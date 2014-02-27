@@ -1,7 +1,7 @@
 #include "lightfield/lightfield.hpp"
 
 OpenLF::Lightfield::Lightfield() {
-    print(1,"light field initialized...");
+    print(1,"Lightfield() called...");
 }
 
 OpenLF::Lightfield::Lightfield(const Lightfield& orig) {

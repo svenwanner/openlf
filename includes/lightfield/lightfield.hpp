@@ -16,7 +16,7 @@
 
 #include "global.hpp"
 
-namespace OpenLF{
+namespace OpenLF {
 
 class Lightfield {
 public:
