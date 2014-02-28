@@ -1,20 +1,26 @@
 #include "image/image.hpp"
 #include "visualize/imgshow.hpp"
 
-OpenLF::Image::Image() {
+OpenLF::Image::Image() 
+{
     print(1,"Image() called...");
+    
+    // set properties
     this->_width = 0;
     this->_height = 0;
     this->_label = "";
 }
 
-OpenLF::Image::Image(int width, int height, int channels) {
+OpenLF::Image::Image(int width, int height, int channels) 
+{
     print(1,"Image(int,int,int) called...");
     if(channels <= 0) throw -1;
     
+    // set properties
     this->_width = width;
     this->_height = height;
     
+    // specifiy label depending on number of channels
     switch(channels) {
         case 1: this->_label = "bw"; break;
         case 2: this->_label = "vec"; break;
@@ -22,85 +28,141 @@ OpenLF::Image::Image(int width, int height, int channels) {
         default: this->_label = ""; break;
     }
     
+    // allocate memory
     for(int c=0; c<channels; c++) 
         this->_data.push_back(new vigra::MultiArray<2,float>(vigra::Shape2(this->_width,this->_height)));               
 }
 
-OpenLF::Image::Image(const char* filename) {
+OpenLF::Image::Image(const char* filename) 
+{
     print(1,"Image(const char*) called..");
     load(filename);
 }
 
-OpenLF::Image::Image(string filename) {
+OpenLF::Image::Image(string filename) 
+{
     print(1,"Image(string) called..");
     load(filename.c_str());
 }
 
-OpenLF::Image::Image(const Image& orig) {
+OpenLF::Image::Image(const Image& orig) 
+{
+    // set properties
     this->_width = orig.width();
     this->_height = orig.height();
+    
+    // allocate memory
+    for(int c=0; c<this->_data.size(); c++) 
+        this->_data.push_back(new vigra::MultiArray<2,float>(vigra::Shape2(this->_width,this->_height)));
 }
 
-OpenLF::Image::~Image() {
-    for(int c=0; c<channels(); c++)
-        delete this->_data[c];
+OpenLF::Image::~Image() 
+{
+    for(int c=0; c<channels(); c++) 
+        this->_data[c]->~MultiArray();
+    this->_data.clear();
 }
 
-int OpenLF::Image::width() const {
+
+
+
+
+
+
+
+
+/* ######################
+   GETTER SETTER METHODS
+   ###################### */
+    
+int OpenLF::Image::width() const 
+{
     return this->_width;
 }
 
-int OpenLF::Image::height() const {
+int OpenLF::Image::height() const 
+{
     return this->_height;
 }
 
-int OpenLF::Image::channels() const {
+int OpenLF::Image::channels() const 
+{
     return this->_data.size();
 }
 
-string OpenLF::Image::label() const {
+string OpenLF::Image::label() const 
+{
     return this->_label;
 }
 
-void OpenLF::Image::set_label(string label) {
+void OpenLF::Image::set_label(string label) 
+{
     this->_label = label;
 }
 
 
-void OpenLF::Image::load(const char* filename) {
-    if(this->_data.size()>0) 
-        for(int c=0; c<channels(); c++)
-            delete this->_data[c];
+
+
+
+
+
+
+/* ######################
+         IO METHODS
+   ###################### */
+
+void OpenLF::Image::load(const char* filename) 
+{    
+    //if image is not empty, delete channels
+    if(this->_data.size()>0) {
+        for(int c=0; c<channels(); c++) {
+            this->_data[c]->~MultiArray();
+        }
+        this->_data.clear();
+    }
+    
  
     try {
+        // import image info from file
         vigra::ImageImportInfo info(filename);
         
         if(info.isGrayscale()) {
             print(3,"load grayscale image...");
+            
+            // uint image to import data from file
             vigra::MultiArray<2, vigra::UInt8> in(info.width(), info.height());
+            
+            // allocate memory
             this->_data.push_back(new vigra::MultiArray<2,float>(info.width(), info.height()));
            
+            // import data
             vigra::importImage(info, vigra::destImage(in));
             
+            // copy data into object and map to range [1,0]
             vigra::UInt8* data_ptr = in.data();
-            
             for(int n=0; n<info.width()*info.height(); n++) {
                 this->_data[0]->data()[n] = ((float)data_ptr[n])/255.0;
             }
            
+            // set properties
             this->_width = info.width();
             this->_height = info.height();
             this->_label = "bw";
         
         } else if(info.isColor()) {
             print(3,"load rgb image...");
+            
+            // uint rgb image to import data from file
             vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in(info.shape());
-            vigra::MultiArray<2, vigra::RGBValue<float> > out(info.shape());
+            
+            // allocate memory
             for(int c=0; c<3; c++)
                 this->_data.push_back(new vigra::MultiArray<2,float>(info.width(), info.height()));
        
+            // import data
             vigra::importImage(info, in);
             
+            // copy data into object and map to range [1,0]
             int index;
             for(int x=0; x<info.width(); x++) {
                 for(int y=0; y<info.height(); y++) {
@@ -111,6 +173,7 @@ void OpenLF::Image::load(const char* filename) {
                 }
             }
             
+            // set properties
             this->_width = info.width();
             this->_height = info.height();
             this->_label = "rgb";
@@ -124,29 +187,42 @@ void OpenLF::Image::load(const char* filename) {
     }
 }
 
-float* OpenLF::Image::get_channel(int channel) {
+
+
+
+
+
+
+
+
+
+/* ######################
+    ACCESS DATA METHODS
+   ###################### */
+
+float* OpenLF::Image::get_channel(int channel) 
+{
     print(3,"get_channel(int)");    
     if(channel>=0 && channel<this->_data.size()) {
         return this->_data[channel]->data();
     }
 }
 
-void OpenLF::Image::swap_channel(int channel, vigra::MultiArray<2,float>& other) {
+void OpenLF::Image::swap_channel(int channel, vigra::MultiArray<2,float>& array) 
+{
     print(3,"get_channel(int)");    
     if(channel<0 || channel>=this->_data.size()) throw OpenLF_Exception("channel doesn't exist exception in Image::swap_channel(int,MultiArray<2,float>&)!");
     try {
-        this->_data[channel]->swap(other);
+        // swap data of channel into array by copying shape and data pointer
+        this->_data[channel]->swap(array);
     } catch(exception & e) {
         cout << e.what() << endl;
     }
 }
 
-
-
-
-
-float OpenLF::Image::acccess_pixel(int x,int y, int channel) {
-    print(3,"acccess_pixel(int,int,int)");
+float OpenLF::Image::access_pixel(int x,int y, int channel) 
+{
+    print(3,"access_pixel(int,int,int)");
     try {
         if(channel<0 || channel>=this->_data.size()) throw OpenLF_Exception("channel doesn't exist exception in Image::acccess_pixel(int,int,int)!");
         if(x<0 || x>=this->_width) throw OpenLF_Exception("out of range row access in Image::acccess_pixel(int,int,int)!");
@@ -157,11 +233,12 @@ float OpenLF::Image::acccess_pixel(int x,int y, int channel) {
     }
 }
 
-float OpenLF::Image::get_pixel(int x, int y, vector<float> &pixel) {
+void OpenLF::Image::get_pixel(int x, int y, vector<float> &values) 
+{
     print(3,"get_pixel(int,int,vector<float>)");
-    pixel.clear();
+    values.clear();
     for(int c=0; c<this->_data.size(); c++) {
-        pixel.push_back(acccess_pixel(x,y,c));
+        values.push_back(access_pixel(x,y,c));
     }
 }
 

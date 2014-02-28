@@ -26,26 +26,102 @@ namespace OpenLF {
 
 class Image {
 public:
-    Image();                     // default constructor
-    virtual ~Image();            // destructor
-    Image(int,int,int);          // empty image constructor (width,height,channels)
-    Image(const char*);          // load from file constructor (filename)
-    Image(string);          // load from file constructor (filename)
+    //! Default constructor.
+    /*!
+      Initializes an empty image of size zero without a label. 
+    */
+    Image();                     
+    virtual ~Image();            
+    
+    //! Empty image constructor.
+    /*!
+      Initializes an empty image. Size and number of channels needs to be
+      specified by the user, 
+    */
+    Image(int x, int y, int channel);
+    
+    //! From file constructor.
+    /*!
+      Initializes image from file. Size, number of channels and [label] is
+      specified automatically as 1[bw] or 3[rgb].
+    */
+    Image(const char* filename);          
+    
+    //! From file constructor.
+    /*!
+      Initializes image from file. Size, number of channels and [label] is 
+      specified automatically as 1[bw] or 3[rgb].
+    */
+    Image(string filename);
+    
+    //! Copy constructor.
+    /*!
+      Copies only properties of the passed object and allocates memory for all
+      channels. To copy the entire image use deepcopy(Image&).
+    */
     Image(const Image& orig);    // copy constructor
     
-    int width() const;           // returns width
-    int height() const;          // returns height
-    int channels() const;        // returns number of channels
-    string label() const;        // returns image label
-    void set_label(string);      // set image label (label)
     
-    void load(const char*);      // load image from file (filename)
+    /*
+     * GETTER SETTER METHODS
+     */
     
-    float* get_channel(int);
-    void swap_channel(int,vigra::MultiArray<2,float>&);
+    //! get width.
+    int width() const;
+    //! get height.
+    int height() const;
+    //! get number of channels.
+    int channels() const;
+    //! get label.
+    string label() const;
     
-    float acccess_pixel(int,int,int);
-    float get_pixel(int,int,vector<float>&);
+    //! set label.
+    void set_label(string label);
+    
+    
+    
+    /*
+     * IO METHODS
+     */
+    
+    //! load from file.
+    /*!
+     Load image data from file (.jpg,.png,.gif,.tif). Size, number of channels 
+     and [label] is specified automatically as 1[bw] or 3[rgb]. 
+    */
+    void load(const char *filename);
+    
+    
+    
+    
+    /*
+     * ACCESS DATA METHODS
+     */
+    
+    //! get data pointer of a specific channel.
+    /*!
+     Returns the pointer to the float data array of an existing channel. 
+    */
+    float* get_channel(int channel);
+    
+    //! fast channel copy to external MultiArray.
+    /*!
+     Copies the channel specified to passed MultiArray reference. 
+    */
+    void swap_channel(int channel, vigra::MultiArray<2,float>& array);
+    
+    //! pixel access.
+    /*!
+     Returns the value of the pixel (x,y) of channel specified. 
+    */
+    float access_pixel(int x, int y, int channel);
+    
+    //! pixel access.
+    /*!
+     Returns the value of the pixel (x,y) of all channels pushing them into the
+     vector passed. 
+    */
+    void get_pixel(int x, int y, vector<float>& values);
     
 //    void get_channel(int,vigra::MultiArray<2,float>&);
     
@@ -58,9 +134,10 @@ public:
 //    void get_rgb_compact(vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> >&);
     
 protected:
-    vector<vigra::MultiArray<2,float>* > _data;
-    int _width,_height;
-    string _label;
+    vector<vigra::MultiArray<2,float>* > _data; //!< vector storing pointers to MultiArray channels
+    int _width;  //!< image width
+    int _height;  //!< image height
+    string _label;   //!< image label "bw","vec","rgb" or specified by user
     
 private:
 

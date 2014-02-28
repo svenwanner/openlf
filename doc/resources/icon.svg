@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.1"
+   width="156"
+   height="156"
+   id="svg2">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient3790">
+      <stop
+         id="stop3792"
+         style="stop-color:#62b2e9;stop-opacity:1"
+         offset="0" />
+      <stop
+         id="stop3794"
+         style="stop-color:#ffffff;stop-opacity:0"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       x1="-0.00132102"
+       y1="114.99841"
+       x2="156.35222"
+       y2="114.99841"
+       id="linearGradient3796"
+       xlink:href="#linearGradient3790"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0,-0.48949052,1.8333166,0,-132.73632,156.00825)" />
+  </defs>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer2">
+    <rect
+       width="28.536818"
+       height="31.567265"
+       ry="0"
+       x="-50.507626"
+       y="22.912403"
+       id="rect3770"
+       style="fill:#ffffff;fill-opacity:0.11872146;stroke:#ffffff;stroke-width:1.02400005;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       d="m 156.01162,156.00891 -156.00755752,0 0,-76.228521 156.17620752,-0.30506 z"
+       id="path3776"
+       style="fill:url(#linearGradient3796);fill-opacity:1;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+  </g>
+  <g
+     transform="translate(0,-896.36218)"
+     id="layer1"
+     style="display:inline">
+    <text
+       x="7.3798833"
+       y="982.71167"
+       id="text2985"
+       xml:space="preserve"
+       style="font-size:36.87828064px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="7.3798833"
+         y="982.71167"
+         id="tspan2987"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:MathJax_Size3;-inkscape-font-specification:MathJax_Size3 Italic">OpenLF</tspan></text>
+    <rect
+       width="143.44167"
+       height="143.44167"
+       x="33.335033"
+       y="181.61069"
+       id="rect2989"
+       style="fill:#ffffff;fill-opacity:0.11872146;stroke:#ffffff;stroke-width:1.02400005;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <rect
+       width="161.6244"
+       height="156.57364"
+       x="260.61935"
+       y="131.10306"
+       id="rect2991"
+       style="fill:#ffffff;fill-opacity:0.11872146;stroke:#ffffff;stroke-width:1.02400005;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <rect
+       width="190.91884"
+       height="241.42645"
+       x="132.32999"
+       y="76.554825"
+       id="rect3761"
+       style="fill:#ffffff;fill-opacity:0.11872146;stroke:#ffffff;stroke-width:1.02400005;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       d="m 297.99501,566.47882 a 116.67262,75.761444 0 1 1 -233.345245,0 116.67262,75.761444 0 1 1 233.345245,0 z"
+       id="path3763"
+       style="fill:#ffffff;fill-opacity:0.11872146;stroke:#ffffff;stroke-width:1.02400005;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <rect
+       width="111.11678"
+       height="131.31982"
+       x="180.81731"
+       y="208.88481"
+       id="rect3767"
+       style="fill:#ffffff;fill-opacity:0.11872146;stroke:#ffffff;stroke-width:1.02400005;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+  </g>
+</svg>
