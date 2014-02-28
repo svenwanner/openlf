@@ -43,6 +43,9 @@ public:
     float* get_channel(int);
     void swap_channel(int,vigra::MultiArray<2,float>&);
     
+    float acccess_pixel(int,int,int);
+    float get_pixel(int,int,vector<float>&);
+    
 //    void get_channel(int,vigra::MultiArray<2,float>&);
     
 //    float* get_data();

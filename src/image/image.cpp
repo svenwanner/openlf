@@ -131,6 +131,34 @@ void OpenLF::Image::swap_channel(int channel, vigra::MultiArray<2,float>& other)
     }
 }
 
+
+
+
+
+float OpenLF::Image::acccess_pixel(int x,int y, int channel) {
+    print(3,"acccess_pixel(int,int,int)");
+    try {
+        if(channel<0 || channel>=this->_data.size()) throw OpenLF_Exception("channel doesn't exist exception in Image::acccess_pixel(int,int,int)!");
+        if(x<0 || x>=this->_width) throw OpenLF_Exception("out of range row access in Image::acccess_pixel(int,int,int)!");
+        if(y<0 || y>=this->_height) throw OpenLF_Exception("out of range column access in Image::acccess_pixel(int,int,int)!");
+        return this->_data[channel]->data()[x*this->_width+y];
+    } catch(exception & e) {
+        cout << e.what() << endl;
+    }
+}
+
+float OpenLF::Image::get_pixel(int x, int y, vector<float> &pixel) {
+    print(3,"get_pixel(int,int,vector<float>)");
+    pixel.clear();
+    for(int c=0; c<this->_data.size(); c++) {
+        pixel.push_back(acccess_pixel(x,y,c));
+    }
+}
+
+
+
+
+
 //void OpenLF::Image::get_channel(int channel, vigra::MultiArray<2,float>& img) {
 //    print(3,"get_channel(int,vigra::MultiArray<2,float>*)...");    
 //    if(channel>=0 && channel<this->_data.size()) {
