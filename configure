@@ -7,8 +7,8 @@ TESTDATAPATH=$(dirname "$SCRIPT")
 TESTOUTPUTPATH=$(dirname "$SCRIPT")
 SETTINGSPATH=$(dirname "$SCRIPT")
 
-SETTINGSPATH+="/tests/settings.h"
-TESTDATAPATH+="/tests/data/input/"
+SETTINGSPATH+="/tests/settings.hpp"
+TESTDATAPATH+="/tests/data/"
 TESTOUTPUTPATH+="/tests/data/output/"
 
 echo "create settings file: $SETTINGSPATH"

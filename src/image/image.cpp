@@ -31,6 +31,11 @@ OpenLF::Image::Image(const char* filename) {
     load(filename);
 }
 
+OpenLF::Image::Image(string filename) {
+    print(1,"Image(string) called..");
+    load(filename.c_str());
+}
+
 OpenLF::Image::Image(const Image& orig) {
     this->_width = orig.width();
     this->_height = orig.height();
@@ -100,11 +105,16 @@ void OpenLF::Image::load(const char* filename) {
             for(int x=0; x<info.width(); x++) {
                 for(int y=0; y<info.height(); y++) {
                     index = x*info.width()+y;
-                    this->_data[0]->data()[index] = in(y,x)[0];
-                    this->_data[1]->data()[index] = in(y,x)[1];
-                    this->_data[2]->data()[index] = in(y,x)[2];
+                    this->_data[0]->data()[index] = in(y,x)[0]/255.0f;
+                    this->_data[1]->data()[index] = in(y,x)[1]/255.0f;
+                    this->_data[2]->data()[index] = in(y,x)[2]/255.0f;
                 }
-            } 
+            }
+            
+            this->_width = info.width();
+            this->_height = info.height();
+            this->_label = "rgb";
+            
         } else {
             throw OpenLF_Exception("Only grayscale and rgb images supported in Image::load()!");
         }

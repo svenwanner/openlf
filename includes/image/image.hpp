@@ -30,6 +30,7 @@ public:
     virtual ~Image();            // destructor
     Image(int,int,int);          // empty image constructor (width,height,channels)
     Image(const char*);          // load from file constructor (filename)
+    Image(string);          // load from file constructor (filename)
     Image(const Image& orig);    // copy constructor
     
     int width() const;           // returns width
