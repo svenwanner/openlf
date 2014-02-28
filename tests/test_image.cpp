@@ -1,4 +1,4 @@
-#include "image_test.hpp"
+#include "test_image.hpp"
 #include "image/image.hpp"
 
 
@@ -22,45 +22,34 @@ void image_test::testConstructor() {
     CPPUNIT_ASSERT(img->width()==0);
     CPPUNIT_ASSERT(img->height()==0);
     CPPUNIT_ASSERT(img->channels()==0);
-    CPPUNIT_ASSERT(img->shape()[0]==0);
-    CPPUNIT_ASSERT(img->shape()[1]==0);
-    CPPUNIT_ASSERT(img->name()=="");
+    CPPUNIT_ASSERT(img->label()=="");
     
     img = new OpenLF::Image(10,10,3);
     
     CPPUNIT_ASSERT(img->width()==10);
     CPPUNIT_ASSERT(img->height()==10);
     CPPUNIT_ASSERT(img->channels()==3);
-    CPPUNIT_ASSERT(img->shape()[0]==10);
-    CPPUNIT_ASSERT(img->shape()[1]==10);
-    CPPUNIT_ASSERT(img->name()=="rgb");
+    CPPUNIT_ASSERT(img->label()=="rgb");
     
     img = new OpenLF::Image(10,10,1);
     
     CPPUNIT_ASSERT(img->width()==10);
     CPPUNIT_ASSERT(img->height()==10);
     CPPUNIT_ASSERT(img->channels()==1);
-    CPPUNIT_ASSERT(img->shape()[0]==10);
-    CPPUNIT_ASSERT(img->shape()[1]==10);
-    CPPUNIT_ASSERT(img->name()=="bw");
+    CPPUNIT_ASSERT(img->label()=="bw");
     
     img = new OpenLF::Image(10,10,2);
     
     CPPUNIT_ASSERT(img->width()==10);
     CPPUNIT_ASSERT(img->height()==10);
     CPPUNIT_ASSERT(img->channels()==2);
-    CPPUNIT_ASSERT(img->shape()[0]==10);
-    CPPUNIT_ASSERT(img->shape()[1]==10);
-    CPPUNIT_ASSERT(img->name()=="vec");
+    CPPUNIT_ASSERT(img->label()=="vec");
     
     img = new OpenLF::Image(10,10,4);
     
     CPPUNIT_ASSERT(img->width()==10);
     CPPUNIT_ASSERT(img->height()==10);
     CPPUNIT_ASSERT(img->channels()==4);
-    CPPUNIT_ASSERT(img->shape()[0]==10);
-    CPPUNIT_ASSERT(img->shape()[1]==10);
-    CPPUNIT_ASSERT(img->name()=="");
+    CPPUNIT_ASSERT(img->label()=="");
 }
-
 

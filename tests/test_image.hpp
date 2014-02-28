@@ -34,4 +34,3 @@ private:
 };
 
 #endif	/* IMAGE_TEST_HPP */
-

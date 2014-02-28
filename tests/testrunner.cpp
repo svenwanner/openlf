@@ -2,7 +2,7 @@
  * File:   testrunner.cpp
  * Author: swanner
  *
- * Created on Feb 21, 2014, 12:55:15 AM
+ * Created on Feb 28, 2014, 3:24:15 PM
  */
 
 #include <cppunit/BriefTestProgressListener.h>
