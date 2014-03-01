@@ -113,6 +113,8 @@ void OpenLF::Image::set_label(string label)
 
 void OpenLF::Image::load(const char* filename) 
 {    
+    //TODO: check if file is .exr and load without norming   
+    
     //if image is not empty, delete channels
     if(this->_data.size()>0) {
         for(int c=0; c<channels(); c++) {
@@ -127,7 +129,7 @@ void OpenLF::Image::load(const char* filename)
         vigra::ImageImportInfo info(filename);
         
         if(info.isGrayscale()) {
-            print(3,"load grayscale image...");
+            print(1,"load grayscale image...");
             
             // uint image to import data from file
             vigra::MultiArray<2, vigra::UInt8> in(info.width(), info.height());
@@ -150,7 +152,7 @@ void OpenLF::Image::load(const char* filename)
             this->_label = "bw";
         
         } else if(info.isColor()) {
-            print(3,"load rgb image...");
+            print(1,"load rgb image...");
             
             // uint rgb image to import data from file
             vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in(info.shape());
@@ -188,7 +190,38 @@ void OpenLF::Image::load(const char* filename)
 }
 
 
+void OpenLF::Image::save(string filename)
+{
+    //TODO: add OpenEXR export
+    
+    string ftype = OpenLF::find_ftype(filename);
+    
+    if(this->_label == "bw") {
+        string msg = "save bw image as " + ftype +"..."; print(1,msg.c_str());
+        
+        if(ftype=="jpg")
+            vigra::exportImage(*this->_data[0], vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=75"));
+        else
+            vigra::exportImage(*this->_data[0], filename.c_str());
+    }
+    
+    else {
+        string msg = "save " + this->_label + " image as " + ftype +"..."; print(1,msg.c_str());
+     
+        //make rgb container
+        vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > out_img(vigra::Shape2(this->_width,this->_height));
+        out_img.init(0);
+        
+        //fill rgb container with data
+        get_rgb(out_img);
+    
+        if(ftype=="jpg")
+            vigra::exportImage(out_img, vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=75"));
+        else
+            vigra::exportImage(out_img, filename.c_str());
+    }
 
+}
 
 
 
@@ -242,81 +275,19 @@ void OpenLF::Image::get_pixel(int x, int y, vector<float> &values)
     }
 }
 
-
-
-
-
-//void OpenLF::Image::get_channel(int channel, vigra::MultiArray<2,float>& img) {
-//    print(3,"get_channel(int,vigra::MultiArray<2,float>*)...");    
-//    if(channel>=0 && channel<this->_data.size()) {
-//        for(int n=0; n<this->_width*this->_height; n++)
-//            img.data()[n] = this->_data[channel]->data()[n];
-//            
-//    } else throw OpenLF_Exception("accessing channel failed, no data available!");
-//}
-
-//
-//vigra::MultiArray<2,float>* OpenLF::Image::get_channel(int channel) {
-//    print(3,"get_channel(int,vigra::MultiArray<2,float>*)...");
-//    if(channel>=0 && channel<this->_data.size()) {
-//        return this->_data[channel];
-//    }
-//    else throw OpenLF_Exception("accessing channel failed, no data available!");
-//}
-//
-//float* OpenLF::Image::get_data() {
-//    return this->_data[0]->data();
-//}
-//
-//void OpenLF::Image::get_bw_channel(vigra::MultiArray<2,float>& img) {
-//    print(3,"get_bw_channel(vigra::MultiArray<2,float>*)...");
-//    if(this->_label == "bw" && this->_data.size()>0) {
-//        float **data_ptr;
-//        float *img_ptr = img.data();
-//        float *local_ptr = this->_data[0]->data();
-//        data_ptr = &img_ptr;
-//        data_ptr = &local_ptr;
-//        for(int i=0; i<5; i++) cout << this->_data[0]->data()[i+300] << " " << img.data()[i+300] << endl;
-//        cout << "image.shape " << img.width() << " " << img.height() << endl; 
-//        cout << "this->_data[0]->data() " << this->_data[0]->data() << endl;
-//        cout << "img.data() " << img.data() << endl;
-//    }
-//    else throw OpenLF_Exception("accessing bw channel failed, no data available!");
-//}
-//
-//void OpenLF::Image::get_vec_channels(vigra::MultiArray<2,float>* x_ptr, vigra::MultiArray<2,float>* y_ptr) {
-//    print(3,"get_vec_channels(vigra::MultiArray<2,float>*,vigra::MultiArray<2,float>*)...");
-//    if(this->_label == "vec" && this->_data.size()>2) {
-//        x_ptr = this->_data[0];
-//        y_ptr = this->_data[1];
-//    }
-//    else throw OpenLF_Exception("accessing vec channels failed, no data available!");
-//}
-//
-//void OpenLF::Image::get_rgb_channels(vigra::MultiArray<2,float>* r_ptr, vigra::MultiArray<2,float>* g_ptr, vigra::MultiArray<2,float>* b_ptr) {
-//    print(3,"get_rgb_channels(vigra::MultiArray<2,float>*,vigra::MultiArray<2,float>*,vigra::MultiArray<2,float>*)...");
-//    if(this->_label == "rgb" && this->_data.size()>3) {
-//        r_ptr = this->_data[0];
-//        g_ptr = this->_data[1];
-//        b_ptr = this->_data[2];
-//    }
-//    else throw OpenLF_Exception("accessing rgb channels failed, no data available!");
-//}
-//
-//void OpenLF::Image::get_rgb_compact(vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> >& rgb_img) {
-//    if(this->_label == "rgb" && this->_data.size()>3) {
-//        float* r = this->_data[0]->data();
-//        float* g = this->_data[1]->data();
-//        float* b = this->_data[2]->data();
-//        
-//        int n=0;
-//        for(int x=0; x<this->_width; x++) {
-//            for(int y=0; y<this->_height; y++) {
-//                rgb_img(x,y)[0] = (vigra::UInt8)r[n]*255.0;
-//                rgb_img(x,y)[1] = (vigra::UInt8)g[n]*255.0;
-//                rgb_img(x,y)[2] = (vigra::UInt8)b[n]*255.0;
-//            }
-//        }
-//    }
-//    else throw OpenLF_Exception("accessing rgb channels failed, no data available!");
-//}
+void OpenLF::Image::get_rgb(vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> >& rgb_img) 
+{      
+    // copy data into vigra RGB image
+    int n=0;
+    for(int x=0; x<this->_width; x++) {
+        for(int y=0; y<this->_height; y++) {
+            for(int c=0; c<3; c++) {
+                if(c<this->_data.size())
+                    rgb_img.data()[n][c] = (int)(this->_data[c]->data()[this->_width*x+y]*255);
+                else
+                    rgb_img.data()[n][c] = 0;
+            }
+            n++;
+        }
+    }
+}

@@ -76,6 +76,19 @@ void image_test::testConstructor() {
         total_diff = total_diff + abs(LENA_TEST_COL_BW[i]/255.0f-px[0]);
     }
     CPPUNIT_ASSERT(total_diff<1e-9);
+    
+    
+    // test bw image saving
+    string filename_pattern = string(test_result_dir)+"save_test_";
+    string filename;
+    
+    filename = filename_pattern+"bw.jpg"; img->save(filename);
+    filename = filename_pattern+"bw.png"; img->save(filename);
+    filename = filename_pattern+"bw.tif"; img->save(filename);
+    filename = filename_pattern+"bw.gif"; img->save(filename);
+    filename = filename_pattern+"bw.bmp"; img->save(filename);
+    //filename = filename_pattern+"bw.exr"; img->save(filename);
+    
     img->~Image();
     
     // test rgb image loading from file
@@ -94,6 +107,16 @@ void image_test::testConstructor() {
         total_diff = total_diff + abs(LENA_TEST_COL_B[i]/255.0f-px[2]);
     }
     CPPUNIT_ASSERT(total_diff<1e-9);
+    
+    
+    // test rgb image saving
+    filename = filename_pattern+"rgb.jpg"; img->save(filename);
+    filename = filename_pattern+"rgb.png"; img->save(filename);
+    filename = filename_pattern+"rgb.tif"; img->save(filename);
+    filename = filename_pattern+"rgb.gif"; img->save(filename);
+    filename = filename_pattern+"rgb.bmp"; img->save(filename);
+    //filename = filename_pattern+"rgb.exr"; img->save(filename);
+    
     img->~Image();
         
     //delete img;

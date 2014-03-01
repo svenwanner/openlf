@@ -2,6 +2,7 @@
 #define	IMAGE_HPP
 
 #include "global.hpp"
+#include "utils/helpers.hpp"
 #include "image/image.hpp"
 
 
@@ -96,12 +97,22 @@ public:
     
     //! load from file.
     /*!
-     Load image data from file (.jpg,.png,.gif,.tif). Size, number of channels 
-     and [label] is specified automatically as 1[bw] or 3[rgb].
+     Load image data from file (.jpg, .png, .gif, .tif, .bmp, .exr). Size, 
+     number of channels and [label] is specified automatically as 1[bw] or 3[rgb].
      \param filename of image file
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     void load(const char *filename);
+    
+    //! save image to file.
+    /*!
+     Saves image data to file (.jpg, .png, .gif, .tif, .bmp, .exr).
+     \param filename of image file
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void save(string filename);
+    
+    
     
     
     
@@ -148,16 +159,18 @@ public:
     */
     void get_pixel(int x, int y, vector<float>& values);
     
-//    void get_channel(int,vigra::MultiArray<2,float>&);
+    //! put data into vigra RGB image.
+    /*!
+     Passed vigra RGB image instance is filled with the first three data channels.
+     If the image has more channel all above 3 are ignored. If there arre less than
+     three channels available, the missing are set to zero.
+     \param rgb_img a vigra RGB image container
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void get_rgb(vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> >& rgb_img);
     
-//    float* get_data();
     
-//    vigra::MultiArray<2,float>* get_channel(int);
-//    void get_bw_channel(vigra::MultiArray<2,float>&);
-//    void get_vec_channels(vigra::MultiArray<2,float>*,vigra::MultiArray<2,float>*);
-//    void get_rgb_channels(vigra::MultiArray<2,float>*,vigra::MultiArray<2,float>*,vigra::MultiArray<2,float>*);
-//    void get_rgb_compact(vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> >&);
-    
+   
     
     
 protected:
