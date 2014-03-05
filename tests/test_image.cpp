@@ -30,6 +30,8 @@ void image_test::testConstructor() {
     CPPUNIT_ASSERT(img->height()==0);
     CPPUNIT_ASSERT(img->channels()==0);
     CPPUNIT_ASSERT(img->label()=="");
+    img->set_label("test");
+    CPPUNIT_ASSERT(img->label()=="test");
     img->~Image();
     
     img = new OpenLF::Image(10,10,3);
@@ -94,7 +96,6 @@ void image_test::testConstructor() {
     CPPUNIT_ASSERT(total_diff<1e-9);
     
     
-    
     // test bw image saving
     filename = filename_pattern+"bw.jpg"; img->save(filename);
     filename = filename_pattern+"bw.png"; img->save(filename);
@@ -132,4 +133,36 @@ void image_test::testConstructor() {
     //filename = filename_pattern+"rgb.exr"; img->save(filename);
     
     img->~Image();
+}
+
+
+
+void image_test::testCopyConstructor() 
+{    
+    // output filename pattern
+    string filename_pattern = string(test_result_dir)+"save_test_";
+    string filename;
+    
+    //open lena rgb image
+    OpenLF::Image* img;
+    img = new OpenLF::Image(lena_rgb_path);
+    OpenLF::Image img_cp = OpenLF::Image(*img);
+    
+    float total_diff = 0.0f;
+    vector<float> px;
+    
+    // check props of image copy
+    CPPUNIT_ASSERT(img_cp.width()==512);
+    CPPUNIT_ASSERT(img_cp.height()==512);
+    CPPUNIT_ASSERT(img_cp.channels()==3);
+    CPPUNIT_ASSERT(img_cp.label()=="rgb");
+    
+    // test if pixel are correct in image copy
+    for(int i=0; i<NUMBER_OF_CHECKPOINTS; i++) {
+        img_cp.get_pixel(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i],px);
+        total_diff = total_diff + abs(LENA_TEST_COL_R[i]/255.0f-px[0]);
+        total_diff = total_diff + abs(LENA_TEST_COL_G[i]/255.0f-px[1]);
+        total_diff = total_diff + abs(LENA_TEST_COL_B[i]/255.0f-px[2]);
+    }
+    CPPUNIT_ASSERT(total_diff<1e-9);
 }

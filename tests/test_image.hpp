@@ -40,6 +40,7 @@ public:
 
 private:
     void testConstructor();
+    void testCopyConstructor();
     string lena_rgb_path;
     string lena_bw_path;
 };

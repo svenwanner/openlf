@@ -2,6 +2,7 @@
 #include "visualize/imgshow.hpp"
 
 OpenLF::Image::Image() 
+/* TEST: image_test::testConstructor() */
 {
     print(1,"Image() called...");
     
@@ -11,7 +12,8 @@ OpenLF::Image::Image()
     this->_label = "";
 }
 
-OpenLF::Image::Image(int width, int height, int channels) 
+OpenLF::Image::Image(int width, int height, int channels)  
+/* TEST: image_test::testConstructor() */
 {
     print(1,"Image(int,int,int) called...");
     if(channels <= 0) throw -1;
@@ -33,27 +35,54 @@ OpenLF::Image::Image(int width, int height, int channels)
         this->_data.push_back(new vigra::MultiArray<2,float>(vigra::Shape2(this->_width,this->_height)));               
 }
 
-OpenLF::Image::Image(const char* filename) 
+OpenLF::Image::Image(const char* filename)  
+/* TEST: image_test::testConstructor() */
 {
     print(1,"Image(const char*) called..");
     load(filename);
 }
 
-OpenLF::Image::Image(string filename) 
+OpenLF::Image::Image(string filename)  
+/* TEST: image_test::testConstructor() */
 {
     print(1,"Image(string) called..");
     load(filename.c_str());
 }
 
 OpenLF::Image::Image(const Image& orig) 
-{
+/* image_test::testCopyConstructor() */
+{       
+    print(1,"Image(const Image&) called..");
+    
     // set properties
     this->_width = orig.width();
     this->_height = orig.height();
+    this->_label = orig.label();
+    
+    // pointer to data
+    float* data_ptr = NULL;
+    float* other_data_ptr = NULL;
     
     // allocate memory
-    for(int c=0; c<this->_data.size(); c++) 
+    for(int c=0; c<this->_data.size(); c++) {
         this->_data.push_back(new vigra::MultiArray<2,float>(vigra::Shape2(this->_width,this->_height)));
+        
+        try {
+            // get data pointer of current channel
+            data_ptr = this->_data[c]->data();
+            other_data_ptr = orig._data[c]->data();
+            if(!data_ptr) throw OpenLF_Exception("Getting this data pointer failed in Image:: CopyConstructor!");
+            if(!other_data_ptr) throw OpenLF_Exception("Getting other data pointer failed in Image:: CopyConstructor!");
+
+            // copy data 
+            for(int n=0; n<this->_width*this->_height; n++) {
+                data_ptr[n] = other_data_ptr[n];
+            }
+        } catch(exception & e) {
+            cout << e.what() << endl;
+        }
+        
+    }
 }
 
 OpenLF::Image::~Image() 
@@ -75,38 +104,45 @@ OpenLF::Image::~Image()
    GETTER SETTER METHODS
    ###################### */
     
-int OpenLF::Image::width() const 
+int OpenLF::Image::width() const  
+/* TEST: image_test::testConstructor() */
 {
     return this->_width;
 }
 
-int OpenLF::Image::height() const 
+int OpenLF::Image::height() const  
+/* TEST: image_test::testConstructor() */
 {
     return this->_height;
 }
 
-int OpenLF::Image::channels() const 
+int OpenLF::Image::channels() const  
+/* TEST: image_test::testConstructor() */
 {
     return this->_data.size();
 }
 
-string OpenLF::Image::label() const 
+string OpenLF::Image::label() const  
+/* TEST: image_test::testConstructor() */
 {
     return this->_label;
 }
 
-void OpenLF::Image::set_label(string label) 
+void OpenLF::Image::set_label(string label)  
+/* TEST: image_test::testConstructor() */
 {
     this->_label = label;
 }
 
-void OpenLF::Image::fill_image_channel(int channel, float value, float std) 
+void OpenLF::Image::fill_image_channel(int channel, float value, float std)  
+/* TEST: image_test::testConstructor() */
 {
     srand (time(NULL));
     float std_dev = 0;
     float tmp_value = 0; 
     float* data_ptr = this->_data[channel]->data();
     
+    // fill channel with value plus a random value if std>0
     for(int n=0; n<this->_width*this->_height; n++) {
         if(std>0) {
             std_dev = (float)rand()/RAND_MAX*std;
@@ -124,7 +160,8 @@ void OpenLF::Image::fill_image_channel(int channel, float value, float std)
          IO METHODS
    ###################### */
 
-void OpenLF::Image::load(const char* filename) 
+void OpenLF::Image::load(const char* filename)  
+/* TEST: image_test::testConstructor() */
 {    
     //TODO: check if file is .exr and load without norming   
     
@@ -203,7 +240,8 @@ void OpenLF::Image::load(const char* filename)
 }
 
 
-void OpenLF::Image::save(string filename)
+void OpenLF::Image::save(string filename)  
+/* TEST: image_test::testConstructor() */
 {
     //TODO: add OpenEXR export
     
@@ -279,7 +317,8 @@ float OpenLF::Image::access_pixel(int x,int y, int channel)
     }
 }
 
-void OpenLF::Image::get_pixel(int x, int y, vector<float> &values) 
+void OpenLF::Image::get_pixel(int x, int y, vector<float> &values)  
+/* TEST: image_test::testConstructor() */
 {
     print(3,"get_pixel(int,int,vector<float>)");
     values.clear();
