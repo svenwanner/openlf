@@ -64,7 +64,7 @@ OpenLF::Image::Image(const Image& orig)
     float* other_data_ptr = NULL;
     
     // allocate memory
-    for(int c=0; c<this->_data.size(); c++) {
+    for(int c=0; c<orig.channels(); c++) {
         this->_data.push_back(new vigra::MultiArray<2,float>(vigra::Shape2(this->_width,this->_height)));
         
         try {
@@ -285,6 +285,7 @@ void OpenLF::Image::save(string filename)
    ###################### */
 
 float* OpenLF::Image::get_channel(int channel) 
+/* TEST: image_test::testCannelAcccess() */
 {
     print(3,"get_channel(int)");    
     if(channel>=0 && channel<this->_data.size()) {
@@ -293,6 +294,7 @@ float* OpenLF::Image::get_channel(int channel)
 }
 
 void OpenLF::Image::swap_channel(int channel, vigra::MultiArray<2,float>& array) 
+/* TEST: image_test::testCannelAcccess() */
 {
     print(3,"get_channel(int)");    
     if(channel<0 || channel>=this->_data.size()) throw OpenLF_Exception("channel doesn't exist exception in Image::swap_channel(int,MultiArray<2,float>&)!");
@@ -304,7 +306,8 @@ void OpenLF::Image::swap_channel(int channel, vigra::MultiArray<2,float>& array)
     }
 }
 
-float OpenLF::Image::access_pixel(int x,int y, int channel) 
+float OpenLF::Image::access_pixel(int x,int y, int channel)
+/* TEST: image_test::testCannelAcccess() */
 {
     print(3,"access_pixel(int,int,int)");
     try {
@@ -328,6 +331,7 @@ void OpenLF::Image::get_pixel(int x, int y, vector<float> &values)
 }
 
 void OpenLF::Image::get_rgb(vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> >& rgb_img) 
+/* TEST: used in save() and thus in image_test::testConstructor() */
 {      
     // copy data into vigra RGB image
     int n=0;
