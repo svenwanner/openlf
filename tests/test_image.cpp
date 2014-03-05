@@ -19,6 +19,11 @@ void image_test::tearDown() {
 }
 
 void image_test::testConstructor() {
+    
+    // output filename pattern
+    string filename_pattern = string(test_result_dir)+"save_test_";
+    string filename;
+    
     OpenLF::Image* img = new OpenLF::Image();
     
     CPPUNIT_ASSERT(img->width()==0);
@@ -44,11 +49,22 @@ void image_test::testConstructor() {
     img->~Image();
     
     img = new OpenLF::Image(10,10,2);
+    img->fill_image_channel(0,0.8,0.1);
+    img->fill_image_channel(1,0.2,0.05);
     
     CPPUNIT_ASSERT(img->width()==10);
     CPPUNIT_ASSERT(img->height()==10);
     CPPUNIT_ASSERT(img->channels()==2);
     CPPUNIT_ASSERT(img->label()=="vec");
+    
+    // test vec image saving
+    filename = filename_pattern+"vec.jpg"; img->save(filename);
+    filename = filename_pattern+"vec.png"; img->save(filename);
+    filename = filename_pattern+"vec.tif"; img->save(filename);
+    filename = filename_pattern+"vec.gif"; img->save(filename);
+    filename = filename_pattern+"vec.bmp"; img->save(filename);
+    //filename = filename_pattern+"vec.exr"; img->save(filename);
+    
     img->~Image();
     
     img = new OpenLF::Image(10,10,4);
@@ -78,10 +94,8 @@ void image_test::testConstructor() {
     CPPUNIT_ASSERT(total_diff<1e-9);
     
     
-    // test bw image saving
-    string filename_pattern = string(test_result_dir)+"save_test_";
-    string filename;
     
+    // test bw image saving
     filename = filename_pattern+"bw.jpg"; img->save(filename);
     filename = filename_pattern+"bw.png"; img->save(filename);
     filename = filename_pattern+"bw.tif"; img->save(filename);
@@ -118,6 +132,4 @@ void image_test::testConstructor() {
     //filename = filename_pattern+"rgb.exr"; img->save(filename);
     
     img->~Image();
-        
-    //delete img;
 }

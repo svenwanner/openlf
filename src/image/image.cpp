@@ -100,7 +100,20 @@ void OpenLF::Image::set_label(string label)
     this->_label = label;
 }
 
-
+void OpenLF::Image::fill_image_channel(int channel, float value, float std) 
+{
+    srand (time(NULL));
+    float std_dev = 0;
+    float tmp_value = 0; 
+    float* data_ptr = this->_data[channel]->data();
+    
+    for(int n=0; n<this->_width*this->_height; n++) {
+        if(std>0) {
+            std_dev = (float)rand()/RAND_MAX*std;
+        }
+        data_ptr[n] = value+std_dev;
+    }
+}
 
 
 

@@ -89,7 +89,15 @@ public:
     */
     void set_label(string label);
     
-    
+    //! fills channel of an passed image object with the value passed 
+    /*!
+     \param img instance of Image 
+     \param channel to fill
+     \param value to fill
+     \param std standard deviation as randomness around value
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void fill_image_channel(int channel, float value, float std);
     
     /*
      * IO METHODS
