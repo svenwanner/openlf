@@ -16,7 +16,7 @@ OpenLF::Image::Image(int width, int height, int channels)
 /* TEST: image_test::testConstructor() */
 {
     print(1,"Image(int,int,int) called...");
-    if(channels <= 0) throw -1;
+    if(channels < 0) throw  OpenLF_Exception("Channel needs to be a posiiv integer in Constructor!");
     
     // set properties
     this->_width = width;
