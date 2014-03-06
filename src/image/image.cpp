@@ -140,14 +140,71 @@ void OpenLF::Image::fill_image_channel(int channel, float value, float std)
     srand (time(NULL));
     float std_dev = 0;
     float tmp_value = 0; 
-    float* data_ptr = this->_data[channel]->data();
+    float* data_ptr = NULL;
     
-    // fill channel with value plus a random value if std>0
-    for(int n=0; n<this->_width*this->_height; n++) {
-        if(std>0) {
-            std_dev = (float)rand()/RAND_MAX*std;
+    try {
+        // get data pointer 
+        data_ptr = this->_data[channel]->data();
+        
+        if(this->_data.size()<=0 || channel >= this->_data.size() || data_ptr == NULL)
+            throw OpenLF_Exception("Channel access exception in Image::fill_image_channel()!");
+
+        // fill channel with value plus a random value if std>0
+        for(int n=0; n<this->_width*this->_height; n++) {
+            if(std>0) {
+                std_dev = (float)rand()/RAND_MAX*std;
+            }
+            data_ptr[n] = value+std_dev;
         }
-        data_ptr[n] = value+std_dev;
+    } catch(exception & e) {
+        cout << e.what() << endl;
+    }
+}
+
+void OpenLF::Image::add_channel() {
+/* TEST: image_test::addCannel() */
+    if(this->_width>0 && this->_height>0) {
+        this->_data.push_back(new vigra::MultiArray<2,float>(vigra::Shape2(this->_width,this->_height)));
+        *this->_data[this->_data.size()-1] = 0;
+    }
+}
+
+void OpenLF::Image::add_channel(float* data) {
+/* TEST: image_test::addCannel() */
+    float* data_ptr = NULL;
+    try {
+        this->_data.push_back(new vigra::MultiArray<2,float>(vigra::Shape2(this->_width,this->_height)));
+        data_ptr = this->_data[this->_data.size()-1]->data();
+        
+        if(data_ptr == NULL)
+            throw OpenLF_Exception("Channel access exception in Image::add_channel()!");
+        
+        // copy data
+        for(int n=0; n<this->_width*this->_height; n++) {
+            data_ptr[n] = data[n];
+        }
+    } catch(exception & e) {
+        cout << e.what() << endl;
+    }
+}
+
+void OpenLF::Image::set_channel(float* data, int channel) {
+/* TEST: image_test::addCannel() */
+    float* data_ptr = NULL;
+    try {
+        if(channel < 0 || channel >= this->_data.size())
+            throw OpenLF_Exception("Access to not existing channel exception in Image::set_channel()!");
+        data_ptr = this->_data[channel]->data();
+        
+        if(data_ptr == NULL)
+            throw OpenLF_Exception("Channel access exception in Image::add_channel()!");
+        
+        // copy data
+        for(int n=0; n<this->_width*this->_height; n++) {
+            data_ptr[n] = data[n];
+        }
+    } catch(exception & e) {
+        cout << e.what() << endl;
     }
 }
 

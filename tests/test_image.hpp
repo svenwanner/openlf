@@ -31,6 +31,7 @@ class image_test : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testConstructor);
     CPPUNIT_TEST(testCopyConstructor);
     CPPUNIT_TEST(testCannelAcccess);
+    CPPUNIT_TEST(addCannel);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -44,6 +45,8 @@ private:
     void testConstructor();
     void testCopyConstructor();
     void testCannelAcccess();
+    void addCannel();
+    
     string lena_rgb_path;
     string lena_bw_path;
 };

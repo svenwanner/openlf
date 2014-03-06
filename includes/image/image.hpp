@@ -99,6 +99,36 @@ public:
     */
     void fill_image_channel(int channel, float value, float std);
     
+    //! adds empty channels to the image object
+    /*!
+     Adds an additional empty channel to the data container.
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void add_channel();
+    
+    //! adds channels to the image object
+    /*!
+     Copies a float array as an additional channel to the data container. It has to be
+     ensured by the user that the shapes are consistent.
+     \param data float pointer to data array 
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void add_channel(float* data);
+    
+    //! copy data to the channel specified
+    /*!
+     Copies a float array into the channel specified. It has to be
+     ensured by the user that the shapes are consistent.
+     \param data float pointer to data array 
+     \param channel to which data should be copied
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void set_channel(float* data, int channel);
+    
+    
+    
+    
+    
     /*
      * IO METHODS
      */

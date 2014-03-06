@@ -138,11 +138,7 @@ void image_test::testConstructor() {
 
 
 void image_test::testCopyConstructor() 
-{    
-    // output filename pattern
-    string filename_pattern = string(test_result_dir)+"save_test_";
-    string filename;
-    
+{       
     //open lena rgb image
     OpenLF::Image* img;
     img = new OpenLF::Image(lena_rgb_path);
@@ -171,12 +167,8 @@ void image_test::testCopyConstructor()
 
 
 
-void image_test::testCannelAcccess() {
-    cout << "test channel access" << endl;
-    // output filename pattern
-    string filename_pattern = string(test_result_dir)+"save_test_";
-    string filename;
-    
+void image_test::testCannelAcccess() 
+{
     //open lena rgb image
     OpenLF::Image* img;
     img = new OpenLF::Image(lena_rgb_path);
@@ -220,4 +212,38 @@ void image_test::testCannelAcccess() {
     CPPUNIT_ASSERT(total_diff<1e-9);
     
     img->~Image();
+}
+
+
+void image_test::addCannel() {
+    string filename_pattern = string(test_result_dir)+"save_test_";
+    string filename;
+    
+    //open lena rgb imag
+    OpenLF::Image img = OpenLF::Image(lena_rgb_path);
+    OpenLF::Image vec = OpenLF::Image(512,512,2);
+    
+    float *r = img.get_channel(0);
+    float *g = img.get_channel(1);
+    float *b = img.get_channel(2);
+    
+    vec.add_channel();
+    CPPUNIT_ASSERT(vec.channels()==3);
+    vec.set_label("rgb");
+    CPPUNIT_ASSERT(vec.label()=="rgb");
+    vec.set_channel(r,0);
+    vec.set_channel(g,1);
+    vec.set_channel(b,2);
+    
+    float px;
+    float total_diff = 0.0f;
+    for(int i=0; i<NUMBER_OF_CHECKPOINTS; i++) {
+        px = vec.access_pixel(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i], 0);
+        total_diff = total_diff + abs(LENA_TEST_COL_R[i]/255.0f-px);
+        px = vec.access_pixel(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i], 1);
+        total_diff = total_diff + abs(LENA_TEST_COL_G[i]/255.0f-px);
+        px = vec.access_pixel(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i], 2);
+        total_diff = total_diff + abs(LENA_TEST_COL_B[i]/255.0f-px);
+    }
+    CPPUNIT_ASSERT(total_diff<1e-9);
 }
