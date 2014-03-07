@@ -145,6 +145,7 @@ void image_test::testConstructor() {
     //filename = filename_pattern+"rgb.exr"; img->save(filename);
     
     img->~Image();
+    //delete img;
 }
 
 
@@ -152,9 +153,8 @@ void image_test::testConstructor() {
 void image_test::testCopyConstructor() 
 {       
     //open lena rgb image
-    OpenLF::Image* img;
-    img = new OpenLF::Image(lena_rgb_path);
-    OpenLF::Image img_cp = OpenLF::Image(*img);
+    OpenLF::Image img = OpenLF::Image(lena_rgb_path);
+    OpenLF::Image img_cp = OpenLF::Image(img);
     
     float total_diff = 0.0f;
     vector<float> px;
@@ -173,8 +173,6 @@ void image_test::testCopyConstructor()
         total_diff = total_diff + abs(LENA_TEST_COL_B[i]/255.0f-px[2]);
     }
     CPPUNIT_ASSERT(total_diff<1e-9);
-    
-    img->~Image();
 }
 
 
@@ -182,16 +180,15 @@ void image_test::testCopyConstructor()
 void image_test::testCannelAcccess() 
 {
     //open lena rgb image
-    OpenLF::Image* img;
-    img = new OpenLF::Image(lena_rgb_path);
+    OpenLF::Image img = OpenLF::Image(lena_rgb_path);
     
     // test get_channel
-    float *r = img->get_channel(0);
-    float *g = img->get_channel(1);
-    float *b = img->get_channel(2);
+    float *r = img.get_channel(0);
+    float *g = img.get_channel(1);
+    float *b = img.get_channel(2);
     float total_diff = 0.0f;
     for(int i=0; i<NUMBER_OF_CHECKPOINTS; i++) {
-        int pos = img->width()*LENA_TEST_POS_X[i]+LENA_TEST_POS_Y[i];
+        int pos = img.width()*LENA_TEST_POS_X[i]+LENA_TEST_POS_Y[i];
         total_diff = total_diff + abs(LENA_TEST_COL_R[i]/255.0f-r[pos]);
         total_diff = total_diff + abs(LENA_TEST_COL_G[i]/255.0f-g[pos]);
         total_diff = total_diff + abs(LENA_TEST_COL_B[i]/255.0f-b[pos]);
@@ -202,28 +199,26 @@ void image_test::testCannelAcccess()
     float px;
     total_diff = 0.0f;
     for(int i=0; i<NUMBER_OF_CHECKPOINTS; i++) {
-        px = img->access_pixel(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i], 0);
+        px = img.access_pixel(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i], 0);
         total_diff = total_diff + abs(LENA_TEST_COL_R[i]/255.0f-px);
-        px = img->access_pixel(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i], 1);
+        px = img.access_pixel(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i], 1);
         total_diff = total_diff + abs(LENA_TEST_COL_G[i]/255.0f-px);
-        px = img->access_pixel(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i], 2);
+        px = img.access_pixel(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i], 2);
         total_diff = total_diff + abs(LENA_TEST_COL_B[i]/255.0f-px);
     }
     CPPUNIT_ASSERT(total_diff<1e-9);
     
     // test swap_channel
     vigra::MultiArray<2,float> array = vigra::MultiArray<2,float>(vigra::Shape2(lena_width,lena_height));
-    img->swap_channel(0,array);
+    img.swap_channel(0,array);
     
     total_diff = 0.0f;
     for(int i=0; i<NUMBER_OF_CHECKPOINTS; i++) {
-        int pos = img->width()*LENA_TEST_POS_X[i]+LENA_TEST_POS_Y[i];
+        int pos = img.width()*LENA_TEST_POS_X[i]+LENA_TEST_POS_Y[i];
         total_diff = total_diff + abs(LENA_TEST_COL_R[i]/255.0f-array.data()[pos]);
     }
     
     CPPUNIT_ASSERT(total_diff<1e-9);
-    
-    img->~Image();
 }
 
 

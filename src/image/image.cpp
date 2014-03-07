@@ -87,8 +87,10 @@ OpenLF::Image::Image(const Image& orig)
 
 OpenLF::Image::~Image() 
 {
-    for(int c=0; c<channels(); c++) 
+    for(int c=0; c<channels(); c++) {
         this->_data[c]->~MultiArray();
+        delete this->_data[c];
+    }
     this->_data.clear();
 }
 
