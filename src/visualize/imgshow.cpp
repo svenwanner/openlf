@@ -43,16 +43,6 @@ void OpenLF::show(vigra::MultiArray<2,float>& img, const char* title) {
     show(cvimg,title);
 }
 
-void OpenLF::show(vigra::MultiArray<2, double>& img, const char* title) {
-    print(3,"show(MultiArray<2,double>&,const char*)");
-    cv::Mat cvimg;
-    cvimg = cv::Mat::zeros(img.width(),img.height(),CV_8UC1);
-    vigra::MultiArray<2,vigra::UInt8> img_u8(vigra::Shape2(img.width(),img.height()));
-    linearRangeMapping(img,img_u8);
-    cvimg.data = (uchar*)img_u8.data();
-    show(cvimg,title);
-}
-
 void OpenLF::show(vigra::MultiArray<2,vigra::UInt8>& img, const char* title) {
     print(3,"show(MultiArray<2,UInt8>&,const char*)");
     cv::Mat cvimg;
@@ -75,42 +65,41 @@ void OpenLF::show(cv::Mat img, const char* title) {
     }
 }
 
+void OpenLF::imshow(OpenLF::Image& img, const char* title) {
+    try {
+        if(img.label()=="bw" || img.label()=="rgb") {
+            cv::Mat cv_mat;
+            img.get_opencv(cv_mat);
+            
+//            //find minimum and maximum intensities
+//            float* minVal, maxVal;
+//            cv::minMaxLoc(cv_mat, minVal, maxVal); 
+//            cv::Mat draw;
+//            cv_mat.convertTo(draw, CV_8U, 255.0/(*maxVal - *minVal), -*minVal * 255.0/(*maxVal - *minVal));
+
+            cv::namedWindow(title, CV_WINDOW_AUTOSIZE);
+            cv::imshow(title, cv_mat);
+            cv::waitKey();
+        }   
+        else {
+            throw OpenLF_Exception("Only grayscale and rgb images supported in show!");
+        }
+    } catch(exception & e) {
+        cout << e.what() << endl;
+    }
+}
+
 //void OpenLF::imshow(OpenLF::Image& img, const char* title) {
 //    print(3,"imshow(Image&,const char*)");
 //    try {
 //        cv::Mat cvimg;
 //        if(img.label()=="bw") {
 //            cout << "show bw image" << endl;
-//            vigra::MultiArray<2,float> img_f32 = vigra::MultiArray<2,float>(vigra::Shape2(img.width(),img.height()));
-//            img.get_channel(0,img_f32);
-//            //container to hold data in uint8 format
-//            vigra::MultiArray<2,vigra::UInt8> img_u8(vigra::Shape2(img.width(),img.height()));
-//            // ensure range of [0,255]
-//            linearRangeMapping(img_f32,img_u8);
-//            
-//            // opencv container to show 
-//            cvimg = cv::Mat::zeros(img.width(),img.height(),CV_8UC1);
-//            // copy data to opencv container
-//            cvimg.data = (uchar*)img_u8.data();
-//            
-////            // opencv container to show 
-////            cvimg = cv::Mat::zeros(img.width(),img.height(),CV_8UC1);
-////            // vigra container to receive data from Image object
-////            vigra::MultiArray<2,float> img_f32 = vigra::MultiArray<2,float>(vigra::Shape2(img.width(),img.height()));
-////            // get data from Image object
-////            img_f32.swapData(*img.get_channel(0));
-////            float *ptr = img.get_data();
-////            for(int x=0; x<img.width()*img.height(); x++) {
-////                img_f32.data()[x] = ptr[x];
-////            }
-////            // container to hold data in uint8 format
-////            vigra::MultiArray<2,vigra::UInt8> img_u8(vigra::Shape2(img.width(),img.height()));
-////            // ensure range of [0,255]
-////            linearRangeMapping(img_f32,img_u8);
-////            // copy data to opencv container
-////            cvimg.data = (uchar*)img_u8.data();
-//
-//        } else if(img.label()=="rgb"){ 
+//            vigra::MultiArray<2,float> img_f32;
+//            img.swap_channel(0,img_f32);           
+//            show(img_f32);
+//        } 
+//        else if(img.label()=="rgb") { 
 ////            cvimg = cv::Mat::zeros(img.width(),img.height(),CV_8UC3);
 ////            vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > rgb_img;
 ////            img.get_rgb_compact(rgb_img);

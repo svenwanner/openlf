@@ -404,3 +404,46 @@ void OpenLF::Image::get_rgb(vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> >
         }
     }
 }
+
+void OpenLF::Image::get_opencv(cv::Mat& cv_mat) {
+// TODO: check pointer passing for faster conversion
+    if(label()=="bw") { 
+        cv_mat = cv::Mat::zeros(this->_width,this->_height,CV_32FC1);
+        
+        for(int x=0; x<width(); x++) {
+           for(int y=0; y<height(); y++) {
+                cv_mat.at<float>(y,x) = this->_data[0]->data()[width()*y+x];
+           }
+       }
+    }
+    else if(label()=="vec") {
+       cv_mat = cv::Mat::zeros(this->_width,this->_height,CV_32FC2);
+       
+       for(int x=0; x<width(); x++) {
+           for(int y=0; y<height(); y++) {
+                cv_mat.at<cv::Vec2f>(y,x)[0] = this->_data[0]->data()[width()*y+x];
+                cv_mat.at<cv::Vec2f>(y,x)[1] = this->_data[1]->data()[width()*y+x];
+           }
+       }       
+    }
+    else if(label()=="rgb") {
+        cv_mat = cv::Mat::zeros(this->_width,this->_height,CV_32FC3);
+       
+        for(int x=0; x<width(); x++) {
+            for(int y=0; y<height(); y++) {
+                 cv_mat.at<cv::Vec3f>(y,x)[0] = this->_data[2]->data()[width()*y+x];
+                 cv_mat.at<cv::Vec3f>(y,x)[1] = this->_data[1]->data()[width()*y+x];
+                 cv_mat.at<cv::Vec3f>(y,x)[2] = this->_data[0]->data()[width()*y+x];
+            }
+        } 
+    }
+
+}
+
+void OpenLF::Image::get_opencv(int channel, cv::Mat& cv_mat) {
+// TODO: check pointer passing for faster conversion
+    if(this->_data.size() > 0 && channel < this->_data.size()) { 
+        cv_mat = cv::Mat::zeros(this->_width,this->_height,CV_32FC1);
+        cv_mat.data = (uchar*)this->_data[channel]->data();
+    }
+}

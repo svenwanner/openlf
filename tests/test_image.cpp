@@ -1,5 +1,6 @@
 #include "test_image.hpp"
 #include "image/image.hpp"
+#include "visualize/imgshow.hpp"
 
 
 CPPUNIT_TEST_SUITE_REGISTRATION(image_test);
@@ -94,7 +95,8 @@ void image_test::testConstructor() {
         total_diff = total_diff + abs(LENA_TEST_COL_BW[i]/255.0f-px[0]);
     }
     CPPUNIT_ASSERT(total_diff<1e-9);
-    
+   
+    //OpenLF::imshow(*img,"bw");
     
     // test bw image saving
     filename = filename_pattern+"bw.jpg"; img->save(filename);
@@ -123,6 +125,12 @@ void image_test::testConstructor() {
     }
     CPPUNIT_ASSERT(total_diff<1e-9);
     
+    cv::Mat tmp;
+    img->get_opencv(2,tmp);
+    OpenLF::show(tmp,"channel 3");
+    //OpenLF::imshow(*img,"rgb");
+    
+    //cout << tmp;
     
     // test rgb image saving
     filename = filename_pattern+"rgb.jpg"; img->save(filename);

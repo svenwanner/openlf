@@ -23,9 +23,9 @@ namespace OpenLF {
     
     void show(vigra::MultiArray<2, float>&,const char*);
     void show(vigra::MultiArray<2, vigra::UInt8>&,const char*);
-    void show(vigra::MultiArray<2, double>&,const char*);
     void show(cv::Mat,const char*);
-    //void imshow(OpenLF::Image&,const char*);
+    void imshow(OpenLF::Image& img, const char* title);
+//    void imshow(OpenLF::Image&,const char*);
     //void imshow(OpenLF::Image&,int,const char*);
 }
 

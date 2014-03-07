@@ -207,6 +207,23 @@ public:
     */
     void get_rgb(vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> >& rgb_img);
     
+    //! convert to OpenCV Mat 
+    /*!
+     Converts image data to OpenCV Mat object. 
+     \param cv_mat reference to opencv container 
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void get_opencv(cv::Mat& cv_mat);
+    
+    //! convert single channel to OpenCV Mat 
+    /*!
+     Converts data from a single channel to OpenCV Mat object. 
+     \param channel to be copied
+     \param cv_mat reference to opencv container 
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void get_opencv(int channel, cv::Mat& cv_mat);
+    
     
    
     
