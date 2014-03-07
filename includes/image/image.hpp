@@ -115,6 +115,15 @@ public:
     */
     void add_channel(float* data);
     
+    //! adds channel to the image object
+    /*!
+     Adds a copy of a channel from the image object passed to the data container
+     \param channel to be copied
+     \param orig image instance from which the channel should be copied 
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void add_channel(int channel, const OpenLF::Image& orig);
+    
     //! copy data to the channel specified
     /*!
      Copies a float array into the channel specified. It has to be
@@ -125,7 +134,15 @@ public:
     */
     void set_channel(float* data, int channel);
     
-    
+    //! copies channel from image instance passed 
+    /*!
+     The channel specified is copied from the image instance passed. The label is
+     set to bw, already existing channels are deleted.
+     \param channel to be copied
+     \param orig is the image instance the channel should be copied from
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void copy_channel(int channel, const Image& orig);
     
     
     
@@ -165,7 +182,7 @@ public:
      \param channel data channel
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
     */
-    float* get_channel(int channel);
+    float* get_channel(int channel) const;
     
     //! fast channel copy to external MultiArray.
     /*!

@@ -65,7 +65,7 @@ struct OpenLF_Exception : public exception
 };
 
 
-const int DEBUG_LEVEL = 6;
+const int DEBUG_LEVEL = 0;
 
 #define RED          "\033[22;31m" 
 

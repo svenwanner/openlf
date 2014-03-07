@@ -23,7 +23,7 @@ const unsigned int LENA_TEST_POS_Y[NUMBER_OF_CHECKPOINTS] = {78,107,232,316,258,
 const unsigned int LENA_TEST_COL_R[NUMBER_OF_CHECKPOINTS] = {176,175,87,236,86,216};
 const unsigned int LENA_TEST_COL_G[NUMBER_OF_CHECKPOINTS] = {112,121,69,164,53,192};
 const unsigned int LENA_TEST_COL_B[NUMBER_OF_CHECKPOINTS] = {102,83,83,142,60,205};
-const unsigned int LENA_TEST_COL_BW[NUMBER_OF_CHECKPOINTS] = {125,130,75,177,63,200};
+const unsigned int LENA_TEST_COL_BW[NUMBER_OF_CHECKPOINTS] = {125,128,74,178,61,198};
 
 class image_test : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(image_test);
@@ -32,6 +32,7 @@ class image_test : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testCopyConstructor);
     CPPUNIT_TEST(testCannelAcccess);
     CPPUNIT_TEST(addCannel);
+    CPPUNIT_TEST(conversionOpenCV);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -46,9 +47,11 @@ private:
     void testCopyConstructor();
     void testCannelAcccess();
     void addCannel();
+    void conversionOpenCV();
     
     string lena_rgb_path;
     string lena_bw_path;
+    int lena_width,lena_height;
 };
 
 #endif	/* IMAGE_TEST_HPP */

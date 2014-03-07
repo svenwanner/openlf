@@ -70,13 +70,6 @@ void OpenLF::imshow(OpenLF::Image& img, const char* title) {
         if(img.label()=="bw" || img.label()=="rgb") {
             cv::Mat cv_mat;
             img.get_opencv(cv_mat);
-            
-//            //find minimum and maximum intensities
-//            float* minVal, maxVal;
-//            cv::minMaxLoc(cv_mat, minVal, maxVal); 
-//            cv::Mat draw;
-//            cv_mat.convertTo(draw, CV_8U, 255.0/(*maxVal - *minVal), -*minVal * 255.0/(*maxVal - *minVal));
-
             cv::namedWindow(title, CV_WINDOW_AUTOSIZE);
             cv::imshow(title, cv_mat);
             cv::waitKey();

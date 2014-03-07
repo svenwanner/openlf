@@ -14,6 +14,8 @@ image_test::~image_test() {
 void image_test::setUp() {
     lena_rgb_path = test_data_dir+"lena_rgb.jpg";
     lena_bw_path = test_data_dir+"lena_bw.jpg";
+    lena_width = 512;
+    lena_height = 576;
 }
 
 void image_test::tearDown() {
@@ -85,8 +87,8 @@ void image_test::testConstructor() {
     
     img = new OpenLF::Image(lena_bw_path);
     
-    CPPUNIT_ASSERT(img->width()==512);
-    CPPUNIT_ASSERT(img->height()==512);
+    CPPUNIT_ASSERT(img->width()==lena_width);
+    CPPUNIT_ASSERT(img->height()==lena_height);
     CPPUNIT_ASSERT(img->channels()==1);
     CPPUNIT_ASSERT(img->label()=="bw");
     
@@ -112,25 +114,27 @@ void image_test::testConstructor() {
     total_diff = 0.0f;
     img = new OpenLF::Image(lena_rgb_path);
     
-    CPPUNIT_ASSERT(img->width()==512);
-    CPPUNIT_ASSERT(img->height()==512);
+    CPPUNIT_ASSERT(img->width()==lena_width);
+    CPPUNIT_ASSERT(img->height()==lena_height);
     CPPUNIT_ASSERT(img->channels()==3);
     CPPUNIT_ASSERT(img->label()=="rgb");
     
     for(int i=0; i<NUMBER_OF_CHECKPOINTS; i++) {
         img->get_pixel(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i],px);
         total_diff = total_diff + abs(LENA_TEST_COL_R[i]/255.0f-px[0]);
+        //cout << "rgb test: " << LENA_TEST_COL_R[i] << " " << px[0]*255.0 << endl;
         total_diff = total_diff + abs(LENA_TEST_COL_G[i]/255.0f-px[1]);
+        //cout << "rgb test: " << LENA_TEST_COL_G[i] << " " << px[1]*255.0 << endl;
         total_diff = total_diff + abs(LENA_TEST_COL_B[i]/255.0f-px[2]);
+        //cout << "rgb test: " << LENA_TEST_COL_B[i] << " " << px[2]*255.0 << endl;
     }
     CPPUNIT_ASSERT(total_diff<1e-9);
     
-    cv::Mat tmp;
-    img->get_opencv(2,tmp);
-    OpenLF::show(tmp,"channel 3");
-    //OpenLF::imshow(*img,"rgb");
+//    cv::Mat tmp;
+//    img->get_opencv(2,tmp);
+//    OpenLF::show(tmp,"channel 3");
     
-    //cout << tmp;
+//    OpenLF::imshow(*img,"rgb");
     
     // test rgb image saving
     filename = filename_pattern+"rgb.jpg"; img->save(filename);
@@ -156,8 +160,8 @@ void image_test::testCopyConstructor()
     vector<float> px;
     
     // check props of image copy
-    CPPUNIT_ASSERT(img_cp.width()==512);
-    CPPUNIT_ASSERT(img_cp.height()==512);
+    CPPUNIT_ASSERT(img_cp.width()==lena_width);
+    CPPUNIT_ASSERT(img_cp.height()==lena_height);
     CPPUNIT_ASSERT(img_cp.channels()==3);
     CPPUNIT_ASSERT(img_cp.label()=="rgb");
     
@@ -208,7 +212,7 @@ void image_test::testCannelAcccess()
     CPPUNIT_ASSERT(total_diff<1e-9);
     
     // test swap_channel
-    vigra::MultiArray<2,float> array = vigra::MultiArray<2,float>(vigra::Shape2(512,512));
+    vigra::MultiArray<2,float> array = vigra::MultiArray<2,float>(vigra::Shape2(lena_width,lena_height));
     img->swap_channel(0,array);
     
     total_diff = 0.0f;
@@ -224,12 +228,9 @@ void image_test::testCannelAcccess()
 
 
 void image_test::addCannel() {
-    string filename_pattern = string(test_result_dir)+"save_test_";
-    string filename;
-    
-    //open lena rgb imag
+    //open lena rgb img
     OpenLF::Image img = OpenLF::Image(lena_rgb_path);
-    OpenLF::Image vec = OpenLF::Image(512,512,2);
+    OpenLF::Image vec = OpenLF::Image(lena_width,lena_height,2);
     
     float *r = img.get_channel(0);
     float *g = img.get_channel(1);
@@ -258,8 +259,8 @@ void image_test::addCannel() {
     }
     CPPUNIT_ASSERT(total_diff<1e-9);
     
-    // test to add channel uding data
-    OpenLF::Image rgb = OpenLF::Image(512,512,0);
+    // test to add channel using data
+    OpenLF::Image rgb = OpenLF::Image(lena_width,lena_height,0);
     rgb.add_channel(r);
     rgb.add_channel(g);
     rgb.add_channel(b);
@@ -275,4 +276,72 @@ void image_test::addCannel() {
         total_diff = total_diff + abs(LENA_TEST_COL_B[i]/255.0f-px);
     }
     CPPUNIT_ASSERT(total_diff<1e-9);
+}
+
+void image_test::conversionOpenCV() {
+    //open lena rgb img
+    OpenLF::Image rgb = OpenLF::Image(lena_rgb_path);
+    OpenLF::Image bw = OpenLF::Image(lena_bw_path);
+    OpenLF::Image vec = OpenLF::Image(lena_width,lena_height,2);
+    
+    //OpenLF::imshow(bw,"bw");
+    //OpenLF::imshow(rgb,"rgb");
+    
+    // test copy_channel
+    vec.copy_channel(0,rgb);
+    vec.add_channel(1,rgb);
+    vec.set_label("vec");
+    
+    CPPUNIT_ASSERT(vec.width()==lena_width);
+    CPPUNIT_ASSERT(vec.height()==lena_height);
+    CPPUNIT_ASSERT(vec.channels()==2);
+    CPPUNIT_ASSERT(vec.label()=="vec");
+    
+    cv::Mat cv_bw;
+    cv::Mat cv_bw2;
+    cv::Mat cv_vec;
+    cv::Mat cv_rgb;
+    
+    // test opencv conversion based on image label 
+    bw.get_opencv(cv_bw);
+    vec.get_opencv(cv_vec);
+    rgb.get_opencv(cv_rgb);
+    
+    //OpenLF::show(cv_rgb,"cv_rgb");
+    //OpenLF::show(cv_bw,"cv_bw");
+    
+    // test opencv conversion specifying the channel
+    rgb.get_opencv(0,cv_bw2);
+    
+    //OpenLF::show(cv_bw2,"cv_bw2");
+    
+    float px = 0;
+    float total_diff_bw = 0.0f;
+    float total_diff_bw2 = 0.0f;
+    float total_diff_vec = 0.0f;
+    float total_diff_rgb = 0.0f;
+   
+    for(int i=0; i<NUMBER_OF_CHECKPOINTS; i++) {
+        px = cv_bw.at<float>(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i]);
+        total_diff_bw = total_diff_bw + abs(LENA_TEST_COL_BW[i]/255.0f-px);
+        
+        px = cv_bw2.at<float>(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i]);
+        total_diff_bw2 = total_diff_bw2 + abs(LENA_TEST_COL_R[i]/255.0f-px);
+        
+        px = cv_vec.at<cv::Vec2f>(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i])[0];
+        total_diff_vec = total_diff_vec + abs(LENA_TEST_COL_R[i]/255.0f-px);
+        px = cv_vec.at<cv::Vec2f>(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i])[1];
+        total_diff_vec = total_diff_vec + abs(LENA_TEST_COL_G[i]/255.0f-px);
+        
+        px = cv_rgb.at<cv::Vec3f>(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i])[0];
+        total_diff_rgb = total_diff_rgb + abs(LENA_TEST_COL_B[i]/255.0f-px);
+        px = cv_rgb.at<cv::Vec3f>(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i])[1];
+        total_diff_rgb = total_diff_rgb + abs(LENA_TEST_COL_G[i]/255.0f-px);
+        px = cv_rgb.at<cv::Vec3f>(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i])[2];
+        total_diff_rgb = total_diff_rgb + abs(LENA_TEST_COL_R[i]/255.0f-px);
+    }
+    CPPUNIT_ASSERT(total_diff_bw<1e-9);
+    CPPUNIT_ASSERT(total_diff_bw2<1e-9);
+    CPPUNIT_ASSERT(total_diff_vec<1e-9);
+    CPPUNIT_ASSERT(total_diff_rgb<1e-9);
 }
