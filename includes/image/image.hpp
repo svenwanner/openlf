@@ -249,6 +249,7 @@ protected:
     vector<vigra::MultiArray<2,float>* > _data; //!< vector storing pointers to MultiArray channels
     int _width;                                 //!< image width
     int _height;                                //!< image height
+    int _num_of_channels;                       //!< number of channels (size of vector _data)
     string _label;                              //!< image label "bw","vec","rgb" or specified by user
     
 private:
