@@ -72,7 +72,7 @@ void OpenLF::imshow(OpenLF::Image& img, const char* title) {
             img.get_opencv(cv_mat);
             cv::namedWindow(title, CV_WINDOW_AUTOSIZE);
             cv::imshow(title, cv_mat);
-            cv::waitKey();
+            cv::waitKey(0);
         }   
         else {
             throw OpenLF_Exception("Only grayscale and rgb images supported in show!");

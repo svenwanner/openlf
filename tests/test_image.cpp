@@ -1,3 +1,23 @@
+/*
+* Copyright (c) 2014 Sven Wanner
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of 
+* this software and associated documentation files (the "Software"), to deal in 
+* the Software without restriction, including without limitation the rights to use,
+* copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the 
+* Software, and to permit persons to whom the Software is furnished to do so, 
+* subject to the following conditions:
+* The above copyright notice and this permission notice shall be included in all 
+* copies or substantial portions of the Software.
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+* PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
+* OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+
 #include "test_image.hpp"
 #include "image/image.hpp"
 #include "visualize/imgshow.hpp"
@@ -287,6 +307,14 @@ void image_test::conversionOpenCV() {
     vec.add_channel(1,rgb);
     vec.set_label("vec");
     
+    OpenLF::Image tmp_bw0 = OpenLF::Image(lena_width,lena_height,1);
+    OpenLF::Image tmp_bw1 = OpenLF::Image(lena_width,lena_height,1);
+    tmp_bw0.copy_channel(0,vec);
+    tmp_bw1.copy_channel(1,vec);
+    
+//    OpenLF::imshow(tmp_bw0,"bw0");
+//    OpenLF::imshow(tmp_bw1,"bw1");
+    
     CPPUNIT_ASSERT(vec.width()==lena_width);
     CPPUNIT_ASSERT(vec.height()==lena_height);
     CPPUNIT_ASSERT(vec.channels()==2);
@@ -319,24 +347,32 @@ void image_test::conversionOpenCV() {
     for(int i=0; i<NUMBER_OF_CHECKPOINTS; i++) {
         px = cv_bw.at<float>(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i]);
         total_diff_bw = total_diff_bw + abs(LENA_TEST_COL_BW[i]/255.0f-px);
+        //cout << "test bw: px=" << px*255.0 << " ground truth=" << LENA_TEST_COL_BW[i] << endl;
         
         px = cv_bw2.at<float>(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i]);
         total_diff_bw2 = total_diff_bw2 + abs(LENA_TEST_COL_R[i]/255.0f-px);
+        //cout << "test bw2: px=" << px*255.0 << " ground truth=" << LENA_TEST_COL_R[i] << endl;
         
         px = cv_vec.at<cv::Vec2f>(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i])[0];
         total_diff_vec = total_diff_vec + abs(LENA_TEST_COL_R[i]/255.0f-px);
+        //cout << "test vec[0]: px=" << px*255.0 << " ground truth=" << LENA_TEST_COL_R[i] << endl;
         px = cv_vec.at<cv::Vec2f>(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i])[1];
         total_diff_vec = total_diff_vec + abs(LENA_TEST_COL_G[i]/255.0f-px);
+        //cout << "test vec[1]: px=" << px*255.0 << " ground truth=" << LENA_TEST_COL_G[i] << endl;
         
         px = cv_rgb.at<cv::Vec3f>(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i])[0];
         total_diff_rgb = total_diff_rgb + abs(LENA_TEST_COL_B[i]/255.0f-px);
+        //cout << "test rgb[0]: px=" << px*255.0 << " ground truth=" << LENA_TEST_COL_R[i] << endl;
         px = cv_rgb.at<cv::Vec3f>(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i])[1];
         total_diff_rgb = total_diff_rgb + abs(LENA_TEST_COL_G[i]/255.0f-px);
+        //cout << "test rgb[1]: px=" << px*255.0 << " ground truth=" << LENA_TEST_COL_G[i] << endl;
         px = cv_rgb.at<cv::Vec3f>(LENA_TEST_POS_X[i],LENA_TEST_POS_Y[i])[2];
         total_diff_rgb = total_diff_rgb + abs(LENA_TEST_COL_R[i]/255.0f-px);
+        //cout << "test rgb[2]: px=" << px*255.0 << " ground truth=" << LENA_TEST_COL_B[i] << endl;
     }
-    CPPUNIT_ASSERT(total_diff_bw<1e-9);
-    CPPUNIT_ASSERT(total_diff_bw2<1e-9);
-    CPPUNIT_ASSERT(total_diff_vec<1e-9);
-    CPPUNIT_ASSERT(total_diff_rgb<1e-9);
+    
+    CPPUNIT_ASSERT(total_diff_bw<1e-9); //cout << "total_diff_bw : " << total_diff_bw << endl;
+    CPPUNIT_ASSERT(total_diff_bw2<1e-9); //cout << "total_diff_bw2 : " << total_diff_bw2 << endl;
+    CPPUNIT_ASSERT(total_diff_vec<1e-9); //cout << "total_diff_vec : " << total_diff_vec << endl;
+    CPPUNIT_ASSERT(total_diff_rgb<1e-9); //cout << "total_diff_rgb : " << total_diff_rgb << endl;
 }
