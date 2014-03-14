@@ -17,9 +17,7 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-
 /**
- * \class Lightfield
  *
  * \brief ...
  *
@@ -31,22 +29,29 @@
  * 
  */
 
-#ifndef LIGHTFIELD_HPP
-#define	LIGHTFIELD_HPP
+#ifndef TEST_LIGHTFIELD_BASE_HPP
+#define	TEST_LIGHTFIELD_BASE_HPP
 
-#include "global.hpp"
+#include <cppunit/extensions/HelperMacros.h>
+#include "lightfield/lightfield_base.hpp"
+#include "lightfield/lightfield.hpp"
 
-namespace OpenLF {
+class test_lightfield_base : public CPPUNIT_NS::TestFixture {
+    CPPUNIT_TEST_SUITE(test_lightfield_base);
 
-class Lightfield {
+    CPPUNIT_TEST(testConstructor);
+
+    CPPUNIT_TEST_SUITE_END();
+
 public:
-    Lightfield();
-    Lightfield(const Lightfield& orig);
-    virtual ~Lightfield();
-private:
+    test_lightfield_base();
+    virtual ~test_lightfield_base();
+    void setUp();
+    void tearDown();
 
+private:
+    void testConstructor();
 };
 
-}
-#endif	/* LIGHTFIELD_HPP */
+#endif	/* TEST_LIGHTFIELD_BASE_HPP */
 
