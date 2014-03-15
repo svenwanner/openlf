@@ -43,6 +43,7 @@
 #include <map>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/contrib/contrib.hpp>
@@ -68,7 +69,7 @@
 
 using namespace std;
 
-
+typedef enum {NONE,LF_4D,LF_3DH,LF_3DV,LF_CROSS} LF_TYPE;
 
 
 /*****************************************************************************
@@ -84,7 +85,7 @@ struct OpenLF_Exception : public exception
 };
 
 
-const int DEBUG_LEVEL = 2;
+const int DEBUG_LEVEL = 3;
 
 #define RED          "\033[22;31m" 
 

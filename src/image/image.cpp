@@ -416,7 +416,7 @@ void OpenLF::Image::save(string filename)
     print(1,"Image::save(string) called...");
     //TODO: add OpenEXR export
     
-    string ftype = OpenLF::find_ftype(filename);
+    string ftype = OpenLF::helpers::find_ftype(filename);
     
     if(_label == "bw") {
         string msg = "save bw image as " + ftype +"..."; print(1,msg.c_str());
