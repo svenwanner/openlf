@@ -132,7 +132,8 @@ bool load_cross_structure( vector<string> fname_list,
 /*!
  Loads all files in passed directory and creates light field channels depending 
  on color mode into the passed map container using channel names as keys (bw,r,g,b).
- Ensure that the images contain no alpha alpha channel, handling them is not yet supported.   
+ Ensure that the images contain no alpha alpha channel, handling them is not yet supported.
+ \image html resources/LF_TYPES.jpg   
  \param dir directory to search for files
  \param channels map container storing the channels
  \param type of light field to load (4D,3DH,3DV,CROSS)

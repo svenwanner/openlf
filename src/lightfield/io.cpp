@@ -321,6 +321,15 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
     }
 }
 
+
+
+
+
+
+
+
+
+
 bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list, 
                                                  map< string, vigra::MultiArray<2,float> > &channels, 
                                                  int cams_h, 
@@ -414,6 +423,14 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
     }
 }
 
+
+
+
+
+
+
+
+
 bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list, 
                                                  map< string, vigra::MultiArray<2,float> > &channels, 
                                                  int cams_h, 
@@ -434,8 +451,8 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
         // load grayscale images
         if(info.isGrayscale()) {
             print(3,"lightfield::io::load_3DV_structure found grayscale image...");
-            //channels["bw"] = vigra::MultiArray<2,float>(vigra::Shape2(info.width(),cams_h*info.height()));
-            vigra::MultiArray<2,float> tmp(vigra::Shape2(cams_v*info.height(),info.width()));
+            channels["bw"] = vigra::MultiArray<2,float>(vigra::Shape2(info.width(),cams_h*info.height()));
+            //vigra::MultiArray<2,float> tmp(vigra::Shape2(cams_v*info.height(),info.width()));
 
             // loop over images
             for(int v=0; v<cams_v; v++) {
@@ -453,7 +470,7 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
                     // copy data into object and map to range [1,0]
                     for(int y=0; y<info_bw.height(); y++) {
                         for(int x=0; x<info_bw.width(); x++) {
-                            tmp(v*height+y,x) = ((float)in(x,y))/255.0;
+                            channels["bw"](v*height+y,x) = ((float)in(x,y))/255.0;
                         }
                     }
                 }
@@ -510,12 +527,243 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
     }
 }
 
+
+
+
+
+
+
+
+
+
+
 bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list, 
                                                    map< string, vigra::MultiArray<2,float> > &channels, 
                                                    int cams_h, 
                                                    int cams_v )  
 {
-    
+    print(3,"lightfield::io::load_CROSSS_structure called...");
+     
+    try {
+        // import image info to get the image shape
+        vigra::ImageImportInfo info(fname_list[0].c_str());
+        
+        cout << "-----" << info.numBands() << " " << info.isByte() << endl;
+
+        // image size
+        int width = info.width();
+        int height = info.height();
+        int cv_index = cams_h/2;
+
+        // load grayscale images
+        if(info.isGrayscale()) {
+            print(3,"lightfield::io::load_CROSS_structure found grayscale image...");
+            channels["bw"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*info.width(),info.height()+info.width()));
+
+            // loop over horizontal images
+            for(int h=0; h<cams_h; h++) {
+                
+                try {
+                    // load image infos from fname_list
+                    vigra::ImageImportInfo info_bw(fname_list[h].c_str());
+
+                    // uint image to import data from file
+                    vigra::MultiArray<2, vigra::UInt8> in(info_bw.width(), info_bw.height());
+
+                    // import data
+                    vigra::importImage(info_bw, vigra::destImage(in));
+
+                    // copy data into object and map to range [1,0]
+                    for(int y=0; y<info_bw.height(); y++) {
+                        for(int x=0; x<info_bw.width(); x++) {
+                            channels["bw"](h*width+x,y) = ((float)in(x,y))/255.0;
+                        }
+                    }
+                }
+                catch(int a) {
+                    cout << "WARNING: Loading bw image data failed while copying data into lf container!" << endl;
+                    return false;
+                }
+            }
+            
+            // loop vertical over images
+            int image_index=cams_h;
+            for(int v=0; v<cams_v; v++) {
+                
+                try {
+                            
+                    // load image infos from fname_list
+                    if(v==cv_index) {
+                        vigra::ImageImportInfo info_bw(fname_list[cv_index].c_str());
+                        
+                        // uint image to import data from file
+                        vigra::MultiArray<2, vigra::UInt8> in(info_bw.width(), info_bw.height());
+
+                        // import data
+                        vigra::importImage(info_bw, vigra::destImage(in));
+
+                        // copy data into object and map to range [1,0]
+                        for(int y=0; y<info_bw.height(); y++) {
+                            for(int x=0; x<info_bw.width(); x++) {
+                                channels["bw"](v*height+y,height+x) = ((float)in(x,y))/255.0;
+                            }
+                        }
+                    }
+                    else {
+                        vigra::ImageImportInfo info_bw(fname_list[image_index].c_str());
+                        image_index++;
+                        
+                        // uint image to import data from file
+                        vigra::MultiArray<2, vigra::UInt8> in(info_bw.width(), info_bw.height());
+
+                        // import data
+                        vigra::importImage(info_bw, vigra::destImage(in));
+
+                        // copy data into object and map to range [1,0]
+                        for(int y=0; y<info_bw.height(); y++) {
+                            for(int x=0; x<info_bw.width(); x++) {
+                                channels["bw"](v*height+y,height+x) = ((float)in(x,y))/255.0;
+                            }
+                        }
+                    }
+
+                    
+                }
+                catch(int a) {
+                    cout << "WARNING: Loading bw image data failed while copying data into lf container!" << endl;
+                    return false;
+                }
+            }
+            
+        } 
+       
+        // load color images
+        else if(info.isColor()) {
+            print(3,"lightfield::io::load_CROSS_structure found color image...");
+            
+            channels["r"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*info.width(),info.height()+info.width())); 
+            channels["g"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*info.width(),info.height()+info.width())); 
+            channels["b"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*info.width(),info.height()+info.width())); 
+            
+            // loop over horizontal images
+            for(int h=0; h<cams_h; h++) {
+                
+                try {
+                    // load image infos from fname_list
+                    vigra::ImageImportInfo info_rgb(fname_list[h].c_str());
+
+                    // uint image to import data from file
+                    vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in_rgb(info_rgb.width(), info_rgb.height());
+
+                    // import data
+                    vigra::importImage(info_rgb, vigra::destImage(in_rgb));
+                    
+
+                    // copy data into object and map to range [1,0]
+                    for(int y=0; y<info_rgb.height(); y++) {
+                        for(int x=0; x<info_rgb.width(); x++) {
+                            //channels["bw"](h*width+x,y) = ((float)in(x,y))/255.0;
+                            channels["r"](h*width+x,y) = ((float)in_rgb(x,y)[0])/255.0;
+                            channels["g"](h*width+x,y) = ((float)in_rgb(x,y)[1])/255.0;
+                            channels["b"](h*width+x,y) = ((float)in_rgb(x,y)[2])/255.0;
+                        }
+                    }
+                }
+                catch(int a) {
+                    cout << "WARNING: Loading bw image data failed while copying data into lf container!" << endl;
+                    return false;
+                }
+            }
+            
+            // loop vertical over images
+            int image_index=cams_h;
+            for(int v=0; v<cams_v; v++) {
+                
+                try {
+                            
+                    // load image infos from fname_list
+                    if(v==cv_index) {
+                        vigra::ImageImportInfo info_rgb(fname_list[cv_index].c_str());
+                        
+                        // uint image to import data from file
+                        vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in_rgb(info_rgb.width(), info_rgb.height());
+
+                        // import data
+                        vigra::importImage(info_rgb, vigra::destImage(in_rgb));
+
+                        // copy data into object and map to range [1,0]
+                        for(int y=0; y<info_rgb.height(); y++) {
+                            for(int x=0; x<info_rgb.width(); x++) {
+                                //channels["bw"](v*height+y,height+x) = ((float)in(x,y))/255.0;
+                                channels["r"](v*height+y,height+x) = ((float)in_rgb(x,y)[0])/255.0;
+                                channels["g"](v*height+y,height+x) = ((float)in_rgb(x,y)[1])/255.0;
+                                channels["b"](v*height+y,height+x) = ((float)in_rgb(x,y)[2])/255.0;
+                            }
+                        }
+                    }
+                    else {
+                        vigra::ImageImportInfo info_rgb(fname_list[image_index].c_str());
+                        image_index++;
+                        
+                        // uint image to import data from file
+                        vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in_rgb(info_rgb.width(), info_rgb.height());
+
+                        // import data
+                        vigra::importImage(info_rgb, vigra::destImage(in_rgb));
+
+                        // copy data into object and map to range [1,0]
+                        for(int y=0; y<info_rgb.height(); y++) {
+                            for(int x=0; x<info_rgb.width(); x++) {
+                                //channels["bw"](v*height+y,height+x) = ((float)in(x,y))/255.0;
+                                channels["r"](v*height+y,height+x) = ((float)in_rgb(x,y)[0])/255.0;
+                                channels["g"](v*height+y,height+x) = ((float)in_rgb(x,y)[1])/255.0;
+                                channels["b"](v*height+y,height+x) = ((float)in_rgb(x,y)[2])/255.0;
+                            }
+                        }
+                    }
+
+                    
+                }
+                catch(int a) {
+                    cout << "WARNING: Loading bw image data failed while copying data into lf container!" << endl;
+                    return false;
+                }
+            }
+
+
+//            for(int h=0; h<cams_h; h++) {
+//
+//                try {
+//                    // load image infos from fname_list
+//                    vigra::ImageImportInfo info_rgb(fname_list[h].c_str());
+//
+//                    // uint rgb image to import data from file
+//                    vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in(info_rgb.shape());
+//
+//                    // import data
+//                    vigra::importImage(info_rgb, in);                   
+//
+//                    // copy data into lf container
+//                    for(int y=0; y<info_rgb.height(); y++) {
+//                        for(int x=0; x<info_rgb.width(); x++) {
+//                            channels["r"](h*width+x,y) = ((float)in(x,y)[0])/255.0f;
+//                            channels["g"](h*width+x,y) = ((float)in(x,y)[1])/255.0f;
+//                            channels["b"](h*width+x,y) = ((float)in(x,y)[2])/255.0f;
+//                        }
+//                    }
+//                }
+//                catch(int a) {
+//                    cout << "WARNING: Loading rgb image data failed while copying data into lf container!" << endl;
+//                    return false;
+//                }
+//            }
+        }
+        return true;
+    }
+    catch(int a) {
+        cout << "WARNING: Loading image data failed while copying data into lf container!" << endl;
+        return false;
+    }
 }
 
 
