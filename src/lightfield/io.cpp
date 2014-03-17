@@ -670,8 +670,9 @@ bool load_from_hdf5( string file_name,
                      int &cams_v,
                      float &baseline_h,
                      float &baseline_v,
-                     float &focal_length ) {
-    
+                     float &focal_length ) 
+/* TEST in lightfield_test::test_hdf5_io() */
+{    
     print(2,"lightfield::io::load_from_hdf5 called...");
     
     // open hdf5 file
@@ -739,6 +740,57 @@ bool load_from_hdf5( string file_name,
             }
             
         } else throw OpenLF_Exception("Loading light field from HDF5 failed, at least rgb or a bw channel is obligatory!");
+    }
+    catch(exception & e) {
+        cout << e.what() << endl;
+        return false;
+    }
+    
+    return true;
+}
+
+
+
+
+bool save_to_hdf5( string file_name, 
+                   map< string, vigra::MultiArray<2,float> > &channels,
+                   LF_TYPE type,
+                   int width,
+                   int height,
+                   int cams_h,
+                   int cams_v,
+                   float baseline_h,
+                   float baseline_v,
+                   float focal_length ) 
+
+/* TEST in lightfield_test::test_hdf5_io() */
+{
+    print(2,"lightfield::io::save_to_hdf5 called...");
+    
+    try {
+        string dset_name;
+        
+        // open hdf5 file and define group name
+        vigra::HDF5File file(file_name.c_str(),vigra::HDF5File::New);
+        file.mkdir("LF");
+        
+        // loop over channels and save each using its key as dataset names
+        for(map<string, vigra::MultiArray<2,float>>::iterator i = channels.begin(); i != channels.end(); ++i)
+        {
+            string key = i->first;
+            dset_name = "/LF/"+key;
+            file.write(dset_name.c_str(), channels[key]);
+        }        
+        
+        // write attributes
+        file.writeAttribute("/LF/","LF_TYPE",(int)type);
+        file.writeAttribute("/LF/","width",width);
+        file.writeAttribute("/LF/","height",height);
+        file.writeAttribute("/LF/","cams_h",cams_h);
+        file.writeAttribute("/LF/","cams_v",cams_v);
+        file.writeAttribute("/LF/","baseline_h",baseline_h);
+        file.writeAttribute("/LF/","baseline_v",baseline_v);
+        file.writeAttribute("/LF/","focal_length",focal_length);
     }
     catch(exception & e) {
         cout << e.what() << endl;

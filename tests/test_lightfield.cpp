@@ -21,6 +21,8 @@ test_lightfield::~test_lightfield() {
 void test_lightfield::setUp() {
     _lf_4D_hdf5_rgb_path = test_lf_dir+"4D/"+"test_lf4D_rgb.h5";
     _lf_4D_hdf5_bw_path = test_lf_dir+"4D/"+"test_lf4D_bw.h5";
+    _lf_4D_hdf5_rgb_out_path = test_result_dir+"test_lf4D_rgb_toH5.h5";
+    _lf_4D_hdf5_bw_out_path = test_result_dir+"test_lf4D_bw_toH5.h5";
     _lf_4D_path = test_lf_dir+"4D/rgb/";
     _lf_3DH_path = test_lf_dir+"3DH/rgb/";
     _lf_3DV_path = test_lf_dir+"3DV/rgb/";
@@ -35,9 +37,8 @@ void test_lightfield::setUp() {
 void test_lightfield::tearDown() {
 }
 
-void test_lightfield::test_loading_from_imagefiles() {
+void test_lightfield::test_hdf5_io() {
     map< string, vigra::MultiArray<2,float> > channels;
-    string outputpath;
     int width = 0;
     int height = 0;
     int cams_v = 0;
@@ -60,6 +61,7 @@ void test_lightfield::test_loading_from_imagefiles() {
     CPPUNIT_ASSERT(channels.size()==3);
     
     OpenLF::lightfield::io::save(test_result_dir+"test_4D_rgb_fromH5.jpg",channels);
+    CPPUNIT_ASSERT( save_to_hdf5(_lf_4D_hdf5_rgb_out_path,channels,type,width,height,cams_h,cams_v,baseline_h,baseline_v,focal_length) );
     channels.clear();
     
     CPPUNIT_ASSERT( load_from_hdf5( _lf_4D_hdf5_bw_path,channels,type,width,height,cams_h,cams_v,baseline_h,baseline_v,focal_length ));
@@ -75,37 +77,42 @@ void test_lightfield::test_loading_from_imagefiles() {
     CPPUNIT_ASSERT(channels.size()==1);
     
     OpenLF::lightfield::io::save(test_result_dir+"test_4D_bw_fromH5.jpg",channels);
+    CPPUNIT_ASSERT( save_to_hdf5(_lf_4D_hdf5_bw_out_path,channels,type,width,height,cams_h,cams_v,baseline_h,baseline_v,focal_length) );
     channels.clear();
+}
 
-    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_4D_path,channels,LF_4D,5,5));
-    OpenLF::lightfield::io::save(test_result_dir+"test_4D_rgb.jpg",channels);
-    channels.clear();
+void test_lightfield::test_loading_from_imagefiles() {
+    map< string, vigra::MultiArray<2,float> > channels;
     
-    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_4D_bw_path,channels,LF_4D,5,5));
-    OpenLF::lightfield::io::save(test_result_dir+"test_4D_bw.jpg",channels);
-    channels.clear();
-    
-    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_3DH_path,channels,LF_3DH,5,1));
-    OpenLF::lightfield::io::save(test_result_dir+"test_3DH.jpg",channels);
-    channels.clear();
-    
-    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_3DH_bw_path,channels,LF_3DH,5,1));
-    OpenLF::lightfield::io::save(test_result_dir+"test_3DH_bw.jpg",channels);
-    channels.clear();
-    
-    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_3DV_path,channels,LF_3DV,1,5));
-    OpenLF::lightfield::io::save(test_result_dir+"test_3DV.jpg",channels);
-    channels.clear();
-    
-    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_3DV_bw_path,channels,LF_3DV,1,5));
-    OpenLF::lightfield::io::save(test_result_dir+"test_3DV_bw.jpg",channels);
-    channels.clear();
-    
-    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_CROSS_path,channels,LF_CROSS,5,5));
-    OpenLF::lightfield::io::save(test_result_dir+"test_CROSS.jpg",channels);
-    channels.clear();
-    
-    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_CROSS_bw_path,channels,LF_CROSS,5,5));
-    OpenLF::lightfield::io::save(test_result_dir+"test_CROSS_bw.jpg",channels);
-    channels.clear();
+//    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_4D_path,channels,LF_4D,5,5));
+//    OpenLF::lightfield::io::save(test_result_dir+"test_4D_rgb.jpg",channels);
+//    channels.clear();
+//    
+//    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_4D_bw_path,channels,LF_4D,5,5));
+//    OpenLF::lightfield::io::save(test_result_dir+"test_4D_bw.jpg",channels);
+//    channels.clear();
+//    
+//    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_3DH_path,channels,LF_3DH,5,1));
+//    OpenLF::lightfield::io::save(test_result_dir+"test_3DH.jpg",channels);
+//    channels.clear();
+//    
+//    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_3DH_bw_path,channels,LF_3DH,5,1));
+//    OpenLF::lightfield::io::save(test_result_dir+"test_3DH_bw.jpg",channels);
+//    channels.clear();
+//    
+//    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_3DV_path,channels,LF_3DV,1,5));
+//    OpenLF::lightfield::io::save(test_result_dir+"test_3DV.jpg",channels);
+//    channels.clear();
+//    
+//    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_3DV_bw_path,channels,LF_3DV,1,5));
+//    OpenLF::lightfield::io::save(test_result_dir+"test_3DV_bw.jpg",channels);
+//    channels.clear();
+//    
+//    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_CROSS_path,channels,LF_CROSS,5,5));
+//    OpenLF::lightfield::io::save(test_result_dir+"test_CROSS.jpg",channels);
+//    channels.clear();
+//    
+//    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_CROSS_bw_path,channels,LF_CROSS,5,5));
+//    OpenLF::lightfield::io::save(test_result_dir+"test_CROSS_bw.jpg",channels);
+//    channels.clear();
 }

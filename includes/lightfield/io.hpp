@@ -146,7 +146,7 @@ bool load_from_filesequence( string dir,
 
 
 
-//! load light field data from hdf5 file
+//! load MultiArray map data from hdf5 file
 /*!
  Loads all channels from a hdf5 file and sets all available properties   
  \param file_name full path of the hdf5 file
@@ -171,6 +171,35 @@ bool load_from_hdf5( string file_name,
                      float &baseline_h,
                      float &baseline_v,
                      float &focal_length );
+
+
+
+//! save MultiArray map to hdf5 file
+/*!
+ Saves all channels in form of a MultiArray map to datasets in a hdf5 file, as  
+ well as the passed arguments as properties.   
+ \param file_name full path of the hdf5 file
+ \param channels map container storing the channels
+ \param type reference of light field type to load (4D,3DH,3DV,CROSS)
+ \param width reference to set the image width
+ \param height reference to set the image height 
+ \param cams_h reference to set number of horizontal cameras
+ \param cams_v reference to set number of vertical cameras 
+ \param baseline_h reference to set horizontal camera baseline
+ \param baseline_v reference to set vertical camera baseline
+ \param focal_length reference to set camera focal length
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+bool save_to_hdf5( string file_name, 
+                   map< string, vigra::MultiArray<2,float> > &channels,
+                   LF_TYPE type,
+                   int width,
+                   int height,
+                   int cams_h,
+                   int cams_v,
+                   float baseline_h,
+                   float baseline_v,
+                   float focal_length );
 
 
 
