@@ -42,6 +42,8 @@
 #include <list>
 #include <map>
 
+#include <H5Cpp.h>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 

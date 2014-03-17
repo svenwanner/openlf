@@ -34,6 +34,8 @@ public:
 private:
     void test_loading_from_imagefiles();
     
+    string _lf_4D_hdf5_bw_path;
+    string _lf_4D_hdf5_rgb_path;
     string _lf_4D_path;
     string _lf_3DH_path;
     string _lf_3DV_path;

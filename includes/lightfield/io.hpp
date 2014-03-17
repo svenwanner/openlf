@@ -62,11 +62,6 @@ void save(string filename, map< string,vigra::MultiArray<2,float> > &img);
 void save(string filename, map< string,vigra::MultiArray<2,float> > &img, string key);
             
             
-//bool load_imagefile(string filename, map< string,vigra::MultiArray<2,float> > &channels);
-
-
-//bool load_roi_from_imagefile(string filename, map< string, vigra::MultiArray<2,float> > &channels, int roi_start[2], int roi_end[2]);
-    
 
 //! load a 4D light field from filenames in directory
 /*!
@@ -148,6 +143,34 @@ bool load_from_filesequence( string dir,
                              int cams_v );
 
 }}}
+
+
+
+//! load light field data from hdf5 file
+/*!
+ Loads all channels from a hdf5 file and sets all available properties   
+ \param file_name full path of the hdf5 file
+ \param channels map container storing the channels
+ \param type reference of light field type to load (4D,3DH,3DV,CROSS)
+ \param width reference to set the image width
+ \param height reference to set the image height 
+ \param cams_h reference to set number of horizontal cameras
+ \param cams_v reference to set number of vertical cameras 
+ \param baseline_h reference to set horizontal camera baseline
+ \param baseline_v reference to set vertical camera baseline
+ \param focal_length reference to set camera focal length
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+bool load_from_hdf5( string file_name, 
+                     map< string, vigra::MultiArray<2,float> > &channels,
+                     LF_TYPE &type,
+                     int &width,
+                     int &height,
+                     int &cams_h,
+                     int &cams_v,
+                     float &baseline_h,
+                     float &baseline_v,
+                     float &focal_length );
 
 
 

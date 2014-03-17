@@ -46,6 +46,10 @@ void OpenLF::lightfield::io::linearRangeMapping(vigra::MultiArray<2,float>& fimg
     }
 }
 
+
+
+
+
 void OpenLF::lightfield::io::save(string filename, map<string,vigra::MultiArray<2,float>> &img)  
 {
     print(2,"lightfield::io::save(string, map) called...");
@@ -95,6 +99,10 @@ void OpenLF::lightfield::io::save(string filename, map<string,vigra::MultiArray<
     }
 }
 
+
+
+
+
 void OpenLF::lightfield::io::save(string filename, map<string,vigra::MultiArray<2,float>> &img, string key)  
 {
     print(3,"lightfield::io::save(string, map, string) called...");
@@ -112,122 +120,8 @@ void OpenLF::lightfield::io::save(string filename, map<string,vigra::MultiArray<
 }
 
 
-//bool OpenLF::lightfield::io::load_imagefile( string filename, 
-//                                             map< string,vigra::MultiArray<2,float> > &channels) 
-//{
-//    map.clear();
-//    
-//    // load image infos
-//    vigra::ImageImportInfo info(filename.c_str());
-//    
-//    if(info.isGrayscale()) {
-//        try {
-//            // uint image to import data from file
-//            vigra::MultiArray<2, vigra::UInt8> in(info.width(), info.height());
-//
-//            // allocate memory
-//            channels["bw"] = vigra::MultiArray<2,float>(info.width(), info.height());
-//
-//            // import data
-//            vigra::importImage(info, vigra::destImage(in));
-//
-//            // copy data into object and map to range [1,0]
-//            vigra::UInt8* data_ptr = in.data();
-//            for(int n=0; n<info.width()*info.height(); n++) {
-//                channels[0].data()[n] = ((float)data_ptr[n])/255.0;
-//            }
-//        }
-//        catch(int a) {
-//            return false;
-//        }
-//    }
-//    else if(info.isColor()) {
-//        try {
-//            // uint rgb image to import data from file
-//            vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in(info.shape());
-//
-//            // allocate memory
-//            channels["r"] = vigra::MultiArray<2,float>(info.width(), info.height());
-//            channels["g"] = vigra::MultiArray<2,float>(info.width(), info.height());
-//            channels["b"] = vigra::MultiArray<2,float>(info.width(), info.height());
-//
-//            // import data
-//            vigra::importImage(info, in);
-//
-//            // copy data into object and map to range [1,0]
-//            int index;
-//            for(int x=0; x<info.width(); x++) {
-//                for(int y=0; y<info.height(); y++) {
-//                    index = y*info.width()+x;
-//                    channels["r"].data()[index] = in(x,y)[0]/255.0f;
-//                    channels["g"].data()[index] = in(x,y)[1]/255.0f;
-//                    channels["b"].data()[index] = in(x,y)[2]/255.0f;
-//                }
-//            }
-//        }
-//        catch(int a) {
-//            return false;
-//        }
-//    }
-//    return true;
-//}
 
 
-//bool OpenLF::lightfield::io::load_roi_from_imagefile( string filename, 
-//                                                     map< string,vigra::MultiArray<2,float> > &channels, 
-//                                                     int roi_start[2],
-//                                                     int roi_end[2]) 
-//{
-//    // import image info from file
-//    vigra::ImageImportInfo info(filename.c_str());
-//
-//    if(info.isGrayscale()) {
-//
-//        // uint image to import data from file
-//        vigra::MultiArray<2, vigra::UInt8> in(info.width(), info.height());
-//
-//        // allocate memory
-//        _data.push_back(new vigra::MultiArray<2,float>(info.width(), info.height()));
-//
-//        // import data
-//        vigra::importImage(info, vigra::destImage(in));
-//
-//        // copy data into object and map to range [1,0]
-//        vigra::UInt8* data_ptr = in.data();
-//        for(int n=0; n<info.width()*info.height(); n++) {
-//            _data[0]->data()[n] = ((float)data_ptr[n])/255.0;
-//        }
-//
-//        // set properties
-//        _width = info.width();
-//        _height = info.height();
-//        _label = "bw";
-//        _num_of_channels = 1;
-//
-//    } else if(info.isColor()) {
-//        print(2,"Image -> load rgb image...");
-//
-//        // uint rgb image to import data from file
-//        vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in(info.shape());
-//
-//        // allocate memory
-//        for(int c=0; c<3; c++)
-//            _data.push_back(new vigra::MultiArray<2,float>(info.width(), info.height()));
-//
-//        // import data
-//        vigra::importImage(info, in);
-//
-//        // copy data into object and map to range [1,0]
-//        int index;
-//        for(int x=0; x<info.width(); x++) {
-//            for(int y=0; y<info.height(); y++) {
-//                index = y*info.width()+x;
-//                _data[0]->data()[index] = in(x,y)[0]/255.0f;
-//                _data[1]->data()[index] = in(x,y)[1]/255.0f;
-//                _data[2]->data()[index] = in(x,y)[2]/255.0f;
-//            }
-//        }
-//}
     
 bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list, 
                                                 map< string, 
@@ -326,10 +220,6 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
 
 
 
-
-
-
-
 bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list, 
                                                  map< string, vigra::MultiArray<2,float> > &channels, 
                                                  int cams_h, 
@@ -422,10 +312,6 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
         return false;
     }
 }
-
-
-
-
 
 
 
@@ -531,12 +417,6 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
 
 
 
-
-
-
-
-
-
 bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list, 
                                                    map< string, vigra::MultiArray<2,float> > &channels, 
                                                    int cams_h, 
@@ -547,9 +427,7 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
     try {
         // import image info to get the image shape
         vigra::ImageImportInfo info(fname_list[0].c_str());
-        
-        cout << "-----" << info.numBands() << " " << info.isByte() << endl;
-
+      
         // image size
         int width = info.width();
         int height = info.height();
@@ -729,34 +607,6 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
                     return false;
                 }
             }
-
-
-//            for(int h=0; h<cams_h; h++) {
-//
-//                try {
-//                    // load image infos from fname_list
-//                    vigra::ImageImportInfo info_rgb(fname_list[h].c_str());
-//
-//                    // uint rgb image to import data from file
-//                    vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in(info_rgb.shape());
-//
-//                    // import data
-//                    vigra::importImage(info_rgb, in);                   
-//
-//                    // copy data into lf container
-//                    for(int y=0; y<info_rgb.height(); y++) {
-//                        for(int x=0; x<info_rgb.width(); x++) {
-//                            channels["r"](h*width+x,y) = ((float)in(x,y)[0])/255.0f;
-//                            channels["g"](h*width+x,y) = ((float)in(x,y)[1])/255.0f;
-//                            channels["b"](h*width+x,y) = ((float)in(x,y)[2])/255.0f;
-//                        }
-//                    }
-//                }
-//                catch(int a) {
-//                    cout << "WARNING: Loading rgb image data failed while copying data into lf container!" << endl;
-//                    return false;
-//                }
-//            }
         }
         return true;
     }
@@ -765,6 +615,10 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
         return false;
     }
 }
+
+
+
+
 
 
 bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, vigra::MultiArray<2,float> > &channels, LF_TYPE type, int cams_h, int cams_v) 
@@ -802,4 +656,94 @@ bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, vig
     }
     cout << "WARNING: Load_from_filesequence failed when reading files from directory!" << endl;
     return false;
+}
+
+
+
+
+bool load_from_hdf5( string file_name, 
+                     map< string, vigra::MultiArray<2,float> > &channels,
+                     LF_TYPE &type,
+                     int &width,
+                     int &height,
+                     int &cams_h,
+                     int &cams_v,
+                     float &baseline_h,
+                     float &baseline_v,
+                     float &focal_length ) {
+    
+    print(2,"lightfield::io::load_from_hdf5 called...");
+    
+    // open hdf5 file
+    vigra::HDF5File file(file_name.c_str(),vigra::HDF5File::OpenReadOnly);
+    // ensure you're in root dir
+    file.root();
+    
+    try {
+        // navigate to group LF
+        file.cd_mk("LF");
+        
+        // if no bw or rgb channels available throw exception
+        if((file.existsDataset("r") && file.existsDataset("g") && file.existsDataset("b")) || file.existsDataset("bw")) {
+            
+            // read the dataset names
+            vector<string> ds_tree;
+            ds_tree = file.ls();
+            
+            // read the obligatory attributes
+            try {
+                // set the LF_TYPE
+                int tmp_type;
+                file.readAttribute("","LF_TYPE",tmp_type);               
+                switch(tmp_type) {
+                    case 1:
+                        type = LF_4D;
+                        break;
+                    case 2:
+                        type = LF_3DH;
+                        break;
+                    case 3:
+                        type = LF_3DV;
+                        break;
+                    case 4:
+                        type = LF_CROSS;
+                        break;
+                    default:
+                        throw OpenLF_Exception("Loading light field from HDF5 failed, no LF_TYPE specified!");
+                }
+                
+                file.readAttribute("","width",width);
+                file.readAttribute("","height",height);
+                file.readAttribute("","cams_h",cams_h);
+                file.readAttribute("","cams_v",cams_v);
+            }
+            catch(exception &e) {
+                cout << e.what() << endl;
+                return false;
+            }
+            
+            // read the optional attributes
+            try {
+                file.readAttribute("","baseline_h",baseline_h);
+                file.readAttribute("","baseline_v",baseline_v);
+                file.readAttribute("","focal_length",focal_length);
+            }
+            catch(int a) {
+                cout << "WARNING: Read light field from HDF5 hasn't found all optional attributes!" << endl;
+            }
+            
+            // read the datasets
+            for(int id=0; id<ds_tree.size(); id++ ) {
+                channels[ds_tree[id]] = vigra::MultiArray<2, float>(vigra::Shape2(480,400));
+                file.read(ds_tree[id], channels[ds_tree[id]]);
+            }
+            
+        } else throw OpenLF_Exception("Loading light field from HDF5 failed, at least rgb or a bw channel is obligatory!");
+    }
+    catch(exception & e) {
+        cout << e.what() << endl;
+        return false;
+    }
+    
+    return true;
 }
