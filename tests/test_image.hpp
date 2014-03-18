@@ -11,6 +11,8 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "settings.hpp"
+#include "image/io.hpp"
+#include "global.hpp"
 
 class test_image : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_image);
@@ -25,8 +27,11 @@ public:
     void setUp();
     void tearDown();
 
-private:
     void test_io();
+    
+private:
+    string _lena_rgb_dir;
+    string _lena_bw_dir;
 };
 
 #endif	/* TEST_IMAGE_HPP */

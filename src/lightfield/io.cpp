@@ -21,7 +21,8 @@
 
 
 
-void OpenLF::lightfield::io::save(string filename, map<string,vigra::MultiArray<2,float>> &img)  
+void OpenLF::lightfield::io::save(string filename, map<string,vigra::MultiArray<2,float>> &img)
+/*TEST: */
 {    
     print(2,"lightfield::io::save(string, map) called...");
     
@@ -74,7 +75,8 @@ void OpenLF::lightfield::io::save(string filename, map<string,vigra::MultiArray<
 
 
 
-void OpenLF::lightfield::io::save(string filename, map<string,vigra::MultiArray<2,float>> &img, string key)  
+void OpenLF::lightfield::io::save(string filename, map<string,vigra::MultiArray<2,float>> &img, string key)
+/*TEST: */
 {
     print(3,"lightfield::io::save(string, map, string) called...");
     string ftype = OpenLF::helpers::find_ftype(filename);
@@ -100,6 +102,7 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
                                                 int cams_h, 
                                                 int cams_v ) 
 {
+/*TEST: */
     print(2,"lightfield::io::load_4D_structure called...");
     
     try {
@@ -195,6 +198,7 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
                                                  map< string, vigra::MultiArray<2,float> > &channels, 
                                                  int cams_h, 
                                                  int cams_v ) 
+/*TEST: */
 {
     print(2,"lightfield::io::load_3DH_structure called...");
      
@@ -291,7 +295,8 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
 bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list, 
                                                  map< string, vigra::MultiArray<2,float> > &channels, 
                                                  int cams_h, 
-                                                 int cams_v ) 
+                                                 int cams_v )
+/*TEST: */
 {
     print(2,"lightfield::io::load_3DV_structure called...");
      
@@ -393,7 +398,8 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
 bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list, 
                                                    map< string, vigra::MultiArray<2,float> > &channels, 
                                                    int cams_h, 
-                                                   int cams_v )  
+                                                   int cams_v )
+/*TEST: */
 {
     print(3,"lightfield::io::load_CROSSS_structure called...");
      
@@ -594,7 +600,8 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
 
 
 
-bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, vigra::MultiArray<2,float> > &channels, LF_TYPE type, int cams_h, int cams_v) 
+bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, vigra::MultiArray<2,float> > &channels, LF_TYPE type, int cams_h, int cams_v)
+/*TEST: */
 {
     print(2,"lightfield::io::load_from_filesequence called...");
      
@@ -640,7 +647,7 @@ bool OpenLF::lightfield::io::load_from_hdf5( string file_name,
                      float &baseline_h,
                      float &baseline_v,
                      float &focal_length ) 
-/* TEST in lightfield_test::test_hdf5_io() */
+/* TEST: lightfield_test::test_hdf5_io() */
 {    
     print(2,"lightfield::io::load_from_hdf5 called...");
     
@@ -723,7 +730,7 @@ bool OpenLF::lightfield::io::save_to_hdf5( string file_name,
                    float baseline_v,
                    float focal_length ) 
 
-/* TEST in lightfield_test::test_hdf5_io() */
+/* TEST: lightfield_test::test_hdf5_io() */
 {
     print(2,"lightfield::io::save_to_hdf5 called...");
     
