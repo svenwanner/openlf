@@ -1,5 +1,4 @@
 #include "global.hpp"
-#include "image/image.hpp"
 
 #ifndef HELPERS_HPP
 #define	HELPERS_HPP

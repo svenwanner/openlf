@@ -22,7 +22,6 @@
 #define	IO_HPP
 
 #include "global.hpp"
-#include "image/image.hpp"
 #include "utils/helpers.hpp"
 #include "visualize/imgshow.hpp"
 
@@ -142,7 +141,7 @@ bool load_from_filesequence( string dir,
                              int cams_h,
                              int cams_v );
 
-}}}
+
 
 
 
@@ -202,6 +201,6 @@ bool save_to_hdf5( string file_name,
                    float focal_length );
 
 
-
+}}}
 #endif	/* IO_HPP */
 
