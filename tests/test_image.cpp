@@ -23,6 +23,7 @@ void test_image::setUp() {
 }
 
 void test_image::tearDown() {
+    cout << "test suite runs through!" << endl;
 }
 
 void test_image::test_io() {
@@ -45,6 +46,9 @@ void test_image::test_io() {
     CPPUNIT_ASSERT(channels["b"].width() == 512);
     CPPUNIT_ASSERT(channels["b"].height() == 576);
     CPPUNIT_ASSERT(channels.size()==4);
+    
+    // test single channel save
+    CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_save_single.jpg",channels,"g"));
     
     // add some channels with other labels and set some values
     channels["x"] = vigra::MultiArray<2,float>(vigra::Shape2(512,576));

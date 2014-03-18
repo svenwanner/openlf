@@ -14,6 +14,7 @@
 #include "settings.hpp"
 
 #include "global.hpp"
+#include "image/io.hpp"
 #include "lightfield/io.hpp"
 #include "lightfield/FileHandler.hpp"
 

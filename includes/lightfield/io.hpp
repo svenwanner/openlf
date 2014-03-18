@@ -30,30 +30,7 @@ namespace OpenLF {
     namespace lightfield { 
         namespace io {
             
-
-            
-//! saves images of the form map<string,MultiArray>
-/*!
- Saves an images of the form map<string,MultiArray> if it either contains a channel
- bw or three channels r,g,b. 
- \param filename to store output image
- \param img storing channels as map 
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/           
-void save(string filename, map< string,vigra::MultiArray<2,float> > &img);
    
-
-//! saves a channel of an image of the form map<string,MultiArray>
-/*!
- Saves a channel of an image of the form map<string,MultiArray> if it exist.
- \param filename to store output image
- \param img storing channels as map 
- \param key of the channel
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/     
-void save(string filename, map< string,vigra::MultiArray<2,float> > &img, string key);
-            
-            
 
 //! load a 4D light field from filenames in directory
 /*!

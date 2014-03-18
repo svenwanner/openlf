@@ -21,78 +21,6 @@
 
 
 
-void OpenLF::lightfield::io::save(string filename, map<string,vigra::MultiArray<2,float>> &img)
-/*TEST: */
-{    
-    print(2,"lightfield::io::save(string, map) called...");
-    
-    string ftype = OpenLF::helpers::find_ftype(filename);
-   
-    if ( img.count("bw") != 0 ) {
-        string msg = "save image as grayscale " + ftype +"..."; print(3,msg.c_str());
-        
-        // allocate memory to store range mapping results
-        vigra::MultiArray<2,vigra::UInt8> tmp(vigra::Shape2(img["bw"].width(),img["bw"].height()));
-        OpenLF::image::io::linear_range_mapping(img["bw"],tmp);
-        
-        if(ftype=="jpg")
-            vigra::exportImage(tmp, vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=75"));
-        else
-            vigra::exportImage(tmp, filename.c_str());
-    }
-    if ( img.count("r") != 0 && img.count("g") != 0  && img.count("b") != 0 ) {
-        string msg = "save image as color " + ftype +"..."; 
-        print(3,msg.c_str());
-        
-        // allocate output container
-        vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > rgb(vigra::Shape2(img["r"].width(),img["r"].height()));
-        
-        // allocate memory to store range mapping results
-        vigra::MultiArray<2,vigra::UInt8> tmp(vigra::Shape2(img["r"].width(),img["r"].height()));
-        
-        // range map data and copy to output image
-        vector<string> channel_labels {"r","g","b"};
-        for(int c=0; c<3; c++) {
-            // map channel to [0,255]
-            OpenLF::image::io::linear_range_mapping(img[channel_labels[c]],tmp);
-
-            // copy data into rgb container
-            for(int y=0; y<img[channel_labels[c]].height(); y++) {
-                for(int x=0; x<img[channel_labels[c]].width(); x++) {
-                    rgb(x,y)[c] = tmp(x,y);
-                }
-            }
-        }
-        
-        if(ftype=="jpg")
-            vigra::exportImage(rgb, vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=75"));
-        else
-            vigra::exportImage(rgb, filename.c_str());
-    }
-}
-
-
-
-
-
-void OpenLF::lightfield::io::save(string filename, map<string,vigra::MultiArray<2,float>> &img, string key)
-/*TEST: */
-{
-    print(3,"lightfield::io::save(string, map, string) called...");
-    string ftype = OpenLF::helpers::find_ftype(filename);
-    
-    string msg = "save channel " + key + " image as " + ftype +"..."; 
-    print(3,msg.c_str());
-
-    if ( img.count(key) != 0 ) {
-        if(ftype=="jpg")
-        vigra::exportImage(img[key], vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=75"));
-        else
-            vigra::exportImage(img[key], filename.c_str());
-    }
-}
-
-
 
 
     
@@ -102,8 +30,8 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
                                                 int cams_h, 
                                                 int cams_v ) 
 {
-/*TEST: */
-    print(2,"lightfield::io::load_4D_structure called...");
+/*TEST: via load_from_filesequence in test_lightfield::test_loading_from_imagefiles() */
+    print(2,"lightfield::io::load_4D_structure(fname_list,channels,cams_h,cams_v) called...");
     
     try {
         // import image info to get the image shape
@@ -198,9 +126,9 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
                                                  map< string, vigra::MultiArray<2,float> > &channels, 
                                                  int cams_h, 
                                                  int cams_v ) 
-/*TEST: */
+/*TEST: via load_from_filesequence in test_lightfield::test_loading_from_imagefiles() */
 {
-    print(2,"lightfield::io::load_3DH_structure called...");
+    print(2,"lightfield::io::load_3DH_structure(fname_list,channels,cams_h,cams_v) called...");
      
     if(cams_v!=1) warning("You tried to load a horizontal light field but your parameter cams_v is not 1");
     
@@ -296,9 +224,9 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
                                                  map< string, vigra::MultiArray<2,float> > &channels, 
                                                  int cams_h, 
                                                  int cams_v )
-/*TEST: */
+/*TEST: via load_from_filesequence in test_lightfield::test_loading_from_imagefiles() */
 {
-    print(2,"lightfield::io::load_3DV_structure called...");
+    print(2,"lightfield::io::load_3DV_structure(fname_list,channels,cams_h,cams_v) called...");
      
     if(cams_h!=1) warning("You tried to load a vertical light field but your parameter cams_h is not 1");
     
@@ -399,9 +327,9 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
                                                    map< string, vigra::MultiArray<2,float> > &channels, 
                                                    int cams_h, 
                                                    int cams_v )
-/*TEST: */
+/*TEST: via load_from_filesequence in test_lightfield::test_loading_from_imagefiles() */
 {
-    print(3,"lightfield::io::load_CROSSS_structure called...");
+    print(2,"lightfield::io::load_cross_structure(fname_list,channels,cams_h,cams_v) called...");
      
     try {
         // import image info to get the image shape
@@ -601,9 +529,9 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
 
 
 bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, vigra::MultiArray<2,float> > &channels, LF_TYPE type, int cams_h, int cams_v)
-/*TEST: */
+/*TEST: test_lightfield::test_loading_from_imagefiles() */
 {
-    print(2,"lightfield::io::load_from_filesequence called...");
+    print(1,"lightfield::io::load_from_filesequence(dir,channels,type,cams_h,cams_v) called...");
      
     // get list of filenames
     vector<string> list;
@@ -637,7 +565,7 @@ bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, vig
 
 
 
-bool OpenLF::lightfield::io::load_from_hdf5( string file_name, 
+bool OpenLF::lightfield::io::load_from_hdf5( string filename, 
                      map< string, vigra::MultiArray<2,float> > &channels,
                      LF_TYPE &type,
                      int &width,
@@ -649,10 +577,10 @@ bool OpenLF::lightfield::io::load_from_hdf5( string file_name,
                      float &focal_length ) 
 /* TEST: lightfield_test::test_hdf5_io() */
 {    
-    print(2,"lightfield::io::load_from_hdf5 called...");
+    print(2,"lightfield::io::load_from_hdf5(filename,channels,type,width,height,cams_h,cams_v,baseline_h,baseline_v,focal_length) called...");
     
     // open hdf5 file
-    vigra::HDF5File file(file_name.c_str(),vigra::HDF5File::OpenReadOnly);
+    vigra::HDF5File file(filename.c_str(),vigra::HDF5File::OpenReadOnly);
     // ensure you're in root dir
     file.root();
     
@@ -732,7 +660,7 @@ bool OpenLF::lightfield::io::save_to_hdf5( string file_name,
 
 /* TEST: lightfield_test::test_hdf5_io() */
 {
-    print(2,"lightfield::io::save_to_hdf5 called...");
+    print(2,"lightfield::io::save_to_hdf5(filename,channels,type,width,height,cams_h,cams_v,baseline_h,baseline_v,focal_length) called...");
     
     try {
         string dset_name;

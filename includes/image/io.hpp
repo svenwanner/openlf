@@ -71,6 +71,17 @@ bool imread(string filename, map<string,vigra::MultiArray<2,float>> &channels);
 bool imsave(string filename, vigra::MultiArray<2,float> img);
 
 
+//! saves a single channel of a channel image
+/*!
+ Saves a single channel of a channel map object to file. 
+ \param filename to store output image
+ \param channels map object of string labels as keys and MultiArrays as data
+ \param key of the channel
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/     
+bool imsave(string filename, map< string,vigra::MultiArray<2,float> > &channels, string key);
+
+
 //! saves a channel image to file
 /*!
 Saves an entire channel map object to file. Channels with labels "bw" and "r","g","b"

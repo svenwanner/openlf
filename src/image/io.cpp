@@ -144,19 +144,43 @@ bool OpenLF::image::io::imread(string filename, map<string,vigra::MultiArray<2,f
 bool OpenLF::image::io::imsave(string filename, vigra::MultiArray<2,float> img)
 /* TEST: test_image::test_io() */
 {
-    print(2,"image::io::imread(string,img) called...");
+    print(2,"image::io::imread(filename,img) called...");
     
+    // get file type
     string ftype = OpenLF::helpers::find_ftype(filename);
     
-    // allocate memory to store range mapping results
-    vigra::MultiArray<2,vigra::UInt8> tmp(vigra::Shape2(img.width(),img.height()));
-    linear_range_mapping(img,tmp);
+    try {
+        // allocate memory to store range mapping results
+        vigra::MultiArray<2,vigra::UInt8> tmp(vigra::Shape2(img.width(),img.height()));
+        linear_range_mapping(img,tmp);
 
-    if(ftype=="jpg")
-        vigra::exportImage(tmp, vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=75"));
-    else
-        vigra::exportImage(tmp, filename.c_str());
+        if(ftype=="jpg")
+            vigra::exportImage(tmp, vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=75"));
+        else
+            vigra::exportImage(tmp, filename.c_str());
+        
+    } catch(exception & e) {
+        cout << e.what() << endl;
+        return false;
+    }
+    
+    return true;
 }
+
+
+
+
+
+bool OpenLF::image::io::imsave(string filename, map<string,vigra::MultiArray<2,float>> &channels, string key)
+/*TEST: test_image::test_io() */
+{
+    print(2,"image::io::save(filename,channels,key) called...");
+
+    if ( channels.count(key) != 0 ) {
+        return imsave(filename, channels[key]);
+    }
+}
+
 
 
 
