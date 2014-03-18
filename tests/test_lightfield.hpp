@@ -15,14 +15,15 @@
 
 #include "global.hpp"
 #include "lightfield/io.hpp"
-#include "visualize/imgshow.hpp"
-#include "lightfield/lightfield.hpp"
+#include "lightfield/FileHandler.hpp"
 
 class test_lightfield : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_lightfield);
 
-    CPPUNIT_TEST(test_loading_from_imagefiles);
-    CPPUNIT_TEST(test_hdf5_io);
+//    CPPUNIT_TEST(test_hdf5_io);
+//    CPPUNIT_TEST(test_loading_from_imagefiles);
+    CPPUNIT_TEST(test_FileHandler);
+    
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -33,8 +34,10 @@ public:
     void tearDown();
 
 private:
-    void test_loading_from_imagefiles();
     void test_hdf5_io();
+    void test_loading_from_imagefiles();
+    void test_FileHandler();
+    
     
     
     string _lf_4D_hdf5_bw_path;

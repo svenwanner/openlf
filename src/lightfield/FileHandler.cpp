@@ -7,12 +7,31 @@
 
 #include "lightfield/FileHandler.hpp"
 
-FileHandler::FileHandler() {
+OpenLF::lightfield::io::FileHandler::FileHandler() 
+{
+    print(1,"lightfield::io::FileHandler::FileHandler() called...");
 }
 
-FileHandler::FileHandler(const FileHandler& orig) {
+OpenLF::lightfield::io::FileHandler::FileHandler(string, map<string,vigra::MultiArray<2,float> >& channels) 
+{
+    print(1,"lightfield::io::FileHandler::FileHandler(string,map) called...");
 }
 
-FileHandler::~FileHandler() {
+OpenLF::lightfield::io::FileHandler::FileHandler(const FileHandler& orig) 
+{
+    print(1,"lightfield::io::FileHandler::FileHandler(FileHandler&) called...");
 }
+
+OpenLF::lightfield::io::FileHandler::~FileHandler() 
+{
+    print(1,"lightfield::io::FileHandler::~FileHandler() called...");
+}
+
+bool OpenLF::lightfield::io::FileHandler::read(string source, map<string,vigra::MultiArray<2,float> >& channels) 
+{
+    print(1,"lightfield::io::FileHandler::read(string,map) called...");
+    
+    return true;
+}
+
 

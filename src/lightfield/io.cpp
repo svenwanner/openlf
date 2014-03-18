@@ -659,7 +659,7 @@ bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, vig
 
 
 
-bool load_from_hdf5( string file_name, 
+bool OpenLF::lightfield::io::load_from_hdf5( string file_name, 
                      map< string, vigra::MultiArray<2,float> > &channels,
                      LF_TYPE &type,
                      int &width,
@@ -741,7 +741,7 @@ bool load_from_hdf5( string file_name,
 
 
 
-bool save_to_hdf5( string file_name, 
+bool OpenLF::lightfield::io::save_to_hdf5( string file_name, 
                    map< string, vigra::MultiArray<2,float> > &channels,
                    LF_TYPE type,
                    int width,

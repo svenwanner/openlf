@@ -49,7 +49,7 @@ void test_lightfield::test_hdf5_io() {
     float focal_length = 0;
     LF_TYPE type = NONE;
     
-    CPPUNIT_ASSERT( load_from_hdf5( _lf_4D_hdf5_rgb_path,channels,type,width,height,cams_h,cams_v,baseline_h,baseline_v,focal_length ));
+    CPPUNIT_ASSERT( OpenLF::lightfield::io::load_from_hdf5( _lf_4D_hdf5_rgb_path,channels,type,width,height,cams_h,cams_v,baseline_h,baseline_v,focal_length ));
     
     CPPUNIT_ASSERT(type == LF_4D);
     CPPUNIT_ASSERT(width == 480);
@@ -62,10 +62,10 @@ void test_lightfield::test_hdf5_io() {
     CPPUNIT_ASSERT(channels.size()==3);
     
     OpenLF::lightfield::io::save(test_result_dir+"test_4D_rgb_fromH5.jpg",channels);
-    CPPUNIT_ASSERT( save_to_hdf5(_lf_4D_hdf5_rgb_out_path,channels,type,width,height,cams_h,cams_v,baseline_h,baseline_v,focal_length) );
+    CPPUNIT_ASSERT( OpenLF::lightfield::io::save_to_hdf5(_lf_4D_hdf5_rgb_out_path,channels,type,width,height,cams_h,cams_v,baseline_h,baseline_v,focal_length) );
     channels.clear();
     
-    CPPUNIT_ASSERT( load_from_hdf5( _lf_4D_hdf5_bw_path,channels,type,width,height,cams_h,cams_v,baseline_h,baseline_v,focal_length ));
+    CPPUNIT_ASSERT( OpenLF::lightfield::io::load_from_hdf5( _lf_4D_hdf5_bw_path,channels,type,width,height,cams_h,cams_v,baseline_h,baseline_v,focal_length ));
     
     CPPUNIT_ASSERT(type == LF_4D);
     CPPUNIT_ASSERT(width == 480);
@@ -78,9 +78,12 @@ void test_lightfield::test_hdf5_io() {
     CPPUNIT_ASSERT(channels.size()==1);
     
     OpenLF::lightfield::io::save(test_result_dir+"test_4D_bw_fromH5.jpg",channels);
-    CPPUNIT_ASSERT( save_to_hdf5(_lf_4D_hdf5_bw_out_path,channels,type,width,height,cams_h,cams_v,baseline_h,baseline_v,focal_length) );
+    CPPUNIT_ASSERT( OpenLF::lightfield::io::save_to_hdf5(_lf_4D_hdf5_bw_out_path,channels,type,width,height,cams_h,cams_v,baseline_h,baseline_v,focal_length) );
     channels.clear();
 }
+
+
+
 
 void test_lightfield::test_loading_from_imagefiles() {
     map< string, vigra::MultiArray<2,float> > channels;
@@ -155,5 +158,22 @@ void test_lightfield::test_loading_from_imagefiles() {
     CPPUNIT_ASSERT(channels.size()==1);
     CPPUNIT_ASSERT(channels["bw"].width()==480);
     CPPUNIT_ASSERT(channels["bw"].height()==176);
+    channels.clear();
+}
+
+
+
+
+void test_lightfield::test_FileHandler() {
+    OpenLF::lightfield::io::FileHandler fileHandler;
+    
+    map< string, vigra::MultiArray<2,float> > channels;
+    
+    // test reading from directory
+    fileHandler.read(_lf_4D_path,channels);
+    channels.clear();
+    
+    // test reading from hdf5
+    fileHandler.read(_lf_4D_hdf5_rgb_path,channels);
     channels.clear();
 }
