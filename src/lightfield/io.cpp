@@ -129,7 +129,7 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
                                                 int cams_h, 
                                                 int cams_v ) 
 {
-    print(3,"lightfield::io::load_4D_structure called...");
+    print(2,"lightfield::io::load_4D_structure called...");
     
     try {
         // import image info to get the image shape
@@ -225,7 +225,7 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
                                                  int cams_h, 
                                                  int cams_v ) 
 {
-    print(3,"lightfield::io::load_3DH_structure called...");
+    print(2,"lightfield::io::load_3DH_structure called...");
      
     if(cams_v!=1) {cout << "WARNING, You tried to load a horizontal light field but your parameter cams_v is not 1! This could be an error!?" << endl;}
     
@@ -322,7 +322,7 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
                                                  int cams_h, 
                                                  int cams_v ) 
 {
-    print(3,"lightfield::io::load_3DV_structure called...");
+    print(2,"lightfield::io::load_3DV_structure called...");
      
     if(cams_h!=1) {cout << "WARNING, You tried to load a vertical light field but your parameter cams_h is not 1! This could be an error!?" << endl;}
     
@@ -337,7 +337,7 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
         // load grayscale images
         if(info.isGrayscale()) {
             print(3,"lightfield::io::load_3DV_structure found grayscale image...");
-            channels["bw"] = vigra::MultiArray<2,float>(vigra::Shape2(info.width(),cams_h*info.height()));
+            channels["bw"] = vigra::MultiArray<2,float>(cams_v*info.height(),info.width());
             //vigra::MultiArray<2,float> tmp(vigra::Shape2(cams_v*info.height(),info.width()));
 
             // loop over images
@@ -352,6 +352,8 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
 
                     // import data
                     vigra::importImage(info_bw, vigra::destImage(in));
+                    
+                    
 
                     // copy data into object and map to range [1,0]
                     for(int y=0; y<info_bw.height(); y++) {
@@ -638,16 +640,12 @@ bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, vig
         // decide data structure depending on lf type
         switch(type) {
             case LF_4D:
-                print(2,"lightfield::io load 4D structure...");
                 return load_4D_structure(fname_list,channels,cams_h,cams_v);
             case LF_3DH:
-                print(2,"lightfield::io load 3DH structure...");
                 return load_3DH_structure(fname_list,channels,cams_h,cams_v);
             case LF_3DV:
-                print(2,"lightfield::io load 3DV structure...");
                 return load_3DV_structure(fname_list,channels,cams_h,cams_v);
             case LF_CROSS:
-                print(2,"lightfield::io load CROSS structure...");
                 return load_cross_structure(fname_list,channels,cams_h,cams_v);
             default:
                 cout << "WARNING: Load_from_filesequence failed due to unknown LF_TYPE!" << endl;
@@ -717,20 +715,12 @@ bool load_from_hdf5( string file_name,
                 file.readAttribute("","height",height);
                 file.readAttribute("","cams_h",cams_h);
                 file.readAttribute("","cams_v",cams_v);
-            }
-            catch(exception &e) {
-                cout << e.what() << endl;
-                return false;
-            }
-            
-            // read the optional attributes
-            try {
                 file.readAttribute("","baseline_h",baseline_h);
                 file.readAttribute("","baseline_v",baseline_v);
                 file.readAttribute("","focal_length",focal_length);
             }
             catch(int a) {
-                cout << "WARNING: Read light field from HDF5 hasn't found all optional attributes!" << endl;
+                throw OpenLF_Exception("Loading light field from HDF5 failed, didn't find all attributes!");
             }
             
             // read the datasets
@@ -748,7 +738,6 @@ bool load_from_hdf5( string file_name,
     
     return true;
 }
-
 
 
 
