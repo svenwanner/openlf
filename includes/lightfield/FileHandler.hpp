@@ -24,6 +24,7 @@
 #define	FILEHANDLER_HPP
 
 #include "global.hpp"
+#include "image/io.hpp"
 #include "lightfield/io.hpp"
 
 namespace OpenLF { 

@@ -18,10 +18,11 @@
 */
 
 
-#ifndef IO_HPP
-#define	IO_HPP
+#ifndef IO_LIGHTFIELD_HPP
+#define	IO_LIGHTFIELD_HPP
 
 #include "global.hpp"
+#include "image/io.hpp"
 #include "utils/helpers.hpp"
 
 
@@ -29,13 +30,6 @@ namespace OpenLF {
     namespace lightfield { 
         namespace io {
             
-//! map range of passed float image to [0,255]
-/*!
- \param fimg float image
- \param img result uint8 container
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/         
-void linearRangeMapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2, vigra::UInt8>& img);
 
             
 //! saves images of the form map<string,MultiArray>
@@ -201,5 +195,5 @@ bool save_to_hdf5( string file_name,
 
 
 }}}
-#endif	/* IO_HPP */
+#endif	/* IO_LIGHTFIELD_HPP */
 

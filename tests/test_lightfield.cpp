@@ -170,10 +170,13 @@ void test_lightfield::test_FileHandler() {
     map< string, vigra::MultiArray<2,float> > channels;
     
     // test reading from directory
-    fileHandler.read(_lf_4D_path,channels);
+    CPPUNIT_ASSERT(fileHandler.read(_lf_4D_path,channels) == true );
     channels.clear();
     
     // test reading from hdf5
-    fileHandler.read(_lf_4D_hdf5_rgb_path,channels);
+    CPPUNIT_ASSERT(fileHandler.read(_lf_4D_hdf5_rgb_path,channels) == true );
     channels.clear();
+    
+    // test if failed mode works
+    CPPUNIT_ASSERT(fileHandler.read("/dummy/path/that/hopefully/may/not/exist/",channels) == false );
 }

@@ -19,39 +19,10 @@
 
 #include "lightfield/io.hpp"
 
-void OpenLF::lightfield::io::linearRangeMapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2, vigra::UInt8>& img) {
-    print(3,"linearRangeMapping(MultiArray<2,float>&,MultiArray<2,UInt8>&) called...");
-    //functor to find range
-    try {
-        vigra::FindMinMax<vigra::FImage::PixelType> minmax; 
-        //find original range
-        vigra::inspectImage(vigra::srcImageRange(fimg), minmax);
-        if(minmax.max<=minmax.min) throw OpenLF_Exception("linearRangeMapping failed, no distance to map!");
-        
-        //transform to range 0...255
-        int nmin, nmax;
-        if(minmax.min>=0 && minmax.min<1 && minmax.max>0 && minmax.max<=1) {
-            nmin = int(ceil(minmax.min*255));
-            nmax = int(floor(minmax.max*255));
-        }
-        else {
-            nmin = 0;
-            nmax = 255;
-        }
-            
-        vigra::transformImage(vigra::srcImageRange(fimg), vigra::destImage(img),
-                              vigra::linearRangeMapping( minmax.min, minmax.max, nmin, nmax) );
-    } catch(exception & e) {
-        cout << e.what() << endl;
-    }
-}
-
-
-
 
 
 void OpenLF::lightfield::io::save(string filename, map<string,vigra::MultiArray<2,float>> &img)  
-{
+{    
     print(2,"lightfield::io::save(string, map) called...");
     
     string ftype = OpenLF::helpers::find_ftype(filename);
@@ -61,7 +32,7 @@ void OpenLF::lightfield::io::save(string filename, map<string,vigra::MultiArray<
         
         // allocate memory to store range mapping results
         vigra::MultiArray<2,vigra::UInt8> tmp(vigra::Shape2(img["bw"].width(),img["bw"].height()));
-        linearRangeMapping(img["bw"],tmp);
+        OpenLF::image::io::linear_range_mapping(img["bw"],tmp);
         
         if(ftype=="jpg")
             vigra::exportImage(tmp, vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=75"));
@@ -82,7 +53,7 @@ void OpenLF::lightfield::io::save(string filename, map<string,vigra::MultiArray<
         vector<string> channel_labels {"r","g","b"};
         for(int c=0; c<3; c++) {
             // map channel to [0,255]
-            linearRangeMapping(img[channel_labels[c]],tmp);
+            OpenLF::image::io::linear_range_mapping(img[channel_labels[c]],tmp);
 
             // copy data into rgb container
             for(int y=0; y<img[channel_labels[c]].height(); y++) {
@@ -227,7 +198,7 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
 {
     print(2,"lightfield::io::load_3DH_structure called...");
      
-    if(cams_v!=1) {cout << "WARNING, You tried to load a horizontal light field but your parameter cams_v is not 1! This could be an error!?" << endl;}
+    if(cams_v!=1) warning("You tried to load a horizontal light field but your parameter cams_v is not 1");
     
     try {
         // import image info to get the image shape
@@ -263,7 +234,7 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
                     }
                 }
                 catch(int a) {
-                    cout << "WARNING: Loading bw image data failed while copying data into lf container!" << endl;
+                    warning("Loading bw image data failed while copying data into lf container");
                     return false;
                 }
             }
@@ -300,7 +271,7 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
                     }
                 }
                 catch(int a) {
-                    cout << "WARNING: Loading rgb image data failed while copying data into lf container!" << endl;
+                    warning("Loading rgb image data failed while copying data into lf container");
                     return false;
                 }
             }
@@ -308,7 +279,7 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
         return true;
     }
     catch(int a) {
-        cout << "WARNING: Loading image data failed while copying data into lf container!" << endl;
+        warning("Loading image data failed while copying data into lf container");
         return false;
     }
 }
@@ -324,7 +295,7 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
 {
     print(2,"lightfield::io::load_3DV_structure called...");
      
-    if(cams_h!=1) {cout << "WARNING, You tried to load a vertical light field but your parameter cams_h is not 1! This could be an error!?" << endl;}
+    if(cams_h!=1) warning("You tried to load a vertical light field but your parameter cams_h is not 1");
     
     try {
         // import image info to get the image shape
@@ -363,7 +334,7 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
                     }
                 }
                 catch(int a) {
-                    cout << "WARNING: Loading bw image data failed while copying data into lf container!" << endl;
+                    warning("Loading bw image data failed while copying data into lf container");
                     return false;
                 }
             }
@@ -400,7 +371,7 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
                     }
                 }
                 catch(int a) {
-                    cout << "WARNING: Loading rgb image data failed while copying data into lf container!" << endl;
+                    warning("Loading rgb image data failed while copying data into lf container");
                     return false;
                 }
             }
@@ -410,7 +381,7 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
         return true;
     }
     catch(int a) {
-        cout << "WARNING: Loading image data failed while copying data into lf container!" << endl;
+        warning("Loading image data failed while copying data into lf container");
         return false;
     }
 }
@@ -461,7 +432,7 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
                     }
                 }
                 catch(int a) {
-                    cout << "WARNING: Loading bw image data failed while copying data into lf container!" << endl;
+                    warning("Loading bw image data failed while copying data into lf container");
                     return false;
                 }
             }
@@ -510,7 +481,7 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
                     
                 }
                 catch(int a) {
-                    cout << "WARNING: Loading bw image data failed while copying data into lf container!" << endl;
+                    warning("Loading bw image data failed while copying data into lf container");
                     return false;
                 }
             }
@@ -550,7 +521,7 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
                     }
                 }
                 catch(int a) {
-                    cout << "WARNING: Loading bw image data failed while copying data into lf container!" << endl;
+                    warning("Loading bw image data failed while copying data into lf container");
                     return false;
                 }
             }
@@ -605,7 +576,7 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
                     
                 }
                 catch(int a) {
-                    cout << "WARNING: Loading bw image data failed while copying data into lf container!" << endl;
+                    warning("Loading bw image data failed while copying data into lf container");
                     return false;
                 }
             }
@@ -613,7 +584,7 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
         return true;
     }
     catch(int a) {
-        cout << "WARNING: Loading image data failed while copying data into lf container!" << endl;
+        warning("Loading image data failed while copying data into lf container");
         return false;
     }
 }
@@ -648,11 +619,11 @@ bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, vig
             case LF_CROSS:
                 return load_cross_structure(fname_list,channels,cams_h,cams_v);
             default:
-                cout << "WARNING: Load_from_filesequence failed due to unknown LF_TYPE!" << endl;
+                warning("Load_from_filesequence failed due to unknown LF_TYPE");
                 return false;
         }
     }
-    cout << "WARNING: Load_from_filesequence failed when reading files from directory!" << endl;
+    warning("Load_from_filesequence failed when reading files from directory");
     return false;
 }
 

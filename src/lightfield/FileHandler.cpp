@@ -31,7 +31,30 @@ bool OpenLF::lightfield::io::FileHandler::read(string source, map<string,vigra::
 {
     print(1,"lightfield::io::FileHandler::read(string,map) called...");
     
-    return true;
+    string source_check;
+    source_check = OpenLF::helpers::find_ftype(source);
+    
+    if(source_check=="h5") {
+        print(3,"lightfield::io::FileHandler::read(string,map) got an hdf5 file...");
+        
+        return true;
+    }
+    else if(source_check=="png"  || source_check=="PNG" || source_check=="jpg" || 
+            source_check=="JPEG" ||source_check=="JPG"  || source_check=="tif" || 
+            source_check=="TIF"  || source_check=="bmp" || source_check=="BMP"  )
+    {
+        
+        return true;
+    }
+    else if(boost::filesystem::is_directory(source_check)) {
+        print(3,"lightfield::io::FileHandler::read(string,map) got a path...");
+
+        return true;
+    }
+    else {
+        warning("Failed to identify input data source. Either hdf5 file is broken or path doesn't exist");
+        return false;   
+    }
 }
 
 

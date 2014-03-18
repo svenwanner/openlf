@@ -46,6 +46,8 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/contrib/contrib.hpp>
@@ -120,6 +122,31 @@ inline void print(int debug_level, const char* text1, const char* text2) {
         space.append("> ");
         cout << DEBUGCOLOR[debug_level] << space.c_str() << text1 << " " << text2 << DEBUGCOLOR[0] << endl;
     }
+};
+
+inline void warning(const char* text) 
+{
+    cout << RED << "WARNING: " << text << "!" << DEBUGCOLOR[0] << endl; 
+};
+
+inline void msg(const char* text) 
+{
+    cout << DEBUGCOLOR[0] << "# msg: " << text << DEBUGCOLOR[0] << endl; 
+};
+
+inline void msg(string text) 
+{
+    cout << DEBUGCOLOR[0] << "# msg: " << text << DEBUGCOLOR[0] << endl; 
+};
+
+inline void msg(const char* text, int num) 
+{
+    cout << DEBUGCOLOR[0] << "# msg: " << text << " : " << num << DEBUGCOLOR[0] << endl; 
+};
+
+inline void msg(string text, float num) 
+{
+    cout << DEBUGCOLOR[0] << "# msg: " << text << " : " << num << DEBUGCOLOR[0] << endl; 
 };
 
 #endif	/* GLOBAL_HPP */
