@@ -17,33 +17,51 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-
-
-
-#ifndef FILEHANDLER_HPP
-#define	FILEHANDLER_HPP
+#ifndef DATAHANDLER_HPP
+#define	DATAHANDLER_HPP
 
 #include "global.hpp"
 #include "image/io.hpp"
 #include "lightfield/io.hpp"
+#include "lightfield/properties.hpp"
+
+
 
 namespace OpenLF { 
     namespace lightfield { 
         namespace io {
+            
 
-class FileHandler {
+class DataHandler {
 public:
-    FileHandler();
-    FileHandler(string, map<string,vigra::MultiArray<2,float> >& channels);
-    FileHandler(const FileHandler& orig);
-    virtual ~FileHandler();
+    DataHandler();
+    DataHandler(string, map<string,vigra::MultiArray<2,float> >& channels);
+    DataHandler(const DataHandler& orig);
+    virtual ~DataHandler();
     
-    bool read(string source,map<string,vigra::MultiArray<2,float>> &channels);
+    //! reads lightfield data from disc
+    /*!
+     This method reads lightfield data from disc. As source can be passed a directory
+     of image files, a hdf5 file or a single image file containing the 4D lightfield.
+     The data are read and set into the passed channel reference.
+     \param source full path of the lightfield image file, a directory or a hdf5 file
+     \param channels map object of string labels as keys and MultiArrays as data 
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */ 
+    bool read(string source, map<string,vigra::MultiArray<2,float> >& channels);
+    
+    //! camera data interface
+    /*!
+     \note not yet implemented but could serve as a later camera interface 
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    bool read(float* source, map<string,vigra::MultiArray<2,float> >& channels);
     
 private:
-    
+
 };
-        
+
+
 }}}
-#endif	/* FILEHANDLER_HPP */
+#endif	/* DATAHANDLER_HPP */
 

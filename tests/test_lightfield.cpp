@@ -31,6 +31,7 @@ void test_lightfield::setUp() {
     _lf_3DH_bw_path = test_lf_dir+"3DH/bw/";
     _lf_3DV_bw_path = test_lf_dir+"3DV/bw/";
     _lf_CROSS_bw_path = test_lf_dir+"CROSS/bw/";
+    _lf_4D_gt_path = test_lf_dir+"test_lf_4D_gt.png";
     _lf_test_ftype = ".png";
 }
 
@@ -164,19 +165,23 @@ void test_lightfield::test_loading_from_imagefiles() {
 
 
 
-void test_lightfield::test_FileHandler() {
-    OpenLF::lightfield::io::FileHandler fileHandler;
+void test_lightfield::test_DataHandler() {
+    OpenLF::lightfield::io::DataHandler dataHandler;
     
     map< string, vigra::MultiArray<2,float> > channels;
     
     // test reading from directory
-    CPPUNIT_ASSERT(fileHandler.read(_lf_4D_path,channels) == true );
+    CPPUNIT_ASSERT(dataHandler.read(_lf_4D_path,channels) == true );
     channels.clear();
     
     // test reading from hdf5
-    CPPUNIT_ASSERT(fileHandler.read(_lf_4D_hdf5_rgb_path,channels) == true );
+    CPPUNIT_ASSERT(dataHandler.read(_lf_4D_hdf5_rgb_path,channels) == true );
     channels.clear();
     
     // test if failed mode works
-    CPPUNIT_ASSERT(fileHandler.read("/dummy/path/that/hopefully/may/not/exist/",channels) == false );
+    CPPUNIT_ASSERT(dataHandler.read("/dummy/path/that/hopefully/may/not/exist/",channels) == false );
+    channels.clear();
+    
+    CPPUNIT_ASSERT(dataHandler.read(_lf_4D_gt_path,channels) == true);
+    channels.clear();
 }

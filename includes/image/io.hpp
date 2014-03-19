@@ -23,6 +23,7 @@
 
 #include "global.hpp"
 #include "utils/helpers.hpp"
+#include "lightfield/properties.hpp"
 
 namespace OpenLF { 
     namespace image { 

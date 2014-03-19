@@ -73,7 +73,7 @@
 
 using namespace std;
 
-typedef enum {NONE,LF_4D,LF_3DH,LF_3DV,LF_CROSS} LF_TYPE;
+
 
 
 /*****************************************************************************
