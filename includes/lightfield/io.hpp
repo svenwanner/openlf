@@ -37,60 +37,56 @@ namespace OpenLF {
 /*!
  Loads all files in passed directory and creates 4D light field channels depending 
  on color mode into the passed map container using channel names as keys (bw,r,g,b). 
+ \note Mandatory for this method is that cams_v and cams_h are set in Property struct
  \param channels map container storing the channels
- \param cams_h number of horizontal cameras
- \param cams_v number of vertical cameras 
+ \param properties struct storing the important parameter 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 bool load_4D_structure( vector<string> fname_list,
                         map< string, vigra::MultiArray<2,float> > &channels,
-                        int cams_h,
-                        int cams_v );
+                        Properties &properties );
 
 
 //! load horizontal 3D light field data from filenames in directory
 /*!
  Loads all files in passed directory and creates 3DH light field channels depending 
- on color mode into the passed map container using channel names as keys (bw,r,g,b). 
+ on color mode into the passed map container using channel names as keys (bw,r,g,b).
+ \note Mandatory for this method is that cams_v and cams_h are set in Property struct 
  \param channels map container storing the channels
- \param cams_h number of horizontal cameras
- \param cams_v number of vertical cameras 
+ \param properties struct storing the important parameter 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 bool load_3DH_structure( vector<string> fname_list,
                          map< string, vigra::MultiArray<2,float> > &channels,
-                         int cams_h,
-                         int cams_v );
+                         Properties &properties );
 
 
 //! load vertical 3D light field data from filenames in directory
 /*!
  Loads all files in passed directory and creates 3DV light field channels depending 
  on color mode into the passed map container using channel names as keys (bw,r,g,b). 
+ \note Mandatory for this method is that cams_v and cams_h are set in Property struct
  \param channels map container storing the channels
- \param cams_h number of horizontal cameras
- \param cams_v number of vertical cameras 
+ \param properties struct storing the important parameter 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 bool load_3DV_structure( vector<string> fname_list,
                          map< string, vigra::MultiArray<2,float> > &channels,
-                         int cams_h,
-                         int cams_v );
+                         Properties &properties );
 
 
 //! load cross light field data from filenames in directory
 /*!
  Loads all files in passed directory and creates cross light field channels depending 
  on color mode into the passed map container using channel names as keys (bw,r,g,b). 
+ \note Mandatory for this method is that cams_v and cams_h are set in Property struct
  \param channels map container storing the channels
- \param cams_h number of horizontal cameras
- \param cams_v number of vertical cameras 
+ \param properties struct storing the important parameter 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 bool load_cross_structure( vector<string> fname_list,
                            map< string, vigra::MultiArray<2,float> > &channels,
-                           int cams_h,
-                           int cams_v );
+                           Properties &properties );
             
 
 //! load light field data from filenames in directory
@@ -98,19 +94,18 @@ bool load_cross_structure( vector<string> fname_list,
  Loads all files in passed directory and creates light field channels depending 
  on color mode into the passed map container using channel names as keys (bw,r,g,b).
  Ensure that the images contain no alpha alpha channel, handling them is not yet supported.
+ \note Mandatory for this method is that "type", "cams_v" and "cams_h" are set in 
+ the Property struct. Ensure to specifiy those via an configfile or during runtime 
+ before calling the method.
  \image html resources/LF_TYPES.jpg   
  \param dir directory to search for files
  \param channels map container storing the channels
- \param type of light field to load (4D,3DH,3DV,CROSS)
- \param cams_h number of horizontal cameras
- \param cams_v number of vertical cameras 
+ \param properties struct storing the important parameter
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 bool load_from_filesequence( string dir, 
                              map< string, vigra::MultiArray<2,float> > &channels,
-                             LF_TYPE type,
-                             int cams_h,
-                             int cams_v );
+                             Properties &properties);
 
 
 
@@ -121,26 +116,12 @@ bool load_from_filesequence( string dir,
  Loads all channels from a hdf5 file and sets all available properties   
  \param file_name full path of the hdf5 file
  \param channels map container storing the channels
- \param type reference of light field type to load (4D,3DH,3DV,CROSS)
- \param width reference to set the image width
- \param height reference to set the image height 
- \param cams_h reference to set number of horizontal cameras
- \param cams_v reference to set number of vertical cameras 
- \param baseline_h reference to set horizontal camera baseline
- \param baseline_v reference to set vertical camera baseline
- \param focal_length reference to set camera focal length
+ \param properties struct storing the important parameter
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 bool load_from_hdf5( string file_name, 
                      map< string, vigra::MultiArray<2,float> > &channels,
-                     LF_TYPE &type,
-                     int &width,
-                     int &height,
-                     int &cams_h,
-                     int &cams_v,
-                     float &baseline_h,
-                     float &baseline_v,
-                     float &focal_length );
+                     Properties &properties);
 
 
 
@@ -150,26 +131,12 @@ bool load_from_hdf5( string file_name,
  well as the passed arguments as properties.   
  \param file_name full path of the hdf5 file
  \param channels map container storing the channels
- \param type reference of light field type to load (4D,3DH,3DV,CROSS)
- \param width reference to set the image width
- \param height reference to set the image height 
- \param cams_h reference to set number of horizontal cameras
- \param cams_v reference to set number of vertical cameras 
- \param baseline_h reference to set horizontal camera baseline
- \param baseline_v reference to set vertical camera baseline
- \param focal_length reference to set camera focal length
+ \param properties struct storing the important parameter
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 bool save_to_hdf5( string file_name, 
                    map< string, vigra::MultiArray<2,float> > &channels,
-                   LF_TYPE type,
-                   int width,
-                   int height,
-                   int cams_h,
-                   int cams_v,
-                   float baseline_h,
-                   float baseline_v,
-                   float focal_length );
+                   Properties &properties);
 
 
 }}}

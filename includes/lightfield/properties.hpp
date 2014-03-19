@@ -23,7 +23,7 @@
 typedef enum {NONE,LF_4D,LF_3DH,LF_3DV,LF_CROSS} LF_TYPE;
 
 struct Properties {
-    LF_TYPE type;
+    LF_TYPE type=NONE;
     int width;
     int height;
     int cams_v;

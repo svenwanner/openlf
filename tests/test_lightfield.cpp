@@ -41,45 +41,38 @@ void test_lightfield::tearDown() {
 
 void test_lightfield::test_hdf5_io() {
     map< string, vigra::MultiArray<2,float> > channels;
-    int width = 0;
-    int height = 0;
-    int cams_v = 0;
-    int cams_h = 0;
-    float baseline_v = 0;
-    float baseline_h = 0;
-    float focal_length = 0;
-    LF_TYPE type = NONE;
+    Properties props_4D; 
     
-    CPPUNIT_ASSERT( OpenLF::lightfield::io::load_from_hdf5( _lf_4D_hdf5_rgb_path,channels,type,width,height,cams_h,cams_v,baseline_h,baseline_v,focal_length ));
+    CPPUNIT_ASSERT( OpenLF::lightfield::io::load_from_hdf5( _lf_4D_hdf5_rgb_path,channels,props_4D ));
     
-    CPPUNIT_ASSERT(type == LF_4D);
-    CPPUNIT_ASSERT(width == 480);
-    CPPUNIT_ASSERT(height == 400);
-    CPPUNIT_ASSERT(cams_h == 5);
-    CPPUNIT_ASSERT(cams_v == 5);
-    CPPUNIT_ASSERT(baseline_h == 0.3f);
-    CPPUNIT_ASSERT(baseline_v == 0.3f);
-    CPPUNIT_ASSERT(focal_length = 10.0f);
+    CPPUNIT_ASSERT(props_4D.type == LF_4D);
+    CPPUNIT_ASSERT(props_4D.width == 480);
+    CPPUNIT_ASSERT(props_4D.height == 400);
+    CPPUNIT_ASSERT(props_4D.cams_h == 5);
+    CPPUNIT_ASSERT(props_4D.cams_v == 5);
+    CPPUNIT_ASSERT(props_4D.baseline_h == 0.3f);
+    CPPUNIT_ASSERT(props_4D.baseline_v == 0.3f);
+    CPPUNIT_ASSERT(props_4D.focal_length = 10.0f);
     CPPUNIT_ASSERT(channels.size()==3);
     
     OpenLF::image::io::imsave(test_result_dir+"test_4D_rgb_fromH5.jpg",channels);
-    CPPUNIT_ASSERT( OpenLF::lightfield::io::save_to_hdf5(_lf_4D_hdf5_rgb_out_path,channels,type,width,height,cams_h,cams_v,baseline_h,baseline_v,focal_length) );
+    CPPUNIT_ASSERT( OpenLF::lightfield::io::save_to_hdf5(_lf_4D_hdf5_rgb_out_path,channels,props_4D) );
     channels.clear();
     
-    CPPUNIT_ASSERT( OpenLF::lightfield::io::load_from_hdf5( _lf_4D_hdf5_bw_path,channels,type,width,height,cams_h,cams_v,baseline_h,baseline_v,focal_length ));
+    CPPUNIT_ASSERT( OpenLF::lightfield::io::load_from_hdf5( _lf_4D_hdf5_bw_path,channels,props_4D ));
     
-    CPPUNIT_ASSERT(type == LF_4D);
-    CPPUNIT_ASSERT(width == 480);
-    CPPUNIT_ASSERT(height == 400);
-    CPPUNIT_ASSERT(cams_h == 5);
-    CPPUNIT_ASSERT(cams_v == 5);
-    CPPUNIT_ASSERT(baseline_h == 0.3f);
-    CPPUNIT_ASSERT(baseline_v == 0.3f);
-    CPPUNIT_ASSERT(focal_length = 10.5f);
+    CPPUNIT_ASSERT(props_4D.type == LF_4D);
+    CPPUNIT_ASSERT(props_4D.width == 480);
+    CPPUNIT_ASSERT(props_4D.height == 400);
+    CPPUNIT_ASSERT(props_4D.cams_h == 5);
+    CPPUNIT_ASSERT(props_4D.cams_v == 5);
+    CPPUNIT_ASSERT(props_4D.baseline_h == 0.3f);
+    CPPUNIT_ASSERT(props_4D.baseline_v == 0.3f);
+    CPPUNIT_ASSERT(props_4D.focal_length = 10.5f);
     CPPUNIT_ASSERT(channels.size()==1);
     
     OpenLF::image::io::imsave(test_result_dir+"test_4D_bw_fromH5.jpg",channels);
-    CPPUNIT_ASSERT( OpenLF::lightfield::io::save_to_hdf5(_lf_4D_hdf5_bw_out_path,channels,type,width,height,cams_h,cams_v,baseline_h,baseline_v,focal_length) );
+    CPPUNIT_ASSERT( OpenLF::lightfield::io::save_to_hdf5(_lf_4D_hdf5_bw_out_path,channels,props_4D) );
     channels.clear();
 }
 
@@ -88,8 +81,12 @@ void test_lightfield::test_hdf5_io() {
 
 void test_lightfield::test_loading_from_imagefiles() {
     map< string, vigra::MultiArray<2,float> > channels;
+    Properties props_4D; 
+    props_4D.cams_h = 5;
+    props_4D.cams_v = 5;
+    props_4D.type = LF_4D;
     
-    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_4D_path,channels,LF_4D,5,5));
+    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_4D_path,channels,props_4D));
     OpenLF::image::io::imsave(test_result_dir+"test_4D_rgb.jpg",channels);
     CPPUNIT_ASSERT(channels.size()==3);
     CPPUNIT_ASSERT(channels["r"].width()==480);
@@ -100,14 +97,20 @@ void test_lightfield::test_loading_from_imagefiles() {
     CPPUNIT_ASSERT(channels["b"].height()==400);
     channels.clear();
     
-    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_4D_bw_path,channels,LF_4D,5,5));
+    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_4D_bw_path,channels,props_4D));
     OpenLF::image::io::imsave(test_result_dir+"test_4D_bw.jpg",channels);
     CPPUNIT_ASSERT(channels.size()==1);
     CPPUNIT_ASSERT(channels["bw"].width()==480);
     CPPUNIT_ASSERT(channels["bw"].height()==400);
     channels.clear();
     
-    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_3DH_path,channels,LF_3DH,5,1));
+    
+    Properties props_3DH; 
+    props_3DH.cams_h = 5;
+    props_3DH.cams_v = 1;
+    props_3DH.type = LF_3DH;
+    
+    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_3DH_path,channels,props_3DH));
     OpenLF::image::io::imsave(test_result_dir+"test_3DH.jpg",channels);
     CPPUNIT_ASSERT(channels.size()==3);
     CPPUNIT_ASSERT(channels["r"].width()==480);
@@ -118,14 +121,20 @@ void test_lightfield::test_loading_from_imagefiles() {
     CPPUNIT_ASSERT(channels["b"].height()==80);
     channels.clear();
     
-    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_3DH_bw_path,channels,LF_3DH,5,1));
+    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_3DH_bw_path,channels,props_3DH));
     OpenLF::image::io::imsave(test_result_dir+"test_3DH_bw.jpg",channels);
     CPPUNIT_ASSERT(channels.size()==1);
     CPPUNIT_ASSERT(channels["bw"].width()==480);
     CPPUNIT_ASSERT(channels["bw"].height()==80);
     channels.clear();
     
-    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_3DV_path,channels,LF_3DV,1,5));
+    
+    Properties props_3DV; 
+    props_3DV.cams_h = 1;
+    props_3DV.cams_v = 5;
+    props_3DV.type = LF_3DV;
+    
+    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_3DV_path,channels,props_3DV));
     OpenLF::image::io::imsave(test_result_dir+"test_3DV.jpg",channels);
     CPPUNIT_ASSERT(channels.size()==3);
     CPPUNIT_ASSERT(channels["r"].width()==400);
@@ -136,14 +145,20 @@ void test_lightfield::test_loading_from_imagefiles() {
     CPPUNIT_ASSERT(channels["b"].height()==96);
     channels.clear();
 
-    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_3DV_bw_path,channels,LF_3DV,1,5));
+    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_3DV_bw_path,channels,props_3DV));
     OpenLF::image::io::imsave(test_result_dir+"test_3DV_bw.jpg",channels);
     CPPUNIT_ASSERT(channels.size()==1);
     CPPUNIT_ASSERT(channels["bw"].width()==400);
     CPPUNIT_ASSERT(channels["bw"].height()==96);
     channels.clear();
     
-    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_CROSS_path,channels,LF_CROSS,5,5));
+    
+    Properties props_CROSS; 
+    props_CROSS.cams_h = 5;
+    props_CROSS.cams_v = 5;
+    props_CROSS.type = LF_CROSS;
+    
+    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_CROSS_path,channels,props_CROSS));
     OpenLF::image::io::imsave(test_result_dir+"test_CROSS.jpg",channels);
     CPPUNIT_ASSERT(channels.size()==3);
     CPPUNIT_ASSERT(channels["r"].width()==480);
@@ -154,7 +169,7 @@ void test_lightfield::test_loading_from_imagefiles() {
     CPPUNIT_ASSERT(channels["b"].height()==176);
     channels.clear();
     
-    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_CROSS_bw_path,channels,LF_CROSS,5,5));
+    CPPUNIT_ASSERT(OpenLF::lightfield::io::load_from_filesequence(_lf_CROSS_bw_path,channels,props_CROSS));
     OpenLF::image::io::imsave(test_result_dir+"test_CROSS_bw.jpg",channels);
     CPPUNIT_ASSERT(channels.size()==1);
     CPPUNIT_ASSERT(channels["bw"].width()==480);
