@@ -23,8 +23,8 @@
 class test_lightfield : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_lightfield);
 
-    CPPUNIT_TEST(test_hdf5_io);
-    CPPUNIT_TEST(test_loading_from_imagefiles);
+    //CPPUNIT_TEST(test_hdf5_io);
+    //CPPUNIT_TEST(test_loading_from_imagefiles);
     CPPUNIT_TEST(test_DataHandler);
     
 

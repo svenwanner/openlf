@@ -35,30 +35,38 @@ namespace OpenLF {
 class DataHandler {
 public:
     DataHandler();
-    DataHandler(string, map<string,vigra::MultiArray<2,float> >& channels);
+    DataHandler(string source);
+    DataHandler(float* source);
     DataHandler(const DataHandler& orig);
-    virtual ~DataHandler();
+    virtual ~DataHandler();   
+    
+    bool read(map<string,vigra::MultiArray<2,float> >& channels, Properties &properties);
+    
+private:
+    
+    string type;
+    string disc_source;
+    float* buffer_source;
     
     //! reads lightfield data from disc
     /*!
      This method reads lightfield data from disc. As source can be passed a directory
      of image files, a hdf5 file or a single image file containing the 4D lightfield.
-     The data are read and set into the passed channel reference.
+     The data are read and set into the passed channel reference. A property struct
+     has to be passed, too.
      \param source full path of the lightfield image file, a directory or a hdf5 file
      \param channels map object of string labels as keys and MultiArrays as data 
+     \param properties struct storing the important parameter 
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */ 
-    bool read(string source, map<string,vigra::MultiArray<2,float> >& channels);
+    bool read_from_disc(string source, map<string,vigra::MultiArray<2,float> >& channels, Properties &properties);
     
     //! camera data interface
     /*!
      \note not yet implemented but could serve as a later camera interface 
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    bool read(float* source, map<string,vigra::MultiArray<2,float> >& channels);
-    
-private:
-
+    bool read_from_buffer(float* source, map<string,vigra::MultiArray<2,float> >& channels, Properties &properties);
 };
 
 

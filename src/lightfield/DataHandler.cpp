@@ -23,11 +23,28 @@
 OpenLF::lightfield::io::DataHandler::DataHandler() 
 {
     print(1,"lightfield::io::DataHandler::DataHandler() called...");
+    
+    type = "";
+    disc_source = "";
+    buffer_source = NULL;
 }
 
-OpenLF::lightfield::io::DataHandler::DataHandler(string, map<string,vigra::MultiArray<2,float> >& channels) 
+OpenLF::lightfield::io::DataHandler::DataHandler(string source) 
 {
-    print(1,"lightfield::io::DataHandler::DataHandler(string,map) called...");
+    print(1,"lightfield::io::DataHandler::DataHandler(string source) called...");
+    
+    type = "disc";
+    disc_source = source;
+    buffer_source = NULL;
+}
+
+OpenLF::lightfield::io::DataHandler::DataHandler(float* source) 
+{
+    print(1,"lightfield::io::DataHandler::DataHandler(float* source) called...");
+    
+    type = "buffer";
+    disc_source = "";
+    buffer_source = source;
 }
 
 OpenLF::lightfield::io::DataHandler::DataHandler(const DataHandler& orig) 
@@ -42,8 +59,27 @@ OpenLF::lightfield::io::DataHandler::~DataHandler()
 
 
 
+bool OpenLF::lightfield::io::DataHandler::read(map<string,vigra::MultiArray<2,float> >& channels, 
+                                               Properties &properties) 
+/* Test: */
+{
+    if(type=="") {
+        throw OpenLF_Exception("lightfield::io::DataHandler, no source specified!");
+        return false;
+    }
+    else if(type=="disc") {
+        return read_from_disc(disc_source, channels, properties);
+    }
+    else if(type=="buffer") {
+        return read_from_buffer(buffer_source, channels, properties);
+    }
+}
 
-bool OpenLF::lightfield::io::DataHandler::read(string source, map<string,vigra::MultiArray<2,float> >& channels) 
+
+bool OpenLF::lightfield::io::DataHandler::read_from_disc(string source, 
+                                               map<string,vigra::MultiArray<2,float> >& channels,
+                                               Properties &properties) 
+/* Test: */
 {
     print(1,"lightfield::io::DataHandler::read(string,map) called...");
     
@@ -53,12 +89,12 @@ bool OpenLF::lightfield::io::DataHandler::read(string source, map<string,vigra::
     if(source_check=="h5") {
         print(3,"lightfield::io::DataHandler::read(string,map) got an hdf5 file...");
         
-        return true;
+        return OpenLF::lightfield::io::load_from_hdf5(disc_source,channels,properties);
     }
     else if(boost::filesystem::is_directory(source_check)) {
         print(3,"lightfield::io::DataHandler::read(string,map) got a path...");
 
-        return true;
+        return OpenLF::lightfield::io::load_from_filesequence(disc_source,channels,properties);
     }
     else if(source_check=="png"  || source_check=="PNG" || source_check=="jpg" || 
             source_check=="JPEG" ||source_check=="JPG"  || source_check=="tif" || 
@@ -66,7 +102,7 @@ bool OpenLF::lightfield::io::DataHandler::read(string source, map<string,vigra::
     {
         print(3,"lightfield::io::DataHandler::read(string,map) got an image file...");
         
-        return true;
+        return OpenLF::image::io::imsave(source,channels);
     }
     else {
         warning("Failed to identify input data source. Either hdf5 file is broken or path doesn't exist");
@@ -76,7 +112,10 @@ bool OpenLF::lightfield::io::DataHandler::read(string source, map<string,vigra::
 
 
 
-bool OpenLF::lightfield::io::DataHandler::read(float* source, map<string,vigra::MultiArray<2,float> >& channels) 
+bool OpenLF::lightfield::io::DataHandler::read_from_buffer(float* source, 
+                                                           map<string,vigra::MultiArray<2,float> >& channels,
+                                                           Properties &properties) 
+/* Test: */
 {
     // TODO maybe later the camera data interface
     return true;
