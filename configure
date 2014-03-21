@@ -6,12 +6,34 @@ SCRIPTPATH=$(dirname "$SCRIPT")
 TESTDATAPATH=$(dirname "$SCRIPT")
 TESTOUTPUTPATH=$(dirname "$SCRIPT")
 SETTINGSPATH=$(dirname "$SCRIPT")
+
 TESTLFPATH=$(dirname "$SCRIPT")
+
+TESTLF_4D_wide=$(dirname "$SCRIPT")
+TESTLF_4D_high=$(dirname "$SCRIPT")
+TESTLF_3DH_wide=$(dirname "$SCRIPT")
+TESTLF_3DH_high=$(dirname "$SCRIPT")
+TESTLF_3DV_wide=$(dirname "$SCRIPT")
+TESTLF_3DV_high=$(dirname "$SCRIPT")
+TESTLF_CROSS_wide=$(dirname "$SCRIPT")
+TESTLF_CROSS_high=$(dirname "$SCRIPT")
+
 
 SETTINGSPATH+="/tests/settings.hpp"
 TESTDATAPATH+="/tests/data/"
-TESTLFPATH+="/tests/data/test_lf/"
 TESTOUTPUTPATH+="/tests/data/output/"
+
+TESTLFPATH+="/tests/data/test_lf/"
+
+TESTLF_4D_wide+="/tests/data/OpenLF_testLF/4D/h7_v5_h48_w64/"
+TESTLF_4D_high+="/tests/data/OpenLF_testLF/4D/h5_v7_h64_w48/"
+TESTLF_3DH_wide+="/tests/data/OpenLF_testLF/3DH/h7_v1_h48_w64/"
+TESTLF_3DH_high+="/tests/data/OpenLF_testLF/3DH/h5_v1_h64_w48/"
+TESTLF_3DV_wide+="/tests/data/OpenLF_testLF/3DV/h1_v5_h48_w64/"
+TESTLF_3DV_high+="/tests/data/OpenLF_testLF/3DV/h1_v7_h64_w48/"
+TESTLF_CROSS_wide+="/tests/data/OpenLF_testLF/CROSS/h7_v5_h48_w64/"
+TESTLF_CROSS_high+="/tests/data/OpenLF_testLF/CROSS/h5_v7_h64_w48/"
+
 
 echo "create settings file: $SETTINGSPATH"
 touch $SETTINGSPATH
@@ -25,8 +47,18 @@ using namespace std;
 #define	TEST_SETTINGS_H
 
 const string test_data_dir = "$TESTDATAPATH";
-const string test_lf_dir = "$TESTLFPATH";
 const string test_result_dir = "$TESTOUTPUTPATH";
+
+const string test_lf_dir = "$TESTLFPATH";
+
+const string test_lf_4D_wide = "$TESTLF_4D_wide";
+const string test_lf_4D_high = "$TESTLF_4D_high";
+const string test_lf_3DH_wide = "$TESTLF_3DH_wide";
+const string test_lf_3DH_high = "$TESTLF_3DH_high";
+const string test_lf_3DV_wide = "$TESTLF_3DV_wide";
+const string test_lf_3DV_high = "$TESTLF_3DV_high";
+const string test_lf_CROSS_wide = "$TESTLF_CROSS_wide";
+const string test_lf_CROSS_high = "$TESTLF_CROSS_high";
 
 #endif	/* TEST_SETTINGS_H */
 EOM

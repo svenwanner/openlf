@@ -219,3 +219,22 @@ void test_lightfield::test_DataHandler() {
 //    CPPUNIT_ASSERT(dataHandler.read(_lf_4D_gt_path,channels) == true);
 //    channels.clear();
 }
+
+
+
+void test_lightfield::test_tmp() {
+    string cfg_4D_wide = test_lf_4D_wide+"bw.cfg";
+    OpenLF::ConfigParser cfg(cfg_4D_wide);
+    
+    string path = "";
+    int width = 0;
+    float baseline_h = 0.0;
+    double focal_length = 0.0;
+    
+    CPPUNIT_ASSERT(cfg.get_field("home",path));
+    CPPUNIT_ASSERT(cfg.get_field("width",width));
+    CPPUNIT_ASSERT(cfg.get_field("baseline_h",baseline_h));
+    CPPUNIT_ASSERT(cfg.get_field("focal_length",focal_length));
+    
+    cout << path << " " << width << " " << baseline_h << " " << focal_length << " " << endl;
+}
