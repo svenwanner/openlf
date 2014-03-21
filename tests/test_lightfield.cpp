@@ -223,18 +223,39 @@ void test_lightfield::test_DataHandler() {
 
 
 void test_lightfield::test_tmp() {
-    string cfg_4D_wide = test_lf_4D_wide+"bw.cfg";
-    OpenLF::ConfigParser cfg(cfg_4D_wide);
+    vector<string> cfgnames {
+    test_lf_4D_wide+"rgb.cfg",
+    test_lf_4D_high+"rgb.cfg",
+    test_lf_3DH_wide+"rgb.cfg",
+    test_lf_3DH_high+"rgb.cfg",
+    test_lf_3DV_wide+"rgb.cfg",
+    test_lf_3DV_high+"rgb.cfg",
+    test_lf_CROSS_wide+"rgb.cfg",
+    test_lf_CROSS_high+"rgb.cfg"};
     
     string path = "";
     int width = 0;
     float baseline_h = 0.0;
     double focal_length = 0.0;
     
-    CPPUNIT_ASSERT(cfg.get_field("home",path));
-    CPPUNIT_ASSERT(cfg.get_field("width",width));
-    CPPUNIT_ASSERT(cfg.get_field("baseline_h",baseline_h));
-    CPPUNIT_ASSERT(cfg.get_field("focal_length",focal_length));
+    OpenLF::ConfigParser cfg;
     
-    cout << path << " " << width << " " << baseline_h << " " << focal_length << " " << endl;
+    for(int n=0; n<cfgnames.size(); n++) {
+        cout << "try to parse " << cfgnames[n] << endl;
+        cfg.parse(cfgnames[n]);
+        
+        CPPUNIT_ASSERT(cfg.get_field("home",path));
+        CPPUNIT_ASSERT(cfg.get_field("width",width));
+        CPPUNIT_ASSERT(cfg.get_field("baseline_h",baseline_h));
+        CPPUNIT_ASSERT(cfg.get_field("focal_length",focal_length));
+        
+        cout << path << " " << width << " " << baseline_h << " " << focal_length << " " << endl;
+    }
+    
+    
+    
+    
+    
+    
+    
 }

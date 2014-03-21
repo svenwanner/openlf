@@ -46,6 +46,7 @@ namespace OpenLF {
 */
 class ConfigParser {
 public:
+    ConfigParser();
     ConfigParser(string filename);
     ConfigParser(const char* filename);
     ConfigParser(const ConfigParser& orig);
@@ -82,6 +83,20 @@ public:
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     bool get_field(string name, double &value);
+    
+    //! parse the file passed
+    /*!
+     \param filename cfgfile the ifstream object of the file loaded
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void parse(const char* filename);
+    
+    //! parse the file passed
+    /*!
+     \param filename cfgfile the ifstream object of the file loaded
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void parse(string filename);
 
 private:
     
@@ -90,7 +105,7 @@ private:
      \param cfgfile the ifstream object of the file loaded
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void parse(ifstream &cfgfile);
+    void __parse__(ifstream &cfgfile);
     
     map<string,double> number_fields; //!< map to store the number fields and values
     map<string,string> string_fields; //!< map to store the string fields and values 

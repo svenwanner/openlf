@@ -19,13 +19,15 @@
 
 #include "utils/ConfigParser.hpp"
 
+OpenLF::ConfigParser::ConfigParser() {}
+
 OpenLF::ConfigParser::ConfigParser(string filename)
 {
     ifstream cfgfile(filename.c_str());
     if (cfgfile.good()) {
         try {
             
-            parse(cfgfile);
+            __parse__(cfgfile);
             
         } catch(exception &e) {
             cout << "failed to parse: " << filename << endl;
@@ -41,7 +43,7 @@ OpenLF::ConfigParser::ConfigParser(const char* filename)
     if (cfgfile.good()) {
         try {
             
-            parse(cfgfile);
+            __parse__(cfgfile);
             
         } catch(exception &e) {
             cout << "failed to parse: " << filename << endl;
@@ -97,7 +99,34 @@ bool OpenLF::ConfigParser::get_field(string name, double &value)
     }
 }
 
-void OpenLF::ConfigParser::parse(ifstream &cfgfile)
+
+void OpenLF::ConfigParser::parse(const char* filename)
+{
+    number_fields.clear();
+    string_fields.clear();
+    
+    ifstream cfgfile(filename);
+    if (cfgfile.good()) {
+        try {
+            
+            __parse__(cfgfile);
+            
+        } catch(exception &e) {
+            cout << "failed to parse: " << filename << endl;
+            cout << e.what() << endl;
+        }
+    }
+    else throw Parse_Exception("ConfigParser: error while parsing configfile!");
+}
+    
+
+void OpenLF::ConfigParser::parse(string filename)
+{
+    parse(filename.c_str());
+}
+
+
+void OpenLF::ConfigParser::__parse__(ifstream &cfgfile)
 {
     string line;
 
