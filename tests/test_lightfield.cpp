@@ -33,6 +33,27 @@ void test_lightfield::setUp() {
     _lf_CROSS_bw_path = test_lf_dir+"CROSS/bw/";
     _lf_4D_gt_path = test_lf_dir+"test_lf_4D_gt.png";
     _lf_test_ftype = ".png";
+    
+     
+    cfgnames["4D_high_bw"] = test_lf_4D_high+"bw.cfg";
+    cfgnames["4D_wide_bw"] = test_lf_4D_wide+"bw.cfg";
+    cfgnames["4D_high_rgb"] = test_lf_4D_high+"rgb.cfg";
+    cfgnames["4D_wide_rgb"] = test_lf_4D_wide+"rgb.cfg";
+    
+    cfgnames["3DH_high_bw"] = test_lf_3DH_high+"bw.cfg";
+    cfgnames["3DH_wide_bw"] = test_lf_3DH_wide+"bw.cfg";
+    cfgnames["3DH_high_rgb"] = test_lf_3DH_high+"rgb.cfg";
+    cfgnames["3DH_wide_rgb"] = test_lf_3DH_wide+"rgb.cfg";
+     
+    cfgnames["3DV_high_bw"] = test_lf_3DV_high+"bw.cfg";
+    cfgnames["3DV_wide_bw"] = test_lf_3DV_wide+"bw.cfg";
+    cfgnames["3DV_high_rgb"] = test_lf_3DV_high+"rgb.cfg";
+    cfgnames["3DV_wide_rgb"] = test_lf_3DV_wide+"rgb.cfg"; 
+    
+    cfgnames["CROSS_high_bw"] = test_lf_CROSS_high+"bw.cfg";
+    cfgnames["CROSS_wide_bw"] = test_lf_CROSS_wide+"bw.cfg";
+    cfgnames["CROSS_high_rgb"] = test_lf_CROSS_high+"rgb.cfg";
+    cfgnames["CROSS_wide_rgb"] = test_lf_CROSS_wide+"rgb.cfg";
 }
 
 void test_lightfield::tearDown() {
@@ -222,40 +243,47 @@ void test_lightfield::test_DataHandler() {
 
 
 
-void test_lightfield::test_tmp() {
-    vector<string> cfgnames {
-    test_lf_4D_wide+"rgb.cfg",
-    test_lf_4D_high+"rgb.cfg",
-    test_lf_3DH_wide+"rgb.cfg",
-    test_lf_3DH_high+"rgb.cfg",
-    test_lf_3DV_wide+"rgb.cfg",
-    test_lf_3DV_high+"rgb.cfg",
-    test_lf_CROSS_wide+"rgb.cfg",
-    test_lf_CROSS_high+"rgb.cfg"};
-    
-    string path = "";
-    int width = 0;
-    float baseline_h = 0.0;
-    double focal_length = 0.0;
+void test_lightfield::test_configparser() 
+{    
+    string path;
+    int width;
+    int height;
+    int cams_h;
+    int cams_v;
+    float baseline_h;
+    float baseline_v;
+    double focal_length;
     
     OpenLF::ConfigParser cfg;
     
-    for(int n=0; n<cfgnames.size(); n++) {
-        cout << "try to parse " << cfgnames[n] << endl;
-        cfg.parse(cfgnames[n]);
+    for(auto iter=cfgnames.begin(); iter!=cfgnames.end(); ++iter) {
+        cout << "try to parse " << cfgnames[iter->first] << endl;
+        cfg.parse(cfgnames[iter->first]);
+        
+        path = "";
+        width = 0;
+        height = 0;
+        cams_h = 0;
+        cams_v = 0;
+        baseline_h = 0.0;
+        baseline_v = 0.0;
+        focal_length = 0.0;
         
         CPPUNIT_ASSERT(cfg.get_field("home",path));
+        CPPUNIT_ASSERT(path!="");
+        CPPUNIT_ASSERT(cfg.get_field("cams_h",cams_h));
+        CPPUNIT_ASSERT(cams_h!=0);
+        CPPUNIT_ASSERT(cfg.get_field("cams_v",cams_v));
+        CPPUNIT_ASSERT(cams_v!=0);
         CPPUNIT_ASSERT(cfg.get_field("width",width));
+        CPPUNIT_ASSERT(width!=0);
+        CPPUNIT_ASSERT(cfg.get_field("height",height));
+        CPPUNIT_ASSERT(height!=0);
         CPPUNIT_ASSERT(cfg.get_field("baseline_h",baseline_h));
+        CPPUNIT_ASSERT(baseline_h!=0);
+        CPPUNIT_ASSERT(cfg.get_field("baseline_v",baseline_v));
+        CPPUNIT_ASSERT(baseline_v!=0);
         CPPUNIT_ASSERT(cfg.get_field("focal_length",focal_length));
-        
-        cout << path << " " << width << " " << baseline_h << " " << focal_length << " " << endl;
+        CPPUNIT_ASSERT(focal_length!=0);
     }
-    
-    
-    
-    
-    
-    
-    
 }

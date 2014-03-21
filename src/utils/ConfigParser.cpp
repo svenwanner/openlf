@@ -22,6 +22,7 @@
 OpenLF::ConfigParser::ConfigParser() {}
 
 OpenLF::ConfigParser::ConfigParser(string filename)
+/* Test: test_lightfield::test_configparser() */
 {
     ifstream cfgfile(filename.c_str());
     if (cfgfile.good()) {
@@ -38,6 +39,7 @@ OpenLF::ConfigParser::ConfigParser(string filename)
 }
 
 OpenLF::ConfigParser::ConfigParser(const char* filename)
+/* Test: test_lightfield::test_configparser() */
 {
     ifstream cfgfile(filename);
     if (cfgfile.good()) {
@@ -60,6 +62,7 @@ OpenLF::ConfigParser::~ConfigParser() {
 }
 
 bool OpenLF::ConfigParser::get_field(string name, string &value)
+/* Test: test_lightfield::test_configparser() */
 {
     if ( string_fields.find(name) == string_fields.end() ) {
         return false;
@@ -70,6 +73,7 @@ bool OpenLF::ConfigParser::get_field(string name, string &value)
 }
 
 bool OpenLF::ConfigParser::get_field(string name, int &value) 
+/* Test: test_lightfield::test_configparser() */
 {
     if ( number_fields.find(name) == number_fields.end() ) {
         return false;
@@ -80,6 +84,7 @@ bool OpenLF::ConfigParser::get_field(string name, int &value)
 }
 
 bool OpenLF::ConfigParser::get_field(string name, float &value) 
+/* Test: test_lightfield::test_configparser() */
 {
     if ( number_fields.find(name) == number_fields.end() ) {
         return false;
@@ -90,6 +95,7 @@ bool OpenLF::ConfigParser::get_field(string name, float &value)
 }
 
 bool OpenLF::ConfigParser::get_field(string name, double &value) 
+/* Test: test_lightfield::test_configparser() */
 {
     if ( number_fields.find(name) == number_fields.end() ) {
         return false;
@@ -101,6 +107,7 @@ bool OpenLF::ConfigParser::get_field(string name, double &value)
 
 
 void OpenLF::ConfigParser::parse(const char* filename)
+/* Test: test_lightfield::test_configparser() */
 {
     number_fields.clear();
     string_fields.clear();
@@ -121,12 +128,14 @@ void OpenLF::ConfigParser::parse(const char* filename)
     
 
 void OpenLF::ConfigParser::parse(string filename)
+/* Test: test_lightfield::test_configparser() */
 {
     parse(filename.c_str());
 }
 
 
 void OpenLF::ConfigParser::__parse__(ifstream &cfgfile)
+/* Test: test_lightfield::test_configparser() */
 {
     string line;
 
@@ -135,14 +144,16 @@ void OpenLF::ConfigParser::__parse__(ifstream &cfgfile)
         while ( getline (cfgfile,line) )
         {
             if(line.at(0)!='#'){
+                
+                // check for "=" char and split string in left and right from "="
                 typedef vector< boost::iterator_range<string::iterator> > find_vector_type;
                 find_vector_type FindVec;
                 boost::ifind_all( FindVec, line, "=" );
                 typedef vector< string > split_vector_type;
                 split_vector_type fields;
-
                 boost::split( fields, line, boost::is_any_of("="), boost::token_compress_on );
 
+                // check for end of value marked with ";"
                 size_t pos=-1;
                 string tmp;
                 pos = fields[1].find(';');

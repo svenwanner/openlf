@@ -27,7 +27,7 @@ class test_lightfield : public CPPUNIT_NS::TestFixture {
     //CPPUNIT_TEST(test_hdf5_io);
     //CPPUNIT_TEST(test_loading_from_imagefiles);
     //CPPUNIT_TEST(test_DataHandler);
-    CPPUNIT_TEST(test_tmp);
+    //CPPUNIT_TEST(test_configparser);
     
 
     CPPUNIT_TEST_SUITE_END();
@@ -42,7 +42,7 @@ private:
     void test_hdf5_io();
     void test_loading_from_imagefiles();
     void test_DataHandler();
-    void test_tmp();
+    void test_configparser();
     
     
     
@@ -61,6 +61,8 @@ private:
     string _lf_4D_gt_path;
     string _lf_test_ftype;
     vector<string> _fnames;
+    
+    map<string,string> cfgnames;
 };
 
 #endif	/* TEST_LIGHTFIELD_HPP */
