@@ -27,7 +27,7 @@
 bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list, 
                                                 map< string, 
                                                 vigra::MultiArray<2,float> > &channels, 
-                                                Properties &properties )
+                                                LF_Properties &properties )
 
 /*TEST: via load_from_filesequence in test_lightfield::test_loading_from_imagefiles() */
 {
@@ -124,7 +124,7 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
 
 bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list, 
                                                  map< string, vigra::MultiArray<2,float> > &channels, 
-                                                 Properties &properties ) 
+                                                 LF_Properties &properties ) 
 /*TEST: via load_from_filesequence in test_lightfield::test_loading_from_imagefiles() */
 {
     print(2,"lightfield::io::load_3DH_structure(fname_list,channels,properties) called...");
@@ -221,7 +221,7 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
 
 bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list, 
                                                  map< string, vigra::MultiArray<2,float> > &channels, 
-                                                 Properties &properties )
+                                                 LF_Properties &properties )
 /*TEST: via load_from_filesequence in test_lightfield::test_loading_from_imagefiles() */
 {
     print(2,"lightfield::io::load_3DV_structure(fname_list,channels,properties) called...");
@@ -323,7 +323,7 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
 
 bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list, 
                                                    map< string, vigra::MultiArray<2,float> > &channels, 
-                                                   Properties &properties )
+                                                   LF_Properties &properties )
 
 /*TEST: via load_from_filesequence in test_lightfield::test_loading_from_imagefiles() */
 {
@@ -526,7 +526,7 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
 
 
 
-bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, vigra::MultiArray<2,float> > &channels, Properties &properties)
+bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, vigra::MultiArray<2,float> > &channels, LF_Properties &properties)
 /*TEST: test_lightfield::test_loading_from_imagefiles() */
 {
     print(1,"lightfield::io::load_from_filesequence(dir,channels,properties) called...");
@@ -565,7 +565,7 @@ bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, vig
 
 bool OpenLF::lightfield::io::load_from_hdf5( string filename, 
                      map< string, vigra::MultiArray<2,float> > &channels,
-                     Properties &properties ) 
+                     LF_Properties &properties ) 
 
 /* TEST: lightfield_test::test_hdf5_io() */
 {    
@@ -641,7 +641,7 @@ bool OpenLF::lightfield::io::load_from_hdf5( string filename,
 
 bool OpenLF::lightfield::io::save_to_hdf5( string file_name, 
                    map< string, vigra::MultiArray<2,float> > &channels,
-                   Properties &properties ) 
+                   LF_Properties &properties ) 
 
 /* TEST: lightfield_test::test_hdf5_io() */
 {

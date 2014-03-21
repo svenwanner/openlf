@@ -44,7 +44,7 @@ namespace OpenLF {
 */
 bool load_4D_structure( vector<string> fname_list,
                         map< string, vigra::MultiArray<2,float> > &channels,
-                        Properties &properties );
+                        LF_Properties &properties );
 
 
 //! load horizontal 3D light field data from filenames in directory
@@ -58,7 +58,7 @@ bool load_4D_structure( vector<string> fname_list,
 */
 bool load_3DH_structure( vector<string> fname_list,
                          map< string, vigra::MultiArray<2,float> > &channels,
-                         Properties &properties );
+                         LF_Properties &properties );
 
 
 //! load vertical 3D light field data from filenames in directory
@@ -72,7 +72,7 @@ bool load_3DH_structure( vector<string> fname_list,
 */
 bool load_3DV_structure( vector<string> fname_list,
                          map< string, vigra::MultiArray<2,float> > &channels,
-                         Properties &properties );
+                         LF_Properties &properties );
 
 
 //! load cross light field data from filenames in directory
@@ -86,7 +86,7 @@ bool load_3DV_structure( vector<string> fname_list,
 */
 bool load_cross_structure( vector<string> fname_list,
                            map< string, vigra::MultiArray<2,float> > &channels,
-                           Properties &properties );
+                           LF_Properties &properties );
             
 
 //! load light field data from filenames in directory
@@ -105,7 +105,7 @@ bool load_cross_structure( vector<string> fname_list,
 */
 bool load_from_filesequence( string dir, 
                              map< string, vigra::MultiArray<2,float> > &channels,
-                             Properties &properties);
+                             LF_Properties &properties);
 
 
 
@@ -121,7 +121,7 @@ bool load_from_filesequence( string dir,
 */
 bool load_from_hdf5( string file_name, 
                      map< string, vigra::MultiArray<2,float> > &channels,
-                     Properties &properties);
+                     LF_Properties &properties);
 
 
 
@@ -136,7 +136,7 @@ bool load_from_hdf5( string file_name,
 */
 bool save_to_hdf5( string file_name, 
                    map< string, vigra::MultiArray<2,float> > &channels,
-                   Properties &properties);
+                   LF_Properties &properties);
 
 
 }}}

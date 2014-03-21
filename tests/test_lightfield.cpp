@@ -62,7 +62,7 @@ void test_lightfield::tearDown() {
 
 void test_lightfield::test_hdf5_io() {
     map< string, vigra::MultiArray<2,float> > channels;
-    Properties props_4D; 
+    LF_Properties props_4D; 
     
     CPPUNIT_ASSERT( OpenLF::lightfield::io::load_from_hdf5( _lf_4D_hdf5_rgb_path,channels,props_4D ));
     
@@ -102,7 +102,7 @@ void test_lightfield::test_hdf5_io() {
 
 void test_lightfield::test_loading_from_imagefiles() {
     map< string, vigra::MultiArray<2,float> > channels;
-    Properties props_4D; 
+    LF_Properties props_4D; 
     props_4D.cams_h = 5;
     props_4D.cams_v = 5;
     props_4D.type = LF_4D;
@@ -126,7 +126,7 @@ void test_lightfield::test_loading_from_imagefiles() {
     channels.clear();
     
     
-    Properties props_3DH; 
+    LF_Properties props_3DH; 
     props_3DH.cams_h = 5;
     props_3DH.cams_v = 1;
     props_3DH.type = LF_3DH;
@@ -150,7 +150,7 @@ void test_lightfield::test_loading_from_imagefiles() {
     channels.clear();
     
     
-    Properties props_3DV; 
+    LF_Properties props_3DV; 
     props_3DV.cams_h = 1;
     props_3DV.cams_v = 5;
     props_3DV.type = LF_3DV;
@@ -174,7 +174,7 @@ void test_lightfield::test_loading_from_imagefiles() {
     channels.clear();
     
     
-    Properties props_CROSS; 
+    LF_Properties props_CROSS; 
     props_CROSS.cams_h = 5;
     props_CROSS.cams_v = 5;
     props_CROSS.type = LF_CROSS;
@@ -203,31 +203,38 @@ void test_lightfield::test_loading_from_imagefiles() {
 
 void test_lightfield::test_DataHandler() {
     
-    // test reading from filesequence 
     map< string, vigra::MultiArray<2,float> > channels;
-    Properties props_4D; 
-    props_4D.cams_h = 5;
-    props_4D.cams_v = 5;
-    props_4D.type = LF_4D;
+    LF_Properties props_4D;
     
-    // init a DataHandler with a string source 
-    OpenLF::lightfield::io::DataHandler dataHandler(_lf_4D_path);
-   
-    // read the data
-    CPPUNIT_ASSERT(dataHandler.read(channels,props_4D) == true );
-    CPPUNIT_ASSERT(props_4D.type == LF_4D);
-    CPPUNIT_ASSERT(props_4D.width == 96);
-    CPPUNIT_ASSERT(props_4D.height == 80);
-    CPPUNIT_ASSERT(props_4D.cams_h == 5);
-    CPPUNIT_ASSERT(props_4D.cams_v == 5);
-    CPPUNIT_ASSERT(channels.size()==3);
-    CPPUNIT_ASSERT(channels["r"].width()==480);
-    CPPUNIT_ASSERT(channels["r"].height()==400);
-    CPPUNIT_ASSERT(channels["g"].width()==480);
-    CPPUNIT_ASSERT(channels["g"].height()==400);
-    CPPUNIT_ASSERT(channels["b"].width()==480);
-    CPPUNIT_ASSERT(channels["b"].height()==400);
-    channels.clear();
+    cout << cfgnames["4D_wide_rgb"]<< endl;
+    OpenLF::lightfield::io::DataHandler dataHandler(cfgnames["4D_wide_rgb"]);
+    dataHandler.read(channels,props_4D);
+    
+//    // test reading from filesequence 
+//    map< string, vigra::MultiArray<2,float> > channels;
+//    LF_Properties props_4D; 
+//    props_4D.cams_h = 5;
+//    props_4D.cams_v = 5;
+//    props_4D.type = LF_4D;
+//    
+//    // init a DataHandler with a string source 
+//    OpenLF::lightfield::io::DataHandler dataHandler(_lf_4D_path);
+//   
+//    // read the data
+//    CPPUNIT_ASSERT(dataHandler.read(channels,props_4D) == true );
+//    CPPUNIT_ASSERT(props_4D.type == LF_4D);
+//    CPPUNIT_ASSERT(props_4D.width == 96);
+//    CPPUNIT_ASSERT(props_4D.height == 80);
+//    CPPUNIT_ASSERT(props_4D.cams_h == 5);
+//    CPPUNIT_ASSERT(props_4D.cams_v == 5);
+//    CPPUNIT_ASSERT(channels.size()==3);
+//    CPPUNIT_ASSERT(channels["r"].width()==480);
+//    CPPUNIT_ASSERT(channels["r"].height()==400);
+//    CPPUNIT_ASSERT(channels["g"].width()==480);
+//    CPPUNIT_ASSERT(channels["g"].height()==400);
+//    CPPUNIT_ASSERT(channels["b"].width()==480);
+//    CPPUNIT_ASSERT(channels["b"].height()==400);
+//    channels.clear();
     
 //    // test reading from hdf5
 //    CPPUNIT_ASSERT(dataHandler.read(_lf_4D_hdf5_rgb_path,channels) == true );
@@ -250,6 +257,7 @@ void test_lightfield::test_configparser()
     int height;
     int cams_h;
     int cams_v;
+    int horopter;
     float baseline_h;
     float baseline_v;
     double focal_length;
@@ -265,11 +273,12 @@ void test_lightfield::test_configparser()
         height = 0;
         cams_h = 0;
         cams_v = 0;
+        horopter = 0;
         baseline_h = 0.0;
         baseline_v = 0.0;
         focal_length = 0.0;
         
-        CPPUNIT_ASSERT(cfg.get_field("home",path));
+        CPPUNIT_ASSERT(cfg.get_field("source",path));
         CPPUNIT_ASSERT(path!="");
         CPPUNIT_ASSERT(cfg.get_field("cams_h",cams_h));
         CPPUNIT_ASSERT(cams_h!=0);
@@ -279,6 +288,8 @@ void test_lightfield::test_configparser()
         CPPUNIT_ASSERT(width!=0);
         CPPUNIT_ASSERT(cfg.get_field("height",height));
         CPPUNIT_ASSERT(height!=0);
+        CPPUNIT_ASSERT(cfg.get_field("horopter",horopter));
+        CPPUNIT_ASSERT(horopter!=0);
         CPPUNIT_ASSERT(cfg.get_field("baseline_h",baseline_h));
         CPPUNIT_ASSERT(baseline_h!=0);
         CPPUNIT_ASSERT(cfg.get_field("baseline_v",baseline_v));

@@ -20,17 +20,18 @@
 #ifndef PROPERTIES_HPP
 #define	PROPERTIES_HPP
 
+
 typedef enum {NONE,LF_4D,LF_3DH,LF_3DV,LF_CROSS} LF_TYPE;
 
-struct Properties {
-    LF_TYPE type=NONE;
+struct LF_Properties {
+    LF_TYPE type;
     int width;
     int height;
     int cams_v;
     int cams_h;
+    int horopter;
     float baseline_v;
     float baseline_h;
     float focal_length;
 };
-
 #endif	/* PROPERTIES_HPP */
