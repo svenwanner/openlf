@@ -1,3 +1,4 @@
+#include "debug.hpp"
 #include "global.hpp"
 
 #ifndef HELPERS_HPP

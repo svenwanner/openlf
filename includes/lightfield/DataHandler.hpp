@@ -20,6 +20,7 @@
 #ifndef DATAHANDLER_HPP
 #define	DATAHANDLER_HPP
 
+#include "debug.hpp"
 #include "global.hpp"
 #include "image/io.hpp"
 #include "lightfield/io.hpp"

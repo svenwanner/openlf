@@ -20,6 +20,7 @@
 #ifndef IMGPROC_HPP
 #define	IMGPROC_HPP
 
+#include "debug.hpp"
 #include "global.hpp"
 
 namespace OpenLF { 

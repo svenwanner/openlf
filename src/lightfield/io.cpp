@@ -40,11 +40,25 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
         // image size
         properties.width = info.width();
         properties.height = info.height();
+        
+        
+        print(3,"Image info:");
+        print(3,"width: ",info.width());
+        print(3,"height: ",info.height());
+        print(3,"numBands: ",info.numBands());
+        print(3,"numExtraBands: ",info.numExtraBands());
+        
 
         // load grayscale images
         if(info.isGrayscale()) {
             print(3,"lightfield::io::load_4D_structure found grayscale image...");
-            channels["bw"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*info.width(),properties.cams_v*info.height()));
+            print(3,"create bw light field of size :");
+            print(3,"width =",properties.width);
+            print(3,"height =",properties.height);
+            print(3,"cams_h =",properties.cams_h);
+            print(3,"cams_v =",properties.cams_v);
+            
+            channels["bw"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*properties.width,properties.cams_v*properties.height));
 
             // loop over images
             for(int v=0; v<properties.cams_v; v++) {
@@ -77,10 +91,15 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
         // load color images
         else if(info.isColor()) {
             print(3,"lightfield::io::load_4D_structure found color image...");
+            print(3,"create rgb light field of size :");
+            print(3,"width =",properties.width);
+            print(3,"height =",properties.height);
+            print(3,"cams_h =",properties.cams_h);
+            print(3,"cams_v =",properties.cams_v);
             
-            channels["r"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*info.width(),properties.cams_v*info.height())); 
-            channels["g"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*info.width(),properties.cams_v*info.height())); 
-            channels["b"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*info.width(),properties.cams_v*info.height())); 
+            channels["r"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*properties.width,properties.cams_v*properties.height)); 
+            channels["g"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*properties.width,properties.cams_v*properties.height)); 
+            channels["b"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*properties.width,properties.cams_v*properties.height)); 
 
             for(int v=0; v<properties.cams_v; v++) {
                 for(int h=0; h<properties.cams_h; h++) {
@@ -88,12 +107,19 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
                     try {
                         // load image infos from fname_list
                         vigra::ImageImportInfo info_rgb(fname_list[v*properties.cams_h+h].c_str());
-                        
+            
                         // uint rgb image to import data from file
-                        vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in(info_rgb.shape());
+                        vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in(vigra::Shape2(info_rgb.width(),info_rgb.height()));
+                        
                         
                         // import data
-                        vigra::importImage(info_rgb, in);                   
+                        if(info_rgb.numExtraBands()!=0) {
+                            vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(info_rgb.width(),info_rgb.height()));
+                            vigra::importImageAlpha(info_rgb, in, alpha);
+                        }
+                        else {
+                            vigra::importImage(info_rgb, in);
+                        }
                         
                         // copy data into lf container
                         for(int y=0; y<info_rgb.height(); y++) {
@@ -114,6 +140,8 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
     }
     catch(int a) {
         return false;
+        
+        cout << "Exception in lightfield::io::load_4D_structure..." << endl;
     }
 }
 
@@ -189,8 +217,15 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
                     // uint rgb image to import data from file
                     vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in(info_rgb.shape());
 
+                    
                     // import data
-                    vigra::importImage(info_rgb, in);                   
+                    if(info_rgb.numExtraBands()!=0) {
+                        vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(info_rgb.width(),info_rgb.height()));
+                        vigra::importImageAlpha(info_rgb, in, alpha);
+                    }
+                    else {
+                        vigra::importImage(info_rgb, in);
+                    }                 
 
                     // copy data into lf container
                     for(int y=0; y<properties.height; y++) {
@@ -290,7 +325,13 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
                     vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in(info_rgb.shape());
 
                     // import data
-                    vigra::importImage(info_rgb, in);                   
+                    if(info_rgb.numExtraBands()!=0) {
+                        vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(info_rgb.width(),info_rgb.height()));
+                        vigra::importImageAlpha(info_rgb, in, alpha);
+                    }
+                    else {
+                        vigra::importImage(info_rgb, in);
+                    }                   
 
                     // copy data into lf container
                     for(int y=0; y<properties.height; y++) {
@@ -337,11 +378,26 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
         properties.width = info.width();
         properties.height = info.height();
         int cv_index = properties.cams_h/2;
+        
+        int lf_width=0;
+        int lf_height=0;
+        int tmp = properties.cams_h*properties.width;
+        
+        // find width of lf image by checking possible dimensions
+        if(tmp > properties.cams_v*properties.height) {
+            lf_width = tmp;
+            lf_height = properties.width+properties.height;
+        }
+        else {
+            lf_width = properties.cams_v*properties.height;
+            lf_height = properties.width+properties.height;
+        }
+        
 
         // load grayscale images
         if(info.isGrayscale()) {
             print(3,"lightfield::io::load_CROSS_structure found grayscale image...");
-            channels["bw"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*properties.width,properties.height+properties.width));
+            channels["bw"] = vigra::MultiArray<2,float>(vigra::Shape2(lf_width,lf_height));
 
             // loop over horizontal images
             for(int h=0; h<properties.cams_h; h++) {
@@ -424,9 +480,9 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
         else if(info.isColor()) {
             print(3,"lightfield::io::load_CROSS_structure found color image...");
             
-            channels["r"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*properties.width,properties.height+properties.width)); 
-            channels["g"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*properties.width,info.height()+properties.width)); 
-            channels["b"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*properties.width,info.height()+properties.width)); 
+            channels["r"] = vigra::MultiArray<2,float>(vigra::Shape2(lf_width,lf_height)); 
+            channels["g"] = vigra::MultiArray<2,float>(vigra::Shape2(lf_width,lf_height)); 
+            channels["b"] = vigra::MultiArray<2,float>(vigra::Shape2(lf_width,lf_height)); 
             
             // loop over horizontal images
             for(int h=0; h<properties.cams_h; h++) {
@@ -437,9 +493,15 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
 
                     // uint image to import data from file
                     vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in_rgb(properties.width, properties.height);
-
+                    
                     // import data
-                    vigra::importImage(info_rgb, vigra::destImage(in_rgb));
+                    if(info_rgb.numExtraBands()!=0) {
+                        vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(info_rgb.width(),info_rgb.height()));
+                        vigra::importImageAlpha(info_rgb, in_rgb, alpha);
+                    }
+                    else {
+                        vigra::importImage(info_rgb, in_rgb);
+                    }
                     
 
                     // copy data into object and map to range [1,0]
@@ -472,7 +534,16 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
                         vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in_rgb(properties.width, properties.height);
 
                         // import data
-                        vigra::importImage(info_rgb, vigra::destImage(in_rgb));
+                        //vigra::importImage(info_rgb, vigra::destImage(in_rgb));
+                        
+                        // import data
+                        if(info_rgb.numExtraBands()!=0) {
+                            vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(info_rgb.width(),info_rgb.height()));
+                            vigra::importImageAlpha(info_rgb, in_rgb, alpha);
+                        }
+                        else {
+                            vigra::importImage(info_rgb, in_rgb);
+                        }
 
                         // copy data into object and map to range [1,0]
                         for(int y=0; y<properties.height; y++) {
@@ -492,7 +563,16 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
                         vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in_rgb(properties.width, properties.height);
 
                         // import data
-                        vigra::importImage(info_rgb, vigra::destImage(in_rgb));
+                       // vigra::importImage(info_rgb, vigra::destImage(in_rgb));
+                        
+                        // import data
+                        if(info_rgb.numExtraBands()!=0) {
+                            vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(info_rgb.width(),info_rgb.height()));
+                            vigra::importImageAlpha(info_rgb, in_rgb, alpha);
+                        }
+                        else {
+                            vigra::importImage(info_rgb, in_rgb);
+                        }
 
                         // copy data into object and map to range [1,0]
                         for(int y=0; y<properties.height; y++) {

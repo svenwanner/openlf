@@ -204,48 +204,89 @@ void test_lightfield::test_loading_from_imagefiles() {
 void test_lightfield::test_DataHandler() {
     
     map< string, vigra::MultiArray<2,float> > channels;
-    LF_Properties props_4D;
+    LF_Properties props;
     
-    cout << cfgnames["4D_wide_rgb"]<< endl;
     OpenLF::lightfield::io::DataHandler dataHandler(cfgnames["4D_wide_rgb"]);
-    dataHandler.read(channels,props_4D);
+    dataHandler.read(channels,props);
+    OpenLF::image::io::imsave(test_result_dir+"test_4D_wide.jpg",channels);
+    channels.clear();
     
-//    // test reading from filesequence 
-//    map< string, vigra::MultiArray<2,float> > channels;
-//    LF_Properties props_4D; 
-//    props_4D.cams_h = 5;
-//    props_4D.cams_v = 5;
-//    props_4D.type = LF_4D;
-//    
-//    // init a DataHandler with a string source 
-//    OpenLF::lightfield::io::DataHandler dataHandler(_lf_4D_path);
-//   
-//    // read the data
-//    CPPUNIT_ASSERT(dataHandler.read(channels,props_4D) == true );
-//    CPPUNIT_ASSERT(props_4D.type == LF_4D);
-//    CPPUNIT_ASSERT(props_4D.width == 96);
-//    CPPUNIT_ASSERT(props_4D.height == 80);
-//    CPPUNIT_ASSERT(props_4D.cams_h == 5);
-//    CPPUNIT_ASSERT(props_4D.cams_v == 5);
-//    CPPUNIT_ASSERT(channels.size()==3);
-//    CPPUNIT_ASSERT(channels["r"].width()==480);
-//    CPPUNIT_ASSERT(channels["r"].height()==400);
-//    CPPUNIT_ASSERT(channels["g"].width()==480);
-//    CPPUNIT_ASSERT(channels["g"].height()==400);
-//    CPPUNIT_ASSERT(channels["b"].width()==480);
-//    CPPUNIT_ASSERT(channels["b"].height()==400);
-//    channels.clear();
+    dataHandler.set_source(cfgnames["4D_wide_bw"]);
+    dataHandler.read(channels,props);
+    OpenLF::image::io::imsave(test_result_dir+"test_4D_wide.jpg",channels);
+    channels.clear();
     
-//    // test reading from hdf5
-//    CPPUNIT_ASSERT(dataHandler.read(_lf_4D_hdf5_rgb_path,channels) == true );
-//    channels.clear();
-//    
-//    // test if failed mode works
-//    CPPUNIT_ASSERT(dataHandler.read("/dummy/path/that/hopefully/may/not/exist/",channels) == false );
-//    channels.clear();
-//    
-//    CPPUNIT_ASSERT(dataHandler.read(_lf_4D_gt_path,channels) == true);
-//    channels.clear();
+    dataHandler.set_source(cfgnames["4D_high_rgb"]);
+    dataHandler.read(channels,props);
+    OpenLF::image::io::imsave(test_result_dir+"test_4D_high.jpg",channels);
+    channels.clear();
+    
+    dataHandler.set_source(cfgnames["4D_high_bw"]);
+    dataHandler.read(channels,props);
+    OpenLF::image::io::imsave(test_result_dir+"test_4D_high.jpg",channels);
+    channels.clear();
+    
+    dataHandler.set_source(cfgnames["3DH_wide_rgb"]);
+    dataHandler.read(channels,props);
+    OpenLF::image::io::imsave(test_result_dir+"test_3DH_wide.jpg",channels);
+    channels.clear();
+    
+    dataHandler.set_source(cfgnames["3DH_wide_bw"]);
+    dataHandler.read(channels,props);
+    OpenLF::image::io::imsave(test_result_dir+"test_3DH_wide.jpg",channels);
+    channels.clear();
+    
+    dataHandler.set_source(cfgnames["3DH_high_rgb"]);
+    dataHandler.read(channels,props);
+    OpenLF::image::io::imsave(test_result_dir+"test_3DH_high.jpg",channels);
+    channels.clear();
+    
+    dataHandler.set_source(cfgnames["3DH_high_bw"]);
+    dataHandler.read(channels,props);
+    OpenLF::image::io::imsave(test_result_dir+"test_3DH_high.jpg",channels);
+    channels.clear();
+    
+    dataHandler.set_source(cfgnames["3DV_wide_rgb"]);
+    dataHandler.read(channels,props);
+    OpenLF::image::io::imsave(test_result_dir+"test_3DV_wide.jpg",channels);
+    channels.clear();
+    
+    dataHandler.set_source(cfgnames["3DV_wide_bw"]);
+    dataHandler.read(channels,props);
+    OpenLF::image::io::imsave(test_result_dir+"test_3DV_wide.jpg",channels);
+    channels.clear();
+    
+    dataHandler.set_source(cfgnames["3DV_high_rgb"]);
+    dataHandler.read(channels,props);
+    OpenLF::image::io::imsave(test_result_dir+"test_3DV_high.jpg",channels);
+    channels.clear();
+    
+    dataHandler.set_source(cfgnames["3DV_high_bw"]);
+    dataHandler.read(channels,props);
+    OpenLF::image::io::imsave(test_result_dir+"test_3DV_high.jpg",channels);
+    channels.clear();
+    
+    dataHandler.set_source(cfgnames["CROSS_wide_rgb"]);
+    dataHandler.read(channels,props);
+    OpenLF::image::io::imsave(test_result_dir+"test_CROSS_wide.jpg",channels);
+    channels.clear();
+    
+    dataHandler.set_source(cfgnames["CROSS_wide_bw"]);
+    dataHandler.read(channels,props);
+    OpenLF::image::io::imsave(test_result_dir+"test_CROSS_wide.jpg",channels);
+    channels.clear();
+    
+    cout << "try to load : " << cfgnames["CROSS_high_rgb"] << endl;
+    dataHandler.set_source(cfgnames["CROSS_high_rgb"]);
+    dataHandler.read(channels,props);
+    OpenLF::image::io::imsave(test_result_dir+"test_CROSS_high.jpg",channels);
+    channels.clear();
+    
+    cout << "try to load : " << cfgnames["CROSS_high_bw"] << endl;
+    dataHandler.set_source(cfgnames["CROSS_high_bw"]);
+    dataHandler.read(channels,props);
+    OpenLF::image::io::imsave(test_result_dir+"test_CROSS_high.jpg",channels);
+    channels.clear();
 }
 
 

@@ -14,6 +14,7 @@
 #include "utils/ConfigParser.hpp"
 #include "settings.hpp"
 
+#include "debug.hpp"
 #include "global.hpp"
 #include "image/io.hpp"
 #include "lightfield/io.hpp"

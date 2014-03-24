@@ -53,7 +53,7 @@ OpenLF::lightfield::io::DataHandler::DataHandler(const char* source)
 
 OpenLF::lightfield::io::DataHandler::DataHandler(const DataHandler& orig) 
 {
-    print(1,"lightfield::io::FileHandler::DataHandler(DataHandler&) called...");
+    print(1,"lightfield::io::DataHandler::DataHandler(DataHandler&) called...");
 }
 
 OpenLF::lightfield::io::DataHandler::~DataHandler() 
@@ -70,6 +70,8 @@ OpenLF::lightfield::io::DataHandler::~DataHandler()
 
 void OpenLF::lightfield::io::DataHandler::set_source(string source)
 {
+    print(1,"lightfield::io:::DataHandler::set_source(source) called...");
+    
     string ftype = OpenLF::helpers::find_ftype(source);
     
     if(ftype=="cfg") {
@@ -113,6 +115,8 @@ void OpenLF::lightfield::io::DataHandler::set_source(string source)
  
 void OpenLF::lightfield::io::DataHandler::set_source(const char* source)
 {
+    print(1,"lightfield::io:::DataHandler::set_source(source) called...");
+    
     string str_source(source);
     set_source(str_source);
 }
@@ -123,7 +127,7 @@ bool OpenLF::lightfield::io::DataHandler::read(map<string,vigra::MultiArray<2,fl
                                                LF_Properties &properties) 
 /* Test: */
 {
-    
+    print(1,"lightfield::io:::DataHandler::read(channels,properties) called...");
     
     if(type=="") {
         throw OpenLF_Exception("lightfield::io::DataHandler, no source specified!");
@@ -155,7 +159,7 @@ bool OpenLF::lightfield::io::DataHandler::read_from_disc(string source,
                                                LF_Properties &properties) 
 /* Test: */
 {
-    print(1,"lightfield::io::DataHandler::read(string,map) called...");
+    print(1,"lightfield::io::DataHandler::read_from_disc(source,channels,properties) called...");
     
     string source_check;
     source_check = OpenLF::helpers::find_ftype(source);

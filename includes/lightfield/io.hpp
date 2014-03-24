@@ -21,6 +21,7 @@
 #ifndef IO_LIGHTFIELD_HPP
 #define	IO_LIGHTFIELD_HPP
 
+#include "debug.hpp"
 #include "global.hpp"
 #include "image/io.hpp"
 #include "utils/helpers.hpp"
