@@ -1,2 +1,10 @@
 /build/
 /dist/
+*~
+*.dep_inc
+*.inc
+Makefile
+nbproject
+tests/settings.hpp
+doc/*
+tests/data/output/
