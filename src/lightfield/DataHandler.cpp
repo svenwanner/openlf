@@ -183,7 +183,7 @@ bool OpenLF::lightfield::io::DataHandler::read_from_disc(string source,
     {
         print(3,"lightfield::io::DataHandler::read(string,map) got an image file...");
         
-        return OpenLF::image::io::imsave(source,channels);
+        return OpenLF::image::io::imread(source,channels);
     }
     else {
         warning("Failed to identify input data source. Either hdf5 file is broken or path doesn't exist");
