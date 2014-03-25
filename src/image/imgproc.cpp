@@ -134,7 +134,7 @@ void OpenLF::image::imgproc::abs_difference(vigra::MultiArray<2,float> &img1,
 
 void OpenLF::image::imgproc::MSE(map<string,vigra::MultiArray<2,float>> &channels1,
          map<string,vigra::MultiArray<2,float>> &channels2,
-         map<string,float> &results) 
+         map<string,double> &results) 
 {
     try {
         string key;

@@ -100,7 +100,7 @@ void abs_difference(vigra::MultiArray<2,float> &img1,
 */ 
 void MSE(map<string,vigra::MultiArray<2,float>> &channels1,
          map<string,vigra::MultiArray<2,float>> &channels2,
-         map<string,float> &results);
+         map<string,double> &results);
 
 
 //! computes the mean square error 1/N Sum(img1(x,y)-img2(x,y))^2)
