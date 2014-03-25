@@ -48,6 +48,8 @@ set(CMAKE_CXX_FLAGS "-g -O -Wall -Wshadow -Wextra -fopenmp -std=c++0x -O3 -march
 
     message( "INFO: RELEASE BUILD" )
 
+
+#TEST: test_image 
     add_executable(OpenLF_test_image
 	./tests/test_image_run.cpp
 	./tests/test_image.cpp 
@@ -55,6 +57,26 @@ set(CMAKE_CXX_FLAGS "-g -O -Wall -Wshadow -Wextra -fopenmp -std=c++0x -O3 -march
     target_link_libraries(OpenLF_test_image hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex 
 	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
 
+
+#TEST: test_imgproc 
+add_executable(OpenLF_test_imgproc
+	./tests/test_imgproc_run.cpp
+	./tests/test_imgproc.cpp 
+	${SRCS} ${HDRS})
+    target_link_libraries(OpenLF_test_imgproc hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex 
+	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
+
+
+#TEST: test_lightfield 
+add_executable(OpenLF_test_lightfield 
+	./tests/test_lightfield_run.cpp
+	./tests/test_lightfield.cpp 
+	${SRCS} ${HDRS})
+    target_link_libraries(OpenLF_test_lightfield  hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex
+	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
+
 enable_testing()
 add_test(OpenLF_test_image ./test_release/OpenLF_test_image)
+add_test(OpenLF_test_imgproc ./test_release/OpenLF_test_imgproc)
+add_test(OpenLF_test_lightfield ./test_release/OpenLF_test_lightfield)
 

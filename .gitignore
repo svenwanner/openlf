@@ -8,5 +8,5 @@ nbproject
 tests/settings.hpp
 doc/*
 tests/data/output/*
-Build/*
+build/
 .directory

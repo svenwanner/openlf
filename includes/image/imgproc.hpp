@@ -34,7 +34,7 @@ namespace OpenLF {
  \param s2 shape 2
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-inline bool shape_check(vigra::Shape2 s1, vigra::Shape2 s2);
+bool shape_check(vigra::Shape2 s1, vigra::Shape2 s2);
             
 
 //! computes the difference btw channel images
