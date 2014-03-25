@@ -64,6 +64,7 @@ private:
     vector<string> _fnames;
     
     map<string,string> cfgnames;
+    map<string,string> imgnames;
 };
 
 #endif	/* TEST_LIGHTFIELD_HPP */

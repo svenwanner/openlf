@@ -34,6 +34,12 @@ void test_lightfield::setUp() {
     _lf_4D_gt_path = test_lf_dir+"test_lf_4D_gt.png";
     _lf_test_ftype = ".png";
     
+    
+    imgnames["4D_high_bw"] = test_lf_4D_high+"4D_high_bw.png";
+    imgnames["4D_high_rgb"] = test_lf_4D_high+"4D_high_rgb.png";
+    imgnames["4D_wide_bw"] = test_lf_4D_wide+"4D_wide_bw.png";
+    imgnames["4D_wide_rgb"] = test_lf_4D_wide+"4D_wide_rgb.png";
+    
      
     cfgnames["4D_high_bw"] = test_lf_4D_high+"bw.cfg";
     cfgnames["4D_wide_bw"] = test_lf_4D_wide+"bw.cfg";
@@ -220,10 +226,12 @@ void test_lightfield::test_loading_from_imagefiles() {
 void test_lightfield::test_DataHandler() {
     
     map< string, vigra::MultiArray<2,float> > channels;
+    map< string, vigra::MultiArray<2,float> > channels_gt;
     LF_Properties props;
     
     OpenLF::lightfield::io::DataHandler dataHandler(cfgnames["4D_wide_rgb"]);
     dataHandler.read(channels,props);
+    OpenLF::image::io::imread(imgnames["4D_wide_rgb"],channels_gt);
     OpenLF::image::io::imsave(test_result_dir+"test_4D_wide.png",channels);
     channels.clear();
     
@@ -374,7 +382,6 @@ void test_lightfield::test_DataHandler() {
     OpenLF::image::io::imsave(test_result_dir+"test_CROSS_high.png",channels);
     channels.clear();
     
-    cout << "------" << cfgnames["CROSS_wide_rgb_sf"] << endl;
     dataHandler.set_source(cfgnames["CROSS_wide_rgb_sf"]);
     dataHandler.read(channels,props);
     OpenLF::image::io::imsave(test_result_dir+"test_CROSS_wide_sf.png",channels);

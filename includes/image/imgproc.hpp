@@ -27,39 +27,91 @@ namespace OpenLF {
     namespace image { 
         namespace imgproc {
             
+
+//! checks shape equality 
+/*!
+ \param s1 shape 1
+ \param s2 shape 2
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/ 
+inline bool shape_check(vigra::Shape2 s1, vigra::Shape2 s2);
+            
+
+//! computes the difference btw channel images
+/*!
+ Computes the difference between channel images pixelwise for each channel and 
+ sums up the resulting difference channels to a single channel.
+ \param channels1 input channel image 1
+ \param channels2 input channel image 2
+ \param result image reference
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/ 
+void difference(map<string,vigra::MultiArray<2,float>> &channels1,
+                map<string,vigra::MultiArray<2,float>> &channels2,
+                vigra::MultiArray<2,float> &result);
+            
           
 //! computes the difference btw images pixelwise img1-img2
 /*!
  \param img1 input image 1
- \param img1 input image 2
+ \param img2 input image 2
  \param result image reference
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-void difference(vigra::MultiArray<2,float> img1, 
-                vigra::MultiArray<2,float> img2,
+void difference(vigra::MultiArray<2,float> &img1, 
+                vigra::MultiArray<2,float> &img2,
                 vigra::MultiArray<2,float> &result);
+
+
+
+//! computes the absolute difference btw  channel images pixelwise |img1-img2|
+/*!
+ \param img1 input channel image 1
+ \param img2 input channel image 2
+ \param result image reference
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/ 
+void abs_difference(map<string,vigra::MultiArray<2,float>> &channels1,
+                    map<string,vigra::MultiArray<2,float>> &channels2,
+                    vigra::MultiArray<2,float> &result);
 
 
 //! computes the absolute difference btw images pixelwise |img1-img2|
 /*!
  \param img1 input image 1
- \param img1 input image 2
+ \param img2 input image 2
  \param result image reference
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-void abs_difference(vigra::MultiArray<2,float> img1, 
-                vigra::MultiArray<2,float> img2,
+void abs_difference(vigra::MultiArray<2,float> &img1, 
+                vigra::MultiArray<2,float> &img2,
                 vigra::MultiArray<2,float> &result);
+
+
+
+//! computes the mean square error
+/*!
+ Computes the mean square error 1/N Sum(channels1(c,x,y)-channels2(c,x,y))^2
+ for each channel separately and writes the results in the result vector. 
+ \param img1 input channel image 1
+ \param img2 input channel image 2
+ \param results float vector storing the MSE for each channel
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/ 
+void MSE(map<string,vigra::MultiArray<2,float>> &channels1,
+         map<string,vigra::MultiArray<2,float>> &channels2,
+         map<string,float> &results);
 
 
 //! computes the mean square error 1/N Sum(img1(x,y)-img2(x,y))^2)
 /*!
  \param img1 input image 1
- \param img1 input image 2
+ \param img2 input image 2
+ \returns mse
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-double MSE(vigra::MultiArray<2,float> img1, 
-                vigra::MultiArray<2,float> img2);
+double MSE(vigra::MultiArray<2,float> &img1, 
+           vigra::MultiArray<2,float> &img2);
             
 }}}
 

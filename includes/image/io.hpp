@@ -47,7 +47,7 @@ void reduce_channels(map<string,vigra::MultiArray<2,float>> &channels,vector<str
  \param fimg float MultiArray to map
  \param img result MultiArray 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/   
+*/
 void linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2, vigra::UInt8>& img);
 
 

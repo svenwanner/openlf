@@ -16,7 +16,7 @@
  *                     D E B U G   H E L P E R S
  *****************************************************************************/
 
-const int DEBUG_LEVEL = 4;
+const int DEBUG_LEVEL = 0;
 
 #define RED          "\033[22;31m" 
 
