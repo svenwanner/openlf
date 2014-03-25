@@ -1,4 +1,4 @@
-/build/
+﻿/build/
 /dist/
 *~
 *.dep_inc
@@ -7,4 +7,6 @@ Makefile
 nbproject
 tests/settings.hpp
 doc/*
-tests/data/output/*.
+tests/data/output/*
+Build/*
+.directory
