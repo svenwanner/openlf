@@ -55,8 +55,8 @@ OpenLF::ConfigParser::ConfigParser(const char* filename)
     else throw Parse_Exception("ConfigParser: error while parsing configfile!");
 }
 
-OpenLF::ConfigParser::ConfigParser(const ConfigParser& orig) {
-}
+//OpenLF::ConfigParser::ConfigParser(const ConfigParser& orig) {
+//}
 
 OpenLF::ConfigParser::~ConfigParser() {
 }

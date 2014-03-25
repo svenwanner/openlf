@@ -51,10 +51,10 @@ OpenLF::lightfield::io::DataHandler::DataHandler(const char* source)
     set_source(source);
 }
 
-OpenLF::lightfield::io::DataHandler::DataHandler(const DataHandler& orig) 
-{
-    print(1,"lightfield::io::DataHandler::DataHandler(DataHandler&) called...");
-}
+//OpenLF::lightfield::io::DataHandler::DataHandler(const DataHandler& orig) 
+//{
+//    print(1,"lightfield::io::DataHandler::DataHandler(DataHandler&) called...");
+//}
 
 OpenLF::lightfield::io::DataHandler::~DataHandler() 
 {
@@ -134,13 +134,15 @@ bool OpenLF::lightfield::io::DataHandler::read(map<string,vigra::MultiArray<2,fl
         return false;
     }
     else if(type=="disc") {
-        return read_from_disc(disc_source, channels, this->properties);
+        bool status = read_from_disc(disc_source, channels, this->properties);
+        copy_properties(properties);
+        return status;
     }
     else if(type=="buffer") {
-        return read_from_buffer(buffer_source, channels, this->properties);
+//        return read_from_buffer(buffer_source, channels, this->properties);
+        return false;
     }
-    
-    copy_properties(properties);
+    else return false;
 }
 
 
@@ -193,14 +195,15 @@ bool OpenLF::lightfield::io::DataHandler::read_from_disc(string source,
 
 
 
-bool OpenLF::lightfield::io::DataHandler::read_from_buffer(float* source, 
-                                                           map<string,vigra::MultiArray<2,float> >& channels,
-                                                           LF_Properties &properties) 
-/* Test: */
-{
-    // TODO maybe later the camera data interface
-    return true;
-}
+//bool OpenLF::lightfield::io::DataHandler::read_from_buffer(float* source, 
+//                                                           map<string,vigra::MultiArray<2,float> >& channels,
+//                                                           LF_Properties &properties) 
+///* Test: */
+//{
+//    // TODO maybe later the camera data interface
+//    source = NULL;
+//    return true;
+//}
 
 
 void OpenLF::lightfield::io::DataHandler::copy_properties(LF_Properties &properties) 

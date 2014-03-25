@@ -37,7 +37,7 @@ void OpenLF::image::io::reduce_channels(map<string,vigra::MultiArray<2,float>> &
         
         // check if key is in keys_to_keep
         int key_found = 0;
-        for(int c=0; c<keys_to_keep.size(); c++) {
+        for(unsigned int c=0; c<keys_to_keep.size(); c++) {
             if(key==keys_to_keep[c]) {
                 key_found++;
             }
@@ -203,6 +203,7 @@ bool OpenLF::image::io::imsave(string filename, map<string,vigra::MultiArray<2,f
     if ( channels.count(key) != 0 ) {
         return imsave(filename, channels[key]);
     }
+    return false;
 }
 
 

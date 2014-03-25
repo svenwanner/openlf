@@ -161,21 +161,15 @@ double OpenLF::image::imgproc::MSE(vigra::MultiArray<2,float> &img1,
                                    vigra::MultiArray<2,float> &img2) 
 
 {
-    try {
-        
-        if(!shape_check(img1.shape(),img2.shape()))
-            throw OpenLF_Exception("Input/input shape mismatch in compute difference!");
-        
-        float* data_ptr1 = img1.data();
-        float* data_ptr2 = img2.data();
-        double sum = 0;
+    if(!shape_check(img1.shape(),img2.shape()))
+        throw OpenLF_Exception("Input/input shape mismatch in compute difference!");
 
-        for(int n=0; n<img1.width()*img1.height(); n++)
-            sum += ((data_ptr1[n]-data_ptr2[n])*(data_ptr1[n]-data_ptr2[n]));
+    float* data_ptr1 = img1.data();
+    float* data_ptr2 = img2.data();
+    double sum = 0;
 
-        return sum/(img1.width()*img1.height());
-        
-    } catch(exception &e) {
-        warning(e.what());
-    }
+    for(int n=0; n<img1.width()*img1.height(); n++)
+        sum += ((data_ptr1[n]-data_ptr2[n])*(data_ptr1[n]-data_ptr2[n]));
+
+    return sum/(img1.width()*img1.height());
 }

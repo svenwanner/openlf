@@ -97,12 +97,12 @@ private:
     */ 
     bool read_from_disc(string source, map<string,vigra::MultiArray<2,float> >& channels, LF_Properties &properties);
     
-    //! camera data interface
-    /*!
-     \note not yet implemented but could serve as a later camera interface 
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-    */
-    bool read_from_buffer(float* source, map<string,vigra::MultiArray<2,float> >& channels, LF_Properties &properties);
+//    //! camera data interface
+//    /*!
+//     \note not yet implemented but could serve as a later camera interface 
+//     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+//    */
+//    bool read_from_buffer(float* source, map<string,vigra::MultiArray<2,float> >& channels, LF_Properties &properties);
     
     //! copies a LF_Property object
     /*!

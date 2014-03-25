@@ -616,7 +616,7 @@ bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, vig
     if(OpenLF::helpers::filenames_from_directory(dir, list)) {
         
         vector<string> fname_list;
-        for(int i=0; i<list.size(); i++) {
+        for(unsigned int i=0; i<list.size(); i++) {
             fname_list.push_back(dir+list[i]);
             print(3,fname_list[i].c_str());
         }
@@ -702,7 +702,7 @@ bool OpenLF::lightfield::io::load_from_hdf5( string filename,
             }
             
             // read the datasets
-            for(int id=0; id<ds_tree.size(); id++ ) {
+            for(unsigned int id=0; id<ds_tree.size(); id++ ) {
                 channels[ds_tree[id]] = vigra::MultiArray<2, float>(vigra::Shape2(480,400));
                 file.read(ds_tree[id], channels[ds_tree[id]]);
             }

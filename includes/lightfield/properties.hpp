@@ -23,6 +23,7 @@
 
 typedef enum {NONE,LF_4D,LF_3DH,LF_3DV,LF_CROSS} LF_TYPE;
 
+
 struct LF_Properties {
     LF_TYPE type;
     int width;
@@ -33,5 +34,9 @@ struct LF_Properties {
     float baseline_v;
     float baseline_h;
     float focal_length;
+    float sensor_size_v;
+    float sensor_size_h;
+    float aperture;
+    float pixel_aspect_ratio;
 };
 #endif	/* PROPERTIES_HPP */
