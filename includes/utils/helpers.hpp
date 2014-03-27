@@ -28,5 +28,22 @@ string find_ftype(string filepath);
 bool filenames_from_directory(string dir, vector<string> &list);
 
 
+//! removes spaces and tabs from a string
+/*!
+ \param input string
+ \param result string without spaces and tabs
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+void remove_leading_spaces_from_string(string input,string &result);
+
+
+//! concats the dir of the passed filename and the relative part passed
+/*!
+ \param filename 
+ \param relative_part to append to the dir of the filename param
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+string make_absolute_path(string filename, string relative_part); 
+
 }}
 #endif	/* HELPERS_HPP */

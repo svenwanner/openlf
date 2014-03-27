@@ -17,10 +17,11 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CONFIGPARSER_HPP
-#define	CONFIGPARSER_HPP
+#ifndef PROPERTIES_HPP
+#define	PROPERTIES_HPP
 
 #include "global.hpp"
+#include "utils/helpers.hpp"
 
 struct Parse_Exception : public exception
 {
@@ -32,6 +33,7 @@ struct Parse_Exception : public exception
 
 
 namespace OpenLF {
+    namespace lightfield {
     
 //! Configuration file parser class
 /*!
@@ -44,13 +46,20 @@ namespace OpenLF {
  integer, float or double.
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-class ConfigParser {
+class Properties {
 public:
-    ConfigParser();
-    ConfigParser(string filename);
-    ConfigParser(const char* filename);
-    ConfigParser(const ConfigParser& orig);
-    virtual ~ConfigParser();
+    Properties();
+    Properties(string filename);
+    Properties(const char* filename);
+    Properties(const Properties& orig);
+    virtual ~Properties();
+    
+    //! access LF_TYPE parsed
+    /*!
+     \param lftype variable to be set
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    bool get_lftype(LF_TYPE &lftype);
     
     //! access value by name
     /*!
@@ -84,6 +93,49 @@ public:
     */
     bool get_field(string name, double &value);
     
+    //! set LF_TYPE parsed
+    /*!
+     \param lftype variable to be set
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void set_lftype(LF_TYPE lftype);
+    
+    //! set value by name
+    /*!
+     \param name of the field
+     \param value variable to pass the value to
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void set_field(string name, string value);
+    
+    //! set value by name
+    /*!
+     \param name of the field
+     \param value variable to pass the value to
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void set_field(string name, int value);
+    
+    //! set value by name
+    /*!
+     \param name of the field
+     \param value variable to pass the value to
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void set_field(string name, float value);
+    
+    //! set value by name
+    /*!
+     \param name of the field
+     \param value variable to pass the value to
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void set_field(string name, double value);
+    
+    
+    
+    
+    
     //! parse the file passed
     /*!
      \param filename cfgfile the ifstream object of the file loaded
@@ -111,6 +163,6 @@ private:
     map<string,string> string_fields; //!< map to store the string fields and values 
     
 };
-}
-#endif	/* CONFIGPARSER_HPP */
+}}
+#endif	/* PROPERTIES_HPP */
 

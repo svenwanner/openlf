@@ -31,8 +31,9 @@
 #ifndef GLOBAL_HPP
 #define	GLOBAL_HPP
 
+#include <cctype>
 
-
+#include <algorithm>
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
@@ -73,6 +74,8 @@
 
 using namespace std;
 
+
+typedef enum {NONE,LF_4D,LF_3DH,LF_3DV,LF_CROSS} LF_TYPE;
 
 struct OpenLF_Exception : public exception
 {

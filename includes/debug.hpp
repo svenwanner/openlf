@@ -16,7 +16,7 @@
  *                     D E B U G   H E L P E R S
  *****************************************************************************/
 
-const int DEBUG_LEVEL = 0;
+const int DEBUG_LEVEL = 2;
 
 #define RED          "\033[22;31m" 
 
@@ -78,25 +78,9 @@ inline void warning(const char* text)
     cout << RED << "WARNING: " << text << "!" << DEBUGCOLOR[0] << endl; 
 };
 
-inline void msg(const char* text) 
+inline void warning(string text) 
 {
-    cout << DEBUGCOLOR[0] << "# msg: " << text << DEBUGCOLOR[0] << endl; 
+    cout << RED << "WARNING: " << text << "!" << DEBUGCOLOR[0] << endl; 
 };
-
-inline void msg(string text) 
-{
-    cout << DEBUGCOLOR[0] << "# msg: " << text << DEBUGCOLOR[0] << endl; 
-};
-
-inline void msg(const char* text, int num) 
-{
-    cout << DEBUGCOLOR[0] << "# msg: " << text << " : " << num << DEBUGCOLOR[0] << endl; 
-};
-
-inline void msg(string text, float num) 
-{
-    cout << DEBUGCOLOR[0] << "# msg: " << text << " : " << num << DEBUGCOLOR[0] << endl; 
-};
-
 #endif	/* DEBUG_HPP */
 

@@ -83,7 +83,7 @@ void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, v
         vigra::transformImage(vigra::srcImageRange(fimg), vigra::destImage(img),
                               vigra::linearRangeMapping( minmax.min, minmax.max, nmin, nmax) );
     } catch(exception & e) {
-        cout << e.what() << endl;
+        warning(e.what());
     }
 }
 
@@ -156,7 +156,7 @@ bool OpenLF::image::io::imread(string filename, map<string,vigra::MultiArray<2,f
         }
     }
     catch(exception &e) {
-        cout << e.what() << endl;
+        warning(e.what());
         return false;
     }
     return true;
@@ -184,7 +184,7 @@ bool OpenLF::image::io::imsave(string filename, vigra::MultiArray<2,float> img)
             vigra::exportImage(tmp, filename.c_str());
         
     } catch(exception & e) {
-        cout << e.what() << endl;
+        warning(e.what());
         return false;
     }
     
@@ -307,7 +307,7 @@ bool OpenLF::image::io::imsave(string filename, map<string,vigra::MultiArray<2,f
         }
         
     } catch(exception & e) {
-        cout << e.what() << endl;
+        warning(e.what());
         return false;
     }
     
@@ -327,7 +327,7 @@ bool OpenLF::image::io::imsave(string filename, map<string,vigra::MultiArray<2,f
         return imsave(filename,channels);
     }
     catch(exception & e) {
-        cout << e.what() << endl;
+        warning(e.what());
         return false;
     }
 }

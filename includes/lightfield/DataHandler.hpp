@@ -17,15 +17,12 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef DATAHANDLER_HPP
 #define	DATAHANDLER_HPP
 
-#include "debug.hpp"
 #include "global.hpp"
-#include "image/io.hpp"
-#include "lightfield/io.hpp"
-#include "utils/ConfigParser.hpp"
-#include "lightfield/properties.hpp"
+#include "lightfield/Properties.hpp"
 
 
 
@@ -33,85 +30,46 @@ namespace OpenLF {
     namespace lightfield { 
         namespace io {
             
-
+            
+/*!
+ * This class is a pure virtual class setting the name of the passed configfile
+ * and does the parsing. It defines a virtual function readData(&channels) which
+ * needs to be overwritten by a derived class aiming to take care of the data
+ * handling and storing within the channels object. To handle any data reading 
+ * derive from this class, which is a member of each LichtField instance, and take
+ * care of a correct sorting of your data and storing in the channel reference. 
+ */
 class DataHandler {
 public:
     DataHandler();
-    DataHandler(string source);
-    DataHandler(const char* source);
-    DataHandler(const DataHandler& orig);
-    virtual ~DataHandler();   
+    DataHandler(string config_filename, Properties *properties);
+    DataHandler(const char* config_filename, Properties *properties);
+    virtual ~DataHandler();
     
-    
-    
-    
-    //! set the source file
+    //! set the config file
     /*!
-     \param source filename of the configfile 
+     \param config_filename is the filename of the configfile 
+     \param properties an instance of a Properties instance to parse and hold the paramter
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */ 
-    void set_source(string source);
+    void set_configfile(string config_filename);
     
-    //! set the source file
+    //! set the config file
     /*!
-     \param source filename of the configfile 
+     \param config_filename is the filename of the configfile 
+     \param properties an instance of a Properties instance to parse and hold the paramter
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */ 
-    void set_source(const char* source);
+    void set_configfile(const char* config_filename);
     
-    //! reads light field data from from the DataHandler
-    /*!
-     This method reads light field data from the DataHandler. The passed channels
-     map and the LF_Properties object are filled with data specified through the configfile
-     \param channels map object of string labels as keys and MultiArrays as data 
-     \param properties struct storing the important parameter 
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-    */ 
-    bool read(map<string,vigra::MultiArray<2,float> >& channels, LF_Properties &properties);
+    virtual bool readData(map<string,vigra::MultiArray<2,float> >& channels) = 0;
     
-    
-    
-    
-private:
-    string type;
-    string disc_source;
-    float* buffer_source;
-    LF_Properties properties;
-    ConfigParser parser;
+protected:
+    string type;            //!< type of input config_filename, disc or buffer
+    string config_filename; //!< the passed config_filename string
+    Properties *properties; //!< pointer to store the address of a properties instance
 
-
-
-
-
-    
-    //! reads lightfield data from disc
-    /*!
-     This method reads lightfield data from disc. As source can be passed a directory
-     of image files, a hdf5 file or a single image file containing the 4D lightfield.
-     The data are read and set into the passed channel reference. A property struct
-     has to be passed, too.
-     \param source full path of the lightfield image file, a directory or a hdf5 file
-     \param channels map object of string labels as keys and MultiArrays as data 
-     \param properties struct storing the important parameter 
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-    */ 
-    bool read_from_disc(string source, map<string,vigra::MultiArray<2,float> >& channels, LF_Properties &properties);
-    
-//    //! camera data interface
-//    /*!
-//     \note not yet implemented but could serve as a later camera interface 
-//     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-//    */
-//    bool read_from_buffer(float* source, map<string,vigra::MultiArray<2,float> >& channels, LF_Properties &properties);
-    
-    //! copies a LF_Property object
-    /*!
-     \param properties struct storing the important parameter  
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-    */
-    void copy_properties(LF_Properties &properties);
 };
-
 
 }}}
 #endif	/* DATAHANDLER_HPP */

@@ -10,16 +10,17 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "utils/helpers.hpp"
-#include "utils/ConfigParser.hpp"
+
+
 #include "settings.hpp"
 
 #include "debug.hpp"
 #include "global.hpp"
 #include "image/io.hpp"
 #include "lightfield/io.hpp"
-#include "lightfield/properties.hpp"
-#include "lightfield/DataHandler.hpp"
+#include "utils/helpers.hpp"
+#include "lightfield/Properties.hpp"
+#include "lightfield/FileHandler.hpp"
 
 
 class test_lightfield : public CPPUNIT_NS::TestFixture {
@@ -27,9 +28,9 @@ class test_lightfield : public CPPUNIT_NS::TestFixture {
 
     //CPPUNIT_TEST(test_hdf5_io);
     //CPPUNIT_TEST(test_loading_from_imagefiles);
-    CPPUNIT_TEST(test_DataHandler);
+    //CPPUNIT_TEST(test_DataHandler);
     //CPPUNIT_TEST(test_configparser);
-    
+    CPPUNIT_TEST(test_IO_Pipeline);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -42,8 +43,9 @@ public:
 private:
     void test_hdf5_io();
     void test_loading_from_imagefiles();
-    void test_DataHandler();
+    void test_FileHandler();
     void test_configparser();
+    void test_IO_Pipeline();
     
     
     

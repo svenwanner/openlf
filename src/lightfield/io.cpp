@@ -27,7 +27,7 @@
 bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list, 
                                                 map< string, 
                                                 vigra::MultiArray<2,float> > &channels, 
-                                                LF_Properties &properties )
+                                                Properties *properties )
 
 /*TEST: via load_from_filesequence in test_lightfield::test_loading_from_imagefiles() */
 {
@@ -36,11 +36,18 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
     try {
         // import image info to get the image shape
         vigra::ImageImportInfo info(fname_list[0].c_str());
-
-        // image size
-        properties.width = info.width();
-        properties.height = info.height();
         
+        // image size
+        int width = info.width();
+        int height = info.height();
+        properties->set_field("width",width);
+        properties->set_field("height",height);
+        
+        // camera grid info
+        int cams_h;
+        properties->get_field("cams_h",cams_h);
+        int cams_v;
+        properties->get_field("cams_v",cams_v);
         
         print(3,"Image info:");
         print(3,"width: ",info.width());
@@ -53,31 +60,31 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
         if(info.isGrayscale()) {
             print(3,"lightfield::io::load_4D_structure found grayscale image...");
             print(3,"create bw light field of size :");
-            print(3,"width =",properties.width);
-            print(3,"height =",properties.height);
-            print(3,"cams_h =",properties.cams_h);
-            print(3,"cams_v =",properties.cams_v);
+            print(3,"width =",width);
+            print(3,"height =",height);
+            print(3,"cams_h =",cams_h);
+            print(3,"cams_v =",cams_v);
             
-            channels["bw"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*properties.width,properties.cams_v*properties.height));
+            channels["bw"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*width,cams_v*height));
 
             // loop over images
-            for(int v=0; v<properties.cams_v; v++) {
-                for(int h=0; h<properties.cams_h; h++) {
+            for(int v=0; v<cams_v; v++) {
+                for(int h=0; h<cams_h; h++) {
                     
                     try {
                         // load image infos from fname_list
-                        vigra::ImageImportInfo info_bw(fname_list[v*properties.cams_h+h].c_str());
+                        vigra::ImageImportInfo info_bw(fname_list[v*cams_h+h].c_str());
 
                         // uint image to import data from file
-                        vigra::MultiArray<2, vigra::UInt8> in(properties.width, properties.height);
+                        vigra::MultiArray<2, vigra::UInt8> in(width, height);
 
                         // import data
                         vigra::importImage(info_bw, vigra::destImage(in));
                       
                         // copy data into object and map to range [1,0]
-                        for(int y=0; y<properties.height; y++) {
-                            for(int x=0; x<properties.width; x++) {
-                                channels["bw"](h*properties.width+x,v*properties.height+y) = ((float)in(x,y))/255.0;
+                        for(int y=0; y<height; y++) {
+                            for(int x=0; x<width; x++) {
+                                channels["bw"](h*width+x,v*height+y) = ((float)in(x,y))/255.0;
                             }
                         }
                     }
@@ -92,29 +99,29 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
         else if(info.isColor()) {
             print(3,"lightfield::io::load_4D_structure found color image...");
             print(3,"create rgb light field of size :");
-            print(3,"width =",properties.width);
-            print(3,"height =",properties.height);
-            print(3,"cams_h =",properties.cams_h);
-            print(3,"cams_v =",properties.cams_v);
+            print(3,"width =",width);
+            print(3,"height =",height);
+            print(3,"cams_h =",cams_h);
+            print(3,"cams_v =",cams_v);
             
-            channels["r"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*properties.width,properties.cams_v*properties.height)); 
-            channels["g"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*properties.width,properties.cams_v*properties.height)); 
-            channels["b"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*properties.width,properties.cams_v*properties.height)); 
+            channels["r"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*width,cams_v*height)); 
+            channels["g"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*width,cams_v*height)); 
+            channels["b"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*width,cams_v*height)); 
 
-            for(int v=0; v<properties.cams_v; v++) {
-                for(int h=0; h<properties.cams_h; h++) {
+            for(int v=0; v<cams_v; v++) {
+                for(int h=0; h<cams_h; h++) {
 
                     try {
                         // load image infos from fname_list
-                        vigra::ImageImportInfo info_rgb(fname_list[v*properties.cams_h+h].c_str());
+                        vigra::ImageImportInfo info_rgb(fname_list[v*cams_h+h].c_str());
             
                         // uint rgb image to import data from file
-                        vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in(vigra::Shape2(info_rgb.width(),info_rgb.height()));
+                        vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in(vigra::Shape2(width,height));
                         
                         
                         // import data
                         if(info_rgb.numExtraBands()!=0) {
-                            vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(info_rgb.width(),info_rgb.height()));
+                            vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(width,height));
                             vigra::importImageAlpha(info_rgb, in, alpha);
                         }
                         else {
@@ -122,11 +129,11 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
                         }
                         
                         // copy data into lf container
-                        for(int y=0; y<info_rgb.height(); y++) {
-                            for(int x=0; x<info_rgb.width(); x++) {
-                                channels["r"](h*properties.width+x,v*properties.height+y) = ((float)in(x,y)[0])/255.0f;
-                                channels["g"](h*properties.width+x,v*properties.height+y) = ((float)in(x,y)[1])/255.0f;
-                                channels["b"](h*properties.width+x,v*properties.height+y) = ((float)in(x,y)[2])/255.0f;
+                        for(int y=0; y<height; y++) {
+                            for(int x=0; x<width; x++) {
+                                channels["r"](h*width+x,v*height+y) = ((float)in(x,y)[0])/255.0f;
+                                channels["g"](h*width+x,v*height+y) = ((float)in(x,y)[1])/255.0f;
+                                channels["b"](h*width+x,v*height+y) = ((float)in(x,y)[2])/255.0f;
                             }
                         }
                     }
@@ -141,7 +148,7 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
     catch(int a) {
         return false;
         
-        cout << "Exception in lightfield::io::load_4D_structure..." << endl;
+        warning("Exception in lightfield::io::load_4D_structure...");
     }
 }
 
@@ -152,43 +159,51 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
 
 bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list, 
                                                  map< string, vigra::MultiArray<2,float> > &channels, 
-                                                 LF_Properties &properties ) 
+                                                 Properties *properties ) 
 /*TEST: via load_from_filesequence in test_lightfield::test_loading_from_imagefiles() */
 {
     print(2,"lightfield::io::load_3DH_structure(fname_list,channels,properties) called...");
      
-    if(properties.cams_v!=1) warning("You tried to load a horizontal light field but your parameter cams_v is not 1");
+    // camera grid info
+    int cams_h;
+    properties->get_field("cams_h",cams_h);
+    int cams_v;
+    properties->get_field("cams_v",cams_v);
+    
+    if(cams_v!=1) warning("You tried to load a horizontal light field but your parameter cams_v is not 1");
     
     try {
         // import image info to get the image shape
         vigra::ImageImportInfo info(fname_list[0].c_str());
 
         // image size
-        properties.width = info.width();
-        properties.height = info.height();
+        int width = info.width();
+        int height = info.height();
+        properties->set_field("width",width);
+        properties->set_field("height",height);
 
         // load grayscale images
         if(info.isGrayscale()) {
             print(3,"lightfield::io::load_3DH_structure found grayscale image...");
-            channels["bw"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*properties.width,properties.height));
+            channels["bw"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*width,height));
 
             // loop over images
-            for(int h=0; h<properties.cams_h; h++) {
+            for(int h=0; h<cams_h; h++) {
                 
                 try {
                     // load image infos from fname_list
                     vigra::ImageImportInfo info_bw(fname_list[h].c_str());
 
                     // uint image to import data from file
-                    vigra::MultiArray<2, vigra::UInt8> in(properties.width, properties.height);
+                    vigra::MultiArray<2, vigra::UInt8> in(width, height);
 
                     // import data
                     vigra::importImage(info_bw, vigra::destImage(in));
 
                     // copy data into object and map to range [1,0]
-                    for(int y=0; y<properties.height; y++) {
-                        for(int x=0; x<properties.width; x++) {
-                            channels["bw"](h*properties.width+x,y) = ((float)in(x,y))/255.0;
+                    for(int y=0; y<height; y++) {
+                        for(int x=0; x<width; x++) {
+                            channels["bw"](h*width+x,y) = ((float)in(x,y))/255.0;
                         }
                     }
                 }
@@ -203,12 +218,12 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
         else if(info.isColor()) {
             print(3,"lightfield::io::load_3DH_structure found color image...");
             
-            channels["r"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*properties.width,properties.height)); 
-            channels["g"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*properties.width,properties.height)); 
-            channels["b"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_h*properties.width,properties.height)); 
+            channels["r"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*width,height)); 
+            channels["g"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*width,height)); 
+            channels["b"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*width,height)); 
 
 
-            for(int h=0; h<properties.cams_h; h++) {
+            for(int h=0; h<cams_h; h++) {
 
                 try {
                     // load image infos from fname_list
@@ -220,7 +235,7 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
                     
                     // import data
                     if(info_rgb.numExtraBands()!=0) {
-                        vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(info_rgb.width(),info_rgb.height()));
+                        vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(width,height));
                         vigra::importImageAlpha(info_rgb, in, alpha);
                     }
                     else {
@@ -228,11 +243,11 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
                     }                 
 
                     // copy data into lf container
-                    for(int y=0; y<properties.height; y++) {
-                        for(int x=0; x<properties.width; x++) {
-                            channels["r"](h*properties.width+x,y) = ((float)in(x,y)[0])/255.0f;
-                            channels["g"](h*properties.width+x,y) = ((float)in(x,y)[1])/255.0f;
-                            channels["b"](h*properties.width+x,y) = ((float)in(x,y)[2])/255.0f;
+                    for(int y=0; y<height; y++) {
+                        for(int x=0; x<width; x++) {
+                            channels["r"](h*width+x,y) = ((float)in(x,y)[0])/255.0f;
+                            channels["g"](h*width+x,y) = ((float)in(x,y)[1])/255.0f;
+                            channels["b"](h*width+x,y) = ((float)in(x,y)[2])/255.0f;
                         }
                     }
                 }
@@ -256,36 +271,45 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
 
 bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list, 
                                                  map< string, vigra::MultiArray<2,float> > &channels, 
-                                                 LF_Properties &properties )
+                                                 Properties *properties )
+
 /*TEST: via load_from_filesequence in test_lightfield::test_loading_from_imagefiles() */
 {
     print(2,"lightfield::io::load_3DV_structure(fname_list,channels,properties) called...");
      
-    if(properties.cams_h!=1) warning("You tried to load a vertical light field but your parameter cams_h is not 1");
+    // camera grid info
+    int cams_h;
+    properties->get_field("cams_h",cams_h);
+    int cams_v;
+    properties->get_field("cams_v",cams_v);
+    
+    if(cams_h!=1) warning("You tried to load a vertical light field but your parameter cams_h is not 1");
     
     try {
         // import image info to get the image shape
         vigra::ImageImportInfo info(fname_list[0].c_str());
 
         // image size
-        properties.width = info.width();
-        properties.height = info.height();
+        int width = info.width();
+        int height = info.height();
+        properties->set_field("width",width);
+        properties->set_field("height",height);
 
         // load grayscale images
         if(info.isGrayscale()) {
             print(3,"lightfield::io::load_3DV_structure found grayscale image...");
-            channels["bw"] = vigra::MultiArray<2,float>(properties.cams_v*properties.height,properties.width);
+            channels["bw"] = vigra::MultiArray<2,float>(cams_v*height,width);
             //vigra::MultiArray<2,float> tmp(vigra::Shape2(cams_v*info.height(),info.width()));
 
             // loop over images
-            for(int v=0; v<properties.cams_v; v++) {
+            for(int v=0; v<cams_v; v++) {
                 
                 try {
                     // load image infos from fname_list
                     vigra::ImageImportInfo info_bw(fname_list[v].c_str());
 
                     // uint image to import data from file
-                    vigra::MultiArray<2, vigra::UInt8> in(properties.width, properties.height);
+                    vigra::MultiArray<2, vigra::UInt8> in(width, height);
 
                     // import data
                     vigra::importImage(info_bw, vigra::destImage(in));
@@ -293,9 +317,9 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
                     
 
                     // copy data into object and map to range [1,0]
-                    for(int y=0; y<properties.height; y++) {
-                        for(int x=0; x<properties.width; x++) {
-                            channels["bw"](v*properties.height+y,x) = ((float)in(x,y))/255.0;
+                    for(int y=0; y<height; y++) {
+                        for(int x=0; x<width; x++) {
+                            channels["bw"](v*height+y,x) = ((float)in(x,y))/255.0;
                         }
                     }
                 }
@@ -311,11 +335,11 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
         else if(info.isColor()) {
             print(3,"lightfield::io::load_3DV_structure found color image...");
             
-            channels["r"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_v*properties.height,properties.width)); 
-            channels["g"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_v*properties.height,properties.width)); 
-            channels["b"] = vigra::MultiArray<2,float>(vigra::Shape2(properties.cams_v*properties.height,properties.width));
+            channels["r"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_v*height,width)); 
+            channels["g"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_v*height,width)); 
+            channels["b"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_v*height,width));
             
-            for(int v=0; v<properties.cams_v; v++) {
+            for(int v=0; v<cams_v; v++) {
 
                 try {
                     // load image infos from fname_list
@@ -326,7 +350,7 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
 
                     // import data
                     if(info_rgb.numExtraBands()!=0) {
-                        vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(info_rgb.width(),info_rgb.height()));
+                        vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(width,height));
                         vigra::importImageAlpha(info_rgb, in, alpha);
                     }
                     else {
@@ -334,11 +358,11 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
                     }                   
 
                     // copy data into lf container
-                    for(int y=0; y<properties.height; y++) {
-                        for(int x=0; x<properties.width; x++) {
-                            channels["r"](v*properties.height+y,x) = ((float)in(x,y)[0])/255.0f;
-                            channels["g"](v*properties.height+y,x) = ((float)in(x,y)[1])/255.0f;
-                            channels["b"](v*properties.height+y,x) = ((float)in(x,y)[2])/255.0f;
+                    for(int y=0; y<height; y++) {
+                        for(int x=0; x<width; x++) {
+                            channels["r"](v*height+y,x) = ((float)in(x,y)[0])/255.0f;
+                            channels["g"](v*height+y,x) = ((float)in(x,y)[1])/255.0f;
+                            channels["b"](v*height+y,x) = ((float)in(x,y)[2])/255.0f;
                         }
                     }
                 }
@@ -364,33 +388,41 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
 
 bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list, 
                                                    map< string, vigra::MultiArray<2,float> > &channels, 
-                                                   LF_Properties &properties )
+                                                   Properties *properties )
 
 /*TEST: via load_from_filesequence in test_lightfield::test_loading_from_imagefiles() */
 {
     print(2,"lightfield::io::load_cross_structure(fname_list,channels,properties) called...");
      
+    // camera grid info
+    int cams_h;
+    properties->get_field("cams_h",cams_h);
+    int cams_v;
+    properties->get_field("cams_v",cams_v);
+    
     try {
         // import image info to get the image shape
         vigra::ImageImportInfo info(fname_list[0].c_str());
       
         // image size
-        properties.width = info.width();
-        properties.height = info.height();
-        int cv_index = properties.cams_h/2;
+        int width = info.width();
+        int height = info.height();
+        properties->set_field("width",width);
+        properties->set_field("height",height);
+        int cv_index = cams_h/2;
         
         int lf_width=0;
         int lf_height=0;
-        int tmp = properties.cams_h*properties.width;
+        int tmp = cams_h*width;
         
         // find width of lf image by checking possible dimensions
-        if(tmp > properties.cams_v*properties.height) {
+        if(tmp > cams_v*height) {
             lf_width = tmp;
-            lf_height = properties.width+properties.height;
+            lf_height = width+height;
         }
         else {
-            lf_width = properties.cams_v*properties.height;
-            lf_height = properties.width+properties.height;
+            lf_width = cams_v*height;
+            lf_height = width+height;
         }
         
 
@@ -400,22 +432,22 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
             channels["bw"] = vigra::MultiArray<2,float>(vigra::Shape2(lf_width,lf_height));
 
             // loop over horizontal images
-            for(int h=0; h<properties.cams_h; h++) {
+            for(int h=0; h<cams_h; h++) {
                 
                 try {
                     // load image infos from fname_list
                     vigra::ImageImportInfo info_bw(fname_list[h].c_str());
 
                     // uint image to import data from file
-                    vigra::MultiArray<2, vigra::UInt8> in(properties.width, properties.height);
+                    vigra::MultiArray<2, vigra::UInt8> in(width, height);
 
                     // import data
                     vigra::importImage(info_bw, vigra::destImage(in));
 
                     // copy data into object and map to range [1,0]
-                    for(int y=0; y<properties.height; y++) {
-                        for(int x=0; x<properties.width; x++) {
-                            channels["bw"](h*properties.width+x,y) = ((float)in(x,y))/255.0;
+                    for(int y=0; y<height; y++) {
+                        for(int x=0; x<width; x++) {
+                            channels["bw"](h*width+x,y) = ((float)in(x,y))/255.0;
                         }
                     }
                 }
@@ -426,8 +458,8 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
             }
             
             // loop vertical over images
-            int image_index=properties.cams_h;
-            for(int v=0; v<properties.cams_v; v++) {
+            int image_index=cams_h;
+            for(int v=0; v<cams_v; v++) {
                 
                 try {
                             
@@ -436,15 +468,15 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
                         vigra::ImageImportInfo info_bw(fname_list[cv_index].c_str());
                         
                         // uint image to import data from file
-                        vigra::MultiArray<2, vigra::UInt8> in(properties.width, properties.height);
+                        vigra::MultiArray<2, vigra::UInt8> in(width, height);
 
                         // import data
                         vigra::importImage(info_bw, vigra::destImage(in));
 
                         // copy data into object and map to range [1,0]
-                        for(int y=0; y<properties.height; y++) {
-                            for(int x=0; x<properties.width; x++) {
-                                channels["bw"](v*properties.height+y,properties.height+x) = ((float)in(x,y))/255.0;
+                        for(int y=0; y<height; y++) {
+                            for(int x=0; x<width; x++) {
+                                channels["bw"](v*height+y,height+x) = ((float)in(x,y))/255.0;
                             }
                         }
                     }
@@ -453,15 +485,15 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
                         image_index++;
                         
                         // uint image to import data from file
-                        vigra::MultiArray<2, vigra::UInt8> in(properties.width, properties.height);
+                        vigra::MultiArray<2, vigra::UInt8> in(width, height);
 
                         // import data
                         vigra::importImage(info_bw, vigra::destImage(in));
 
                         // copy data into object and map to range [1,0]
-                        for(int y=0; y<properties.height; y++) {
-                            for(int x=0; x<properties.width; x++) {
-                                channels["bw"](v*properties.height+y,properties.height+x) = ((float)in(x,y))/255.0;
+                        for(int y=0; y<height; y++) {
+                            for(int x=0; x<width; x++) {
+                                channels["bw"](v*height+y,height+x) = ((float)in(x,y))/255.0;
                             }
                         }
                     }
@@ -485,18 +517,18 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
             channels["b"] = vigra::MultiArray<2,float>(vigra::Shape2(lf_width,lf_height)); 
             
             // loop over horizontal images
-            for(int h=0; h<properties.cams_h; h++) {
+            for(int h=0; h<cams_h; h++) {
                 
                 try {
                     // load image infos from fname_list
                     vigra::ImageImportInfo info_rgb(fname_list[h].c_str());
 
                     // uint image to import data from file
-                    vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in_rgb(properties.width, properties.height);
+                    vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in_rgb(width, height);
                     
                     // import data
                     if(info_rgb.numExtraBands()!=0) {
-                        vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(info_rgb.width(),info_rgb.height()));
+                        vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(width,height));
                         vigra::importImageAlpha(info_rgb, in_rgb, alpha);
                     }
                     else {
@@ -505,12 +537,12 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
                     
 
                     // copy data into object and map to range [1,0]
-                    for(int y=0; y<properties.height; y++) {
-                        for(int x=0; x<properties.width; x++) {
+                    for(int y=0; y<height; y++) {
+                        for(int x=0; x<width; x++) {
                             //channels["bw"](h*width+x,y) = ((float)in(x,y))/255.0;
-                            channels["r"](h*properties.width+x,y) = ((float)in_rgb(x,y)[0])/255.0;
-                            channels["g"](h*properties.width+x,y) = ((float)in_rgb(x,y)[1])/255.0;
-                            channels["b"](h*properties.width+x,y) = ((float)in_rgb(x,y)[2])/255.0;
+                            channels["r"](h*width+x,y) = ((float)in_rgb(x,y)[0])/255.0;
+                            channels["g"](h*width+x,y) = ((float)in_rgb(x,y)[1])/255.0;
+                            channels["b"](h*width+x,y) = ((float)in_rgb(x,y)[2])/255.0;
                         }
                     }
                 }
@@ -521,8 +553,8 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
             }
             
             // loop vertical over images
-            int image_index=properties.cams_h;
-            for(int v=0; v<properties.cams_v; v++) {
+            int image_index=cams_h;
+            for(int v=0; v<cams_v; v++) {
                 
                 try {
                             
@@ -531,14 +563,14 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
                         vigra::ImageImportInfo info_rgb(fname_list[cv_index].c_str());
                         
                         // uint image to import data from file
-                        vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in_rgb(properties.width, properties.height);
+                        vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in_rgb(width, height);
 
                         // import data
                         //vigra::importImage(info_rgb, vigra::destImage(in_rgb));
                         
                         // import data
                         if(info_rgb.numExtraBands()!=0) {
-                            vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(info_rgb.width(),info_rgb.height()));
+                            vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(width,height));
                             vigra::importImageAlpha(info_rgb, in_rgb, alpha);
                         }
                         else {
@@ -546,12 +578,12 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
                         }
 
                         // copy data into object and map to range [1,0]
-                        for(int y=0; y<properties.height; y++) {
-                            for(int x=0; x<properties.width; x++) {
+                        for(int y=0; y<height; y++) {
+                            for(int x=0; x<width; x++) {
                                 //channels["bw"](v*height+y,height+x) = ((float)in(x,y))/255.0;
-                                channels["r"](v*properties.height+y,properties.height+x) = ((float)in_rgb(x,y)[0])/255.0;
-                                channels["g"](v*properties.height+y,properties.height+x) = ((float)in_rgb(x,y)[1])/255.0;
-                                channels["b"](v*properties.height+y,properties.height+x) = ((float)in_rgb(x,y)[2])/255.0;
+                                channels["r"](v*height+y,height+x) = ((float)in_rgb(x,y)[0])/255.0;
+                                channels["g"](v*height+y,height+x) = ((float)in_rgb(x,y)[1])/255.0;
+                                channels["b"](v*height+y,height+x) = ((float)in_rgb(x,y)[2])/255.0;
                             }
                         }
                     }
@@ -560,14 +592,14 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
                         image_index++;
                         
                         // uint image to import data from file
-                        vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in_rgb(properties.width, properties.height);
+                        vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in_rgb(width, height);
 
                         // import data
                        // vigra::importImage(info_rgb, vigra::destImage(in_rgb));
                         
                         // import data
                         if(info_rgb.numExtraBands()!=0) {
-                            vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(info_rgb.width(),info_rgb.height()));
+                            vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(width,height));
                             vigra::importImageAlpha(info_rgb, in_rgb, alpha);
                         }
                         else {
@@ -575,12 +607,12 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
                         }
 
                         // copy data into object and map to range [1,0]
-                        for(int y=0; y<properties.height; y++) {
-                            for(int x=0; x<properties.width; x++) {
+                        for(int y=0; y<height; y++) {
+                            for(int x=0; x<width; x++) {
                                 //channels["bw"](v*height+y,height+x) = ((float)in(x,y))/255.0;
-                                channels["r"](v*properties.height+y,properties.height+x) = ((float)in_rgb(x,y)[0])/255.0;
-                                channels["g"](v*properties.height+y,properties.height+x) = ((float)in_rgb(x,y)[1])/255.0;
-                                channels["b"](v*properties.height+y,properties.height+x) = ((float)in_rgb(x,y)[2])/255.0;
+                                channels["r"](v*height+y,height+x) = ((float)in_rgb(x,y)[0])/255.0;
+                                channels["g"](v*height+y,height+x) = ((float)in_rgb(x,y)[1])/255.0;
+                                channels["b"](v*height+y,height+x) = ((float)in_rgb(x,y)[2])/255.0;
                             }
                         }
                     }
@@ -606,7 +638,10 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
 
 
 
-bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, vigra::MultiArray<2,float> > &channels, LF_Properties &properties)
+bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, 
+                                                    vigra::MultiArray<2,float> > &channels, 
+                                                    Properties *properties)
+
 /*TEST: test_lightfield::test_loading_from_imagefiles() */
 {
     print(1,"lightfield::io::load_from_filesequence(dir,channels,properties) called...");
@@ -622,7 +657,11 @@ bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, vig
         }
          
         // decide data structure depending on lf type
-        switch(properties.type) {
+        LF_TYPE type;
+        properties->get_lftype(type);
+        if(!properties->get_lftype(type))
+            throw OpenLF_Exception("Unknown LF_TYPE in lightfield::io::load_from_filesequence, check your Properties instance or your ConfigFile!");
+        switch(type) {
             case LF_4D:
                 return load_4D_structure(fname_list,channels,properties);
             case LF_3DH:
@@ -632,11 +671,10 @@ bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, vig
             case LF_CROSS:
                 return load_cross_structure(fname_list,channels,properties);
             default:
-                warning("Load_from_filesequence failed due to unknown LF_TYPE");
+                throw OpenLF_Exception("Unknown LF_TYPE in lightfield::io::load_from_filesequence, check your Properties instance or your ConfigFile!");
                 return false;
         }
     }
-    warning("Load_from_filesequence failed when reading files from directory");
     return false;
 }
 
@@ -645,7 +683,7 @@ bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, vig
 
 bool OpenLF::lightfield::io::load_from_hdf5( string filename, 
                      map< string, vigra::MultiArray<2,float> > &channels,
-                     LF_Properties &properties ) 
+                     Properties *properties ) 
 
 /* TEST: lightfield_test::test_hdf5_io() */
 {    
@@ -667,6 +705,9 @@ bool OpenLF::lightfield::io::load_from_hdf5( string filename,
             vector<string> ds_tree;
             ds_tree = file.ls();
             
+            int itmp;
+            float ftmp;
+            
             // read the obligatory attributes
             try {
                 // set the LF_TYPE
@@ -674,32 +715,94 @@ bool OpenLF::lightfield::io::load_from_hdf5( string filename,
                 file.readAttribute("","LF_TYPE",tmp_type);               
                 switch(tmp_type) {
                     case 1:
-                        properties.type = LF_4D;
+                        properties->set_lftype(LF_4D);
                         break;
                     case 2:
-                        properties.type = LF_3DH;
+                        properties->set_lftype(LF_3DH);
                         break;
                     case 3:
-                        properties.type = LF_3DV;
+                        properties->set_lftype(LF_3DV);
                         break;
                     case 4:
-                        properties.type = LF_CROSS;
+                        properties->set_lftype(LF_CROSS);
                         break;
                     default:
                         throw OpenLF_Exception("Loading light field from HDF5 failed, no LF_TYPE specified!");
                 }
                 
-                file.readAttribute("","width",properties.width);
-                file.readAttribute("","height",properties.height);
-                file.readAttribute("","cams_h",properties.cams_h);
-                file.readAttribute("","cams_v",properties.cams_v);
-                file.readAttribute("","baseline_h",properties.baseline_h);
-                file.readAttribute("","baseline_v",properties.baseline_v);
-                file.readAttribute("","focal_length",properties.focal_length);
+                file.readAttribute("","width",itmp);
+                properties->set_field("width",itmp);
+                
+                file.readAttribute("","height",itmp);
+                properties->set_field("height",itmp);
+                
+                file.readAttribute("","cams_h",itmp);
+                properties->set_field("cams_h",itmp);
+                
+                file.readAttribute("","cams_v",itmp);
+                properties->set_field("cams_v",itmp);
             }
             catch(int a) {
-                throw OpenLF_Exception("Loading light field from HDF5 failed, didn't find all attributes!");
+                throw OpenLF_Exception("Loading light field from HDF5 failed, couldn't find all necessary attributes!");
+                return false;
             }
+                
+            try {
+                file.readAttribute("","baseline_h",ftmp);
+                properties->set_field("baseline_h",ftmp);
+            } catch(int a) {
+                warning("Found no property baseline!");
+            }
+
+            try {
+                file.readAttribute("","baseline_v",ftmp);
+                properties->set_field("baseline_v",ftmp);
+            } catch(int a) {
+                warning("Found no property baseline!");
+            }
+
+            try {
+                file.readAttribute("","focal_length",ftmp);
+                properties->set_field("focal_length",ftmp);
+            } catch(int a) {
+                warning("Found no property baseline!");
+            }
+
+            try {
+                file.readAttribute("","DH",ftmp);
+                properties->set_field("DH",ftmp);
+            } catch(int a) {
+                warning("Found no property baseline!");
+            }
+
+            try {
+                file.readAttribute("","pixel_aspect_ratio",ftmp);
+                properties->set_field("pixel_aspect_ratio",ftmp);
+            } catch(int a) {
+                warning("Found no property baseline!");
+            }
+
+            try {
+                file.readAttribute("","aperture",ftmp);
+                properties->set_field("aperture",ftmp);
+            } catch(int a) {
+                warning("Found no property baseline!");
+            }
+
+            try {
+                file.readAttribute("","sensor_size_h",ftmp);
+                properties->set_field("sensor_size_h",ftmp);
+            } catch(int a) {
+                warning("Found no property baseline!");
+            }
+
+            try {
+                file.readAttribute("","sensor_size_v",ftmp);
+                properties->set_field("sensor_size_v",ftmp);
+            } catch(int a) {
+                warning("Found no property baseline!");
+            }
+                
             
             // read the datasets
             for(unsigned int id=0; id<ds_tree.size(); id++ ) {
@@ -710,7 +813,7 @@ bool OpenLF::lightfield::io::load_from_hdf5( string filename,
         } else throw OpenLF_Exception("Loading light field from HDF5 failed, at least rgb or a bw channel is obligatory!");
     }
     catch(exception & e) {
-        cout << e.what() << endl;
+        warning(e.what());
         return false;
     }
     
@@ -721,7 +824,7 @@ bool OpenLF::lightfield::io::load_from_hdf5( string filename,
 
 bool OpenLF::lightfield::io::save_to_hdf5( string file_name, 
                    map< string, vigra::MultiArray<2,float> > &channels,
-                   LF_Properties &properties ) 
+                   Properties *properties ) 
 
 /* TEST: lightfield_test::test_hdf5_io() */
 {
@@ -742,18 +845,65 @@ bool OpenLF::lightfield::io::save_to_hdf5( string file_name,
             file.write(dset_name.c_str(), channels[key]);
         }        
         
+        int itmp;
+        float ftmp;
+        
         // write attributes
-        file.writeAttribute("/LF/","LF_TYPE",(int)properties.type);
-        file.writeAttribute("/LF/","width",properties.width);
-        file.writeAttribute("/LF/","height",properties.height);
-        file.writeAttribute("/LF/","cams_h",properties.cams_h);
-        file.writeAttribute("/LF/","cams_v",properties.cams_v);
-        file.writeAttribute("/LF/","baseline_h",properties.baseline_h);
-        file.writeAttribute("/LF/","baseline_v",properties.baseline_v);
-        file.writeAttribute("/LF/","focal_length",properties.focal_length);
+        if(properties->get_field("type",itmp))
+            file.writeAttribute("/LF/","LF_TYPE",itmp);
+        else warning("Missing obligatory property (LF_TYPE) while saving to hdf5!");
+        
+        if(properties->get_field("width",itmp))
+            file.writeAttribute("/LF/","width",itmp);
+        else warning("Missing obligatory property (width) while saving to hdf5!");
+        
+        if(properties->get_field("height",itmp))
+            file.writeAttribute("/LF/","height",itmp);
+        else warning("Missing obligatory property (height) while saving to hdf5!");
+        
+        if(properties->get_field("cams_h",itmp))
+            file.writeAttribute("/LF/","cams_h",itmp);
+        else warning("Missing obligatory property (cams_h) while saving to hdf5!");
+        
+        if(properties->get_field("cams_v",itmp))
+            file.writeAttribute("/LF/","cams_v",itmp);
+        else warning("Missing obligatory property (cams_v) while saving to hdf5!");
+        
+        if(properties->get_field("focal_length",ftmp))
+            file.writeAttribute("/LF/","focal_length",ftmp);
+        else warning("Missing property (focal_length) while saving to hdf5!");
+        
+        if(properties->get_field("baseline_h",ftmp))
+            file.writeAttribute("/LF/","baseline_h",ftmp);
+        else warning("Missing property (baseline_h) while saving to hdf5!");
+        
+        if(properties->get_field("baseline_v",ftmp))
+            file.writeAttribute("/LF/","baseline_v",ftmp);
+        else warning("Missing property (baseline_v) while saving to hdf5!");
+        
+        if(properties->get_field("DH",ftmp))
+            file.writeAttribute("/LF/","DH",ftmp);
+        else warning("Missing property (DH) while saving to hdf5!");
+        
+        if(properties->get_field("pixel_aspect_ratio",ftmp))
+            file.writeAttribute("/LF/","pixel_aspect_ratio",ftmp);
+        else warning("Missing property (pixel_aspect_ratio) while saving to hdf5!");
+        
+        if(properties->get_field("aperture",ftmp))
+            file.writeAttribute("/LF/","aperture",ftmp);
+        else warning("Missing property (aperture) while saving to hdf5!");
+        
+        if(properties->get_field("sensor_size_h",ftmp))
+            file.writeAttribute("/LF/","sensor_size_h",ftmp);
+        else warning("Missing property (sensor_size_h) while saving to hdf5!");
+
+        if(properties->get_field("sensor_size_v",ftmp))
+            file.writeAttribute("/LF/","sensor_size_v",ftmp);
+        else warning("Missing property (sensor_size_v) while saving to hdf5!");        
+        
     }
     catch(exception & e) {
-        cout << e.what() << endl;
+        warning(e.what());
         return false;
     }
     

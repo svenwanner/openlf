@@ -20,201 +20,94 @@
 #include "lightfield/DataHandler.hpp"
 
 
+
 OpenLF::lightfield::io::DataHandler::DataHandler() 
 {
     print(1,"lightfield::io::DataHandler::DataHandler() called...");
     
     type = "";
-    disc_source = "";
-    buffer_source = NULL;
 }
 
-OpenLF::lightfield::io::DataHandler::DataHandler(string source) 
+OpenLF::lightfield::io::DataHandler::DataHandler(string config_filename, Properties *properties) 
 {
-    print(1,"lightfield::io::DataHandler::DataHandler(string source) called...");
+    print(1,"lightfield::io::DataHandler::DataHandler(config_filename,*properties) called...");
     
     type = "";
-    disc_source = "";
-    buffer_source = NULL;
     
-    set_source(source);
+    this->properties = properties;
+    set_configfile(config_filename);
 }
 
-OpenLF::lightfield::io::DataHandler::DataHandler(const char* source) 
+OpenLF::lightfield::io::DataHandler::DataHandler(const char* config_filename, Properties *properties) 
 {
-    print(1,"lightfield::io::DataHandler::DataHandler(string source) called...");
+    print(1,"lightfield::io::DataHandler::DataHandler(config_filename,*properties) called...");
     
     type = "";
-    disc_source = "";
-    buffer_source = NULL;
-    
-    set_source(source);
+   
+    this->properties = properties;
+    set_configfile(config_filename);
 }
-
-//OpenLF::lightfield::io::DataHandler::DataHandler(const DataHandler& orig) 
-//{
-//    print(1,"lightfield::io::DataHandler::DataHandler(DataHandler&) called...");
-//}
 
 OpenLF::lightfield::io::DataHandler::~DataHandler() 
 {
     print(1,"lightfield::io::DataHandler::~DataHandler() called...");
+    
 }
 
 
 
 
 
-
-
-
-void OpenLF::lightfield::io::DataHandler::set_source(string source)
+/*!
+* This method is the entry point for data initialization. The passed string is thought
+* to be a path to a configfile. If not see the comment later in the else section. The
+* passed Properties instance is in fact a configparser parsing the configfile and storing
+* all the parameter. Pipe this thing through wherever you need the properties. After parsing the 
+* configfile this method checks the important source parameter in the configfile. If this
+* is the string "cam" it later should handle the data from a buffer if not this function 
+* set the type of data handling to "disc" which means the source parameter is automatically
+* interpreted as a filename of a single image file containing the light field, a hdf5 file
+* or a path storing the images as single image files. 
+*/
+void OpenLF::lightfield::io::DataHandler::set_configfile(string config_filename)
 {
-    print(1,"lightfield::io:::DataHandler::set_source(source) called...");
+    print(1,"lightfield::io:::DataHandler::set_configfile(config_filename,&properties) called...");
     
-    string ftype = OpenLF::helpers::find_ftype(source);
+    this->config_filename = config_filename;
+    
+    string ftype = OpenLF::helpers::find_ftype(config_filename);
+    
     
     if(ftype=="cfg") {
-        parser.parse(source);
         
-        // read properties from parsed configfile 
-        int lft;
-        parser.get_field("type",lft);
-        switch(lft) {
-            case 1: properties.type = LF_4D; break;
-            case 2: properties.type = LF_3DH; break;
-            case 3: properties.type = LF_3DV; break;
-            case 4: properties.type = LF_CROSS; break;
-            default: properties.type = NONE;
+        // parse configfile
+        try {
+            properties->parse(config_filename);
+        } catch(exception &e) {
+            warning(e.what());
         }
-        parser.get_field("width",properties.width);
-        parser.get_field("height",properties.height);
-        parser.get_field("cams_h",properties.cams_h);
-        parser.get_field("cams_v",properties.cams_v);
-        parser.get_field("baseline_h",properties.baseline_h);
-        parser.get_field("baseline_v",properties.baseline_v);
-        parser.get_field("focal_length",properties.baseline_v);
-        parser.get_field("horopter",properties.horopter);
         
         string source_type;
-        parser.get_field("source",source_type);
+        properties->get_field("source",source_type);
         
-        // check if source is hardware device or configfile
+        // check if source is a camera then handle data from buffer else handle from disc
         if(source_type == "cam") {
-            //TODO: Here later camera data should be handled
-            //TODO: via the source type different types of cameras can be managed
-            type = "buffer";
+            type = "buffer"; // set data reading type buffer
         }
-        else {
-            
-            type = "disc"; // set data reading type 
-            disc_source = source_type; // set disc source type as specified in config file
+        else { 
+            type = "disc"; // set data reading type to disc
         }
+    }
+    else {
+        warning("lightfield::io::DataHandler::set_configfile(config_filename) expects a  configfile as input!");
+        throw OpenLF_Exception("Missing Configfile!");
     }
 }
  
-void OpenLF::lightfield::io::DataHandler::set_source(const char* source)
+void OpenLF::lightfield::io::DataHandler::set_configfile(const char* config_filename)
 {
-    print(1,"lightfield::io:::DataHandler::set_source(source) called...");
+    print(1,"lightfield::io:::DataHandler::set_configfile(config_filename) called...");
     
-    string str_source(source);
-    set_source(str_source);
-}
-
-
-
-bool OpenLF::lightfield::io::DataHandler::read(map<string,vigra::MultiArray<2,float> >& channels, 
-                                               LF_Properties &properties) 
-/* Test: */
-{
-    print(1,"lightfield::io:::DataHandler::read(channels,properties) called...");
-    
-    if(type=="") {
-        throw OpenLF_Exception("lightfield::io::DataHandler, no source specified!");
-        return false;
-    }
-    else if(type=="disc") {
-        bool status = read_from_disc(disc_source, channels, this->properties);
-        copy_properties(properties);
-        return status;
-    }
-    else if(type=="buffer") {
-//        return read_from_buffer(buffer_source, channels, this->properties);
-        return false;
-    }
-    else return false;
-}
-
-
-
-
-
-
-
-
-/*##############################################################################
- *##############      P R I V A T E   M E T H O D S      #######################
- *##############################################################################*/
-
-bool OpenLF::lightfield::io::DataHandler::read_from_disc(string source, 
-                                               map<string,vigra::MultiArray<2,float> >& channels,
-                                               LF_Properties &properties) 
-/* Test: */
-{
-    print(1,"lightfield::io::DataHandler::read_from_disc(source,channels,properties) called...");
-    
-    string source_check;
-    source_check = OpenLF::helpers::find_ftype(source);
-    
-    cout << "source " << source << endl;
-    cout << "source check " << source_check << endl;
-    
-    if(source_check=="h5") {
-        print(3,"lightfield::io::DataHandler::read(string,map) got an hdf5 file...");
-        
-        return OpenLF::lightfield::io::load_from_hdf5(disc_source,channels,properties);
-    }
-    else if(boost::filesystem::is_directory(source_check)) {
-        print(3,"lightfield::io::DataHandler::read(string,map) got a path...");
-
-        return OpenLF::lightfield::io::load_from_filesequence(disc_source,channels,properties);
-    }
-    else if(source_check=="png"  || source_check=="PNG" || source_check=="jpg" || 
-            source_check=="JPEG" ||source_check=="JPG"  || source_check=="tif" || 
-            source_check=="TIF"  || source_check=="bmp" || source_check=="BMP"  )
-    {
-        print(3,"lightfield::io::DataHandler::read(string,map) got an image file...");
-        
-        return OpenLF::image::io::imread(source,channels);
-    }
-    else {
-        warning("Failed to identify input data source. Either hdf5 file is broken or path doesn't exist");
-        return false;   
-    }
-}
-
-
-
-//bool OpenLF::lightfield::io::DataHandler::read_from_buffer(float* source, 
-//                                                           map<string,vigra::MultiArray<2,float> >& channels,
-//                                                           LF_Properties &properties) 
-///* Test: */
-//{
-//    // TODO maybe later the camera data interface
-//    source = NULL;
-//    return true;
-//}
-
-
-void OpenLF::lightfield::io::DataHandler::copy_properties(LF_Properties &properties) 
-{
-    properties.type = this->properties.type;
-    properties.width = this->properties.width;
-    properties.height = this->properties.height;
-    properties.cams_h = this->properties.cams_h;
-    properties.cams_v = this->properties.cams_v;
-    properties.horopter = this->properties.horopter;
-    properties.baseline_h = this->properties.baseline_h;
-    properties.baseline_v = this->properties.baseline_v;
-    properties.focal_length = this->properties.focal_length;
+    string tmp(config_filename);
+    set_configfile(tmp);
 }
