@@ -26,11 +26,10 @@
 class test_lightfield : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_lightfield);
 
-    //CPPUNIT_TEST(test_hdf5_io);
-    //CPPUNIT_TEST(test_loading_from_imagefiles);
-    //CPPUNIT_TEST(test_DataHandler);
-    //CPPUNIT_TEST(test_configparser);
-    CPPUNIT_TEST(test_IO_Pipeline);
+    CPPUNIT_TEST(test_IO_Pipeline_4D);
+    CPPUNIT_TEST(test_IO_Pipeline_3DH);
+    CPPUNIT_TEST(test_IO_Pipeline_3DV);
+    CPPUNIT_TEST(test_IO_Pipeline_CROSS);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -41,29 +40,11 @@ public:
     void tearDown();
 
 private:
-    void test_hdf5_io();
-    void test_loading_from_imagefiles();
-    void test_FileHandler();
-    void test_configparser();
-    void test_IO_Pipeline();
+    void test_IO_Pipeline_4D();
+    void test_IO_Pipeline_3DH();
+    void test_IO_Pipeline_3DV();
+    void test_IO_Pipeline_CROSS();
     
-    
-    
-    string _lf_4D_hdf5_bw_path;
-    string _lf_4D_hdf5_rgb_path;
-    string _lf_4D_hdf5_bw_out_path;
-    string _lf_4D_hdf5_rgb_out_path;
-    string _lf_4D_path;
-    string _lf_3DH_path;
-    string _lf_3DV_path;
-    string _lf_CROSS_path;
-    string _lf_4D_bw_path;
-    string _lf_3DH_bw_path;
-    string _lf_3DV_bw_path;
-    string _lf_CROSS_bw_path;
-    string _lf_4D_gt_path;
-    string _lf_test_ftype;
-    vector<string> _fnames;
     
     map<string,string> cfgnames;
     map<string,string> imgnames;

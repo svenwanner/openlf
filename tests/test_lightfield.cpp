@@ -20,20 +20,20 @@ test_lightfield::~test_lightfield() {
 }
 
 void test_lightfield::setUp() {
-    _lf_4D_hdf5_rgb_path = test_lf_dir+"4D/"+"test_lf4D_rgb.h5";
-    _lf_4D_hdf5_bw_path = test_lf_dir+"4D/"+"test_lf4D_bw.h5";
-    _lf_4D_hdf5_rgb_out_path = test_result_dir+"test_lf4D_rgb_toH5.h5";
-    _lf_4D_hdf5_bw_out_path = test_result_dir+"test_lf4D_bw_toH5.h5";
-    _lf_4D_path = test_lf_dir+"4D/rgb/";
-    _lf_3DH_path = test_lf_dir+"3DH/rgb/";
-    _lf_3DV_path = test_lf_dir+"3DV/rgb/";
-    _lf_CROSS_path = test_lf_dir+"CROSS/rgb/";
-    _lf_4D_bw_path = test_lf_dir+"4D/bw/";
-    _lf_3DH_bw_path = test_lf_dir+"3DH/bw/";
-    _lf_3DV_bw_path = test_lf_dir+"3DV/bw/";
-    _lf_CROSS_bw_path = test_lf_dir+"CROSS/bw/";
-    _lf_4D_gt_path = test_lf_dir+"test_lf_4D_gt.png";
-    _lf_test_ftype = ".png";
+//    _lf_4D_hdf5_rgb_path = test_lf_dir+"4D/"+"test_lf4D_rgb.h5";
+//    _lf_4D_hdf5_bw_path = test_lf_dir+"4D/"+"test_lf4D_bw.h5";
+//    _lf_4D_hdf5_rgb_out_path = test_result_dir+"test_lf4D_rgb_toH5.h5";
+//    _lf_4D_hdf5_bw_out_path = test_result_dir+"test_lf4D_bw_toH5.h5";
+//    _lf_4D_path = test_lf_dir+"4D/rgb/";
+//    _lf_3DH_path = test_lf_dir+"3DH/rgb/";
+//    _lf_3DV_path = test_lf_dir+"3DV/rgb/";
+//    _lf_CROSS_path = test_lf_dir+"CROSS/rgb/";
+//    _lf_4D_bw_path = test_lf_dir+"4D/bw/";
+//    _lf_3DH_bw_path = test_lf_dir+"3DH/bw/";
+//    _lf_3DV_bw_path = test_lf_dir+"3DV/bw/";
+//    _lf_CROSS_bw_path = test_lf_dir+"CROSS/bw/";
+//    _lf_4D_gt_path = test_lf_dir+"test_lf_4D_gt.png";
+//    _lf_test_ftype = ".png";
     
     
     imgnames["4D_high_bw"] = test_lf_4D_high+"4D_high_bw.png";
@@ -99,8 +99,7 @@ void test_lightfield::tearDown() {
 }
 
 
-
-void test_lightfield::test_IO_Pipeline() 
+void test_lightfield::test_IO_Pipeline_4D()
 {
     string p;
     
@@ -111,12 +110,6 @@ void test_lightfield::test_IO_Pipeline()
     // result gt container
     vigra::MultiArray<2,float> result_4D_wide(vigra::Shape2(448,240));
     vigra::MultiArray<2,float> result_4D_high(vigra::Shape2(240,448));
-    vigra::MultiArray<2,float> result_3DH_wide(vigra::Shape2(448,48));
-    vigra::MultiArray<2,float> result_3DH_high(vigra::Shape2(240,64));
-    vigra::MultiArray<2,float> result_3DV_wide(vigra::Shape2(240,64));
-    vigra::MultiArray<2,float> result_3DV_high(vigra::Shape2(448,48));
-    vigra::MultiArray<2,float> result_CROSS_wide(vigra::Shape2(448,112));
-    vigra::MultiArray<2,float> result_CROSS_high(vigra::Shape2(448,112));
     
     // pointer storing the FileHandler instance
     OpenLF::lightfield::io::DataHandler *dataHandler;
@@ -294,11 +287,23 @@ void test_lightfield::test_IO_Pipeline()
     CPPUNIT_ASSERT(result_4D_wide.sum<int>()==0);
     channels.clear();
     channels_gt.clear();
+}
+
+void test_lightfield::test_IO_Pipeline_3DH() 
+{
+    string p;
     
+    map< string, vigra::MultiArray<2,float> > channels;
+    map< string, vigra::MultiArray<2,float> > channels_gt;
+    OpenLF::lightfield::Properties properties;
     
+    // result gt container
+    vigra::MultiArray<2,float> result_3DH_wide(vigra::Shape2(448,48));
+    vigra::MultiArray<2,float> result_3DH_high(vigra::Shape2(240,64));
     
-    
-    
+    // pointer storing the FileHandler instance
+    OpenLF::lightfield::io::DataHandler *dataHandler;
+
     
     
     /*********************************************************************
@@ -443,10 +448,23 @@ void test_lightfield::test_IO_Pipeline()
     channels.clear();
     channels_gt.clear();
     
+}
+
+void test_lightfield::test_IO_Pipeline_3DV() 
+{
+    string p;
     
+    map< string, vigra::MultiArray<2,float> > channels;
+    map< string, vigra::MultiArray<2,float> > channels_gt;
+    OpenLF::lightfield::Properties properties;
     
+    // result gt container
+    vigra::MultiArray<2,float> result_3DV_wide(vigra::Shape2(240,64));
+    vigra::MultiArray<2,float> result_3DV_high(vigra::Shape2(448,48));
     
-    
+    // pointer storing the FileHandler instance
+    OpenLF::lightfield::io::DataHandler *dataHandler;
+
     
     
     /*********************************************************************
@@ -590,9 +608,24 @@ void test_lightfield::test_IO_Pipeline()
     CPPUNIT_ASSERT(result_3DV_wide.sum<int>()==0);
     channels.clear();
     channels_gt.clear();
+}
 
+void test_lightfield::test_IO_Pipeline_CROSS() 
+{
+    string p;
+    
+    map< string, vigra::MultiArray<2,float> > channels;
+    map< string, vigra::MultiArray<2,float> > channels_gt;
+    OpenLF::lightfield::Properties properties;
+    
+    // result gt container
+    vigra::MultiArray<2,float> result_CROSS_wide(vigra::Shape2(448,112));
+    vigra::MultiArray<2,float> result_CROSS_high(vigra::Shape2(448,112));
+    
+    // pointer storing the FileHandler instance
+    OpenLF::lightfield::io::DataHandler *dataHandler;
 
-
+    
 
     /*********************************************************************
      *                       Test from CROSS image high     
