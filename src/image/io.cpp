@@ -105,7 +105,6 @@ bool OpenLF::image::io::imread(string filename, map<string,vigra::MultiArray<2,f
 
         // load grayscale images
         if(info.isGrayscale()) {
-            if(info.numBands()!=1) throw OpenLF_Exception("Image is not a grayscale image, alpha channels not supported yet!");
             print(3,"image::io::imread(string,map) found grayscale image...");
             
             // create channel
@@ -115,7 +114,13 @@ bool OpenLF::image::io::imread(string filename, map<string,vigra::MultiArray<2,f
             vigra::MultiArray<2, vigra::UInt8> in(width,height);
 
             // import data
-            vigra::importImage(info, vigra::destImage(in));
+            if(info.numExtraBands()!=0) {
+                vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(info.width(),info.height()));
+                vigra::importImageAlpha(info, in, alpha);
+            }
+            else {
+                vigra::importImage(info, in);
+            }  
 
             // copy data into object and map to range [1,0]
             for(int y=0; y<height; y++) {
@@ -247,20 +252,12 @@ bool OpenLF::image::io::imsave(string filename, map<string,vigra::MultiArray<2,f
             rgb_filename.insert(insert_pos,"_rgb");
             
             
-            cout << "#################" << endl;
-
             // allocate output container
             vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > rgb(vigra::Shape2(channels["r"].width(),channels["r"].height()));
 
-            
-            cout << "#################" << endl;
-            cout << channels["r"].width() << "," << channels["r"].height() << endl;
-            cout << channels["g"].width() << "," << channels["g"].height() << endl;
-            cout << channels["b"].width() << "," << channels["b"].height() << endl;
             // allocate memory to store range mapping results
             vigra::MultiArray<2,vigra::UInt8> tmp(vigra::Shape2(channels["r"].width(),channels["r"].height()));
-            
-            cout << "#################" << endl;
+      
             
             // range map data and copy to output image
             vector<string> channel_labels {"r","g","b"};
