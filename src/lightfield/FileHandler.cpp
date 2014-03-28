@@ -100,7 +100,7 @@ bool OpenLF::lightfield::io::FileHandler::read_from_disc(map<string,vigra::Multi
     //##########################################################################
     //       if a file type was found and it's h5 read from hdf5 file
     //##########################################################################
-    if(source_check=="h5") {
+    if(source_check=="h5" || source_check=="hdf5" || source_check=="lf") {
         print(2,"lightfield::io::FileHandler::read_from_disc(channels) got an hdf5 file...");
         
         // if the file exist read it
@@ -165,9 +165,13 @@ bool OpenLF::lightfield::io::FileHandler::read_from_disc(map<string,vigra::Multi
     }
     
     //##################################################################################
-    // if the source_check is no file type check if it's an absolute or a relative path
+    // if the source_check is no file type check if it is an absolute or a relative path
     //##################################################################################
     else {
+        // check if last character of path is a '/', if not append one
+        if(source_check.back() != '/')
+            source_check += "/";
+        
         // if the source property in the configfile is a absolute path read from file sequence
         if(boost::filesystem::is_directory(source_check)) {
             print(2,"lightfield::io::FileHandler::read_from_disc(channels) got an absolute path...");

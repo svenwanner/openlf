@@ -76,7 +76,33 @@ OpenLF::lightfield::Properties::~Properties()
 
 
 
+int OpenLF::lightfield::Properties::sizeof_num_field()
+{
+    print(1,"lightfield::Properties::sizeof_num_fields() called...");
+    
+    return number_fields.size();
+}
 
+int OpenLF::lightfield::Properties::sizeof_str_field() 
+{
+    print(1,"lightfield::Properties::sizeof_str_fields() called...");
+    
+    return string_fields.size();
+}
+
+void OpenLF::lightfield::Properties::get_num_field_keys(vector<string> &keys)
+{
+    for (auto& k : number_fields) {
+        keys.push_back(k.first);
+    }
+}
+
+void OpenLF::lightfield::Properties::get_str_field_keys(vector<string> &keys)
+{
+    for (auto& k : string_fields) {
+        keys.push_back(k.first);
+    }
+}
 
 
 bool OpenLF::lightfield::Properties::get_lftype(LF_TYPE &lftype)

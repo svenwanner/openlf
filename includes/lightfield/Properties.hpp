@@ -37,11 +37,11 @@ namespace OpenLF {
     
 //! Configuration file parser class
 /*!
- The class can load simple configfiles containing number and strings.
- The structure of configfile entries is field=value;
+ This class can load simple configfiles containing numbers and strings.
+ The structure of configfile entries is field : value;
  If the values are strings they need to be in quotation marks:
- e.g. a number: myNum=100; 
- e.g. a string: myStr="Hello World";
+ e.g. a number: myNum : 100
+ e.g. a string: myStr : "Hello World"
  The values can be accessed by get_field methods which can set the value as string,
  integer, float or double.
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
@@ -53,6 +53,40 @@ public:
     Properties(const char* filename);
     Properties(const Properties& orig);
     virtual ~Properties();
+    
+    
+    
+    
+    
+    //! get size of number_fields map
+    /*!
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    int sizeof_num_field();
+    
+    //! get size of string_fields map
+    /*!
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    int sizeof_str_field();
+
+    //! get list of number_fields map keys
+    /*!
+     \param keys reference to a vector of strings to store the keys
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void get_num_field_keys(vector<string> &keys);
+    
+    //! get list of string_fields map keys
+    /*!
+     \param keys reference to a vector of strings to store the keys
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void get_str_field_keys(vector<string> &keys);
+    
+    
+
+
     
     //! access LF_TYPE parsed
     /*!
