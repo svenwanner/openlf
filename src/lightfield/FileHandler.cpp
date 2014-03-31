@@ -49,7 +49,6 @@ OpenLF::lightfield::io::FileHandler::~FileHandler()
 
 
 bool OpenLF::lightfield::io::FileHandler::readData(map<string,vigra::MultiArray<2,float> >& channels) 
-/* Test: */
 {
     print(1,"lightfield::io:::FileHandler::readData(channels) called...");
     
@@ -85,7 +84,6 @@ bool OpenLF::lightfield::io::FileHandler::readData(map<string,vigra::MultiArray<
  * path relative to the location of the configfile.
  */
 bool OpenLF::lightfield::io::FileHandler::read_from_disc(map<string,vigra::MultiArray<2,float> >& channels) 
-/* Test: */
 {
     print(1,"lightfield::io::FileHandler::read_from_disc(channels) called...");
     

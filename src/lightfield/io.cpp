@@ -684,8 +684,6 @@ bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string,
 bool OpenLF::lightfield::io::load_from_hdf5( string filename, 
                      map< string, vigra::MultiArray<2,float> > &channels,
                      Properties *properties ) 
-
-/* TEST: lightfield_test::test_hdf5_io() */
 {    
     print(2,"lightfield::io::load_from_hdf5(filename,channels,properties) called...");
     
@@ -832,8 +830,6 @@ bool OpenLF::lightfield::io::load_from_hdf5( string filename,
 bool OpenLF::lightfield::io::save_to_hdf5( string file_name, 
                    map< string, vigra::MultiArray<2,float> > &channels,
                    Properties *properties ) 
-
-/* TEST: lightfield_test::test_hdf5_io() */
 {
     print(2,"lightfield::io::save_to_hdf5(filename,channels,properties) called...");
     

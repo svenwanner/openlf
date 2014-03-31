@@ -25,7 +25,6 @@ OpenLF::lightfield::Properties::Properties()
 }
 
 OpenLF::lightfield::Properties::Properties(string filename)
-/* Test:  */
 {
     print(1,"lightfield::Properties(filename) called...");
     
@@ -45,7 +44,6 @@ OpenLF::lightfield::Properties::Properties(string filename)
 }
 
 OpenLF::lightfield::Properties::Properties(const char* filename)
-/* Test:  */
 {
     print(1,"lightfield::Properties(filename) called...");
     
@@ -127,7 +125,6 @@ bool OpenLF::lightfield::Properties::get_lftype(LF_TYPE &lftype)
 }
 
 bool OpenLF::lightfield::Properties::get_field(string name, string &value)
-/* Test:  */
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     
@@ -140,7 +137,6 @@ bool OpenLF::lightfield::Properties::get_field(string name, string &value)
 }
 
 bool OpenLF::lightfield::Properties::get_field(string name, int &value) 
-/* Test:  */
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     
@@ -153,7 +149,6 @@ bool OpenLF::lightfield::Properties::get_field(string name, int &value)
 }
 
 bool OpenLF::lightfield::Properties::get_field(string name, float &value) 
-/* Test:  */
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     
@@ -166,7 +161,6 @@ bool OpenLF::lightfield::Properties::get_field(string name, float &value)
 }
 
 bool OpenLF::lightfield::Properties::get_field(string name, double &value) 
-/* Test: */
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     
@@ -223,7 +217,6 @@ void OpenLF::lightfield::Properties::set_field(string name, double value)
 
 
 void OpenLF::lightfield::Properties::parse(const char* filename)
-/* Test:  */
 {
     print(1,"lightfield::Properties::parse(filename) called...");
     
@@ -247,7 +240,6 @@ void OpenLF::lightfield::Properties::parse(const char* filename)
     
 
 void OpenLF::lightfield::Properties::parse(string filename)
-/* Test: */
 {
     print(1,"lightfield::Properties::parse(filename) called...");
     
@@ -256,7 +248,6 @@ void OpenLF::lightfield::Properties::parse(string filename)
 
 
 void OpenLF::lightfield::Properties::__parse__(ifstream &cfgfile)
-/* Test:  */
 {
     print(1,"lightfield::Properties::__parse__(cfgfile) called...");
     

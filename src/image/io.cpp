@@ -22,7 +22,6 @@
 
 
 void OpenLF::image::io::reduce_channels(map<string,vigra::MultiArray<2,float>> &channels,vector<string> keys_to_keep)
-/* TEST: via imsave in test_image::test_io() */
 {
     print(2,"image::io::reduce_channels(channels,keys_to_keep) called...");
     
@@ -54,7 +53,6 @@ void OpenLF::image::io::reduce_channels(map<string,vigra::MultiArray<2,float>> &
 
 
 void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2, vigra::UInt8>& img) 
-/* TEST: via imsave in test_image::test_io() */
 {
     print(2,"image::io::linear_range_mapping(fimg,img) called...");
     
@@ -91,7 +89,6 @@ void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, v
 
 
 bool OpenLF::image::io::imread(string filename, map<string,vigra::MultiArray<2,float>> &channels)
-/* TEST: test_image::test_io() */
 {
     print(2,"image::io::imread(string,map) called...");
     
@@ -171,7 +168,6 @@ bool OpenLF::image::io::imread(string filename, map<string,vigra::MultiArray<2,f
 
 
 bool OpenLF::image::io::imsave(string filename, vigra::MultiArray<2,float> img)
-/* TEST: test_image::test_io() */
 {
     print(2,"image::io::imread(filename,img) called...");
     
@@ -216,7 +212,6 @@ bool OpenLF::image::io::imsave(string filename, map<string,vigra::MultiArray<2,f
 
 
 bool OpenLF::image::io::imsave(string filename, map<string,vigra::MultiArray<2,float>> channels)
-/* TEST: test_image::test_io() */
 {
     print(2,"image::io::imsave(filename, channels) called...");
 
@@ -314,7 +309,6 @@ bool OpenLF::image::io::imsave(string filename, map<string,vigra::MultiArray<2,f
 
 
 bool OpenLF::image::io::imsave(string filename, map<string,vigra::MultiArray<2,float>> channels, vector<string> keys_to_save)
-/* TEST: test_image::test_io() */
 {
     print(2,"image::io::imsave(filename, channels, keys_to_save) called...");
     
