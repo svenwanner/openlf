@@ -189,28 +189,28 @@ void OpenLF::lightfield::Properties::set_field(string name, string value)
 {
     print(1,"lightfield::Properties::set_field(name,value) called...");
     
-    string_fields["name"] = value;
+    string_fields[name] = value;
 }
 
 void OpenLF::lightfield::Properties::set_field(string name, int value)
 {
     print(1,"lightfield::Properties::set_field(name,value) called...");
     
-    number_fields["name"] = (double)value;
+    number_fields[name] = (double)value;
 }
 
 void OpenLF::lightfield::Properties::set_field(string name, float value)
 {
     print(1,"lightfield::Properties::set_field(name,value) called...");
     
-    number_fields["name"] = (double)value;
+    number_fields[name] = (double)value;
 }
 
 void OpenLF::lightfield::Properties::set_field(string name, double value)
 {
     print(1,"lightfield::Properties::set_field(name,value) called...");
     
-    number_fields["name"] = value;
+    number_fields[name] = value;
 }
 
 

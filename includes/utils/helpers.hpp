@@ -45,5 +45,9 @@ void remove_leading_spaces_from_string(string input,string &result);
 */
 string make_absolute_path(string filename, string relative_part); 
 
+
+bool remove_by_value(vector<string> &list, string value);
+
+
 }}
 #endif	/* HELPERS_HPP */

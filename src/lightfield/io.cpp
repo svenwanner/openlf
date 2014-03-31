@@ -847,59 +847,87 @@ bool OpenLF::lightfield::io::save_to_hdf5( string file_name,
         
         int itmp;
         float ftmp;
+        string stmp;
+        vector<string> fields;
+        properties->get_num_field_keys(fields);
         
-        // write attributes
-        if(properties->get_field("type",itmp))
-            file.writeAttribute("/LF/","LF_TYPE",itmp);
-        else warning("Missing obligatory property (LF_TYPE) while saving to hdf5!");
         
-        if(properties->get_field("width",itmp))
-            file.writeAttribute("/LF/","width",itmp);
-        else warning("Missing obligatory property (width) while saving to hdf5!");
+        // write obligatory attributes
+        if(properties->get_field("type",itmp)) {
+            if(OpenLF::helpers::remove_by_value(fields, "type"))
+                file.writeAttribute("/LF/","LF_TYPE",itmp);
+            else warning("Missing obligatory property (LF_TYPE) while saving to hdf5!");
+        }
         
-        if(properties->get_field("height",itmp))
-            file.writeAttribute("/LF/","height",itmp);
-        else warning("Missing obligatory property (height) while saving to hdf5!");
+        if(properties->get_field("width",itmp)) {
+            if(OpenLF::helpers::remove_by_value(fields, "width"))
+                file.writeAttribute("/LF/","width",itmp);
+            else warning("Missing obligatory property (width) while saving to hdf5!");
+        }
+        if(properties->get_field("height",itmp)) {
+            if(OpenLF::helpers::remove_by_value(fields, "height"))
+                file.writeAttribute("/LF/","height",itmp);
+            else warning("Missing obligatory property (height) while saving to hdf5!");
+        }
         
-        if(properties->get_field("cams_h",itmp))
-            file.writeAttribute("/LF/","cams_h",itmp);
-        else warning("Missing obligatory property (cams_h) while saving to hdf5!");
+        if(properties->get_field("cams_h",itmp)) {
+            if(OpenLF::helpers::remove_by_value(fields, "cams_h"))
+                file.writeAttribute("/LF/","cams_h",itmp);
+            else warning("Missing obligatory property (cams_h) while saving to hdf5!");
+        }
         
-        if(properties->get_field("cams_v",itmp))
-            file.writeAttribute("/LF/","cams_v",itmp);
-        else warning("Missing obligatory property (cams_v) while saving to hdf5!");
+        if(properties->get_field("cams_v",itmp)) {
+            if(OpenLF::helpers::remove_by_value(fields, "cams_v"))
+                file.writeAttribute("/LF/","cams_v",itmp);
+            else warning("Missing obligatory property (cams_v) while saving to hdf5!");
+        }
         
-        if(properties->get_field("focal_length",ftmp))
-            file.writeAttribute("/LF/","focal_length",ftmp);
-        else warning("Missing property (focal_length) while saving to hdf5!");
+        // write all attributes left as float or string
+        for(int n=0; n<fields.size(); n++) {
+            if(properties->get_field(fields[n],ftmp))
+                file.writeAttribute("/LF/",fields[n],ftmp);
+        }
+        fields.clear();
         
-        if(properties->get_field("baseline_h",ftmp))
-            file.writeAttribute("/LF/","baseline_h",ftmp);
-        else warning("Missing property (baseline_h) while saving to hdf5!");
         
-        if(properties->get_field("baseline_v",ftmp))
-            file.writeAttribute("/LF/","baseline_v",ftmp);
-        else warning("Missing property (baseline_v) while saving to hdf5!");
+        properties->get_str_field_keys(fields);
+        for(int n=0; n<fields.size(); n++) {
+            if(properties->get_field(fields[n],stmp))
+                file.writeAttribute("/LF/",fields[n],stmp);
+        }
+        fields.clear();
         
-        if(properties->get_field("DH",ftmp))
-            file.writeAttribute("/LF/","DH",ftmp);
-        else warning("Missing property (DH) while saving to hdf5!");
-        
-        if(properties->get_field("pixel_aspect_ratio",ftmp))
-            file.writeAttribute("/LF/","pixel_aspect_ratio",ftmp);
-        else warning("Missing property (pixel_aspect_ratio) while saving to hdf5!");
-        
-        if(properties->get_field("aperture",ftmp))
-            file.writeAttribute("/LF/","aperture",ftmp);
-        else warning("Missing property (aperture) while saving to hdf5!");
-        
-        if(properties->get_field("sensor_size_h",ftmp))
-            file.writeAttribute("/LF/","sensor_size_h",ftmp);
-        else warning("Missing property (sensor_size_h) while saving to hdf5!");
-
-        if(properties->get_field("sensor_size_v",ftmp))
-            file.writeAttribute("/LF/","sensor_size_v",ftmp);
-        else warning("Missing property (sensor_size_v) while saving to hdf5!");        
+//        if(properties->get_field("focal_length",ftmp))
+//            file.writeAttribute("/LF/","focal_length",ftmp);
+//        else warning("Missing property (focal_length) while saving to hdf5!");
+//        
+//        if(properties->get_field("baseline_h",ftmp))
+//            file.writeAttribute("/LF/","baseline_h",ftmp);
+//        else warning("Missing property (baseline_h) while saving to hdf5!");
+//        
+//        if(properties->get_field("baseline_v",ftmp))
+//            file.writeAttribute("/LF/","baseline_v",ftmp);
+//        else warning("Missing property (baseline_v) while saving to hdf5!");
+//        
+//        if(properties->get_field("DH",ftmp))
+//            file.writeAttribute("/LF/","DH",ftmp);
+//        else warning("Missing property (DH) while saving to hdf5!");
+//        
+//        if(properties->get_field("pixel_aspect_ratio",ftmp))
+//            file.writeAttribute("/LF/","pixel_aspect_ratio",ftmp);
+//        else warning("Missing property (pixel_aspect_ratio) while saving to hdf5!");
+//        
+//        if(properties->get_field("aperture",ftmp))
+//            file.writeAttribute("/LF/","aperture",ftmp);
+//        else warning("Missing property (aperture) while saving to hdf5!");
+//        
+//        if(properties->get_field("sensor_size_h",ftmp))
+//            file.writeAttribute("/LF/","sensor_size_h",ftmp);
+//        else warning("Missing property (sensor_size_h) while saving to hdf5!");
+//
+//        if(properties->get_field("sensor_size_v",ftmp))
+//            file.writeAttribute("/LF/","sensor_size_v",ftmp);
+//        else warning("Missing property (sensor_size_v) while saving to hdf5!");        
         
     }
     catch(exception & e) {

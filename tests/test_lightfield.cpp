@@ -115,7 +115,7 @@ void test_lightfield::test_IO_Pipeline_4D()
     OpenLF::lightfield::io::DataHandler *dataHandler;
 
     LF_TYPE type;
-    int width,height,cams_v,cams_h,my_fancy_self_defined_field;
+    int width,height,cams_v,cams_h;
     float baseline_h,baseline_v,focal_length,DH,pixel_aspect_ratio,aperture,sensor_size_v,sensor_size_h;
     
     /*********************************************************************
@@ -127,7 +127,7 @@ void test_lightfield::test_IO_Pipeline_4D()
     CPPUNIT_ASSERT(dataHandler->readData(channels));
 //    p = test_result_dir+"4D_high.png";
 //    OpenLF::image::io::imsave(p,channels);
-    p=test_result_dir+"4D_high.lf";
+    p=test_result_dir+"4D_high_rgb.lf";
     OpenLF::lightfield::io::save_to_hdf5(p,channels,&properties);
     
     // test if config parser works
@@ -139,11 +139,11 @@ void test_lightfield::test_IO_Pipeline_4D()
     CPPUNIT_ASSERT(properties.get_field("baseline_h",baseline_h));
     CPPUNIT_ASSERT(properties.get_field("baseline_v",baseline_v));
     CPPUNIT_ASSERT(properties.get_field("focal_length",focal_length));
+    CPPUNIT_ASSERT(properties.get_field("DH",DH));
     CPPUNIT_ASSERT(properties.get_field("aperture",aperture));
     CPPUNIT_ASSERT(properties.get_field("pixel_aspect_ratio",pixel_aspect_ratio));
     CPPUNIT_ASSERT(properties.get_field("sensor_size_v",sensor_size_v));
     CPPUNIT_ASSERT(properties.get_field("sensor_size_h",sensor_size_h));
-    CPPUNIT_ASSERT(properties.get_field("my_fancy_self_defined_field",my_fancy_self_defined_field));
     
     CPPUNIT_ASSERT(type==LF_4D);
     CPPUNIT_ASSERT(width==48);
@@ -153,11 +153,11 @@ void test_lightfield::test_IO_Pipeline_4D()
     CPPUNIT_ASSERT(baseline_h==0.1f);
     CPPUNIT_ASSERT(baseline_v==0.1f);
     CPPUNIT_ASSERT(focal_length==0.020f);
+    CPPUNIT_ASSERT(DH==1.0f);
     CPPUNIT_ASSERT(aperture==2.8f);
     CPPUNIT_ASSERT(pixel_aspect_ratio==1.0f);
     CPPUNIT_ASSERT(sensor_size_v==0.002f);
     CPPUNIT_ASSERT(sensor_size_h==0.0025f);
-    CPPUNIT_ASSERT(my_fancy_self_defined_field==42);
     
     // make ground truth check of read data
     result_4D_high = 1;

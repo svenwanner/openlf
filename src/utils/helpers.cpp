@@ -58,3 +58,16 @@ string OpenLF::helpers::make_absolute_path(string filename, string relative_part
     abs_path = dir.string()+"/"+relative_part;
     return abs_path;
 } 
+
+
+bool OpenLF::helpers::remove_by_value(vector<string> &list, string value) 
+{
+    for( auto iter = list.begin(); iter != list.end(); ++iter )
+    {
+        if( *iter == value ) {
+            list.erase( iter );
+            return true;
+        }
+    }
+    return false;
+}
