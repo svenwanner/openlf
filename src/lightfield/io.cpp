@@ -695,8 +695,10 @@ bool OpenLF::lightfield::io::load_from_hdf5( string filename,
     file.root();
     
     try {
+        
         // navigate to group LF
         file.cd_mk("LF");
+       
         
         // if no bw or rgb channels available throw exception
         if((file.existsDataset("r") && file.existsDataset("g") && file.existsDataset("b")) || file.existsDataset("bw")) {
@@ -806,7 +808,12 @@ bool OpenLF::lightfield::io::load_from_hdf5( string filename,
             
             // read the datasets
             for(unsigned int id=0; id<ds_tree.size(); id++ ) {
-                channels[ds_tree[id]] = vigra::MultiArray<2, float>(vigra::Shape2(480,400));
+                // determine data set shape
+                vigra::ArrayVector<int> ds_shape(2);
+                ds_shape = file.getDatasetShape(ds_tree[id]);
+                
+                // allocate memory and read channels
+                channels[ds_tree[id]] = vigra::MultiArray<2, float>(vigra::Shape2(ds_shape[0],ds_shape[1]));
                 file.read(ds_tree[id], channels[ds_tree[id]]);
             }
             
@@ -895,40 +902,7 @@ bool OpenLF::lightfield::io::save_to_hdf5( string file_name,
             if(properties->get_field(fields[n],stmp))
                 file.writeAttribute("/LF/",fields[n],stmp);
         }
-        fields.clear();
-        
-//        if(properties->get_field("focal_length",ftmp))
-//            file.writeAttribute("/LF/","focal_length",ftmp);
-//        else warning("Missing property (focal_length) while saving to hdf5!");
-//        
-//        if(properties->get_field("baseline_h",ftmp))
-//            file.writeAttribute("/LF/","baseline_h",ftmp);
-//        else warning("Missing property (baseline_h) while saving to hdf5!");
-//        
-//        if(properties->get_field("baseline_v",ftmp))
-//            file.writeAttribute("/LF/","baseline_v",ftmp);
-//        else warning("Missing property (baseline_v) while saving to hdf5!");
-//        
-//        if(properties->get_field("DH",ftmp))
-//            file.writeAttribute("/LF/","DH",ftmp);
-//        else warning("Missing property (DH) while saving to hdf5!");
-//        
-//        if(properties->get_field("pixel_aspect_ratio",ftmp))
-//            file.writeAttribute("/LF/","pixel_aspect_ratio",ftmp);
-//        else warning("Missing property (pixel_aspect_ratio) while saving to hdf5!");
-//        
-//        if(properties->get_field("aperture",ftmp))
-//            file.writeAttribute("/LF/","aperture",ftmp);
-//        else warning("Missing property (aperture) while saving to hdf5!");
-//        
-//        if(properties->get_field("sensor_size_h",ftmp))
-//            file.writeAttribute("/LF/","sensor_size_h",ftmp);
-//        else warning("Missing property (sensor_size_h) while saving to hdf5!");
-//
-//        if(properties->get_field("sensor_size_v",ftmp))
-//            file.writeAttribute("/LF/","sensor_size_v",ftmp);
-//        else warning("Missing property (sensor_size_v) while saving to hdf5!");        
-        
+        fields.clear();    
     }
     catch(exception & e) {
         warning(e.what());

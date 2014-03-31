@@ -127,8 +127,12 @@ void test_lightfield::test_IO_Pipeline_4D()
     CPPUNIT_ASSERT(dataHandler->readData(channels));
 //    p = test_result_dir+"4D_high.png";
 //    OpenLF::image::io::imsave(p,channels);
+    
+    //////////////////////////////////////////////////////////////
     p=test_result_dir+"4D_high_rgb.lf";
     OpenLF::lightfield::io::save_to_hdf5(p,channels,&properties);
+    //////////////////////////////////////////////////////////////
+    
     
     // test if config parser works
     CPPUNIT_ASSERT(properties.get_lftype(type));
@@ -168,7 +172,10 @@ void test_lightfield::test_IO_Pipeline_4D()
     channels.clear();
     channels_gt.clear();
   
-    
+    //////////////////////////////////////////////////////////////
+    OpenLF::lightfield::io::load_from_hdf5(p,channels,&properties);
+    channels.clear();
+    //////////////////////////////////////////////////////////////
     
     // init fileHandler and test if read data works
     dataHandler = new OpenLF::lightfield::io::FileHandler(cfgnames["4D_high_bw"],&properties);

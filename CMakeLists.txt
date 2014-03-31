@@ -48,6 +48,13 @@ set(CMAKE_CXX_FLAGS "-g -O -Wall -Wshadow -Wextra -fopenmp -std=c++0x -O3 -march
 
     message( "INFO: RELEASE BUILD" )
 
+#WORKFLOW: sandbox 
+    add_executable(OpenLF_sandbox
+	./workflows/sandbox.cpp
+	${SRCS} ${HDRS})
+    target_link_libraries(OpenLF_sandbox hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex 
+	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
+
 
 #TEST: test_image 
     add_executable(OpenLF_test_image
