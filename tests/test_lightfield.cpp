@@ -785,3 +785,27 @@ void test_lightfield::test_IO_Pipeline_CROSS()
     
     delete dataHandler;
 }
+
+
+
+void test_lightfield::test_Lightfield_Instanciation()
+{
+    OpenLF::lightfield::Lightfield lf(cfgnames["4D_high_rgb"]);
+    
+    map< string, vigra::MultiArray<2,float> > *test_channels = NULL;
+    vigra::MultiArray<2,float> *test_image = NULL;
+    
+    lf.data(&test_channels);
+    cout << "pp test_channels : " << test_channels << endl;
+    
+    lf.data("b",&test_image);
+    cout << "pp test_image : " << test_image << endl;
+    
+    CPPUNIT_ASSERT(test_channels!=NULL);
+    CPPUNIT_ASSERT(test_image!=NULL);
+    
+//    string p = test_result_dir+"channels_from_lf.png";
+//    OpenLF::image::io::imsave(p,*test_channels);
+//    p = test_result_dir+"r_channel_from_lf.png";
+//    OpenLF::image::io::imsave(p,*test_image);
+}

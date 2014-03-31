@@ -21,15 +21,18 @@
 #include "utils/helpers.hpp"
 #include "lightfield/Properties.hpp"
 #include "lightfield/FileHandler.hpp"
+#include "lightfield/Lightfield.hpp"
 
 
 class test_lightfield : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_lightfield);
 
-    CPPUNIT_TEST(test_IO_Pipeline_4D);
-    CPPUNIT_TEST(test_IO_Pipeline_3DH);
-    CPPUNIT_TEST(test_IO_Pipeline_3DV);
-    CPPUNIT_TEST(test_IO_Pipeline_CROSS);
+    //CPPUNIT_TEST(test_IO_Pipeline_4D);
+    //CPPUNIT_TEST(test_IO_Pipeline_3DH);
+    //CPPUNIT_TEST(test_IO_Pipeline_3DV);
+    //CPPUNIT_TEST(test_IO_Pipeline_CROSS);
+    
+    CPPUNIT_TEST(test_Lightfield_Instanciation);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -44,6 +47,8 @@ private:
     void test_IO_Pipeline_3DH();
     void test_IO_Pipeline_3DV();
     void test_IO_Pipeline_CROSS();
+    
+    void test_Lightfield_Instanciation();
     
     
     map<string,string> cfgnames;
