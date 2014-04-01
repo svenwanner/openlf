@@ -40,7 +40,6 @@ public:
     
     
     
-    
     //! open hdf5 file
     /*!
      This method should be called to open a hdf5 file after 
