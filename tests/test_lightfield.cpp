@@ -26,6 +26,8 @@ void test_lightfield::setUp() {
     imgnames["4D_wide_bw"] = test_lf_4D_wide+"4D_wide_bw.png";
     imgnames["4D_wide_rgb"] = test_lf_4D_wide+"4D_wide_rgb.png";
     
+    imgnames["4D_high_rgb_h5"] = test_lf_4D_high+"4D_high_rgb.lf";
+    
     imgnames["3DH_high_bw"] = test_lf_3DH_high+"3DH_high_bw.png";
     imgnames["3DH_high_rgb"] = test_lf_3DH_high+"3DH_high_rgb.png";
     imgnames["3DH_wide_bw"] = test_lf_3DH_wide+"3DH_wide_bw.png";
@@ -50,6 +52,8 @@ void test_lightfield::setUp() {
     cfgnames["4D_wide_bw_sf"] = test_lf_4D_wide+"4D_wide_bw.cfg";
     cfgnames["4D_high_rgb_sf"] = test_lf_4D_high+"4D_high_rgb.cfg";
     cfgnames["4D_wide_rgb_sf"] = test_lf_4D_wide+"4D_wide_rgb.cfg";
+    
+    cfgnames["4D_high_rgb_h5"] = test_lf_4D_high+"4D_high_rgb_h5.cfg";
     
     cfgnames["3DH_high_bw"] = test_lf_3DH_high+"bw.cfg";
     cfgnames["3DH_wide_bw"] = test_lf_3DH_wide+"bw.cfg";
@@ -90,7 +94,9 @@ void test_lightfield::tearDown() {
 void test_lightfield::test_instantiate_Lightfield()
 {
     // instantiate a lightfield 
-    OpenLF::lightfield::Lightfield lf(cfgnames["4D_high_rgb"]);
+    //OpenLF::lightfield::Lightfield lf(cfgnames["4D_high_rgb_h5"]);
+    OpenLF::lightfield::Lightfield lf;
+    lf.open(imgnames["4D_high_rgb_h5"]);
     
     // create pointer to a map and a MultiArray to keep the addresses of the lf data
     map< string, vigra::MultiArray<2,float> > *test_channels = NULL;
