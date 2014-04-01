@@ -22,7 +22,6 @@ find_library( CPPUNIT_LIBRARY NAMES cppunit cppunit_dll
             PATHS   ${FOO_PREFIX}/lib
                     /usr/lib
                     /usr/lib64
-		    /usr/local
                     /usr/local/lib
                     /usr/local/lib64
             PATH_SUFFIXES release )
@@ -78,6 +77,13 @@ add_executable(OpenLF_test_imgproc
     target_link_libraries(OpenLF_test_imgproc hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex 
 	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
 
+#TEST: test_lightfield_IO 
+add_executable(OpenLF_test_lightfield_IO 
+	./tests/test_lightfield_IO_run.cpp
+	./tests/test_lightfield_IO.cpp 
+	${SRCS} ${HDRS})
+    target_link_libraries(OpenLF_test_lightfield_IO  hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex
+	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
 
 #TEST: test_lightfield 
 add_executable(OpenLF_test_lightfield 
@@ -87,8 +93,10 @@ add_executable(OpenLF_test_lightfield
     target_link_libraries(OpenLF_test_lightfield  hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex
 	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
 
+
 enable_testing()
 add_test(OpenLF_test_image ./test_release/OpenLF_test_image)
 add_test(OpenLF_test_imgproc ./test_release/OpenLF_test_imgproc)
+add_test(OpenLF_test_lightfield_IO ./test_release/OpenLF_test_lightfield_IO)
 add_test(OpenLF_test_lightfield ./test_release/OpenLF_test_lightfield)
 

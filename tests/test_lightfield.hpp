@@ -17,8 +17,9 @@
 #include "debug.hpp"
 #include "global.hpp"
 #include "image/io.hpp"
-#include "lightfield/io.hpp"
+#include "image/imgproc.hpp"
 #include "utils/helpers.hpp"
+#include "lightfield/io.hpp"
 #include "lightfield/Properties.hpp"
 #include "lightfield/FileHandler.hpp"
 #include "lightfield/Lightfield.hpp"
@@ -26,11 +27,6 @@
 
 class test_lightfield : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_lightfield);
-
-    CPPUNIT_TEST(test_IO_Pipeline_4D);
-    CPPUNIT_TEST(test_IO_Pipeline_3DH);
-    CPPUNIT_TEST(test_IO_Pipeline_3DV);
-    CPPUNIT_TEST(test_IO_Pipeline_CROSS);
     
     CPPUNIT_TEST(test_instantiate_Lightfield);
 
@@ -43,10 +39,7 @@ public:
     void tearDown();
 
 private:
-    void test_IO_Pipeline_4D();
-    void test_IO_Pipeline_3DH();
-    void test_IO_Pipeline_3DV();
-    void test_IO_Pipeline_CROSS();
+    
     
     void test_instantiate_Lightfield();
     
