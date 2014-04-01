@@ -687,13 +687,19 @@ bool OpenLF::lightfield::io::load_from_hdf5( string filename,
 {    
     print(2,"lightfield::io::load_from_hdf5(filename,channels,properties) called...");
     
+    
+    // read all attribute names 
+    vector<string> attrs;
+    vector<bool> isStr;
+    OpenLF::helpers::get_attribute_list(filename,"LF",attrs,isStr);
+    if(attrs.size()==0) throw OpenLF_Exception("No attributes found while loading from hdf5!");
+    
     // open hdf5 file
     vigra::HDF5File file(filename.c_str(),vigra::HDF5File::OpenReadOnly);
     // ensure you're in root dir
     file.root();
     
     try {
-        
         // navigate to group LF
         file.cd_mk("LF");
        
@@ -705,104 +711,42 @@ bool OpenLF::lightfield::io::load_from_hdf5( string filename,
             vector<string> ds_tree;
             ds_tree = file.ls();
             
-            int itmp;
-            float ftmp;
-            
-            // read the obligatory attributes
-            try {
-                // set the LF_TYPE
-                int tmp_type;
-                file.readAttribute("","LF_TYPE",tmp_type);               
-                switch(tmp_type) {
-                    case 1:
-                        properties->set_lftype(LF_4D);
-                        break;
-                    case 2:
-                        properties->set_lftype(LF_3DH);
-                        break;
-                    case 3:
-                        properties->set_lftype(LF_3DV);
-                        break;
-                    case 4:
-                        properties->set_lftype(LF_CROSS);
-                        break;
-                    default:
-                        throw OpenLF_Exception("Loading light field from HDF5 failed, no LF_TYPE specified!");
+            while(true) {
+                if(isStr.size()==0 || attrs.size()==0) break;
+                
+                string name = attrs.back();
+                bool str = isStr.back();
+                float num_fval = 0.0;
+                int num_ival = 0.0;
+                string str_val = "";
+                
+                if(str) {
+                    file.readAttribute("",name,str_val);
+                    properties->set_field(name,str_val);
+                    properties->get_field(name,str_val); 
+                }
+                else {
+                    if(name=="LF_TYPE") {
+                        // set the LF_TYPE
+                        file.readAttribute("","LF_TYPE",num_ival);
+                        properties->set_field("type",num_ival);
+                    }
+                    if(name=="width" || name=="height" || name=="cams_v" || name=="cams_h") {
+                        file.readAttribute("",name,num_ival);
+                        properties->set_field(name,num_ival);
+                        
+                        properties->get_field(name,num_ival);
+                    }
+                    else {
+                        file.readAttribute("",name,num_fval);
+                        properties->set_field(name,num_fval);
+                        properties->get_field(name,num_fval);
+                    }
                 }
                 
-                file.readAttribute("","width",itmp);
-                properties->set_field("width",itmp);
-                
-                file.readAttribute("","height",itmp);
-                properties->set_field("height",itmp);
-                
-                file.readAttribute("","cams_h",itmp);
-                properties->set_field("cams_h",itmp);
-                
-                file.readAttribute("","cams_v",itmp);
-                properties->set_field("cams_v",itmp);
+                attrs.pop_back();
+                isStr.pop_back();
             }
-            catch(int a) {
-                throw OpenLF_Exception("Loading light field from HDF5 failed, couldn't find all necessary attributes!");
-                return false;
-            }
-                
-            try {
-                file.readAttribute("","baseline_h",ftmp);
-                properties->set_field("baseline_h",ftmp);
-            } catch(int a) {
-                warning("Found no property baseline!");
-            }
-
-            try {
-                file.readAttribute("","baseline_v",ftmp);
-                properties->set_field("baseline_v",ftmp);
-            } catch(int a) {
-                warning("Found no property baseline!");
-            }
-
-            try {
-                file.readAttribute("","focal_length",ftmp);
-                properties->set_field("focal_length",ftmp);
-            } catch(int a) {
-                warning("Found no property baseline!");
-            }
-
-            try {
-                file.readAttribute("","DH",ftmp);
-                properties->set_field("DH",ftmp);
-            } catch(int a) {
-                warning("Found no property baseline!");
-            }
-
-            try {
-                file.readAttribute("","pixel_aspect_ratio",ftmp);
-                properties->set_field("pixel_aspect_ratio",ftmp);
-            } catch(int a) {
-                warning("Found no property baseline!");
-            }
-
-            try {
-                file.readAttribute("","aperture",ftmp);
-                properties->set_field("aperture",ftmp);
-            } catch(int a) {
-                warning("Found no property baseline!");
-            }
-
-            try {
-                file.readAttribute("","sensor_size_h",ftmp);
-                properties->set_field("sensor_size_h",ftmp);
-            } catch(int a) {
-                warning("Found no property baseline!");
-            }
-
-            try {
-                file.readAttribute("","sensor_size_v",ftmp);
-                properties->set_field("sensor_size_v",ftmp);
-            } catch(int a) {
-                warning("Found no property baseline!");
-            }
-                
             
             // read the datasets
             for(unsigned int id=0; id<ds_tree.size(); id++ ) {

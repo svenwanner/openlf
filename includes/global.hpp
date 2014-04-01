@@ -43,7 +43,8 @@
 #include <list>
 #include <map>
 
-#include <H5Cpp.h>
+
+
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
@@ -71,6 +72,7 @@
 #include <vigra/stdimage.hxx>
 #include <vigra/impex.hxx>
 
+#include <H5Cpp.h>
 
 using namespace std;
 

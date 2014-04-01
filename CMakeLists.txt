@@ -22,6 +22,7 @@ find_library( CPPUNIT_LIBRARY NAMES cppunit cppunit_dll
             PATHS   ${FOO_PREFIX}/lib
                     /usr/lib
                     /usr/lib64
+		    /usr/local
                     /usr/local/lib
                     /usr/local/lib64
             PATH_SUFFIXES release )
@@ -42,7 +43,11 @@ ADD_DEFINITIONS(${HDF5_CPPFLAGS})
 # so that we will find TutorialConfig.h
 include_directories("${PROJECT_SOURCE_DIR}")
 
-set(CMAKE_CXX_FLAGS "-g -O -Wall -Wshadow -Wextra -fopenmp -std=c++0x -O3 -march=native")
+# uncomment this for develop building
+set(CMAKE_CXX_FLAGS "-g -O -Wall -Wshadow -Wextra -fopenmp -std=c++0x -march=native")
+
+# uncomment this for release build to get best code optimization
+#set(CMAKE_CXX_FLAGS "-g -O -Wall -Wshadow -Wextra -fopenmp -std=c++0x -O3 -#march=native")
 
 # add the executable
 

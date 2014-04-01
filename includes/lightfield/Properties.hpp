@@ -54,7 +54,7 @@ public:
     Properties(const Properties& orig);
     virtual ~Properties();
     
-    
+    void clear();
     
     
     

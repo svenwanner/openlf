@@ -72,6 +72,16 @@ OpenLF::lightfield::Properties::~Properties()
     string_fields.clear();
 }
 
+void OpenLF::lightfield::Properties::clear() {
+    number_fields.clear();
+    string_fields.clear();
+}
+
+
+
+
+
+
 
 
 int OpenLF::lightfield::Properties::sizeof_num_field()

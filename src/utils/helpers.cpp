@@ -71,3 +71,21 @@ bool OpenLF::helpers::remove_by_value(vector<string> &list, string value)
     }
     return false;
 }
+
+
+void OpenLF::helpers::get_attribute_list(string filename, string GroupID, vector<string> &attrs, vector<bool> &isString) {
+    H5::H5File file = H5::H5File( filename.c_str(), vigra::HDF5File::Open );
+    H5::Group group = file.openGroup(GroupID.c_str());
+    H5::Attribute attr;
+    int num = group.getNumAttrs();
+    for (int i =0;i<num;i++){
+        attr = group.openAttribute(i);
+        H5::DataType dtype;
+        dtype = attr.getDataType();
+      
+        attrs.push_back(attr.getName());
+        isString.push_back(dtype.isVariableStr());
+    } 
+    file.close();
+}
+  

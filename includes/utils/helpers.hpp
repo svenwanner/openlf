@@ -46,8 +46,16 @@ void remove_leading_spaces_from_string(string input,string &result);
 string make_absolute_path(string filename, string relative_part); 
 
 
+//! removes a element from a string vector by value
+/*!
+ \param list the vector to remove an item from 
+ \param value the value to be removed
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
 bool remove_by_value(vector<string> &list, string value);
 
+
+void get_attribute_list(string filename, string GroupID, vector<string> &attrs, vector<bool> &isString);
 
 }}
 #endif	/* HELPERS_HPP */
