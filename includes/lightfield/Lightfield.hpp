@@ -9,7 +9,7 @@
 #define	LIGHTFIELD_HPP
 
 #include "global.hpp"
-//#include "lightfield/io.hpp"
+#include "lightfield/io.hpp"
 #include "lightfield/Properties.hpp"
 #include "lightfield/DataHandler.hpp"
 #include "lightfield/FileHandler.hpp"
@@ -20,9 +20,42 @@ namespace OpenLF {
 
 class Lightfield {
 public:
+    Lightfield();
     Lightfield(string filename);
     Lightfield(const Lightfield& orig);
     virtual ~Lightfield();
+
+    
+    
+    
+    
+    //! opens a hdf5 file
+    /*!
+     This method should be called to open a hdf5 file after 
+     instancing with default constructor. 
+     \param filename of the .h5,.hdf5 or .lf file 
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    bool open(string filename);
+    
+    //! opens a hdf5 file
+    /*!
+     This method should be called to open a hdf5 file after 
+     instancing with default constructor. 
+     \param filename of the .h5,.hdf5 or .lf file 
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    bool open(const char* filename);
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     //! get pointer to data channels
     /*!
