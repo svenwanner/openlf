@@ -56,17 +56,59 @@ public:
     bool open(const char* filename);
     
     
-    //! check if specific property exist
+    
+    
+    
+    
+    //! check if a specific property exist
     /*!
-     \param filename of the .h5,.hdf5 or .lf file 
+     \param name of the property to check for
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    bool has_property(string);
+    bool has_property(string name);
     
     
+    //! access a property by name
+    /*!
+     \param name of the property
+     \param value reference to the value of the property 
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    bool get_property(string name, int &value);
     
     
+    //! access a property by name
+    /*!
+     \param name of the property
+     \param value reference to the value of the property 
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    bool get_property(string name, float &value);
     
+    
+    //! access a property by name
+    /*!
+     \param name of the property
+     \param value reference to the value of the property 
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    bool get_property(string name, double &value);
+    
+    
+    //! access a property by name
+    /*!
+     \param name of the property
+     \param value reference to the value of the property 
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    bool get_property(string name, string &value);
+    
+    
+    //! get the LF_TYPE
+    /*!
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    LF_TYPE type();
     
     
     

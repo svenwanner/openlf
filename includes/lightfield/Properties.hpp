@@ -64,18 +64,21 @@ public:
     */
     int sizeof_num_field();
     
+    
     //! get size of string_fields map
     /*!
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     int sizeof_str_field();
 
+    
     //! get list of number_fields map keys
     /*!
      \param keys reference to a vector of strings to store the keys
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     void get_num_field_keys(vector<string> &keys);
+    
     
     //! get list of string_fields map keys
     /*!
@@ -86,7 +89,22 @@ public:
     
     
 
-
+    
+    
+    //! check if the field name exist
+    /*!
+     \param fieldname
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    bool has_field(string fieldname);
+    
+    
+    
+    
+    
+    
+   
+    
     
     //! access LF_TYPE parsed
     /*!
@@ -94,6 +112,7 @@ public:
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     bool get_lftype(LF_TYPE &lftype);
+    
     
     //! access value by name
     /*!
@@ -103,6 +122,7 @@ public:
     */
     bool get_field(string name, string &value);
     
+    
     //! access value by name
     /*!
      \param name of the field
@@ -110,6 +130,7 @@ public:
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     bool get_field(string name, int &value);
+    
     
     //! access value by name
     /*!
@@ -119,6 +140,7 @@ public:
     */
     bool get_field(string name, float &value);
     
+    
     //! access value by name
     /*!
      \param name of the field
@@ -127,12 +149,14 @@ public:
     */
     bool get_field(string name, double &value);
     
+    
     //! set LF_TYPE parsed
     /*!
      \param lftype variable to be set
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     void set_lftype(LF_TYPE lftype);
+    
     
     //! set value by name
     /*!
@@ -142,6 +166,7 @@ public:
     */
     void set_field(string name, string value);
     
+    
     //! set value by name
     /*!
      \param name of the field
@@ -150,6 +175,7 @@ public:
     */
     void set_field(string name, int value);
     
+    
     //! set value by name
     /*!
      \param name of the field
@@ -157,6 +183,7 @@ public:
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     void set_field(string name, float value);
+    
     
     //! set value by name
     /*!
@@ -177,6 +204,7 @@ public:
     */
     void parse(const char* filename);
     
+    
     //! parse the file passed
     /*!
      \param filename cfgfile the ifstream object of the file loaded
@@ -184,6 +212,7 @@ public:
     */
     void parse(string filename);
 
+    
 private:
     
     //! parsing the input file
