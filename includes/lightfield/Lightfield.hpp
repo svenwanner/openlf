@@ -40,23 +40,28 @@ public:
     
     
     
-    //! open hdf5 file
+    //! open lightfields from  hdf5 or config file
     /*!
-     This method should be called to open a hdf5 file after 
-     instancing with default constructor. 
-     \param filename of the .h5,.hdf5 or .lf file 
+     \param filename of the .cfg, .h5,.hdf5 or .lf file 
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     bool open(string filename);
     
-    //! open hdf5 file
+    
+    //! open lightfields from  hdf5 or config file
     /*!
-     This method should be called to open a hdf5 file after 
-     instancing with default constructor. 
-     \param filename of the .h5,.hdf5 or .lf file 
+     \param filename of the .cfg, .h5,.hdf5 or .lf file 
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     bool open(const char* filename);
+    
+    
+    //! check if specific property exist
+    /*!
+     \param filename of the .h5,.hdf5 or .lf file 
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    bool has_property(string);
     
     
     

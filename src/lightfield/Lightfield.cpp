@@ -19,14 +19,16 @@
 
 #include "lightfield/Lightfield.hpp"
 
-OpenLF::lightfield::Lightfield::Lightfield() {
+OpenLF::lightfield::Lightfield::Lightfield() 
+{
     print(1,"lightfield::Lightfield::Lightfield() called...");
 }
 
-OpenLF::lightfield::Lightfield::Lightfield(string filename) {
+OpenLF::lightfield::Lightfield::Lightfield(string filename) 
+{
     print(1,"lightfield::Lightfield::Lightfield(filename) called...");
-    dataHandler = new OpenLF::lightfield::io::FileHandler(filename,&properties);
-    dataHandler->readData(channels);
+    
+    open(filename);
 }
 
 OpenLF::lightfield::Lightfield::Lightfield(const Lightfield& orig) {
@@ -44,11 +46,31 @@ OpenLF::lightfield::Lightfield::~Lightfield() {
 
 
 
-bool OpenLF::lightfield::Lightfield::open(string filename) {
-    return OpenLF::lightfield::io::load_from_hdf5( filename, channels, &properties ); 
+bool OpenLF::lightfield::Lightfield::open(string filename) 
+{
+    print(1,"lightfield::Lightfield::open(filename) called");
+    
+    properties.clear();
+    channels.clear();
+    
+    string ftype;
+    ftype = OpenLF::helpers::find_ftype(filename);
+    
+    if(ftype=="h5" || ftype=="lf" || ftype=="hdf5") {
+        return OpenLF::lightfield::io::load_from_hdf5( filename, channels, &properties ); 
+    }
+    else if(ftype=="cfg") {
+        dataHandler = new OpenLF::lightfield::io::FileHandler(filename,&properties);
+        return dataHandler->readData(channels);
+    }
+    else {
+        return false;
+        throw OpenLF_Exception("Lightfield IO Error: Filetype not specified!");
+    }
 }
 
-bool OpenLF::lightfield::Lightfield::open(const char* filename) {
+bool OpenLF::lightfield::Lightfield::open(const char* filename) 
+{
     return open(string(filename));
 }
 
