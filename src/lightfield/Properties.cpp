@@ -72,6 +72,52 @@ OpenLF::lightfield::Properties::~Properties()
     string_fields.clear();
 }
 
+
+void OpenLF::lightfield::Properties::log() 
+{
+    string text = "\n#### Properties ####\n";
+    
+    text += "#\n# number fields:\n";
+    for (auto& k : this->number_fields) {
+        text += "# "+k.first+" = "+boost::lexical_cast<string>(k.second)+"\n";
+    }
+    
+    text += "#\n# string fields:\n";
+    for (auto& k : this->string_fields) {
+        text += "# "+k.first+" = "+k.second+"\n";
+    }
+    
+    cout << text << endl;
+}
+
+
+
+
+OpenLF::lightfield::Properties & OpenLF::lightfield::Properties::operator+=(OpenLF::lightfield::Properties &rhs)
+{ 
+    string key;
+    double nvalue;
+    string svalue;
+    
+    for (auto& k : rhs.number_fields) {
+        key = k.first;
+        if(!this->has_field(key)) {
+            rhs.get_field(key,nvalue);
+            this->set_field(key,nvalue);
+        }
+    }
+    
+    for (auto& k : rhs.string_fields) {
+        key = k.first;
+        if(!this->has_field(key)) {
+            rhs.get_field(key,svalue);
+            this->set_field(key,svalue);
+        }
+    }
+    return *this;  
+}
+
+
 void OpenLF::lightfield::Properties::clear() {
     number_fields.clear();
     string_fields.clear();
@@ -114,7 +160,7 @@ void OpenLF::lightfield::Properties::get_str_field_keys(vector<string> &keys)
 
 
 
-bool OpenLF::lightfield::Properties::has_field(string fieldname) 
+bool OpenLF::lightfield::Properties::has_field(string fieldname)
 {
     for (auto& k : number_fields) {
         if(k.first==fieldname)
@@ -164,7 +210,7 @@ bool OpenLF::lightfield::Properties::get_field(string name, string &value)
     }
 }
 
-bool OpenLF::lightfield::Properties::get_field(string name, int &value) 
+bool OpenLF::lightfield::Properties::get_field(string name, int &value)
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     
@@ -176,7 +222,7 @@ bool OpenLF::lightfield::Properties::get_field(string name, int &value)
     }
 }
 
-bool OpenLF::lightfield::Properties::get_field(string name, float &value) 
+bool OpenLF::lightfield::Properties::get_field(string name, float &value)
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     

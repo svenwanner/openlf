@@ -830,3 +830,115 @@ void test_lightfield_IO::test_IO_Pipeline_CROSS()
 }
 
 
+
+void test_lightfield_IO::test_Properties_methods()
+{
+    int tmp_ival = 0;
+    float tmp_fval = 0.0f;
+    string tmp_sval = "";
+    
+    OpenLF::lightfield::Properties props;
+    props.set_field("a_string","Hello");
+    props.set_field("prop1_string","World");
+    props.set_field("prop1_ivalue",1);
+    props.set_field("prop1_fvalue",9.99f);
+    
+    CPPUNIT_ASSERT(props.sizeof_str_field() == 2);
+    CPPUNIT_ASSERT(props.sizeof_num_field() == 2);
+    
+    vector<string> gt_keys {"a_string","prop1_string","prop1_ivalue","prop1_ivalue"};
+    vector<string> keys;
+    props.get_num_field_keys(keys);
+    CPPUNIT_ASSERT(keys.size()==2);
+    
+    int found = 0;
+    for(unsigned int i=0; i<keys.size(); i++) {
+        for(unsigned int j=0; j<gt_keys.size(); j++) {
+            if(keys[i]==gt_keys[j])
+                found++;
+        }
+    }
+    CPPUNIT_ASSERT(found==2);
+    keys.clear();
+    
+    props.get_str_field_keys(keys);
+    CPPUNIT_ASSERT(keys.size()==2);
+    
+    found = 0;
+    for(unsigned int i=0; i<keys.size(); i++) {
+        for(unsigned int j=0; j<gt_keys.size(); j++) {
+            if(keys[i]==gt_keys[j])
+                found++;
+        }
+    }
+    CPPUNIT_ASSERT(found==2);
+    
+    OpenLF::lightfield::Properties props2;
+    props2.set_field("a_string","Goodbye");
+    props2.set_field("prop2_string","World");
+    props2.set_field("prop2_ivalue",3);
+    props2.set_field("prop2_fvalue",0.01f);
+    
+    
+    CPPUNIT_ASSERT(props.has_field("a_string"));
+    CPPUNIT_ASSERT(props.has_field("prop1_string"));
+    CPPUNIT_ASSERT(props.has_field("prop1_ivalue"));
+    CPPUNIT_ASSERT(props.has_field("prop1_fvalue"));
+    CPPUNIT_ASSERT(props2.has_field("a_string"));
+    CPPUNIT_ASSERT(props2.has_field("prop2_string"));
+    CPPUNIT_ASSERT(props2.has_field("prop2_ivalue"));
+    CPPUNIT_ASSERT(props2.has_field("prop2_fvalue"));
+    
+    
+    CPPUNIT_ASSERT(props.get_field("a_string",tmp_sval));
+    CPPUNIT_ASSERT(tmp_sval=="Hello");
+    CPPUNIT_ASSERT(props.get_field("prop1_string",tmp_sval));
+    CPPUNIT_ASSERT(tmp_sval=="World");
+    CPPUNIT_ASSERT(props.get_field("prop1_ivalue",tmp_ival));
+    CPPUNIT_ASSERT(tmp_ival==1);
+    CPPUNIT_ASSERT(props.get_field("prop1_fvalue",tmp_fval));
+    CPPUNIT_ASSERT(tmp_fval==9.99f);
+    
+    CPPUNIT_ASSERT(props2.get_field("a_string",tmp_sval));
+    CPPUNIT_ASSERT(tmp_sval=="Goodbye");
+    CPPUNIT_ASSERT(props2.get_field("prop2_string",tmp_sval));
+    CPPUNIT_ASSERT(tmp_sval=="World");
+    CPPUNIT_ASSERT(props2.get_field("prop2_ivalue",tmp_ival));
+    CPPUNIT_ASSERT(tmp_ival==3);
+    CPPUNIT_ASSERT(props2.get_field("prop2_fvalue",tmp_fval));
+    CPPUNIT_ASSERT(tmp_fval==0.01f);
+    
+    // test adding, result should be that all
+    // fields that doesn't exist in the rhs
+    // appears in lhs without overwriting in 
+    // lhs if the fields are the same in both.
+    props+=props2;
+    
+    CPPUNIT_ASSERT(props.sizeof_str_field() == 3);
+    CPPUNIT_ASSERT(props.sizeof_num_field() == 4);
+    CPPUNIT_ASSERT(props.get_field("a_string",tmp_sval));
+    CPPUNIT_ASSERT(tmp_sval=="Hello");
+    CPPUNIT_ASSERT(props.get_field("prop1_string",tmp_sval));
+    CPPUNIT_ASSERT(tmp_sval=="World");
+    CPPUNIT_ASSERT(props.get_field("prop1_ivalue",tmp_ival));
+    CPPUNIT_ASSERT(tmp_ival==1);
+    CPPUNIT_ASSERT(props.get_field("prop1_fvalue",tmp_fval));
+    CPPUNIT_ASSERT(tmp_fval==9.99f);
+    CPPUNIT_ASSERT(props.get_field("prop2_string",tmp_sval));
+    CPPUNIT_ASSERT(tmp_sval=="World");
+    CPPUNIT_ASSERT(props.get_field("prop2_ivalue",tmp_ival));
+    CPPUNIT_ASSERT(tmp_ival==3);
+    CPPUNIT_ASSERT(props.get_field("prop2_fvalue",tmp_fval));
+    CPPUNIT_ASSERT(tmp_fval==0.01f);
+    
+    CPPUNIT_ASSERT(props2.sizeof_str_field() == 2);
+    CPPUNIT_ASSERT(props2.sizeof_num_field() == 2);
+    CPPUNIT_ASSERT(props2.get_field("a_string",tmp_sval));
+    CPPUNIT_ASSERT(tmp_sval=="Goodbye");
+    CPPUNIT_ASSERT(props2.get_field("prop2_string",tmp_sval));
+    CPPUNIT_ASSERT(tmp_sval=="World");
+    CPPUNIT_ASSERT(props2.get_field("prop2_ivalue",tmp_ival));
+    CPPUNIT_ASSERT(tmp_ival==3);
+    CPPUNIT_ASSERT(props2.get_field("prop2_fvalue",tmp_fval));
+    CPPUNIT_ASSERT(tmp_fval==0.01f);
+}

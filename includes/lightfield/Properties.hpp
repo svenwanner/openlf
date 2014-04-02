@@ -51,9 +51,32 @@ public:
     Properties();
     Properties(string filename);
     Properties(const char* filename);
-    Properties(const Properties& orig);
+    //Properties(const Properties& orig);
     virtual ~Properties();
     
+    
+    //! prints the properties on the console
+    /*!
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void log();
+    
+    
+    
+    //! overload of += operator 
+    /*!
+     Important: the properties on the right hand side of the operator 
+     is added to the left hand side. If both have fields with the same
+     name the fields from lhs stay unchanged, the rhs values are ignored.
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    Properties & operator+=(Properties &rhs);
+    
+    
+    //! clears the property fields
+    /*!
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
     void clear();
     
     

@@ -29,6 +29,7 @@ class test_lightfield_IO : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_IO_Pipeline_3DH);
     CPPUNIT_TEST(test_IO_Pipeline_3DV);
     CPPUNIT_TEST(test_IO_Pipeline_CROSS);
+    CPPUNIT_TEST(test_Properties_methods);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -43,6 +44,7 @@ private:
     void test_IO_Pipeline_3DH();
     void test_IO_Pipeline_3DV();
     void test_IO_Pipeline_CROSS();
+    void test_Properties_methods();
     
     map<string,string> cfgnames;
     map<string,string> imgnames;
