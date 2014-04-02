@@ -78,9 +78,43 @@ bool OpenLF::lightfield::Lightfield::open(const char* filename)
 
 
 
+bool OpenLF::lightfield::Lightfield::has_property(string name) {
+    return properties.has_field(name);
+}
 
 
+bool OpenLF::lightfield::Lightfield::get_property(string name, int &value) 
+{
+    return properties.get_field(name,value);
+}
+    
 
+bool OpenLF::lightfield::Lightfield::get_property(string name, float &value)
+{
+    return properties.get_field(name,value);
+}
+
+
+bool OpenLF::lightfield::Lightfield::get_property(string name, double &value)
+{
+    return properties.get_field(name,value);
+}
+
+
+bool OpenLF::lightfield::Lightfield::get_property(string name, string &value)
+{
+    return properties.get_field(name,value);
+}
+
+LF_TYPE OpenLF::lightfield::Lightfield::type()
+{
+    LF_TYPE lftype;
+    properties.get_lftype(lftype);
+    return lftype;
+}
+    
+    
+    
 
 
 

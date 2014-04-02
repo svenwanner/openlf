@@ -113,6 +113,24 @@ void OpenLF::lightfield::Properties::get_str_field_keys(vector<string> &keys)
 }
 
 
+
+bool OpenLF::lightfield::Properties::has_field(string fieldname) 
+{
+    for (auto& k : number_fields) {
+        if(k.first==fieldname)
+            return true;
+    }
+    for (auto& k : string_fields) {
+        if(k.first==fieldname)
+            return true;
+    }
+    return false;
+}
+
+
+
+
+
 bool OpenLF::lightfield::Properties::get_lftype(LF_TYPE &lftype)
 {
     print(1,"lightfield::Properties::get_lftype(&lftype) called...");
