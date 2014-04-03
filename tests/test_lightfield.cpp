@@ -100,7 +100,7 @@ void test_lightfield::test_instantiate_Lightfield()
     
     // test has property method
     CPPUNIT_ASSERT(lf->has_property("width"));
-    CPPUNIT_ASSERT(!lf->has_property("withdom"));
+    CPPUNIT_ASSERT(!lf->has_property("notThere"));
     CPPUNIT_ASSERT(lf->type()==LF_4D);
     
     // test getting properties
