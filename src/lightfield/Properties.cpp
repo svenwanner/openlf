@@ -101,18 +101,15 @@ OpenLF::lightfield::Properties & OpenLF::lightfield::Properties::operator+=(Open
     
     for (auto& k : rhs.number_fields) {
         key = k.first;
-        if(!this->has_field(key)) {
-            rhs.get_field(key,nvalue);
-            this->set_field(key,nvalue);
-        }
+        rhs.get_field(key,nvalue);
+        this->set_field(key,nvalue);
+      
     }
     
     for (auto& k : rhs.string_fields) {
         key = k.first;
-        if(!this->has_field(key)) {
-            rhs.get_field(key,svalue);
-            this->set_field(key,svalue);
-        }
+        rhs.get_field(key,svalue);
+        this->set_field(key,svalue);
     }
     return *this;  
 }

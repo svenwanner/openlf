@@ -142,3 +142,12 @@ void OpenLF::lightfield::Lightfield::data(string channel_name, vigra::MultiArray
     if (channels.find(channel_name) == channels.end()) *channel_data = NULL;
     else *channel_data = &channels[channel_name];
 }
+
+
+
+
+
+
+void OpenLF::lightfield::Lightfield::append_properties(OpenLF::lightfield::Properties &properties) {
+    this->properties += properties;
+}

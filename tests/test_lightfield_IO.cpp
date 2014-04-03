@@ -917,7 +917,7 @@ void test_lightfield_IO::test_Properties_methods()
     CPPUNIT_ASSERT(props.sizeof_str_field() == 3);
     CPPUNIT_ASSERT(props.sizeof_num_field() == 4);
     CPPUNIT_ASSERT(props.get_field("a_string",tmp_sval));
-    CPPUNIT_ASSERT(tmp_sval=="Hello");
+    CPPUNIT_ASSERT(tmp_sval=="Goodbye");
     CPPUNIT_ASSERT(props.get_field("prop1_string",tmp_sval));
     CPPUNIT_ASSERT(tmp_sval=="World");
     CPPUNIT_ASSERT(props.get_field("prop1_ivalue",tmp_ival));

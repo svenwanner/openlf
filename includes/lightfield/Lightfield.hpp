@@ -31,6 +31,7 @@ namespace OpenLF {
     namespace lightfield { 
 
 class Lightfield {
+    
 public:
     Lightfield();
     Lightfield(string filename);
@@ -149,7 +150,13 @@ public:
     void data(string channel_name, vigra::MultiArray<2,float> ** channel_data);
     
     
-private:
+    
+    
+    
+    void append_properties(Properties &properties);
+    
+    
+protected:
     map< string,vigra::MultiArray<2,float> > channels; 
     OpenLF::lightfield::io::DataHandler *dataHandler;
     OpenLF::lightfield::Properties properties;

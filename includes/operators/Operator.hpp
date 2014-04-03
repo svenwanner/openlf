@@ -17,24 +17,45 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "operator/Operator.hpp"
+#ifndef OPERATOR_HPP
+#define	OPERATOR_HPP
 
-OpenLF::operators::Operator::Operator() 
-{
-    clear();
-}
+#include "global.hpp"
+#include "lightfield/Lightfield.hpp"
 
-OpenLF::operators::Operator::Operator(const Operator& orig) 
-{
-}
 
-OpenLF::operators::Operator::~Operator() 
-{
-}
+namespace OpenLF {
+    namespace operators {
+     
+    
 
-void OpenLF::operators::Operator::clear() 
-{
-    lf = NULL;
-    properties = NULL;
-}
+class Operator {
+public:
+    Operator();
+    Operator(const Operator& orig);
+    virtual ~Operator();
+    void clear();
+    
+    //! input interface to set a lightfield 
+    /*!
+     \param lf pointer to a light field instance
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void input(OpenLF::lightfield::Lightfield *lf);
+    
+    //! input interface to set additional properties
+    /*!
+     \param properties pointer to a Properties instance
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void input(OpenLF::lightfield::Properties *properties);
+
+protected:
+    OpenLF::lightfield::Lightfield *lf;
+    OpenLF::lightfield::Properties *properties;
+
+};
+
+}}
+#endif	/* OPERATOR_HPP */
 
