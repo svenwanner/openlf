@@ -35,22 +35,16 @@ void test_channel::tearDown() {
 void test_channel::test_initialization() {
     OpenLF::image::ImageChannel channel;
     map<string,OpenLF::image::ImageChannel> channels;
-    
-    vigra::MultiArray<2,float> *tmp;
   
-//    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["straw_bw"],channels));
     CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["straw_rgb"],channels));
+    CPPUNIT_ASSERT(channels["r"].width()==1023);
+    CPPUNIT_ASSERT(channels["r"].height()==774);
     
-//    ch.init(straw_bw["bw"].width(),straw_bw["bw"].height(),straw_bw["bw"].data());
-//    
-//    CPPUNIT_ASSERT(ch.width()==straw_bw["bw"].width());
-//    CPPUNIT_ASSERT(ch.height()==straw_bw["bw"].height());
-//    
-//    ch.data(&tmp);
-//    
-//    OpenLF::image::io::imsave("/home/swanner/Desktop/test.jpg",*tmp);
-//    delete tmp;
-
+    channels.clear();
+    
+    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["straw_bw"],channels));
+    CPPUNIT_ASSERT(channels["bw"].width()==1023);
+    CPPUNIT_ASSERT(channels["bw"].height()==774);
 }
 
 

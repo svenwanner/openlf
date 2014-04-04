@@ -23,8 +23,6 @@
 
 OpenLF::image::ImageChannel::ImageChannel() {
     print(1,"image::ImageChannel::ImageChannel() called...");
-    
-    pixel = NULL;
 }
 
 OpenLF::image::ImageChannel::ImageChannel(int width, int height)
@@ -62,29 +60,28 @@ OpenLF::image::ImageChannel::ImageChannel(const ImageChannel& orig)
 
 OpenLF::image::ImageChannel::~ImageChannel() 
 {
-    delete pixel;
 }
 
 
 
 void OpenLF::image::ImageChannel::init(int width, int height) 
 {
-    pixel = new array_2d(vigra::Shape2(width,height));
+    pixel = array_2d(vigra::Shape2(width,height));
 }
 
 
 void OpenLF::image::ImageChannel::init(vigra::Shape2 shape)
 {
-    pixel = new array_2d(shape);
+    pixel = array_2d(shape);
 }
 
 
 void OpenLF::image::ImageChannel::init(int width, int height, float* data_ptr) 
 {
-    pixel = new array_2d(vigra::Shape2(width,height));
+    pixel = array_2d(vigra::Shape2(width,height));
     
-    float *local_ptr = pixel->data();
-    for(int n=0; n<width*height; n++) {
+    float *local_ptr = pixel.data();
+    for(int n=0; n < width * height; n++) {
         local_ptr[n] = data_ptr[n];
     }
 }
@@ -92,21 +89,21 @@ void OpenLF::image::ImageChannel::init(int width, int height, float* data_ptr)
 
 void OpenLF::image::ImageChannel::init(vigra::Shape2 shape, float* data_ptr)
 {
-    pixel = new array_2d(shape);
+    pixel = array_2d(shape);
     
-    float *local_ptr = pixel->data();
-    for(int n=0; n<shape[0]*shape[1]; n++) {
+    float *local_ptr = pixel.data();
+    for(int n=0; n < shape[0] * shape[1]; n++) {
         local_ptr[n] = data_ptr[n];
     }
 }
 
 
-void OpenLF::image::ImageChannel::init(int width, int height, vigra::UInt8* data_ptr) 
+void OpenLF::image::ImageChannel::init(int width, int height, vigra::UInt8 * data_ptr) 
 {
-    pixel = new array_2d(vigra::Shape2(width,height));
+    pixel = array_2d(vigra::Shape2(width,height));
     
-    float *local_ptr = pixel->data();
-    for(int n=0; n<width*height; n++) {
+    float *local_ptr = pixel.data();
+    for(int n=0; n < width * height; n++) {
         local_ptr[n] = (float)data_ptr[n]/255.0;
     }
 }
@@ -114,10 +111,10 @@ void OpenLF::image::ImageChannel::init(int width, int height, vigra::UInt8* data
 
 void OpenLF::image::ImageChannel::init(vigra::Shape2 shape, vigra::UInt8* data_ptr)
 {
-    pixel = new array_2d(shape);
+    pixel = array_2d(shape);
     
-    float *local_ptr = pixel->data();
-    for(int n=0; n<shape[0]*shape[1]; n++) {
+    float *local_ptr = pixel.data();
+    for(int n=0; n < shape[0] * shape[1]; n++) {
         local_ptr[n] = (float)data_ptr[n]/255.0;
     }
 }
@@ -130,7 +127,7 @@ float* OpenLF::image::ImageChannel::data_ptr()
 {
     print(1,"image::Channel::data_ptr() called...");
     
-    return this->pixel->data();
+    return pixel.data();
 }
 
 
@@ -138,7 +135,7 @@ vigra::MultiArray<2,float>* OpenLF::image::ImageChannel::data()
 {
     print(1,"image::Channel::data() called...");
     
-    return this->pixel;
+    return &pixel;
 }
 
 
@@ -146,5 +143,5 @@ void OpenLF::image::ImageChannel::data(vigra::MultiArray<2,float> **pixel)
 {
     print(1,"image::Channel::data(**pixel) called...");
     
-    *pixel = this->pixel;
+    *pixel = &this->pixel;
 }

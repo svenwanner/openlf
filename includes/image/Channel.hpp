@@ -107,21 +107,21 @@ public:
     /*!
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    int width() { return pixel->width(); };
+    int width() { return pixel.width(); };
     
     
     //! get height
     /*!
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    int height() { return pixel->height(); };
+    int height() { return pixel.height(); };
     
     
     //! get shape
     /*!
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    vigra::Shape2 shape() { return pixel->shape(); };
+    vigra::Shape2 shape() { return pixel.shape(); };
     
     
     
@@ -152,7 +152,7 @@ public:
     
     
 private:
-    array_2d *pixel;
+    array_2d pixel;
 };
 
 
