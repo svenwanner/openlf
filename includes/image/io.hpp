@@ -24,6 +24,7 @@
 #include "debug.hpp"
 #include "global.hpp"
 #include "utils/helpers.hpp"
+#include "image/Channel.hpp"
 
 namespace OpenLF { 
     namespace image { 
@@ -61,6 +62,19 @@ void linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2,
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
 bool imread(string filename, map<string,vigra::MultiArray<2,float>> &channels);
+
+
+//! read an image from file and store channels in map structure
+/*!
+ Load an image from file and stores the image channels in the passed map structure.
+ Labels "bw" for a gray value image and "r","g","b" for color images are set automatically.
+ The passed channel map isn't cleared. If one of the channels above already exist
+ it's overwritten, if other channels are present they will be kept. 
+ \param filename full path of the image file
+ \param channels map object of string labels as keys and Channel instance as data 
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/ 
+bool imread(string filename, map<string,OpenLF::image::ImageChannel> &channels);
 
 
 //! saves an image to file

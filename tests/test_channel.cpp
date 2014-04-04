@@ -33,18 +33,24 @@ void test_channel::tearDown() {
 }
 
 void test_channel::test_initialization() {
-    OpenLF::image::Channel ch;
+    OpenLF::image::ImageChannel channel;
+    map<string,OpenLF::image::ImageChannel> channels;
     
     vigra::MultiArray<2,float> *tmp;
   
-    ch.init(straw_bw["bw"].width(),straw_bw["bw"].height(),straw_bw["bw"].data());
+//    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["straw_bw"],channels));
+    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["straw_rgb"],channels));
     
-    CPPUNIT_ASSERT(ch.width()==straw_bw["bw"].width());
-    CPPUNIT_ASSERT(ch.height()==straw_bw["bw"].height());
-    
-    ch.data(&tmp);
-    
-    OpenLF::image::io::imsave("/home/swanner/Desktop/test.jpg",*tmp);
+//    ch.init(straw_bw["bw"].width(),straw_bw["bw"].height(),straw_bw["bw"].data());
+//    
+//    CPPUNIT_ASSERT(ch.width()==straw_bw["bw"].width());
+//    CPPUNIT_ASSERT(ch.height()==straw_bw["bw"].height());
+//    
+//    ch.data(&tmp);
+//    
+//    OpenLF::image::io::imsave("/home/swanner/Desktop/test.jpg",*tmp);
+//    delete tmp;
+
 }
 
 

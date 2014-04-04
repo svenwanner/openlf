@@ -1,9 +1,21 @@
-/* 
- * File:   Channel.hpp
- * Author: swanner
- *
- * Created on April 3, 2014, 11:27 AM
- */
+/*
+* Copyright (c) 2014 Sven Wanner
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy of 
+* this software and associated documentation files (the "Software"), to deal in 
+* the Software without restriction, including without limitation the rights to use,
+* copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the 
+* Software, and to permit persons to whom the Software is furnished to do so, 
+* subject to the following conditions:
+* The above copyright notice and this permission notice shall be included in all 
+* copies or substantial portions of the Software.
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+* PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
+* OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #ifndef CHANNEL_HPP
 #define	CHANNEL_HPP
@@ -18,13 +30,22 @@ namespace OpenLF {
     
 
 
-class Channel {
+class ImageChannel {
 public:
-    Channel();
-    Channel(const Channel& orig);
-    virtual ~Channel();
+    ImageChannel();
+    ImageChannel(int width, int height);
+    ImageChannel(vigra::Shape2 shape);
+    ImageChannel(int width, int height, float* data_ptr);
+    ImageChannel(vigra::Shape2 shape, float* data_ptr);
     
-    //! allocate memory
+    ImageChannel(const ImageChannel& orig);
+    virtual ~ImageChannel();
+    
+    
+    
+    
+    
+    //! allocate empty memory from image size 
     /*!
      \param width image width
      \param height image height
@@ -33,7 +54,7 @@ public:
     void init(int width, int height);
     
     
-    //!  allocate memory
+    //!  allocate empty memory from shape
     /*!
      \param shape image shape
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
@@ -41,7 +62,7 @@ public:
     void init(vigra::Shape2 shape);
     
     
-    //!  allocate memory
+    //!  allocate memory from shape and float data pointer
     /*!
      \param shape image shape
      \param data_ptr float pointer to data 
@@ -50,7 +71,7 @@ public:
     void init(vigra::Shape2 shape, float* data_ptr);
     
     
-    //!  allocate memory
+    //!  allocate memory from image size and float data pointer
     /*!
      \param width image width
      \param height image height
@@ -60,7 +81,24 @@ public:
     void init(int width, int height, float* data_ptr);
     
     
+    //!  allocate memory from shape and uint8 data pointer
+    /*!
+     \param shape image shape
+     \param data_ptr uint8 pointer to data 
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void init(vigra::Shape2 shape, vigra::UInt8* data_ptr);
     
+    
+    //!  allocate memory from image size and uint8 data pointer
+    /*!
+     \param width image width
+     \param height image height
+     \param data_ptr uint8 pointer to data 
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void init(int width, int height, vigra::UInt8* data_ptr);
+   
     
     
     
@@ -91,6 +129,12 @@ public:
     
     
     
+    //! returns a pointer to the data as MultiArray<2,float>
+    /*!
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    float* data_ptr();
+    
     
     //! returns a pointer to the data as MultiArray<2,float>
     /*!
@@ -114,4 +158,3 @@ private:
 
 }}
 #endif	/* CHANNEL_HPP */
-

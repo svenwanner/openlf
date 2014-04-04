@@ -94,9 +94,19 @@ add_executable(OpenLF_test_lightfield
 	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
 
 
+#TEST: test_channel
+add_executable(OpenLF_test_channel 
+	./tests/test_channel_run.cpp
+	./tests/test_channel.cpp 
+	${SRCS} ${HDRS})
+    target_link_libraries(OpenLF_test_channel  hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex
+	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
+
+
 enable_testing()
 add_test(OpenLF_test_image ./test_release/OpenLF_test_image)
 add_test(OpenLF_test_imgproc ./test_release/OpenLF_test_imgproc)
 add_test(OpenLF_test_lightfield_IO ./test_release/OpenLF_test_lightfield_IO)
 add_test(OpenLF_test_lightfield ./test_release/OpenLF_test_lightfield)
+add_test(OpenLF_test_channel ./test_release/OpenLF_test_channel)
 
