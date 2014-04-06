@@ -830,7 +830,7 @@ bool OpenLF::lightfield::io::save_to_hdf5( string file_name,
         }
         
         // write all attributes left as float or string
-        for(int n=0; n<fields.size(); n++) {
+        for(unsigned int n=0; n<fields.size(); n++) {
             if(properties->get_field(fields[n],ftmp))
                 file.writeAttribute("/LF/",fields[n],ftmp);
         }
@@ -838,7 +838,7 @@ bool OpenLF::lightfield::io::save_to_hdf5( string file_name,
         
         
         properties->get_str_field_keys(fields);
-        for(int n=0; n<fields.size(); n++) {
+        for(unsigned int n=0; n<fields.size(); n++) {
             if(properties->get_field(fields[n],stmp))
                 file.writeAttribute("/LF/",fields[n],stmp);
         }

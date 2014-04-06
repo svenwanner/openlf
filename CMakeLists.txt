@@ -5,16 +5,19 @@ project (OpenLF)
 set (OpenLF_VERSION_MAJOR 1)
 set (OpenLF_VERSION_MINOR 0)
 
+#CONFIG += debug_and_release
+
 include_directories(./src/)
 include_directories(./includes/)
 
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/test_release)
+#set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/test_release)
 
 # configure a header file to pass some of the CMake settings
 # to the source code
 find_package(OpenGL)
 find_package(HDF5)
 find_package(Vigra)
+find_package(OpenMP)
 find_package(OpenCV REQUIRED )
 find_package(Boost REQUIRED )
 
@@ -42,11 +45,20 @@ ADD_DEFINITIONS(${HDF5_CPPFLAGS})
 # so that we will find TutorialConfig.h
 include_directories("${PROJECT_SOURCE_DIR}")
 
+# conditional include openmp
+if(OPENMP_FOUND)
+message("OPENMP FOUND")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
+
+
 # uncomment this for develop building
-set(CMAKE_CXX_FLAGS "-g -O -Wall -Wshadow -Wextra -fopenmp -std=c++0x -march=native")
+#set(CMAKE_CXX_FLAGS "-g -O -Wall -Wshadow -Wextra -std=c++0x -march=native")
 
 # uncomment this for release build to get best code optimization
-#set(CMAKE_CXX_FLAGS "-g -O -Wall -Wshadow -Wextra -fopenmp -std=c++0x -O3 -#march=native")
+set(CMAKE_CXX_FLAGS "-g -O -Wall -Wshadow -Wextra  -std=c++0x -O3 -march=native")
 
 # add the executable
 
