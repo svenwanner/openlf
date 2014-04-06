@@ -5,12 +5,10 @@ project (OpenLF)
 set (OpenLF_VERSION_MAJOR 1)
 set (OpenLF_VERSION_MINOR 0)
 
-#CONFIG += debug_and_release
-
 include_directories(./src/)
 include_directories(./includes/)
 
-#set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/test_release)
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/test_release)
 
 # configure a header file to pass some of the CMake settings
 # to the source code
