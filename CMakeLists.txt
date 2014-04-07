@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 2.8.3)
 project (OpenLF)
 
 # The version number.
@@ -58,10 +58,18 @@ endif()
 # uncomment this for release build to get best code optimization
 set(CMAKE_CXX_FLAGS "-g -O -Wall -Wshadow -Wextra  -std=c++0x -O3 -march=native")
 
+execute_process(COMMAND ${CMAKE_CURRENT_LIST_DIR}/configure)
+
 # add the executable
 
     message( "INFO: RELEASE BUILD" )
 
+add_custom_target(
+	    Configure
+	    COMMAND ${CMAKE_CURRENT_LIST_DIR}/configure ${CMAKE_CURRENT_LIST_FILE}
+)
+
+	
 #WORKFLOW: sandbox 
     add_executable(OpenLF_sandbox
 	./workflows/sandbox.cpp
@@ -69,6 +77,7 @@ set(CMAKE_CXX_FLAGS "-g -O -Wall -Wshadow -Wextra  -std=c++0x -O3 -march=native"
     target_link_libraries(OpenLF_sandbox hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex 
 	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
 
+add_dependencies(OpenLF_sandbox Configure)
 
 #TEST: test_image 
     add_executable(OpenLF_test_image
@@ -78,6 +87,7 @@ set(CMAKE_CXX_FLAGS "-g -O -Wall -Wshadow -Wextra  -std=c++0x -O3 -march=native"
     target_link_libraries(OpenLF_test_image hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex 
 	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
 
+add_dependencies(OpenLF_test_image Configure)
 
 #TEST: test_imgproc 
 add_executable(OpenLF_test_imgproc
@@ -87,6 +97,8 @@ add_executable(OpenLF_test_imgproc
     target_link_libraries(OpenLF_test_imgproc hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex 
 	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
 
+add_dependencies(OpenLF_test_imgproc Configure)
+
 #TEST: test_lightfield_IO 
 add_executable(OpenLF_test_lightfield_IO 
 	./tests/test_lightfield_IO_run.cpp
@@ -94,6 +106,8 @@ add_executable(OpenLF_test_lightfield_IO
 	${SRCS} ${HDRS})
     target_link_libraries(OpenLF_test_lightfield_IO  hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex
 	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
+
+add_dependencies(OpenLF_test_lightfield_IO Configure)
 
 #TEST: test_lightfield 
 add_executable(OpenLF_test_lightfield 
@@ -103,6 +117,7 @@ add_executable(OpenLF_test_lightfield
     target_link_libraries(OpenLF_test_lightfield  hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex
 	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
 
+add_dependencies(OpenLF_test_lightfield Configure)
 
 #TEST: test_channel
 add_executable(OpenLF_test_channel 
@@ -112,6 +127,7 @@ add_executable(OpenLF_test_channel
     target_link_libraries(OpenLF_test_channel  hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex
 	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
 
+add_dependencies(OpenLF_test_channel Configure)
 
 enable_testing()
 add_test(OpenLF_test_image ./test_release/OpenLF_test_image)
