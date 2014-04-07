@@ -1,20 +1,37 @@
 #!/bin/bash 
-SCRIPT=$(readlink "$0")
-SCRIPTPATH=$(dirname "$SCRIPT")
-TESTDATAPATH=$(dirname "$SCRIPT")
-TESTOUTPUTPATH=$(dirname "$SCRIPT")
-SETTINGSPATH=$(dirname "$SCRIPT")
+# run "greadlink" and "gdirname" instead of "readlink" and "dirname" on Mac
+if [ "$(uname)" == "Darwin" ]; then
+	READLINK=greadlink
+	DIRNAME=gdirname
+else
+	READLINK=readlink
+	DIRNAME=dirname
+fi
 
-TESTLFPATH=$(dirname "$SCRIPT")
+# Absolute path to this script
+if [ $# -eq 1 ]
+then
+    SCRIPT=$($READLINK -f "$1")
+else
+	SCRIPT=$($READLINK -f "$0")
+fi
 
-TESTLF_4D_wide=$(dirname "$SCRIPT")
-TESTLF_4D_high=$(dirname "$SCRIPT")
-TESTLF_3DH_wide=$(dirname "$SCRIPT")
-TESTLF_3DH_high=$(dirname "$SCRIPT")
-TESTLF_3DV_wide=$(dirname "$SCRIPT")
-TESTLF_3DV_high=$(dirname "$SCRIPT")
-TESTLF_CROSS_wide=$(dirname "$SCRIPT")
-TESTLF_CROSS_high=$(dirname "$SCRIPT")
+
+# Absolute path this script is in, thus /home/user/bin
+SCRIPTPATH=$($DIRNAME "$SCRIPT")
+TESTDATAPATH=$($DIRNAME "$SCRIPT")
+TESTOUTPUTPATH=$($DIRNAME "$SCRIPT")
+SETTINGSPATH=$($DIRNAME "$SCRIPT")
+TESTLFPATH=$($DIRNAME "$SCRIPT")
+
+TESTLF_4D_wide=$($DIRNAME "$SCRIPT")
+TESTLF_4D_high=$($DIRNAME "$SCRIPT")
+TESTLF_3DH_wide=$($DIRNAME "$SCRIPT")
+TESTLF_3DH_high=$($DIRNAME "$SCRIPT")
+TESTLF_3DV_wide=$($DIRNAME "$SCRIPT")
+TESTLF_3DV_high=$($DIRNAME "$SCRIPT")
+TESTLF_CROSS_wide=$($DIRNAME "$SCRIPT")
+TESTLF_CROSS_high=$($DIRNAME "$SCRIPT")
 
 
 SETTINGSPATH+="/tests/settings.hpp"
@@ -32,6 +49,8 @@ TESTLF_3DV_high+="/tests/data/OpenLF_testLF/3DV/h1_v7_h64_w48/"
 TESTLF_CROSS_wide+="/tests/data/OpenLF_testLF/CROSS/h7_v5_h48_w64/"
 TESTLF_CROSS_high+="/tests/data/OpenLF_testLF/CROSS/h5_v7_h64_w48/"
 
+
+mkdir $TESTDATAPATH/output
 
 echo "create settings file: $SETTINGSPATH"
 touch $SETTINGSPATH
@@ -61,7 +80,5 @@ const string test_lf_CROSS_high = "$TESTLF_CROSS_high";
 #endif	/* TEST_SETTINGS_H */
 EOM
 
-cd tests
-cd data
-mkdir output
+
 
