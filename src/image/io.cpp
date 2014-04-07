@@ -23,7 +23,7 @@
 
 void OpenLF::image::io::reduce_channels(map<string,vigra::MultiArray<2,float>> &channels,vector<string> keys_to_keep)
 {
-    print(2,"image::io::reduce_channels(channels,keys_to_keep) called...");
+    print(1,"image::io::reduce_channels(channels,keys_to_keep) called...");
     
     // if no labels to keep passed return void
     if(keys_to_keep.size() == 0) return;
@@ -54,7 +54,7 @@ void OpenLF::image::io::reduce_channels(map<string,vigra::MultiArray<2,float>> &
 
 void OpenLF::image::io::reduce_channels(map<string,OpenLF::image::ImageChannel> &channels,vector<string> keys_to_keep)
 {
-    print(2,"image::io::reduce_channels(channels,keys_to_keep) called...");
+    print(1,"image::io::reduce_channels(channels,keys_to_keep) called...");
     
     // if no labels to keep passed return void
     if(keys_to_keep.size() == 0) return;
@@ -85,7 +85,7 @@ void OpenLF::image::io::reduce_channels(map<string,OpenLF::image::ImageChannel> 
 
 void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2, vigra::UInt8>& img) 
 {
-    print(2,"image::io::linear_range_mapping(fimg,img) called...");
+    print(1,"image::io::linear_range_mapping(fimg,img) called...");
     
     try {
         // functor to find range
@@ -120,7 +120,7 @@ void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, v
 
 void OpenLF::image::io::linear_range_mapping(OpenLF::image::ImageChannel& img_channel, vigra::MultiArray<2, vigra::UInt8>& img) 
 {
-    print(2,"image::io::linear_range_mapping(img_channel,img) called...");
+    print(1,"image::io::linear_range_mapping(img_channel,img) called...");
     
     try {
         // functor to find range
@@ -128,11 +128,13 @@ void OpenLF::image::io::linear_range_mapping(OpenLF::image::ImageChannel& img_ch
         
         // find original range
         vigra::MultiArray<2,float> *tmp;
+        tmp = NULL;
         tmp = img_channel.data();
+        
+        if(tmp==NULL) throw OpenLF_Exception("image::io::linear_range_mapping failed, pointer NULL Exception!");
         
         vigra::inspectImage(vigra::srcImageRange(*tmp), minmax);
         if(minmax.max<=minmax.min) throw OpenLF_Exception("image::io::linear_range_mapping failed, no distance in image to map!");
-        
         
         int nmin, nmax;
         // if original range is btw [0,1] keep relative range by multiplying min/max with 255
@@ -305,7 +307,6 @@ bool OpenLF::image::io::imread(string filename, map<string,OpenLF::image::ImageC
             int n=0;
             for(int y=0; y<height; y++) {
                 for(int x=0; x<width; x++) {
-                    cout << r_ptr[n] << ",";
                     r_ptr[n] = ((float)in(x,y)[0])/255.0f;
                     g_ptr[n] = ((float)in(x,y)[1])/255.0f;
                     b_ptr[n] = ((float)in(x,y)[2])/255.0f;
@@ -461,7 +462,6 @@ bool OpenLF::image::io::imsave(string filename, map<string,vigra::MultiArray<2,f
                         rgb(x,y)[c] = tmp(x,y);
                     }
                 }
-
                 // delete r,g and b channel
                 channels.erase(channel_labels[c]);
             }
@@ -502,12 +502,12 @@ bool OpenLF::image::io::imsave(string filename, map<string,vigra::MultiArray<2,f
 
 
 
-bool OpenLF::image::io::imsave(string filename, map<string,OpenLF::image::ImageChannel> channels)
+bool OpenLF::image::io::imsave(string filename, map<string,OpenLF::image::ImageChannel> &channels)
 {
     print(2,"image::io::imsave(filename, channels) called...");
-
+  
     string ftype = OpenLF::helpers::find_ftype(filename);
-    
+       
     try {
         
         // if a grayscale channel exist save
@@ -531,7 +531,7 @@ bool OpenLF::image::io::imsave(string filename, map<string,OpenLF::image::ImageC
         if ( channels.count("r") != 0 && channels.count("g") != 0  && channels.count("b") != 0 ) {
 
             string msg = "save image as color " + ftype +"...";  print(3,msg.c_str());
-
+           
             // adapt filename to set the appendix
             string rgb_filename = string(filename);
             int insert_pos = filename.length()-(ftype.length()+1);
@@ -543,7 +543,6 @@ bool OpenLF::image::io::imsave(string filename, map<string,OpenLF::image::ImageC
 
             // allocate memory to store range mapping results
             vigra::MultiArray<2,vigra::UInt8> tmp(vigra::Shape2(channels["r"].width(),channels["r"].height()));
-      
             
             // range map data and copy to output image
             vector<string> channel_labels {"r","g","b"};

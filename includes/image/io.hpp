@@ -166,7 +166,7 @@ an appendix.
  \param channels map of string labels as keys and MultiArrays as data 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-bool imsave(string filename, map<string,ImageChannel> channels);
+bool imsave(string filename, map<string,ImageChannel> &channels);
 
 
 //! saves a channel image to file

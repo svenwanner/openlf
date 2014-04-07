@@ -55,7 +55,14 @@ OpenLF::image::ImageChannel::ImageChannel(vigra::Shape2 shape, float* data_ptr)
 
 OpenLF::image::ImageChannel::ImageChannel(const ImageChannel& orig) 
 {
+    int w = orig.width();
+    int h = orig.height();
+    this->pixel = array_2d(vigra::Shape2(w,h));
     
+    float* d_ptr = orig.data_ptr();
+    for(int n=0; n<h*w; n++) {
+        this->pixel.data()[n] = d_ptr[n];
+    }
 }
 
 OpenLF::image::ImageChannel::~ImageChannel() 
@@ -123,7 +130,7 @@ void OpenLF::image::ImageChannel::init(vigra::Shape2 shape, vigra::UInt8* data_p
 
 
 
-float* OpenLF::image::ImageChannel::data_ptr()
+float* OpenLF::image::ImageChannel::data_ptr() const
 {
     print(1,"image::Channel::data_ptr() called...");
     
@@ -131,7 +138,7 @@ float* OpenLF::image::ImageChannel::data_ptr()
 }
 
 
-vigra::MultiArray<2,float>* OpenLF::image::ImageChannel::data() 
+vigra::MultiArray<2,float>* OpenLF::image::ImageChannel::data()
 {
     print(1,"image::Channel::data() called...");
     

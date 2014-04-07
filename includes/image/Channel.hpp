@@ -107,21 +107,21 @@ public:
     /*!
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    int width() { return pixel.width(); };
+    int width() const { return pixel.width(); };
     
     
     //! get height
     /*!
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    int height() { return pixel.height(); };
+    int height() const { return pixel.height(); };
     
     
     //! get shape
     /*!
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    vigra::Shape2 shape() { return pixel.shape(); };
+    vigra::Shape2 shape() const { return pixel.shape(); };
     
     
     
@@ -133,7 +133,7 @@ public:
     /*!
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    float* data_ptr();
+    float* data_ptr() const;
     
     
     //! returns a pointer to the data as MultiArray<2,float>
