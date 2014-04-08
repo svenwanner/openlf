@@ -81,6 +81,18 @@ OpenLF::image::ImageChannel::ImageChannel(vigra::Shape2 shape, float* data_ptr)
 }
 
 /*! 
+ * Initialize ImageChannel instance with by copying data from a passed vigra
+ * MultiArray reference.
+ * 
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
+ */
+OpenLF::image::ImageChannel::ImageChannel(array_2d &vmarr) 
+{
+    init(vmarr.width(),vmarr.height(),vmarr.data());
+}
+
+
+/*! 
  * This copy constructor is used to be a deep copy constructor copying the all
  * properties and the data as well.
  * 
@@ -196,17 +208,6 @@ void OpenLF::image::ImageChannel::set(float value)
 { 
     for(int n=0; n<this->pixel.width()*this->pixel.height(); n++)
         this->pixel.data()[n] = value; 
-}
-
-/*!
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
- */
-void OpenLF::image::ImageChannel::set(int x, int y, float value)
-{ 
-    if(x<0 || x>=this->pixel.width()) throw OpenLF_Exception("Out of x bounce Exception! in image::ImageChannel::set(x,y,value)");
-    if(y<0 || y>=this->pixel.height()) throw OpenLF_Exception("Out of y bounce Exception! in image::ImageChannel::set(x,y,value)");
-    
-    this->pixel.data()[y*this->pixel.width()+x] = value; 
 }
 
 /*!

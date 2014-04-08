@@ -74,6 +74,16 @@ void test_channel::test_initialization() {
     CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_single_channels_bw.jpg",channels["bw"]));
     
     channels.clear();
+    
+    
+    // test init using a vigra MultiArray
+    vigra::MultiArray<2,float> tarr(vigra::Shape2(3,3));
+    for(int y=0; y<3; y++)
+        for(int x=0; x<3; x++)
+            tarr(x,y) = x+1;
+    CPPUNIT_ASSERT(tarr.sum<float>()==18.0f);
+    OpenLF::image::ImageChannel ic_tarr(tarr);
+    CPPUNIT_ASSERT(ic_tarr.sum()==18.0f);
 }
 
 
@@ -115,7 +125,7 @@ void test_channel::test_operator_overload()
     ic_res_1 = 0.0f;
     for(int y=0; y<3; y++)
         for(int x=0; x<3; x++) 
-            ic_res_2.set(x,y,x);
+            ic_res_2(x,y)=x;
     
     CPPUNIT_ASSERT(ic_res_1.sum()==0.0f);
     CPPUNIT_ASSERT(ic_res_2.sum()==9.0f);
@@ -137,25 +147,25 @@ void test_channel::test_operator_overload()
     ic_res_1 /= 2.0f;
     CPPUNIT_ASSERT(ic_res_1.sum()==9.0f);
     
-    // test '*=' and '/=' pixelwise operator
+    // test '*=' and '/=' pixelwise and () operator
     ic_res_1 = 1.0f;
     ic_res_1 *= ic_res_2;
     for(int y=0; y<3; y++)
         for(int x=0; x<3; x++) 
-            CPPUNIT_ASSERT(ic_res_1.get(x,y)==x);
+            CPPUNIT_ASSERT(ic_res_1(x,y)==x);
     
     ic_res_1 = 0.0f;
     ic_res_2 = 0.0f;
     for(int y=0; y<3; y++) {
         for(int x=0; x<3; x++) {
-            ic_res_1.set(x,y,x+1);
-            ic_res_2.set(x,y,x+1);
+            ic_res_1(x,y)=x+1;
+            ic_res_2(x,y)=x+1;
         }
     }
     
     ic_res_1 /= ic_res_2;
     for(int y=0; y<3; y++)
         for(int x=0; x<3; x++) 
-            CPPUNIT_ASSERT(ic_res_1.get(x,y)==1.0f);
+            CPPUNIT_ASSERT(ic_res_1(x,y)==1.0f);
 }
 

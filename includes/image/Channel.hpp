@@ -23,11 +23,9 @@
 #include "global.hpp"
 #include "debug.hpp"
 
+
+
 typedef vigra::MultiArray<2,float> array_2d;
-
-
-
-
 
 
 
@@ -80,6 +78,12 @@ public:
      \param data_ptr image data 
     */
     ImageChannel(vigra::Shape2 shape, float* data_ptr);
+    
+    //! Initialize with vigra MultiArray constructor
+    /*!
+     \param vmarr vigra MultiArray<2,float> 
+    */
+    ImageChannel(array_2d &vmarr);
     
     //! copy constructor
     /*!
@@ -185,23 +189,6 @@ public:
     void set(float value);
     
     
-    //! set pixel x,y to value passed 
-    /*!
-     \param x pixel position
-     \param y pixel position
-     \param float value to set
-    */
-    void set(int x, int y, float value);
-    
-    
-    //! get pixel x,y to value passed 
-    /*!
-     \param x pixel position
-     \param y pixel position
-    */
-   float get(int x, int y) { return pixel(x,y); };
-    
-    
     //! get sum over all image pixels
     double sum() { return pixel.sum<double>(); };
     
@@ -227,6 +214,11 @@ public:
 //////            O P E R A T O R    O V E R L O A D S
 ////////////////////////////////////////////////////////////////////////////////
     
+    //! overload of () operator 
+    float & operator() (int x, int y) { return pixel(x,y); }
+    
+    //! overload of () operator 
+    //void operator() (int x, int y, float value) { pixel(x,y) = value; }
     
     //! overload of = operator 
     ImageChannel & operator=(float value);

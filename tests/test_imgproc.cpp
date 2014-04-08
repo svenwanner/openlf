@@ -124,9 +124,9 @@ void test_imgproc::test_diff_abs_mse()
     int n=0;
     for(int y=0; y<3; y++) {
         for(int x=0; x<3; x++) {
-            ic_tmp_1.set(x,y,n);
-            ic_tmp_2.set(x,y,n);
-            ic_tmp_3.set(x,y,n+0.1*n);
+            ic_tmp_1(x,y)=n;
+            ic_tmp_2(x,y)=n;
+            ic_tmp_3(x,y)=n+0.1*n;
             n++;
         }
     }
