@@ -29,6 +29,7 @@ class test_channel : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_channel);
 
     CPPUNIT_TEST(test_initialization);
+    CPPUNIT_TEST(test_operator_overload);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -40,6 +41,7 @@ public:
 
 private:
     void test_initialization();
+    void test_operator_overload();
     
     
     map<string,string> imgnames;

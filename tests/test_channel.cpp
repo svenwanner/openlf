@@ -11,28 +11,25 @@
 CPPUNIT_TEST_SUITE_REGISTRATION(test_channel);
 
 test_channel::test_channel() {
-}
-
-test_channel::~test_channel() {
-    cout << "tests run through!" << endl;
-}
-
-void test_channel::setUp() {
-    
     imgnames["lena_rgb"] = test_data_dir+"lena_rgb.jpg";
     imgnames["lena_bw"] = test_data_dir+"lena_bw.jpg";
     imgnames["straw_rgb"] = test_data_dir+"straw_rgb.jpg";
     imgnames["straw_bw"] = test_data_dir+"straw_bw.jpg";
-                
-    cout <<  imgnames["lena_rgb"] << " " << imgnames["lena_bw"] << endl;
-    
+                   
     CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["lena_rgb"],lena_rgb));
     CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["lena_bw"],lena_bw));
     CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["straw_rgb"],straw_rgb));
     CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["straw_bw"],straw_bw));
 }
 
-void test_channel::tearDown() {
+test_channel::~test_channel() {   
+}
+
+void test_channel::setUp() {
+}
+
+void test_channel::tearDown() {   
+    cout << "\ntest finished" << endl;
 }
 
 void test_channel::test_initialization() {
@@ -47,6 +44,7 @@ void test_channel::test_initialization() {
     CPPUNIT_ASSERT(channels["g"].height()==774);
     CPPUNIT_ASSERT(channels["b"].width()==1032);
     CPPUNIT_ASSERT(channels["b"].height()==774);
+    
     CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_save_single_channels_r.jpg",channels["r"]));
     CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_save_single_channels_g.jpg",channels["g"]));
     CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_save_single_channels_b.jpg",channels["b"]));
@@ -78,4 +76,86 @@ void test_channel::test_initialization() {
     channels.clear();
 }
 
+
+
+void test_channel::test_operator_overload()
+{
+    map<string,OpenLF::image::ImageChannel> channels;
+    OpenLF::image::ImageChannel ic_res_1(3,3);
+    OpenLF::image::ImageChannel ic_res_2(3,3);
+    OpenLF::image::ImageChannel ic_res_3(4,4);
+    
+    // test '==' operator
+    CPPUNIT_ASSERT(ic_res_1==ic_res_2);
+    CPPUNIT_ASSERT(ic_res_1!=ic_res_3);
+    
+    // test '=' operator
+    ic_res_1 = 0.0f;
+    ic_res_2 = 0.0f;
+    CPPUNIT_ASSERT(ic_res_1.sum()==0.0f);
+    CPPUNIT_ASSERT(ic_res_2.sum()==0.0f);
+    ic_res_1 = 1.0f;
+    CPPUNIT_ASSERT(ic_res_1.sum()==(float)(ic_res_1.width()*ic_res_1.height()));
+        
+    // test '+' operator
+    ic_res_1 = 0.0f;
+    ic_res_1 = ic_res_1 + 1.0f;
+    CPPUNIT_ASSERT(ic_res_1.sum()==(float)(ic_res_1.width()*ic_res_1.height()));
+    
+    // test '-' operator
+    ic_res_1 = ic_res_1 - 1.0f;
+    CPPUNIT_ASSERT(ic_res_1.sum()==0.0f);
+    
+    // test '+=' and '-=' operator
+    ic_res_1 += 1.0f;
+    CPPUNIT_ASSERT(ic_res_1.sum()==(float)(ic_res_1.width()*ic_res_1.height()));
+    ic_res_1 -= 1.0f;
+    CPPUNIT_ASSERT(ic_res_1.sum()==0.0f);
+    
+    ic_res_1 = 0.0f;
+    for(int y=0; y<3; y++)
+        for(int x=0; x<3; x++) 
+            ic_res_2.set(x,y,x);
+    
+    CPPUNIT_ASSERT(ic_res_1.sum()==0.0f);
+    CPPUNIT_ASSERT(ic_res_2.sum()==9.0f);
+    
+    // test '+=' and '-=' pixelwise operator
+    ic_res_1 += ic_res_2;
+    CPPUNIT_ASSERT(ic_res_1.sum()==9.0f);
+    
+    ic_res_1 -= ic_res_2;
+    CPPUNIT_ASSERT(ic_res_1.sum()==0.0f);
+    
+    ic_res_1 += 1.0f;
+    CPPUNIT_ASSERT(ic_res_1.sum()==9.0f);
+    
+    // test '*=' and '/=' operator
+    ic_res_1 *= 2.0f;
+    CPPUNIT_ASSERT(ic_res_1.sum()==18.0f);
+    
+    ic_res_1 /= 2.0f;
+    CPPUNIT_ASSERT(ic_res_1.sum()==9.0f);
+    
+    // test '*=' and '/=' pixelwise operator
+    ic_res_1 = 1.0f;
+    ic_res_1 *= ic_res_2;
+    for(int y=0; y<3; y++)
+        for(int x=0; x<3; x++) 
+            CPPUNIT_ASSERT(ic_res_1.get(x,y)==x);
+    
+    ic_res_1 = 0.0f;
+    ic_res_2 = 0.0f;
+    for(int y=0; y<3; y++) {
+        for(int x=0; x<3; x++) {
+            ic_res_1.set(x,y,x+1);
+            ic_res_2.set(x,y,x+1);
+        }
+    }
+    
+    ic_res_1 /= ic_res_2;
+    for(int y=0; y<3; y++)
+        for(int x=0; x<3; x++) 
+            CPPUNIT_ASSERT(ic_res_1.get(x,y)==1.0f);
+}
 

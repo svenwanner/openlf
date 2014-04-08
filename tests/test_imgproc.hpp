@@ -15,13 +15,18 @@
 #include "settings.hpp"
 #include "image/imgproc.hpp"
 
+#include "image/Channel.hpp"
+
+
 class test_imgproc : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_imgproc);
 
     CPPUNIT_TEST(test_shape_check);
-    CPPUNIT_TEST(test_difference);
-    CPPUNIT_TEST(test_abs_difference);
-    CPPUNIT_TEST(test_MSE);
+    CPPUNIT_TEST(test_diff_abs_mse);
+    
+    //###### to delete later ##################################
+//    CPPUNIT_TEST(test_abs_difference);
+//    CPPUNIT_TEST(test_MSE);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -33,9 +38,11 @@ public:
 
 private:
     void test_shape_check();
-    void test_difference();
-    void test_abs_difference();
-    void test_MSE();
+    void test_diff_abs_mse();
+    
+    //###### to delete later ##################################
+//    void test_abs_difference();
+//    void test_MSE();
     
     map<string,string> imgnames;
     map<string,vigra::MultiArray<2,float> > lena_rgb;

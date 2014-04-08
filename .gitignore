@@ -10,3 +10,4 @@ doc/*
 tests/data/output/*
 build/
 .directory
+latex/

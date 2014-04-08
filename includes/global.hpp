@@ -34,9 +34,11 @@
 #include <cctype>
 
 #include <algorithm>
+#include <stdexcept>
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
+#include <limits> 
 #include <vector>
 #include <string>
 #include <math.h>

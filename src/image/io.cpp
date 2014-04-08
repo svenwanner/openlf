@@ -44,7 +44,6 @@ void OpenLF::image::io::reduce_channels(map<string,vigra::MultiArray<2,float>> &
 
         // if not found erase channel
         if(key_found==0) {
-            cout << "erase " << key << endl;
             channels.erase(key);
         }
     }
@@ -75,7 +74,6 @@ void OpenLF::image::io::reduce_channels(map<string,OpenLF::image::ImageChannel> 
 
         // if not found erase channel
         if(key_found==0) {
-            cout << "erase " << key << endl;
             channels.erase(key);
         }
     }
@@ -129,7 +127,7 @@ void OpenLF::image::io::linear_range_mapping(OpenLF::image::ImageChannel& img_ch
         // find original range
         vigra::MultiArray<2,float> *tmp;
         tmp = NULL;
-        tmp = img_channel.data();
+        tmp = img_channel.image();
         
         if(tmp==NULL) throw OpenLF_Exception("image::io::linear_range_mapping failed, pointer NULL Exception!");
         
@@ -294,13 +292,13 @@ bool OpenLF::image::io::imread(string filename, map<string,OpenLF::image::ImageC
             
             
             float* r_ptr = NULL;
-            r_ptr = img_channel["r"].data_ptr();
+            r_ptr = img_channel["r"].data();
             if(r_ptr==NULL) throw OpenLF_Exception("imread read channel error!");
             float* g_ptr = NULL;
-            g_ptr = img_channel["g"].data_ptr();
+            g_ptr = img_channel["g"].data();
             if(g_ptr==NULL) throw OpenLF_Exception("imread read channel error!");
             float* b_ptr = NULL;
-            b_ptr = img_channel["b"].data_ptr();
+            b_ptr = img_channel["b"].data();
             if(b_ptr==NULL) throw OpenLF_Exception("imread read channel error!");
 
             // copy data into lf container

@@ -25,31 +25,85 @@
 
 typedef vigra::MultiArray<2,float> array_2d;
 
+
+
+
+
+
+
+
 namespace OpenLF {
     namespace image {
     
-
-
+        
+//! Vigra MultiArray wrapper to provide a single 2D image channel
+/*!
+ * This class is used to be a wrapper of Vigra MultiArray's of type
+ * vigra::MultiArray<2,float>. The intention is to provide a 2D image
+ * channel as part of a multi-channel structure to handle an arbitrary 
+ * number of image and result data in a common structure. The data are
+ * stored in a vigra::MultiArray<2,float>. One has access to the data 
+ * via pointer passing of either the array itself or the float pointer 
+ * to the memory block. The class behaves quite similar to a vigra Multi-
+ * Array 
+ */
 class ImageChannel {
 public:
+    
+    //! Default constructor
     ImageChannel();
+    
+    //! Empty image constructor
+    /*!
+     \param width image width
+     \param height image height
+    */
     ImageChannel(int width, int height);
+    
+    //! Empty image constructor
+    /*!
+     \param shape of the empty image
+    */
     ImageChannel(vigra::Shape2 shape);
+    
+    //! Initialize with float array constructor
+    /*!
+     \param width image width
+     \param height image height
+     \param data_ptr image data 
+    */
     ImageChannel(int width, int height, float* data_ptr);
+    
+    //! Initialize with float array constructor
+    /*!
+     \param shape
+     \param data_ptr image data 
+    */
     ImageChannel(vigra::Shape2 shape, float* data_ptr);
     
+    //! copy constructor
+    /*!
+     \param orig ImageChannel reference to copy from 
+    */
     ImageChannel(const ImageChannel& orig);
+    
+    //! default destructor
+    /*!
+    */
     virtual ~ImageChannel();
     
     
     
     
     
+////////////////////////////////////////////////////////////////////////////////
+//////                    I N I T I A L I Z E R S 
+////////////////////////////////////////////////////////////////////////////////
+    
     //! allocate empty memory from image size 
     /*!
      \param width image width
      \param height image height
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     void init(int width, int height);
     
@@ -57,7 +111,6 @@ public:
     //!  allocate empty memory from shape
     /*!
      \param shape image shape
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     void init(vigra::Shape2 shape);
     
@@ -66,7 +119,6 @@ public:
     /*!
      \param shape image shape
      \param data_ptr float pointer to data 
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     void init(vigra::Shape2 shape, float* data_ptr);
     
@@ -76,7 +128,6 @@ public:
      \param width image width
      \param height image height
      \param data_ptr float pointer to data 
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     void init(int width, int height, float* data_ptr);
     
@@ -85,7 +136,6 @@ public:
     /*!
      \param shape image shape
      \param data_ptr uint8 pointer to data 
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     void init(vigra::Shape2 shape, vigra::UInt8* data_ptr);
     
@@ -95,13 +145,17 @@ public:
      \param width image width
      \param height image height
      \param data_ptr uint8 pointer to data 
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     void init(int width, int height, vigra::UInt8* data_ptr);
-   
     
     
     
+    
+    
+    
+////////////////////////////////////////////////////////////////////////////////
+//////                S E T / G E T   M E T H O D S  
+////////////////////////////////////////////////////////////////////////////////
     
     //! get width
     /*!
@@ -124,30 +178,92 @@ public:
     vigra::Shape2 shape() const { return pixel.shape(); };
     
     
-    
-    
-    
-    
-    
-    //! returns a pointer to the data as MultiArray<2,float>
+    //! set all pixels to value passed 
     /*!
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+     \param float value to set
     */
-    float* data_ptr() const;
+    void set(float value);
     
     
-    //! returns a pointer to the data as MultiArray<2,float>
+    //! set pixel x,y to value passed 
     /*!
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+     \param x pixel position
+     \param y pixel position
+     \param float value to set
     */
-    vigra::MultiArray<2,float>* data();
+    void set(int x, int y, float value);
     
     
-    //! set the passed pointer to a MultiArray<2,float> pointer to point to internal data address
+    //! get pixel x,y to value passed 
     /*!
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+     \param x pixel position
+     \param y pixel position
     */
-    void data(vigra::MultiArray<2,float> **pixel);
+   float get(int x, int y) { return pixel(x,y); };
+    
+    
+    //! get sum over all image pixels
+    double sum() { return pixel.sum<double>(); };
+    
+    
+    //! get a pointer to the data as MultiArray<2,float>
+    float* data() const;
+    
+    
+    //! get a pointer to the data as MultiArray<2,float>
+    vigra::MultiArray<2,float>* image();
+    
+    
+    //! set the passed MultiArray<2,float> pointer to internal data address
+    /*!
+     \param pixel a pointer to a pointer to a MultiArray
+    */
+    void image(vigra::MultiArray<2,float> **pixel);
+   
+   
+   
+   
+////////////////////////////////////////////////////////////////////////////////
+//////            O P E R A T O R    O V E R L O A D S
+////////////////////////////////////////////////////////////////////////////////
+    
+    
+    //! overload of = operator 
+    ImageChannel & operator=(float value);
+    
+    //! overload of + operator 
+    ImageChannel & operator+(float value);
+    
+    //! overload of - operator 
+    ImageChannel & operator-(float value);
+    
+    //! overload of += operator 
+    ImageChannel & operator+=(float value);
+    
+    //! overload of -= operator
+    ImageChannel & operator-=(float value);
+    
+    //! overload of += operator pixelwise
+    ImageChannel & operator+=(ImageChannel &rhs);
+    
+    //! overload of -= operator pixelwise
+    ImageChannel & operator-=(ImageChannel &rhs);
+    
+    //! overload of *= operator 
+    ImageChannel & operator*=(float value);
+    
+    //! overload of /= operator 
+    ImageChannel & operator/=(float value);
+    
+    //! overload of *= operator pixelwise
+    ImageChannel & operator*=(ImageChannel &rhs);
+    
+    //! overload of /= operator pixelwise
+    ImageChannel & operator/=(ImageChannel &rhs);
+    
+    
+    
+
     
     
     
@@ -157,4 +273,15 @@ private:
 
 
 }}
+
+
+
+
+//! overload of == operator 
+bool operator==(const OpenLF::image::ImageChannel & lhs, const OpenLF::image::ImageChannel & rhs);
+
+//! overload of != operator 
+bool operator!=(const OpenLF::image::ImageChannel & lhs, const OpenLF::image::ImageChannel & rhs);
+
+
 #endif	/* CHANNEL_HPP */

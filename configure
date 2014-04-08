@@ -50,7 +50,7 @@ TESTLF_CROSS_wide+="/tests/data/OpenLF_testLF/CROSS/h7_v5_h48_w64/"
 TESTLF_CROSS_high+="/tests/data/OpenLF_testLF/CROSS/h5_v7_h64_w48/"
 
 
-mkdir $TESTDATAPATH/output
+mkdir -p $TESTDATAPATH/output
 
 echo "create settings file: $SETTINGSPATH"
 touch $SETTINGSPATH
