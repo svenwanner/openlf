@@ -8,18 +8,9 @@
 #ifndef TEST_CHANNEL_HPP
 #define	TEST_CHANNEL_HPP
 
-#include "settings.hpp"
-
-#include "debug.hpp"
 #include "global.hpp"
-#include "image/io.hpp"
-#include "image/imgproc.hpp"
+#include "settings.hpp"
 #include "image/Channel.hpp" 
-#include "utils/helpers.hpp"
-#include "lightfield/io.hpp"
-#include "lightfield/Properties.hpp"
-#include "lightfield/FileHandler.hpp"
-#include "lightfield/Lightfield.hpp"
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -42,13 +33,6 @@ public:
 private:
     void test_initialization();
     void test_operator_overload();
-    
-//    
-//    map<string,string> imgnames;
-//    map<string,vigra::MultiArray<2,float> > lena_rgb;
-//    map<string,vigra::MultiArray<2,float> > lena_bw;
-//    map<string,vigra::MultiArray<2,float> > straw_rgb;
-//    map<string,vigra::MultiArray<2,float> > straw_bw;
 };
 
 #endif	/* TEST_CHANNEL_HPP */

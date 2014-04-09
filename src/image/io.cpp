@@ -81,38 +81,38 @@ void OpenLF::image::io::reduce_channels(map<string,OpenLF::image::ImageChannel> 
 
 
 
-//void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2, vigra::UInt8>& img) 
-//{
-//    print(1,"image::io::linear_range_mapping(fimg,img) called...");
-//    
-//    try {
-//        // functor to find range
-//        vigra::FindMinMax<vigra::FImage::PixelType> minmax;
-//        
-//        // find original range
-//        vigra::inspectImage(vigra::srcImageRange(fimg), minmax);
-//        if(minmax.max<=minmax.min) throw OpenLF_Exception("image::io::linear_range_mapping failed, no distance in image to map!");
-//        
-//        
-//        int nmin, nmax;
-//        // if original range is btw [0,1] keep relative range by multiplying min/max with 255
-//        if(minmax.min>=0 && minmax.min<1 && minmax.max>0 && minmax.max<=1) {
-//            nmin = int(ceil(minmax.min*255));
-//            nmax = int(floor(minmax.max*255));
-//        }
-//        // else scale hard to [0,255]
-//        else {
-//            nmin = 0;
-//            nmax = 255;
-//        }
-//            
-//        // transform the range to min/max specified
-//        vigra::transformImage(vigra::srcImageRange(fimg), vigra::destImage(img),
-//                              vigra::linearRangeMapping( minmax.min, minmax.max, nmin, nmax) );
-//    } catch(exception & e) {
-//        warning(e.what());
-//    }
-//}
+void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2, vigra::UInt8>& img) 
+{
+    print(1,"image::io::linear_range_mapping(fimg,img) called...");
+    
+    try {
+        // functor to find range
+        vigra::FindMinMax<vigra::FImage::PixelType> minmax;
+        
+        // find original range
+        vigra::inspectImage(vigra::srcImageRange(fimg), minmax);
+        if(minmax.max<=minmax.min) throw OpenLF_Exception("image::io::linear_range_mapping failed, no distance in image to map!");
+        
+        
+        int nmin, nmax;
+        // if original range is btw [0,1] keep relative range by multiplying min/max with 255
+        if(minmax.min>=0 && minmax.min<1 && minmax.max>0 && minmax.max<=1) {
+            nmin = int(ceil(minmax.min*255));
+            nmax = int(floor(minmax.max*255));
+        }
+        // else scale hard to [0,255]
+        else {
+            nmin = 0;
+            nmax = 255;
+        }
+            
+        // transform the range to min/max specified
+        vigra::transformImage(vigra::srcImageRange(fimg), vigra::destImage(img),
+                              vigra::linearRangeMapping( minmax.min, minmax.max, nmin, nmax) );
+    } catch(exception & e) {
+        warning(e.what());
+    }
+}
 
 
 
@@ -322,34 +322,34 @@ bool OpenLF::image::io::imread(string filename, map<string,OpenLF::image::ImageC
 
 
 
-//bool OpenLF::image::io::imsave(string filename, vigra::MultiArray<2,float> img)
-//{
-//    print(2,"image::io::imread(filename,img) called...");
-//    
-//    // get file type
-//    string ftype = OpenLF::helpers::find_ftype(filename);
-//    
-//    try {
-//        // allocate memory to store range mapping results
-//        vigra::MultiArray<2,vigra::UInt8> tmp(vigra::Shape2(img.width(),img.height()));
-//        linear_range_mapping(img,tmp);
-//
-//        if(ftype=="jpg")
-//            vigra::exportImage(tmp, vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=75"));
-//        else
-//            vigra::exportImage(tmp, filename.c_str());
-//        
-//    } catch(exception & e) {
-//        warning(e.what());
-//        return false;
-//    }
-//    
-//    return true;
-//}
+bool OpenLF::image::io::imsave(string filename, vigra::MultiArray<2,float> img)
+{
+    print(2,"image::io::imread(filename,img) called...");
+    
+    // get file type
+    string ftype = OpenLF::helpers::find_ftype(filename);
+    
+    try {
+        // allocate memory to store range mapping results
+        vigra::MultiArray<2,vigra::UInt8> tmp(vigra::Shape2(img.width(),img.height()));
+        linear_range_mapping(img,tmp);
+
+        if(ftype=="jpg")
+            vigra::exportImage(tmp, vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=75"));
+        else
+            vigra::exportImage(tmp, filename.c_str());
+        
+    } catch(exception & e) {
+        warning(e.what());
+        return false;
+    }
+    
+    return true;
+}
 
 
 
-bool OpenLF::image::io::imsave(string filename, OpenLF::image::ImageChannel &img_channel)
+bool OpenLF::image::io::imsave(string filename, OpenLF::image::ImageChannel img_channel)
 {
     print(2,"image::io::imread(filename,channel_img) called...");
     
@@ -391,7 +391,7 @@ bool OpenLF::image::io::imsave(string filename, OpenLF::image::ImageChannel &img
 
 
 
-bool OpenLF::image::io::imsave(string filename, map<string,OpenLF::image::ImageChannel> &channels, string key)
+bool OpenLF::image::io::imsave(string filename, map<string,OpenLF::image::ImageChannel> channels, string key)
 /*TEST: test_image::test_io() */
 {
     print(2,"image::io::save(filename,channels,key) called...");
@@ -500,7 +500,7 @@ bool OpenLF::image::io::imsave(string filename, map<string,OpenLF::image::ImageC
 
 
 
-bool OpenLF::image::io::imsave(string filename, map<string,OpenLF::image::ImageChannel> &channels)
+bool OpenLF::image::io::imsave(string filename, map<string,OpenLF::image::ImageChannel> channels)
 {
     print(2,"image::io::imsave(filename, channels) called...");
   

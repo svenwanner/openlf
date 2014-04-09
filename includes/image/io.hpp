@@ -59,7 +59,7 @@ void reduce_channels(map<string,ImageChannel> &channels,vector<string> keys_to_k
  \param img result MultiArray 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-//void linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2, vigra::UInt8>& img);
+void linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2, vigra::UInt8>& img);
 
 
 //! map the pixel values to a range of [0,255]
@@ -104,7 +104,7 @@ bool imread(string filename, map<string,OpenLF::image::ImageChannel> &img_channe
  \param img MultiArray float image
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-//bool imsave(string filename, vigra::MultiArray<2,float> img);
+bool imsave(string filename, vigra::MultiArray<2,float> img);
 
 
 //! saves an Channel instance to file
@@ -114,7 +114,7 @@ bool imread(string filename, map<string,OpenLF::image::ImageChannel> &img_channe
  \param channel_img instance of the Channel class 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-bool imsave(string filename, ImageChannel &img_channel);
+bool imsave(string filename, ImageChannel img_channel);
 
 
 
@@ -137,7 +137,7 @@ bool imsave(string filename, ImageChannel &img_channel);
  \param key of the channel
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */     
-bool imsave(string filename, map< string,ImageChannel> &channels, string key);
+bool imsave(string filename, map< string,ImageChannel> channels, string key);
 
 
 
@@ -164,7 +164,7 @@ an appendix.
  \param channels map of string labels as keys and MultiArrays as data 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-bool imsave(string filename, map<string,ImageChannel> &channels);
+bool imsave(string filename, map<string,ImageChannel> channels);
 
 
 //! saves a channel image to file

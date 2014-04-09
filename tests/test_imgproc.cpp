@@ -33,57 +33,15 @@ void test_imgproc::setUp() {
     imgnames["lena_bw"] = test_data_dir+"lena_bw.jpg";
     imgnames["straw_rgb"] = test_data_dir+"straw_rgb.jpg";
     imgnames["straw_bw"] = test_data_dir+"straw_bw.jpg";
-    
-    //###### to delete later ##################################
-//    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["lena_rgb"],lena_rgb));
-//    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["lena_bw"],lena_bw));
-//    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["straw_rgb"],straw_rgb));
-//    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["straw_bw"],straw_bw));
 }
 
 void test_imgproc::tearDown() {
     cout << "\n\nall tests finished" << endl;
 }
 
-void test_imgproc::test_shape_check() 
-{
-    OpenLF::image::ImageChannel ic_1(100,100);
-    OpenLF::image::ImageChannel ic_2(100,100);
-    OpenLF::image::ImageChannel ic_3(50,100);
-    
-    CPPUNIT_ASSERT(ic_1==ic_2);
-    CPPUNIT_ASSERT((ic_1!=ic_2) == false);
-    CPPUNIT_ASSERT((ic_1==ic_3) == false);
-    CPPUNIT_ASSERT(ic_1!=ic_3);
-}
 
 void test_imgproc::test_diff_abs_mse()
-{
-    //###### to delete later ##################################
-//    vigra::MultiArray<2,float> tmp1(vigra::Shape2(lena_bw["bw"].width(),lena_bw["bw"].height()));
-//    tmp1 = lena_bw["bw"];
-//    vigra::MultiArray<2,float> tmp2(vigra::Shape2(lena_bw["bw"].width(),lena_bw["bw"].height()));
-//    tmp2 = lena_bw["bw"];
-//    vigra::MultiArray<2,float> tmp3(vigra::Shape2(lena_rgb["r"].width(),lena_rgb["r"].height()));
-//    tmp3 = lena_rgb["r"];
-//    
-//    vigra::MultiArray<2,float> res1(vigra::Shape2(lena_bw["bw"].width(),lena_bw["bw"].height()));
-//    OpenLF::image::imgproc::difference(tmp1,tmp2,res1);
-//    vigra::MultiArray<2,float> res2(vigra::Shape2(lena_bw["bw"].width(),lena_bw["bw"].height()));
-//    OpenLF::image::imgproc::difference(tmp1,tmp3,res2);
-//
-//    CPPUNIT_ASSERT(res1.sum<float>()==0.0);
-//    CPPUNIT_ASSERT(res2.sum<float>()<-44400.0);
-//    
-//    res1 = 0;
-//    res2 = 0;
-//    OpenLF::image::imgproc::difference(lena_bw,lena_bw,res1);
-//    OpenLF::image::imgproc::difference(lena_rgb,lena_rgb,res2);
-//    CPPUNIT_ASSERT(res1.sum<float>()==0.0);
-//    CPPUNIT_ASSERT(res2.sum<float>()==0.0);
-    
-    
-    
+{   
     map<string,OpenLF::image::ImageChannel> channels;
     OpenLF::image::io::imread(imgnames["lena_rgb"],channels);
     OpenLF::image::ImageChannel ic_r = channels["r"];
@@ -142,56 +100,3 @@ void test_imgproc::test_diff_abs_mse()
     CPPUNIT_ASSERT(mses["g"]==0.0);
     CPPUNIT_ASSERT(mses["b"]==0.0);
 }
-
-
-//###### to delete later ##################################
-//void test_imgproc::test_abs_difference() 
-//{
-//    vigra::MultiArray<2,float> tmp1(vigra::Shape2(lena_bw["bw"].width(),lena_bw["bw"].height()));
-//    tmp1 = lena_bw["bw"];
-//    vigra::MultiArray<2,float> tmp2(vigra::Shape2(lena_bw["bw"].width(),lena_bw["bw"].height()));
-//    tmp2 = lena_bw["bw"];
-//    vigra::MultiArray<2,float> tmp3(vigra::Shape2(lena_rgb["r"].width(),lena_rgb["r"].height()));
-//    tmp3 = lena_rgb["r"];
-//    
-//    vigra::MultiArray<2,float> res1(vigra::Shape2(lena_bw["bw"].width(),lena_bw["bw"].height()));
-//    OpenLF::image::imgproc::abs_difference(tmp1,tmp2,res1);
-//    vigra::MultiArray<2,float> res2(vigra::Shape2(lena_bw["bw"].width(),lena_bw["bw"].height()));
-//    OpenLF::image::imgproc::abs_difference(tmp1,tmp3,res2);
-//
-//    CPPUNIT_ASSERT(res1.sum<float>()==0.0);
-//    CPPUNIT_ASSERT(res2.sum<float>()>46600.0);
-//    
-//    res1 = 0;
-//    res2 = 0;
-//    OpenLF::image::imgproc::abs_difference(lena_bw,lena_bw,res1);
-//    OpenLF::image::imgproc::abs_difference(lena_rgb,lena_rgb,res2);
-//    CPPUNIT_ASSERT(res1.sum<float>()==0.0);
-//    CPPUNIT_ASSERT(res2.sum<float>()==0.0);
-//}
-
-
-//###### to delete later ##################################
-//void test_imgproc::test_MSE()
-//{
-//    double mse = 0;
-//    vigra::MultiArray<2,float> tmp1(vigra::Shape2(3,3));
-//    vigra::MultiArray<2,float> tmp2(vigra::Shape2(3,3));
-//    vigra::MultiArray<2,float> tmp3(vigra::Shape2(3,3));
-//    
-//    for(int n=0; n<9; n++) {
-//        tmp1.data()[n] = n;
-//        tmp2.data()[n] = n;
-//        tmp3.data()[n] = n+0.1*n;
-//    }
-//    
-//    CPPUNIT_ASSERT(OpenLF::image::imgproc::MSE(tmp1,tmp2)==0.0);
-//    mse = OpenLF::image::imgproc::MSE(tmp1,tmp3);
-//    CPPUNIT_ASSERT((mse<0.226668 && mse>0.226666));
-//    
-//    map<string,double> mses;
-//    OpenLF::image::imgproc::MSE(lena_rgb,lena_rgb,mses);
-//    CPPUNIT_ASSERT(mses["r"]==0.0);
-//    CPPUNIT_ASSERT(mses["g"]==0.0);
-//    CPPUNIT_ASSERT(mses["b"]==0.0);
-//}
