@@ -11,15 +11,15 @@
 CPPUNIT_TEST_SUITE_REGISTRATION(test_channel);
 
 test_channel::test_channel() {
-    imgnames["lena_rgb"] = test_data_dir+"lena_rgb.jpg";
-    imgnames["lena_bw"] = test_data_dir+"lena_bw.jpg";
-    imgnames["straw_rgb"] = test_data_dir+"straw_rgb.jpg";
-    imgnames["straw_bw"] = test_data_dir+"straw_bw.jpg";
-                   
-    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["lena_rgb"],lena_rgb));
-    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["lena_bw"],lena_bw));
-    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["straw_rgb"],straw_rgb));
-    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["straw_bw"],straw_bw));
+//    imgnames["lena_rgb"] = test_data_dir+"lena_rgb.jpg";
+//    imgnames["lena_bw"] = test_data_dir+"lena_bw.jpg";
+//    imgnames["straw_rgb"] = test_data_dir+"straw_rgb.jpg";
+//    imgnames["straw_bw"] = test_data_dir+"straw_bw.jpg";
+//                   
+//    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["lena_rgb"],lena_rgb));
+//    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["lena_bw"],lena_bw));
+//    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["straw_rgb"],straw_rgb));
+//    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["straw_bw"],straw_bw));
 }
 
 test_channel::~test_channel() {   

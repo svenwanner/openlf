@@ -30,8 +30,8 @@ public:
     void test_io();
     
 private:
-    string _lena_rgb_dir;
-    string _lena_bw_dir;
+//    string _lena_rgb_dir;
+//    string _lena_bw_dir;
 };
 
 #endif	/* TEST_IMAGE_HPP */

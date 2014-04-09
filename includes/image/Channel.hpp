@@ -24,7 +24,6 @@
 #include "debug.hpp"
 
 
-
 typedef vigra::MultiArray<2,float> array_2d;
 
 

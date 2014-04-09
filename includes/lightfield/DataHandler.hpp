@@ -22,6 +22,7 @@
 #define	DATAHANDLER_HPP
 
 #include "global.hpp"
+#include "image/Channel.hpp"
 #include "lightfield/Properties.hpp"
 
 
@@ -62,7 +63,7 @@ public:
     */ 
     void set_configfile(const char* config_filename);
     
-    virtual bool readData(map<string,vigra::MultiArray<2,float> >& channels) = 0;
+    virtual bool readData(map<string,OpenLF::image::ImageChannel>& channels) = 0;
     
 protected:
     string type;            //!< type of input config_filename, disc or buffer

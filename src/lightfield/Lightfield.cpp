@@ -118,26 +118,25 @@ LF_TYPE OpenLF::lightfield::Lightfield::type()
 
 
 
-void OpenLF::lightfield::Lightfield::data(map< string,vigra::MultiArray<2,float> > **channels) {
+void OpenLF::lightfield::Lightfield::data(map<string,OpenLF::image::ImageChannel> **channels) {
     print(1,"lightfield::Lightfield::data(channels) called...");
     *channels = &this->channels;
 }
 
 
-map< string,vigra::MultiArray<2,float> > * OpenLF::lightfield::Lightfield::data() {
+map<string,OpenLF::image::ImageChannel> * OpenLF::lightfield::Lightfield::data() {
     print(1,"lightfield::Lightfield::data(channels) called...");
     cout << "address of channels : " << &this->channels << endl;
     return &this->channels;
 }
 
-vigra::MultiArray<2,float> *OpenLF::lightfield::Lightfield::data(string channel_name) {
+OpenLF::image::ImageChannel *OpenLF::lightfield::Lightfield::data(string channel_name) {
     print(1,"lightfield::Lightfield::data(channel_name,channel_data) called...");
-    cout << "address of single channel : " << &channels[channel_name] << endl;
     if (channels.find(channel_name) == channels.end()) return NULL;
     else return &channels[channel_name];
 }
 
-void OpenLF::lightfield::Lightfield::data(string channel_name, vigra::MultiArray<2,float> **channel_data) {
+void OpenLF::lightfield::Lightfield::data(string channel_name, OpenLF::image::ImageChannel **channel_data) {
     print(1,"lightfield::Lightfield::data(channel_name,channel_data) called...");
     if (channels.find(channel_name) == channels.end()) *channel_data = NULL;
     else *channel_data = &channels[channel_name];

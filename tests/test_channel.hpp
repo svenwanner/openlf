@@ -43,12 +43,12 @@ private:
     void test_initialization();
     void test_operator_overload();
     
-    
-    map<string,string> imgnames;
-    map<string,vigra::MultiArray<2,float> > lena_rgb;
-    map<string,vigra::MultiArray<2,float> > lena_bw;
-    map<string,vigra::MultiArray<2,float> > straw_rgb;
-    map<string,vigra::MultiArray<2,float> > straw_bw;
+//    
+//    map<string,string> imgnames;
+//    map<string,vigra::MultiArray<2,float> > lena_rgb;
+//    map<string,vigra::MultiArray<2,float> > lena_bw;
+//    map<string,vigra::MultiArray<2,float> > straw_rgb;
+//    map<string,vigra::MultiArray<2,float> > straw_bw;
 };
 
 #endif	/* TEST_CHANNEL_HPP */

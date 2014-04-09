@@ -24,8 +24,8 @@
 #include "global.hpp"
 #include "image/io.hpp"
 #include "lightfield/io.hpp"
+#include "image/Channel.hpp"
 #include "lightfield/Properties.hpp"
-
 #include "lightfield/DataHandler.hpp"
 
 
@@ -59,7 +59,7 @@ public:
      \param channels map object of string labels as keys and MultiArrays as data 
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */ 
-    bool readData(map<string,vigra::MultiArray<2,float> >& channels);
+    bool readData(map<string,image::ImageChannel>& channels);
     
     
     
@@ -77,7 +77,7 @@ protected:
      \param channels map object of string labels as keys and MultiArrays as data 
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */ 
-    bool read_from_disc(map<string,vigra::MultiArray<2,float> >& channels);
+    bool read_from_disc(map<string,image::ImageChannel>& channels);
 };
 
 

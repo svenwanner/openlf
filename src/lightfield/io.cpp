@@ -25,8 +25,7 @@
 
     
 bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list, 
-                                                map< string, 
-                                                vigra::MultiArray<2,float> > &channels, 
+                                                map< string,OpenLF::image::ImageChannel> &channels, 
                                                 Properties *properties )
 
 /*TEST: via load_from_filesequence in test_lightfield::test_loading_from_imagefiles() */
@@ -65,7 +64,7 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
             print(3,"cams_h =",cams_h);
             print(3,"cams_v =",cams_v);
             
-            channels["bw"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*width,cams_v*height));
+            channels["bw"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_h*width,cams_v*height));
 
             // loop over images
             for(int v=0; v<cams_v; v++) {
@@ -104,9 +103,9 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
             print(3,"cams_h =",cams_h);
             print(3,"cams_v =",cams_v);
             
-            channels["r"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*width,cams_v*height)); 
-            channels["g"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*width,cams_v*height)); 
-            channels["b"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*width,cams_v*height)); 
+            channels["r"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_h*width,cams_v*height)); 
+            channels["g"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_h*width,cams_v*height)); 
+            channels["b"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_h*width,cams_v*height)); 
 
             for(int v=0; v<cams_v; v++) {
                 for(int h=0; h<cams_h; h++) {
@@ -158,7 +157,7 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
 
 
 bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list, 
-                                                 map< string, vigra::MultiArray<2,float> > &channels, 
+                                                 map< string,OpenLF::image::ImageChannel> &channels, 
                                                  Properties *properties ) 
 /*TEST: via load_from_filesequence in test_lightfield::test_loading_from_imagefiles() */
 {
@@ -185,7 +184,7 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
         // load grayscale images
         if(info.isGrayscale()) {
             print(3,"lightfield::io::load_3DH_structure found grayscale image...");
-            channels["bw"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*width,height));
+            channels["bw"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_h*width,height));
 
             // loop over images
             for(int h=0; h<cams_h; h++) {
@@ -218,9 +217,9 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
         else if(info.isColor()) {
             print(3,"lightfield::io::load_3DH_structure found color image...");
             
-            channels["r"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*width,height)); 
-            channels["g"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*width,height)); 
-            channels["b"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_h*width,height)); 
+            channels["r"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_h*width,height)); 
+            channels["g"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_h*width,height)); 
+            channels["b"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_h*width,height)); 
 
 
             for(int h=0; h<cams_h; h++) {
@@ -270,7 +269,7 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
 
 
 bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list, 
-                                                 map< string, vigra::MultiArray<2,float> > &channels, 
+                                                 map< string,OpenLF::image::ImageChannel> &channels, 
                                                  Properties *properties )
 
 /*TEST: via load_from_filesequence in test_lightfield::test_loading_from_imagefiles() */
@@ -298,7 +297,7 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
         // load grayscale images
         if(info.isGrayscale()) {
             print(3,"lightfield::io::load_3DV_structure found grayscale image...");
-            channels["bw"] = vigra::MultiArray<2,float>(cams_v*height,width);
+            channels["bw"] = OpenLF::image::ImageChannel(cams_v*height,width);
             //vigra::MultiArray<2,float> tmp(vigra::Shape2(cams_v*info.height(),info.width()));
 
             // loop over images
@@ -335,9 +334,9 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
         else if(info.isColor()) {
             print(3,"lightfield::io::load_3DV_structure found color image...");
             
-            channels["r"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_v*height,width)); 
-            channels["g"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_v*height,width)); 
-            channels["b"] = vigra::MultiArray<2,float>(vigra::Shape2(cams_v*height,width));
+            channels["r"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_v*height,width)); 
+            channels["g"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_v*height,width)); 
+            channels["b"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_v*height,width));
             
             for(int v=0; v<cams_v; v++) {
 
@@ -387,7 +386,7 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
 
 
 bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list, 
-                                                   map< string, vigra::MultiArray<2,float> > &channels, 
+                                                   map< string,OpenLF::image::ImageChannel> &channels, 
                                                    Properties *properties )
 
 /*TEST: via load_from_filesequence in test_lightfield::test_loading_from_imagefiles() */
@@ -429,7 +428,7 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
         // load grayscale images
         if(info.isGrayscale()) {
             print(3,"lightfield::io::load_CROSS_structure found grayscale image...");
-            channels["bw"] = vigra::MultiArray<2,float>(vigra::Shape2(lf_width,lf_height));
+            channels["bw"] = OpenLF::image::ImageChannel(vigra::Shape2(lf_width,lf_height));
 
             // loop over horizontal images
             for(int h=0; h<cams_h; h++) {
@@ -512,9 +511,9 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
         else if(info.isColor()) {
             print(3,"lightfield::io::load_CROSS_structure found color image...");
             
-            channels["r"] = vigra::MultiArray<2,float>(vigra::Shape2(lf_width,lf_height)); 
-            channels["g"] = vigra::MultiArray<2,float>(vigra::Shape2(lf_width,lf_height)); 
-            channels["b"] = vigra::MultiArray<2,float>(vigra::Shape2(lf_width,lf_height)); 
+            channels["r"] = OpenLF::image::ImageChannel(vigra::Shape2(lf_width,lf_height)); 
+            channels["g"] = OpenLF::image::ImageChannel(vigra::Shape2(lf_width,lf_height)); 
+            channels["b"] = OpenLF::image::ImageChannel(vigra::Shape2(lf_width,lf_height)); 
             
             // loop over horizontal images
             for(int h=0; h<cams_h; h++) {
@@ -638,8 +637,8 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
 
 
 
-bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string, 
-                                                    vigra::MultiArray<2,float> > &channels, 
+bool OpenLF::lightfield::io::load_from_filesequence(string dir, 
+                                                    map< string,OpenLF::image::ImageChannel> &channels, 
                                                     Properties *properties)
 
 /*TEST: test_lightfield::test_loading_from_imagefiles() */
@@ -682,7 +681,7 @@ bool OpenLF::lightfield::io::load_from_filesequence(string dir, map< string,
 
 
 bool OpenLF::lightfield::io::load_from_hdf5( string filename, 
-                     map< string, vigra::MultiArray<2,float> > &channels,
+                     map< string,OpenLF::image::ImageChannel> &channels,
                      Properties *properties ) 
 {    
     print(2,"lightfield::io::load_from_hdf5(filename,channels,properties) called...");
@@ -755,8 +754,10 @@ bool OpenLF::lightfield::io::load_from_hdf5( string filename,
                 ds_shape = file.getDatasetShape(ds_tree[id]);
                 
                 // allocate memory and read channels
-                channels[ds_tree[id]] = vigra::MultiArray<2, float>(vigra::Shape2(ds_shape[0],ds_shape[1]));
-                file.read(ds_tree[id], channels[ds_tree[id]]);
+                channels[ds_tree[id]] = OpenLF::image::ImageChannel(ds_shape[0],ds_shape[1]);
+                vigra::MultiArray<2,float> *tmp;
+                channels[ds_tree[id]].image(&tmp);
+                file.read(ds_tree[id], *tmp);
             }
             
         } else throw OpenLF_Exception("Loading light field from HDF5 failed, at least rgb or a bw channel is obligatory!");
@@ -772,7 +773,7 @@ bool OpenLF::lightfield::io::load_from_hdf5( string filename,
 
 
 bool OpenLF::lightfield::io::save_to_hdf5( string file_name, 
-                   map< string, vigra::MultiArray<2,float> > &channels,
+                   map< string,OpenLF::image::ImageChannel> &channels,
                    Properties *properties ) 
 {
     print(2,"lightfield::io::save_to_hdf5(filename,channels,properties) called...");
@@ -785,11 +786,13 @@ bool OpenLF::lightfield::io::save_to_hdf5( string file_name,
         file.mkdir("LF");
         
         // loop over channels and save each using its key as dataset names
-        for(map<string, vigra::MultiArray<2,float>>::iterator i = channels.begin(); i != channels.end(); ++i)
+        for(map<string, OpenLF::image::ImageChannel>::iterator i = channels.begin(); i != channels.end(); ++i)
         {
             string key = i->first;
             dset_name = "/LF/"+key;
-            file.write(dset_name.c_str(), channels[key]);
+            vigra::MultiArray<2,float> *tmp;
+            channels[key].image(&tmp);
+            file.write(dset_name.c_str(), *tmp);
         }        
         
         int itmp;

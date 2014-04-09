@@ -25,6 +25,7 @@
 #include "global.hpp"
 #include "image/io.hpp"
 #include "utils/helpers.hpp"
+#include "image/Channel.hpp"
 #include "lightfield/Properties.hpp"
 
 
@@ -44,7 +45,7 @@ namespace OpenLF {
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 bool load_4D_structure( vector<string> fname_list,
-                        map< string, vigra::MultiArray<2,float> > &channels,
+                        map< string,image::ImageChannel> &channels,
                         Properties *properties );
 
 
@@ -58,7 +59,7 @@ bool load_4D_structure( vector<string> fname_list,
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 bool load_3DH_structure( vector<string> fname_list,
-                         map< string, vigra::MultiArray<2,float> > &channels,
+                         map< string,image::ImageChannel> &channels,
                          Properties *properties );
 
 
@@ -72,7 +73,7 @@ bool load_3DH_structure( vector<string> fname_list,
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 bool load_3DV_structure( vector<string> fname_list,
-                         map< string, vigra::MultiArray<2,float> > &channels,
+                         map< string,image::ImageChannel> &channels,
                          Properties *properties );
 
 
@@ -86,7 +87,7 @@ bool load_3DV_structure( vector<string> fname_list,
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 bool load_cross_structure( vector<string> fname_list,
-                           map< string, vigra::MultiArray<2,float> > &channels,
+                           map< string,image::ImageChannel> &channels,
                            Properties *properties );
             
 
@@ -105,7 +106,7 @@ bool load_cross_structure( vector<string> fname_list,
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 bool load_from_filesequence( string dir, 
-                             map< string, vigra::MultiArray<2,float> > &channels,
+                             map< string,image::ImageChannel> &channels,
                              Properties *properties);
 
 
@@ -121,7 +122,7 @@ bool load_from_filesequence( string dir,
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 bool load_from_hdf5( string file_name, 
-                     map< string, vigra::MultiArray<2,float> > &channels,
+                     map< string,image::ImageChannel> &channels,
                      Properties *properties);
 
 
@@ -136,7 +137,7 @@ bool load_from_hdf5( string file_name,
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 bool save_to_hdf5( string file_name, 
-                   map< string, vigra::MultiArray<2,float> > &channels,
+                   map< string,image::ImageChannel> &channels,
                    Properties *properties);
 
 

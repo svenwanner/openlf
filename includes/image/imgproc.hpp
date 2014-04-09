@@ -40,9 +40,9 @@ namespace OpenLF {
  \param result image reference
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-void difference(map<string,vigra::MultiArray<2,float>> &channels1,
-                map<string,vigra::MultiArray<2,float>> &channels2,
-                vigra::MultiArray<2,float> &result);
+//void difference(map<string,vigra::MultiArray<2,float>> &channels1,
+//                map<string,vigra::MultiArray<2,float>> &channels2,
+//                vigra::MultiArray<2,float> &result);
 
 
 //! computes the difference btw channel images
@@ -66,9 +66,9 @@ void difference(map<string,ImageChannel> &channels1,
  \param result image reference
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-void difference(vigra::MultiArray<2,float> &img1, 
-                vigra::MultiArray<2,float> &img2,
-                vigra::MultiArray<2,float> &result);
+//void difference(vigra::MultiArray<2,float> &img1, 
+//                vigra::MultiArray<2,float> &img2,
+//                vigra::MultiArray<2,float> &result);
 
 
 
@@ -92,9 +92,9 @@ void difference(ImageChannel &img1,
  \param result image reference
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-void abs_difference(map<string,vigra::MultiArray<2,float>> &channels1,
-                    map<string,vigra::MultiArray<2,float>> &channels2,
-                    vigra::MultiArray<2,float> &result);
+//void abs_difference(map<string,vigra::MultiArray<2,float>> &channels1,
+//                    map<string,vigra::MultiArray<2,float>> &channels2,
+//                    vigra::MultiArray<2,float> &result);
 
 
 //! computes the absolute difference btw  ImageChannel |img1-img2|
@@ -116,9 +116,9 @@ void abs_difference(map<string,ImageChannel> &channels1,
  \param result image reference
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-void abs_difference(vigra::MultiArray<2,float> &img1, 
-                vigra::MultiArray<2,float> &img2,
-                vigra::MultiArray<2,float> &result);
+//void abs_difference(vigra::MultiArray<2,float> &img1, 
+//                vigra::MultiArray<2,float> &img2,
+//                vigra::MultiArray<2,float> &result);
 
 
 //! computes the absolute difference btw ImagesChannels pixelwise |img1-img2|
@@ -142,9 +142,9 @@ void abs_difference(ImageChannel &img1,
  \param results float vector storing the MSE for each channel
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-void MSE(map<string,vigra::MultiArray<2,float>> &channels1,
-         map<string,vigra::MultiArray<2,float>> &channels2,
-         map<string,double> &results);
+//void MSE(map<string,vigra::MultiArray<2,float>> &channels1,
+//         map<string,vigra::MultiArray<2,float>> &channels2,
+//         map<string,double> &results);
 
 
 //! computes the mean square error
@@ -168,8 +168,8 @@ void MSE(map<string,ImageChannel> &channels1,
  \returns mse
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-double MSE(vigra::MultiArray<2,float> &img1, 
-           vigra::MultiArray<2,float> &img2);
+//double MSE(vigra::MultiArray<2,float> &img1, 
+//           vigra::MultiArray<2,float> &img2);
 
 
 //! computes the mean square error 1/N Sum(img1(x,y)-img2(x,y))^2)

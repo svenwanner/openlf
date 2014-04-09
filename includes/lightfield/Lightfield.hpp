@@ -121,14 +121,14 @@ public:
      Returns a pointer to the channels map containing the data.
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    map< string,vigra::MultiArray<2,float> > * data();
+    map<string,OpenLF::image::ImageChannel> * data();
     
     //! set pointer passed to address data channels
     /*!
      \param channels pointer to a channels map to get the address of the internal map
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void data(map< string,vigra::MultiArray<2,float> > **channels);
+    void data(map< string,OpenLF::image::ImageChannel> **channels);
     
     //! get pointer to specific channel
     /*!
@@ -137,7 +137,7 @@ public:
      \param channel_name the name of the channel
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    vigra::MultiArray<2,float> *data(string channel_name);
+    OpenLF::image::ImageChannel *data(string channel_name);
     
     //! set pointer passed to the address of the channel specified
     /*!
@@ -147,7 +147,7 @@ public:
      \param channel_data pointer to a MultiArray to get the address of the internal channel specified
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void data(string channel_name, vigra::MultiArray<2,float> ** channel_data);
+    void data(string channel_name, OpenLF::image::ImageChannel ** channel_data);
     
     
     
@@ -157,7 +157,7 @@ public:
     
     
 protected:
-    map< string,vigra::MultiArray<2,float> > channels; 
+    map< string,OpenLF::image::ImageChannel> channels; 
     OpenLF::lightfield::io::DataHandler *dataHandler;
     OpenLF::lightfield::Properties properties;
 };
