@@ -29,15 +29,7 @@ namespace OpenLF {
     namespace image { 
         namespace imgproc {
             
-
-//! checks shape equality 
-/*!
- \param s1 shape 1
- \param s2 shape 2
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/ 
-bool shape_check(vigra::Shape2 s1, vigra::Shape2 s2);
-            
+    
 
 //! computes the difference btw channel images
 /*!

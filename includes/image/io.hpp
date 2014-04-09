@@ -53,7 +53,6 @@ void reduce_channels(map<string,vigra::MultiArray<2,float>> &channels,vector<str
 void reduce_channels(map<string,ImageChannel> &channels,vector<string> keys_to_keep);
    
 
-
 //! map the pixel values to a range of [0,255]
 /*!
  \param fimg float MultiArray to map
@@ -70,7 +69,6 @@ void linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2,
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 void linear_range_mapping(ImageChannel& img_channel, vigra::MultiArray<2, vigra::UInt8>& img);
-
 
 
 //! read an image from file and store channels in map structure
@@ -182,7 +180,6 @@ itself are automatically added to the filename as an appendix.
 */ 
 bool imsave(string filename, map<string,vigra::MultiArray<2,float>> channels,vector<string> keys_to_save);
      
-
 
 //! saves a ImageChannel instance to file
 /*!

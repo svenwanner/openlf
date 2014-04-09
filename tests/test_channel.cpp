@@ -33,57 +33,82 @@ void test_channel::tearDown() {
 }
 
 void test_channel::test_initialization() {
-    OpenLF::image::ImageChannel channel;
-    map<string,OpenLF::image::ImageChannel> channels;
-  
-    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["straw_rgb"],channels));
-    
-    CPPUNIT_ASSERT(channels["r"].width()==1032);
-    CPPUNIT_ASSERT(channels["r"].height()==774);
-    CPPUNIT_ASSERT(channels["g"].width()==1032);
-    CPPUNIT_ASSERT(channels["g"].height()==774);
-    CPPUNIT_ASSERT(channels["b"].width()==1032);
-    CPPUNIT_ASSERT(channels["b"].height()==774);
-    
-    CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_save_single_channels_r.jpg",channels["r"]));
-    CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_save_single_channels_g.jpg",channels["g"]));
-    CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_save_single_channels_b.jpg",channels["b"]));
-            
-    CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_save_single_key.jpg", channels, "b"));
-    
-    vector<string> keys_to_save {"g","b"};
-    CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_save_key_selection.jpg", channels, keys_to_save));
-    
-    float* arr = new float[1032*774];
-    float m=0.0;
-    for(int n=0; n<1032*774; n++) {
-        arr[n] = m;
-        if(n%1032==0) {
-            m+=1.0/773.0;
+
+    // init vigra arrays for testing
+    vigra::MultiArray<2,float> tarr(vigra::Shape2(3,3));
+    vigra::MultiArray<2,vigra::UInt8> tarr_ui8(vigra::Shape2(3,3));
+    for(int y=0; y<3; y++) {
+        for(int x=0; x<3; x++) {
+            tarr(x,y) = (float)(x+1.0f);
+            tarr_ui8(x,y) = 255;
         }
-    }
-    OpenLF::image::ImageChannel additional_channel(1032,774,arr);
-    channels["x"] = additional_channel;
-    CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_save_entire_channel_map.jpg", channels));
+    }   
+    CPPUNIT_ASSERT(tarr.sum<float>()==18.0f);
+    CPPUNIT_ASSERT(tarr_ui8.sum<int>()==9*255);
     
-    channels.clear();
     
-    CPPUNIT_ASSERT(OpenLF::image::io::imread(imgnames["straw_bw"],channels));
-    CPPUNIT_ASSERT(channels["bw"].width()==1032);
-    CPPUNIT_ASSERT(channels["bw"].height()==774);
-    CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_single_channels_bw.jpg",channels["bw"]));
     
-    channels.clear();
+    // get data pointer for testing
+    float *tarr_ptr = tarr.data();
+    vigra::UInt8 *tarr_ui8_ptr = tarr_ui8.data();
     
+    // test init default
+    OpenLF::image::ImageChannel ic_def;
+    CPPUNIT_ASSERT(!ic_def.hasData());
+    ic_def.init(3,3);
+    CPPUNIT_ASSERT(ic_def.hasData());
+    CPPUNIT_ASSERT(ic_def.sum()==0.0f);
+    CPPUNIT_ASSERT(ic_def.width()==3);
+    CPPUNIT_ASSERT(ic_def.height()==3);
+    CPPUNIT_ASSERT(ic_def.shape()==vigra::Shape2(3,3));
+    
+    // test init by shape
+    OpenLF::image::ImageChannel ic_sh(vigra::Shape2(3,3));
+    CPPUNIT_ASSERT(ic_sh.hasData());
+    CPPUNIT_ASSERT(ic_sh.sum()==0.0f);
+    
+    // test set value
+    ic_sh.set(1.0f);
+    CPPUNIT_ASSERT(ic_sh.sum()==9.0f);
+    
+    // test init using pointer 
+    OpenLF::image::ImageChannel ic_ptr_f(3,3,tarr_ptr);
+    OpenLF::image::ImageChannel ic_ptr_ui8(3,3,tarr_ui8_ptr);
+    CPPUNIT_ASSERT(ic_ptr_f.sum()==18.0f);
+    CPPUNIT_ASSERT(ic_ptr_ui8.sum()==9.0f);
     
     // test init using a vigra MultiArray
-    vigra::MultiArray<2,float> tarr(vigra::Shape2(3,3));
-    for(int y=0; y<3; y++)
-        for(int x=0; x<3; x++)
-            tarr(x,y) = x+1;
-    CPPUNIT_ASSERT(tarr.sum<float>()==18.0f);
     OpenLF::image::ImageChannel ic_tarr(tarr);
     CPPUNIT_ASSERT(ic_tarr.sum()==18.0f);
+    OpenLF::image::ImageChannel ic_tarr_ui8(tarr_ui8);
+    CPPUNIT_ASSERT(ic_tarr_ui8.sum()==9.0f);
+    
+    // test get image and data
+    vigra::MultiArray<2,float> *img_ptr_1 = NULL;
+    vigra::MultiArray<2,float> *img_ptr_2 = NULL;
+    float* data_ptr = NULL;
+    
+    ic_tarr.set(1.234);
+    img_ptr_1 = ic_tarr.image();
+    ic_tarr.image(&img_ptr_2);
+    data_ptr = ic_tarr.data();
+    
+    int n=0;
+    for(int y=0; y<3; y++) {
+        for(int x=0; x<3; x++) {
+            CPPUNIT_ASSERT(ic_tarr(x,y)==1.234f);
+            CPPUNIT_ASSERT(ic_tarr(x,y)==1.234f);
+            CPPUNIT_ASSERT(img_ptr_1->data()[n]==1.234f);
+            CPPUNIT_ASSERT(img_ptr_2->data()[n]==1.234f);
+            CPPUNIT_ASSERT(data_ptr[n]==1.234f);
+            data_ptr[n] = 1.0f;
+            CPPUNIT_ASSERT(ic_tarr.get(x,y)==1.0f);
+            float tmp = 0.0f;
+            ic_tarr.get(x,y,tmp);
+            CPPUNIT_ASSERT(tmp==1.0f);
+            n++;
+        }
+    }   
 }
 
 

@@ -79,11 +79,32 @@ public:
     */
     ImageChannel(vigra::Shape2 shape, float* data_ptr);
     
+    //! Initialize with uint8 array constructor
+    /*!
+     \param width image width
+     \param height image height
+     \param data_ptr image data 
+    */
+    ImageChannel(int width, int height, vigra::UInt8* data_ptr);
+    
+    //! Initialize with uint8 array constructor
+    /*!
+     \param shape
+     \param data_ptr image data 
+    */
+    ImageChannel(vigra::Shape2 shape, vigra::UInt8* data_ptr);
+    
     //! Initialize with vigra MultiArray constructor
     /*!
      \param vmarr vigra MultiArray<2,float> 
     */
     ImageChannel(array_2d &vmarr);
+    
+    //! Initialize with vigra MultiArray constructor
+    /*!
+     \param vmarr vigra MultiArray<2,Uint8> 
+    */
+    ImageChannel(vigra::MultiArray<2,vigra::UInt8> &vmarr);
     
     //! copy constructor
     /*!
@@ -161,6 +182,9 @@ public:
 //////                S E T / G E T   M E T H O D S  
 ////////////////////////////////////////////////////////////////////////////////
     
+    bool hasData() const { return pixel.hasData(); };
+    
+    
     //! get width
     /*!
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
@@ -187,6 +211,21 @@ public:
      \param float value to set
     */
     void set(float value);
+    
+    //! get pixel 
+    /*!
+     \param x position
+     \param y position
+    */
+    float get(int x, int y);
+    
+    //! get pixel 
+    /*!
+     \param x position
+     \param y position
+     \param float value reference
+    */
+    void get(int x, int y, float &value);
     
     
     //! get sum over all image pixels
@@ -216,9 +255,6 @@ public:
     
     //! overload of () operator 
     float & operator() (int x, int y) { return pixel(x,y); }
-    
-    //! overload of () operator 
-    //void operator() (int x, int y, float value) { pixel(x,y) = value; }
     
     //! overload of = operator 
     ImageChannel & operator=(float value);

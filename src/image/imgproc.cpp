@@ -20,13 +20,6 @@
 #include "image/imgproc.hpp"
 
 
-bool OpenLF::image::imgproc::shape_check(vigra::Shape2 s1, vigra::Shape2 s2) 
-{
-    bool status = true;
-    if(s1[0]!=s2[0]) status = false;
-    if(s1[1]!=s2[1]) status = false;
-    return status;
-}
 
 
 void OpenLF::image::imgproc::difference(map<string,vigra::MultiArray<2,float>> &channels1,
@@ -92,9 +85,9 @@ void OpenLF::image::imgproc::difference(vigra::MultiArray<2,float> &img1,
     try {
         result=0;
         
-        if(!shape_check(img1.shape(),img2.shape()))
+        if(img1.shape()!=img2.shape())
             throw OpenLF_Exception("Input/input shape mismatch in compute difference!");
-        if(!shape_check(img1.shape(),result.shape()))
+        if(img1.shape()!=result.shape())
             throw OpenLF_Exception("input/result shape mismatch in compute difference!");
         float* data_ptr1 = img1.data();
         float* data_ptr2 = img2.data();
@@ -115,9 +108,9 @@ void OpenLF::image::imgproc::difference(OpenLF::image::ImageChannel &img1,
 {
     try {
         
-        if(!shape_check(img1.shape(),img2.shape()))
+        if(img1!=img2)
             throw OpenLF_Exception("Input/input shape mismatch in compute difference!");
-        if(!shape_check(img1.shape(),result.shape()))
+        if(img1!=result)
             throw OpenLF_Exception("input/result shape mismatch in compute difference!");
         float* data_ptr1 = img1.data();
         float* data_ptr2 = img2.data();
@@ -192,9 +185,9 @@ void OpenLF::image::imgproc::abs_difference(vigra::MultiArray<2,float> &img1,
 {
     try {
         
-        if(!shape_check(img1.shape(),img2.shape()))
+        if(img1.shape()!=img2.shape())
             throw OpenLF_Exception("Input/input shape mismatch in compute difference!");
-        if(!shape_check(img1.shape(),result.shape()))
+        if(img1.shape()!=result.shape())
             throw OpenLF_Exception("input/result shape mismatch in compute difference!");
         
         float* data_ptr1 = img1.data();
@@ -215,9 +208,9 @@ void OpenLF::image::imgproc::abs_difference(OpenLF::image::ImageChannel &img1,
                                             OpenLF::image::ImageChannel &result) 
 {
     try {
-        if(!shape_check(img1.shape(),img2.shape()))
+        if(img1!=img2)
             throw OpenLF_Exception("Input/input shape mismatch in compute difference!");
-        if(!shape_check(img1.shape(),result.shape()))
+        if(img1!=result)
             throw OpenLF_Exception("input/result shape mismatch in compute difference!");
         
         float* data_ptr1 = img1.data();
@@ -286,7 +279,7 @@ double OpenLF::image::imgproc::MSE(vigra::MultiArray<2,float> &img1,
                                    vigra::MultiArray<2,float> &img2) 
 
 {
-    if(!shape_check(img1.shape(),img2.shape()))
+    if(img1.shape()!=img2.shape())
         throw OpenLF_Exception("Input/input shape mismatch in compute difference!");
 
     float* data_ptr1 = img1.data();
@@ -304,7 +297,7 @@ double OpenLF::image::imgproc::MSE(OpenLF::image::ImageChannel &img1,
                                    OpenLF::image::ImageChannel &img2) 
 
 {
-    if(!shape_check(img1.shape(),img2.shape()))
+    if(img1!=img2)
         throw OpenLF_Exception("Input/input shape mismatch in compute difference!");
 
     float* data_ptr1 = img1.data();

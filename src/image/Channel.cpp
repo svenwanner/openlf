@@ -81,6 +81,34 @@ OpenLF::image::ImageChannel::ImageChannel(vigra::Shape2 shape, float* data_ptr)
 }
 
 /*! 
+ * Initialize ImageChannel instance with shape (width,height) and data given
+ * by the passed uint8 array. The user has to ensure that shape passed and the
+ * size of the uint8 array passed are consistent. Data at data_ptr are copied. 
+ * 
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
+ */
+OpenLF::image::ImageChannel::ImageChannel(int width, int height, vigra::UInt8* data_ptr)
+{
+    print(1,"image::ImageChannel::ImageChannel(width,height, data_ptr) called...");
+    
+    init(width,height,data_ptr);
+}
+
+/*! 
+ * Initialize ImageChannel instance with shape and data given
+ * by the passed uint8 array. The user has to ensure that shape passed and the
+ * size of the uint8 array passed are consistent. Data at data_ptr are copied.
+ * 
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
+ */
+OpenLF::image::ImageChannel::ImageChannel(vigra::Shape2 shape, vigra::UInt8* data_ptr)
+{
+    print(1,"image::ImageChannel::ImageChannel(shape, data_ptr) called...");
+    
+    init(shape,data_ptr);
+}
+
+/*! 
  * Initialize ImageChannel instance with by copying data from a passed vigra
  * MultiArray reference.
  * 
@@ -91,6 +119,16 @@ OpenLF::image::ImageChannel::ImageChannel(array_2d &vmarr)
     init(vmarr.width(),vmarr.height(),vmarr.data());
 }
 
+/*! 
+ * Initialize ImageChannel instance with by copying data from a passed vigra
+ * MultiArray reference.
+ * 
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
+ */
+OpenLF::image::ImageChannel::ImageChannel(vigra::MultiArray<2,vigra::UInt8> &vmarr) 
+{
+    init(vmarr.width(),vmarr.height(),vmarr.data());
+}
 
 /*! 
  * This copy constructor is used to be a deep copy constructor copying the all
@@ -208,6 +246,26 @@ void OpenLF::image::ImageChannel::set(float value)
 { 
     for(int n=0; n<this->pixel.width()*this->pixel.height(); n++)
         this->pixel.data()[n] = value; 
+}
+
+/*!
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+float OpenLF::image::ImageChannel::get(int x, int y) 
+{
+    if(x>=0 && x<pixel.width() && y>=0 && y<pixel.height())
+        return pixel(x,y);
+    else throw OpenLF_Exception("Out of bounce");
+}
+ 
+/*!
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+void OpenLF::image::ImageChannel::get(int x, int y, float &value) 
+{
+    if(x>=0 && x<pixel.width() && y>=0 && y<pixel.height())
+        value = pixel(x,y);
+    else throw OpenLF_Exception("Out of bounce");
 }
 
 /*!
