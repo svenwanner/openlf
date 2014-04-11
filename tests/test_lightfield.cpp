@@ -93,54 +93,54 @@ void test_lightfield::tearDown() {
 
 void test_lightfield::test_instantiate_Lightfield()
 {
-//    // test instancing via the default constructor and open
-//    OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield();
-//    // test open from hdf5
-//    CPPUNIT_ASSERT(lf->open(imgnames["4D_high_rgb_h5"]));
-//    
-//    // test has property method
-//    CPPUNIT_ASSERT(lf->has_property("width"));
-//    CPPUNIT_ASSERT(!lf->has_property("notThere"));
-//    CPPUNIT_ASSERT(lf->type()==LF_4D);
-//    
-//    // test getting properties
-//    float tmp; int tmp2;
-//    CPPUNIT_ASSERT(lf->get_property("aperture",tmp));
-//    CPPUNIT_ASSERT(tmp==2.8f);
-//    CPPUNIT_ASSERT(lf->get_property("height",tmp2));
-//    CPPUNIT_ASSERT(tmp2==64);
-//    
-//    // create pointer to a map and a MultiArray to keep the addresses of the lf data
-//    map< string, vigra::MultiArray<2,float> > *test_channels = NULL;
-//    vigra::MultiArray<2,float> *test_image = NULL;
-//    
-//    // get the pointers to the lf data
-//    lf->data(&test_channels);
-//    lf->data("g",&test_image);
-//    
-//    CPPUNIT_ASSERT(test_channels!=NULL);
-//    CPPUNIT_ASSERT(test_image!=NULL);
-//    
-//    string p = test_result_dir+"4D_high_rgb_h5.png";
-//    OpenLF::image::io::imsave(p,*test_channels);
-//    p = test_result_dir+"4D_high_rgb_h5_g.png";
-//    OpenLF::image::io::imsave(p,*test_image);
-//    
-//    test_channels->clear();
-//    test_image = NULL;
-//    
-//    // test open new data set from config file
-//    CPPUNIT_ASSERT(lf->open(cfgnames["4D_wide_rgb"]));
-//    
-//    // get the pointers to the lf data
-//    lf->data(&test_channels);
-//    lf->data("g",&test_image);
-//    
-//    CPPUNIT_ASSERT(test_channels!=NULL);
-//    CPPUNIT_ASSERT(test_image!=NULL);
-//    
-//    p = test_result_dir+"4D_wide_rgb.png";
-//    OpenLF::image::io::imsave(p,*test_channels);
-//    p = test_result_dir+"4D_wide_rgb_g.png";
-//    OpenLF::image::io::imsave(p,*test_image);
+    // test instancing via the default constructor and open
+    OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield();
+    // test open from hdf5
+    CPPUNIT_ASSERT(lf->open(imgnames["4D_high_rgb_h5"]));
+    
+    // test has property method
+    CPPUNIT_ASSERT(lf->has_property("width"));
+    CPPUNIT_ASSERT(!lf->has_property("notThere"));
+    CPPUNIT_ASSERT(lf->type()==LF_4D);
+    
+    // test getting properties
+    float tmp; int tmp2;
+    CPPUNIT_ASSERT(lf->get_property("aperture",tmp));
+    CPPUNIT_ASSERT(tmp==2.8f);
+    CPPUNIT_ASSERT(lf->get_property("height",tmp2));
+    CPPUNIT_ASSERT(tmp2==64);
+    
+    // create pointer to a map and a MultiArray to keep the addresses of the lf data
+    map< string,OpenLF::image::ImageChannel> *test_channels = NULL;
+    OpenLF::image::ImageChannel *test_image = NULL;
+    
+    // get the pointers to the lf data
+    lf->data(&test_channels);
+    lf->data("g",&test_image);
+    
+    CPPUNIT_ASSERT(test_channels!=NULL);
+    CPPUNIT_ASSERT(test_image!=NULL);
+    
+    string p = test_result_dir+"4D_high_rgb_h5.png";
+    OpenLF::image::io::imsave(p,*test_channels);
+    p = test_result_dir+"4D_high_rgb_h5_g.png";
+    OpenLF::image::io::imsave(p,*test_image);
+    
+    test_channels->clear();
+    test_image = NULL;
+    
+    // test open new data set from config file
+    CPPUNIT_ASSERT(lf->open(cfgnames["4D_wide_rgb"]));
+    
+    // get the pointers to the lf data
+    lf->data(&test_channels);
+    lf->data("g",&test_image);
+    
+    CPPUNIT_ASSERT(test_channels!=NULL);
+    CPPUNIT_ASSERT(test_image!=NULL);
+    
+    p = test_result_dir+"4D_wide_rgb.png";
+    OpenLF::image::io::imsave(p,*test_channels);
+    p = test_result_dir+"4D_wide_rgb_g.png";
+    OpenLF::image::io::imsave(p,*test_image);
 }

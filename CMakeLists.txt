@@ -133,7 +133,7 @@ enable_testing()
 add_test(OpenLF_test_image ./test_release/OpenLF_test_image)
 add_test(OpenLF_test_channel ./test_release/OpenLF_test_channel)
 add_test(OpenLF_test_imgproc ./test_release/OpenLF_test_imgproc)
-#add_test(OpenLF_test_lightfield_IO ./test_release/OpenLF_test_lightfield_IO)
-#add_test(OpenLF_test_lightfield ./test_release/OpenLF_test_lightfield)
+add_test(OpenLF_test_lightfield_IO ./test_release/OpenLF_test_lightfield_IO)
+add_test(OpenLF_test_lightfield ./test_release/OpenLF_test_lightfield)
 
 

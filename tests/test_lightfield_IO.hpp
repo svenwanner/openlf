@@ -16,6 +16,7 @@
 #include "image/imgproc.hpp"
 #include "utils/helpers.hpp"
 #include "lightfield/io.hpp"
+#include "image/Channel.hpp"
 #include "lightfield/Properties.hpp"
 #include "lightfield/FileHandler.hpp"
 #include "lightfield/Lightfield.hpp"

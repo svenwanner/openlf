@@ -77,7 +77,7 @@ void test_channel::test_initialization() {
     // test get image and data
     vigra::MultiArray<2,float> *img_ptr_1 = NULL;
     vigra::MultiArray<2,float> *img_ptr_2 = NULL;
-    float* data_ptr = NULL;
+    float *data_ptr = NULL;
     
     ic_tarr.set(1.234);
     img_ptr_1 = ic_tarr.image();

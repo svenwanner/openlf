@@ -159,20 +159,20 @@ void OpenLF::image::imgproc::abs_difference(map<string,OpenLF::image::ImageChann
 {
     try {
         string key;
+        result = 0.0;
         
         OpenLF::image::ImageChannel tmp(result.width(),result.height());
+        tmp.set(0.0f);
         
         for ( auto& iter : channels1 ) {
             key=iter.first;
             if ( channels2.find(key) == channels2.end() ) {
                 throw OpenLF_Exception("Key match Error in compute abs_difference!");
             } else {
-                
                 abs_difference(channels1[key],channels2[key],tmp);
                 result+=tmp;
-                
             }
-        } 
+        }        
     } catch(exception &e) {
         warning(e.what());
     }

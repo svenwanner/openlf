@@ -22,7 +22,7 @@
 
 #include "debug.hpp"
 #include "global.hpp"
-
+#include "image/io.hpp"
 #include "image/Channel.hpp"
 
 namespace OpenLF { 
