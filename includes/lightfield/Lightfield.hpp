@@ -256,7 +256,14 @@ public:
     void appendProperties(Properties &properties);
     
     
-    
+    //! access a single image of a light field channel
+    /*!
+     \param h horizontal index
+     \param v vertical index
+     \param channel_name name of the channel
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    vigra::MultiArrayView<2,float> getImage(int h, int v, string channel_name);
     
     
     

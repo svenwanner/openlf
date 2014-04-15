@@ -11,6 +11,7 @@ int main(int argc, char** argv) {
     if(argc>=2) {
         
         OpenLF::lightfield::Lightfield lf;
+        
         try {
             // the argument is the filename of a lightfield
             // either of a hdf5 or a config file
@@ -20,7 +21,7 @@ int main(int argc, char** argv) {
             e.what();
             return -1;
         }
-
+        
         // create your operator
         My4DOperator myOp;
         // link the light field to it

@@ -238,3 +238,13 @@ void OpenLF::lightfield::Lightfield::allocateChannel(string channel_name)
 void OpenLF::lightfield::Lightfield::appendProperties(OpenLF::lightfield::Properties &properties) {
     this->properties += properties;
 }
+
+
+vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getImage(int h, int v, string channel_name) 
+{
+    if (channels.find(channel_name) == channels.end())
+        throw OpenLF_Exception("channels doesn't exist!");
+    if(h<0 || h>=cams_h() || v<0 || v>=cams_v())
+        throw OpenLF_Exception("out of image bounds!");
+    return channels[channel_name].viewToROI(h*imgWidth(),v*imgHeight(),imgWidth(),imgHeight());
+}

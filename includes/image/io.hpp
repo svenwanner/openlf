@@ -31,17 +31,6 @@ namespace OpenLF {
         namespace io {
             
 
-//! reduces a passed channel map
-/*!
- The passed channel map is reduced to only the channels with the labels passed in
- keys_to_keep. 
- \param channels map object of string labels as keys and MultiArrays as data
- \param keys_to_keep string vector of labels to keep in map
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/     
-//void reduce_channels(map<string,vigra::MultiArray<2,float>> &channels,vector<string> keys_to_keep);
-   
-
 //! reduces a passed ImageChannel map
 /*!
  The passed ImageChannel map is reduced to only the channels with the labels passed in
@@ -78,19 +67,6 @@ void linear_range_mapping(ImageChannel& img_channel, vigra::MultiArray<2, vigra:
  The passed channel map isn't cleared. If one of the channels above already exist
  it's overwritten, if other channels are present they will be kept. 
  \param filename full path of the image file
- \param channels map of string labels as keys and MultiArrays as data 
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/ 
-//bool imread(string filename, map<string,vigra::MultiArray<2,float>> &channels);
-
-
-//! read an image from file and store channels in map structure
-/*!
- Load an image from file and stores the image channels in the passed map structure.
- Labels "bw" for a gray value image and "r","g","b" for color images are set automatically.
- The passed channel map isn't cleared. If one of the channels above already exist
- it's overwritten, if other channels are present they will be kept. 
- \param filename full path of the image file
  \param channels map of string labels as keys and Channel instance as data 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
@@ -106,6 +82,14 @@ bool imread(string filename, map<string,OpenLF::image::ImageChannel> &img_channe
 */ 
 bool imsave(string filename, vigra::MultiArray<2,float> img);
 
+//! saves an image view to file
+/*!
+ Saves a 2D MultiArray float image to file.
+ \param filename path to save the file
+ \param img MultiArray float image
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/ 
+bool imsave(string filename, vigra::MultiArrayView<2,float> img);
 
 //! saves an Channel instance to file
 /*!
@@ -117,18 +101,6 @@ bool imsave(string filename, vigra::MultiArray<2,float> img);
 bool imsave(string filename, ImageChannel img_channel);
 
 
-
-//! saves a single channel of a channel map
-/*!
- Saves a single channel of a channel map object to file. 
- \param filename path to save the file
- \param channels map of string labels as keys and MultiArrays as data
- \param key of the channel
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/     
-//bool imsave(string filename, map< string,vigra::MultiArray<2,float> > &channels, string key);
-
-
 //! saves a single channel of a channel map
 /*!
  Saves a single channel of a channel map object to file. 
@@ -138,20 +110,6 @@ bool imsave(string filename, ImageChannel img_channel);
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */     
 bool imsave(string filename, map< string,ImageChannel> channels, string key);
-
-
-
-//! saves all channels of an image to file
-/*!
-Saves an entire channel map object to file. Channels with labels "bw" and "r","g","b"
-are automatically saved as gray value or color image respectively. The type or in
-case of other labels the label itself are automatically added to the filename as 
-an appendix. 
- \param filename full path of the image file
- \param channels map of string labels as keys and MultiArrays as data 
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/ 
-//bool imsave(string filename, map<string,vigra::MultiArray<2,float>> channels); 
 
 
 //! saves all channels of an ImageChannel map to file
@@ -166,20 +124,6 @@ an appendix.
 */ 
 bool imsave(string filename, map<string,ImageChannel> channels);
 
-
-//! saves a channel image to file
-/*!
-Saves specific channels with labels passed via keys_to_save of a channel map object 
-to file. Channels with labels "bw" and "r","g","b" are automatically saved as gray 
-value or color image respectively. The type or in case of other labels the label 
-itself are automatically added to the filename as an appendix.  
- \param filename full path of the image file
- \param channels map of string labels as keys and MultiArrays as data 
- \param keys_to_save vector of labels to be kept for saving
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/ 
-//bool imsave(string filename, map<string,vigra::MultiArray<2,float>> channels,vector<string> keys_to_save);
-     
 
 //! saves a ImageChannel instance to file
 /*!

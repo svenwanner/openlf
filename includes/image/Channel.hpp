@@ -245,6 +245,15 @@ public:
     */
     void image(vigra::MultiArray<2,float> **pixel);
    
+    
+    //! get a view to a region of interest
+    /*!
+     \param x ROI x position
+     \param y ROI y position
+     \param width of the ROI
+     \param height of the ROI
+    */
+    vigra::MultiArrayView<2,float> viewToROI(int x, int y, int width, int height);
    
    
    
