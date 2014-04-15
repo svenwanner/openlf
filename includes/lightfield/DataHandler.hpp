@@ -53,7 +53,7 @@ public:
      \param properties an instance of a Properties instance to parse and hold the paramter
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */ 
-    void set_configfile(string config_filename);
+    void setConfigfile(string config_filename);
     
     //! set the config file
     /*!
@@ -61,7 +61,7 @@ public:
      \param properties an instance of a Properties instance to parse and hold the paramter
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */ 
-    void set_configfile(const char* config_filename);
+    void setConfigfile(const char* config_filename);
     
     virtual bool readData(map<string,OpenLF::image::ImageChannel>& channels) = 0;
     

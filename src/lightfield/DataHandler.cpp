@@ -35,7 +35,7 @@ OpenLF::lightfield::io::DataHandler::DataHandler(string config_filename, Propert
     type = "";
     
     this->properties = properties;
-    set_configfile(config_filename);
+    setConfigfile(config_filename);
 }
 
 OpenLF::lightfield::io::DataHandler::DataHandler(const char* config_filename, Properties *properties) 
@@ -45,7 +45,7 @@ OpenLF::lightfield::io::DataHandler::DataHandler(const char* config_filename, Pr
     type = "";
    
     this->properties = properties;
-    set_configfile(config_filename);
+    setConfigfile(config_filename);
 }
 
 OpenLF::lightfield::io::DataHandler::~DataHandler() 
@@ -69,7 +69,7 @@ OpenLF::lightfield::io::DataHandler::~DataHandler()
 * interpreted as a filename of a single image file containing the light field, a hdf5 file
 * or a path storing the images as single image files. 
 */
-void OpenLF::lightfield::io::DataHandler::set_configfile(string config_filename)
+void OpenLF::lightfield::io::DataHandler::setConfigfile(string config_filename)
 {
     print(1,"lightfield::io:::DataHandler::set_configfile(config_filename,&properties) called...");
     
@@ -104,10 +104,10 @@ void OpenLF::lightfield::io::DataHandler::set_configfile(string config_filename)
     }
 }
  
-void OpenLF::lightfield::io::DataHandler::set_configfile(const char* config_filename)
+void OpenLF::lightfield::io::DataHandler::setConfigfile(const char* config_filename)
 {
     print(1,"lightfield::io:::DataHandler::set_configfile(config_filename) called...");
     
     string tmp(config_filename);
-    set_configfile(tmp);
+    setConfigfile(tmp);
 }

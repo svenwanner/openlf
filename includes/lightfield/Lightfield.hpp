@@ -39,7 +39,9 @@ public:
     virtual ~Lightfield();
 
     
-    
+////////////////////////////////////////////////////////////////////////////////
+//////                        I/O  M E T H O D S
+////////////////////////////////////////////////////////////////////////////////
     
     //! open lightfields from  hdf5 or config file
     /*!
@@ -57,7 +59,27 @@ public:
     bool open(const char* filename);
     
     
+    //! save lightfields to hdf5 or config file
+    /*!
+     \param filename  
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void save(string filename) {
+        OpenLF::lightfield::io::save_to_hdf5(filename,channels,&properties);
+    }
     
+        
+    
+    
+    
+ 
+    
+    
+////////////////////////////////////////////////////////////////////////////////
+//////                        G E T    I N F O S 
+////////////////////////////////////////////////////////////////////////////////
+    
+        
     //! check if a specific channel exist
     /*!
      \param name of the channel to check for existence
@@ -71,7 +93,7 @@ public:
      \param name of the property to check for existence
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    bool has_property(string name);
+    bool hasProperty(string name);
     
     
     //! access a property by name
@@ -80,7 +102,7 @@ public:
      \param value reference to the value of the property 
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    bool get_property(string name, int &value);
+    bool getProperty(string name, int &value);
     
     
     //! access a property by name
@@ -89,7 +111,7 @@ public:
      \param value reference to the value of the property 
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    bool get_property(string name, float &value);
+    bool getProperty(string name, float &value);
     
     
     //! access a property by name
@@ -98,7 +120,7 @@ public:
      \param value reference to the value of the property 
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    bool get_property(string name, double &value);
+    bool getProperty(string name, double &value);
     
     
     //! access a property by name
@@ -107,7 +129,7 @@ public:
      \param value reference to the value of the property 
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    bool get_property(string name, string &value);
+    bool getProperty(string name, string &value);
     
     
     //! get the LF_TYPE
@@ -153,6 +175,20 @@ public:
     int cams_v();
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+////////////////////////////////////////////////////////////////////////////////
+//////                      A C C E S S    D A T A
+////////////////////////////////////////////////////////////////////////////////    
+    
     //! get the data pointer of a specific channel 
     /*!
      Returns the data pointer to the channel specified by the channel_name.
@@ -162,6 +198,7 @@ public:
     */
     float* channel_ptr(string channel_name);
     
+    
     //! get pointer to data channels
     /*!
      Returns a pointer to the channels map containing the data.
@@ -169,12 +206,14 @@ public:
     */
     map<string,OpenLF::image::ImageChannel> * data();
     
+    
     //! set pointer passed to address data channels
     /*!
      \param channels pointer to a channels map to get the address of the internal map
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     void data(map< string,OpenLF::image::ImageChannel> **channels);
+    
     
     //! get pointer to specific channel
     /*!
@@ -184,6 +223,7 @@ public:
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     OpenLF::image::ImageChannel *data(string channel_name);
+    
     
     //! set pointer passed to the address of the channel specified
     /*!
@@ -195,6 +235,7 @@ public:
     */
     void data(string channel_name, OpenLF::image::ImageChannel ** channel_data);
     
+    
     //! Allocate a new channel
     /*!
      Allocates a new channel with the name passed. The channels size is defined by
@@ -205,18 +246,31 @@ public:
     void allocateChannel(string channel_name);
     
     
-    void append_properties(Properties &properties);
+    //! merge internal properties with properties passed
+    /*!
+     Important: If a field of the passed properties instance already exist
+     in the internal properties instance the internal value is overwritten
+     \param properties instance
+     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    void appendProperties(Properties &properties);
     
     
-    void save(string filename) {
-        OpenLF::lightfield::io::save_to_hdf5(filename,channels,&properties);
-    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
 protected:
-    map< string,OpenLF::image::ImageChannel> channels; 
-    OpenLF::lightfield::io::DataHandler *dataHandler;
-    OpenLF::lightfield::Properties properties;
+    map< string,OpenLF::image::ImageChannel> channels;  //!< map to store the light field channels
+    OpenLF::lightfield::io::DataHandler *dataHandler;   //!< instance of a dataHandler to read data
+    OpenLF::lightfield::Properties properties;          //!< properties instance to hold all parameters
 };
 
 }}

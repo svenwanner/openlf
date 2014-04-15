@@ -47,11 +47,15 @@ void My4DOperator::precompute()
     //============================================
     
     
+    
+    //**********************************************************************************
+    //**************** this is the demo code which can be replaced ********************* 
+    
     // allocate some memory to store stuff you may need in compute and post-compute but
-    // only during computation. This is deleted after the operator has finished.
+    // only during computation. This map is deleted after the operator has finished.
     tmp_memory["aTmpStorage"] = OpenLF::image::ImageChannel(lf->width(),lf->height());
     
-    // compute something of importance
+    // compute something of importance to use in compute and in postcompute
     if(lf->hasChannel("r") && lf->hasChannel("g") && lf->hasChannel("b")) {
         
         float* r_ptr = lf->channel_ptr("r");
@@ -67,6 +71,9 @@ void My4DOperator::precompute()
             tmp_memory["aTmpStorage"].data()[n] = 1.0f;
         }
     }
+    
+    //**************** this is the demo code which can be replaced ********************* 
+    //**********************************************************************************
 }
 
 void My4DOperator::compute() 
@@ -78,7 +85,14 @@ void My4DOperator::compute()
     // light field class.
     //============================================
     
+
     
+  
+    //**********************************************************************************
+    //**************** this is the demo code which can be replaced ********************* 
+    
+    // compute the most useful property ever if the input is a rgb light field
+    // and store it in your new channel myNewChannel
     if(lf->hasChannel("r") && lf->hasChannel("g") && lf->hasChannel("b")) {
         
         float* r_ptr = lf->channel_ptr("r");
@@ -97,6 +111,9 @@ void My4DOperator::compute()
     else {
         cout << "This operator does nothing to gray value light fields!" << endl;
     }
+    
+    //**************** this is the demo code which can be replaced ********************* 
+    //**********************************************************************************
 }
 
 void My4DOperator::postcompute() 
@@ -105,6 +122,12 @@ void My4DOperator::postcompute()
     // This method can be used to do some pre-computations
     //====================================================
     
+    
+    
+    //**********************************************************************************
+    //**************** this is the demo code which can be replaced *********************
+    
+    // do a postprocessing using your data from precompute and from compute as well
     float* nChannel = lf->channel_ptr("myNewChannel");
     for(int n=0; n<lf->width()*lf->height(); n++) {
         if(nChannel[n] > tmp_memory["aTmpStorage"].data()[n])
@@ -112,4 +135,7 @@ void My4DOperator::postcompute()
         else
             nChannel[n] = 0.0;
     }
+    
+    //**************** this is the demo code which can be replaced ********************* 
+    //**********************************************************************************
 }

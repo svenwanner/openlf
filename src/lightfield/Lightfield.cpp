@@ -43,7 +43,9 @@ OpenLF::lightfield::Lightfield::~Lightfield() {
 
 
 
-
+////////////////////////////////////////////////////////////////////////////////
+//////                        I/O  M E T H O D S
+////////////////////////////////////////////////////////////////////////////////
 
 
 bool OpenLF::lightfield::Lightfield::open(string filename) 
@@ -76,6 +78,16 @@ bool OpenLF::lightfield::Lightfield::open(const char* filename)
 
 
 
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//////                        G E T    I N F O S 
+////////////////////////////////////////////////////////////////////////////////
+
 bool OpenLF::lightfield::Lightfield::hasChannel(string name)
 {
     if (channels.find(name) == channels.end()) return false;
@@ -83,30 +95,30 @@ bool OpenLF::lightfield::Lightfield::hasChannel(string name)
 }
 
 
-bool OpenLF::lightfield::Lightfield::has_property(string name) {
+bool OpenLF::lightfield::Lightfield::hasProperty(string name) {
     return properties.has_field(name);
 }
 
 
-bool OpenLF::lightfield::Lightfield::get_property(string name, int &value) 
+bool OpenLF::lightfield::Lightfield::getProperty(string name, int &value) 
 {
     return properties.get_field(name,value);
 }
     
 
-bool OpenLF::lightfield::Lightfield::get_property(string name, float &value)
+bool OpenLF::lightfield::Lightfield::getProperty(string name, float &value)
 {
     return properties.get_field(name,value);
 }
 
 
-bool OpenLF::lightfield::Lightfield::get_property(string name, double &value)
+bool OpenLF::lightfield::Lightfield::getProperty(string name, double &value)
 {
     return properties.get_field(name,value);
 }
 
 
-bool OpenLF::lightfield::Lightfield::get_property(string name, string &value)
+bool OpenLF::lightfield::Lightfield::getProperty(string name, string &value)
 {
     return properties.get_field(name,value);
 }
@@ -167,6 +179,16 @@ int OpenLF::lightfield::Lightfield::cams_v()
     return sv;
 }
     
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//////                      A C C E S S    D A T A
+//////////////////////////////////////////////////////////////////////////////// 
     
 float* OpenLF::lightfield::Lightfield::channel_ptr(string channel_name) {
     print(1,"lightfield::Lightfield::channel_ptr(channel_name,channel_data) called...");
@@ -213,13 +235,6 @@ void OpenLF::lightfield::Lightfield::allocateChannel(string channel_name)
 }
 
 
-
-
-
-
-
-
-
-void OpenLF::lightfield::Lightfield::append_properties(OpenLF::lightfield::Properties &properties) {
+void OpenLF::lightfield::Lightfield::appendProperties(OpenLF::lightfield::Properties &properties) {
     this->properties += properties;
 }

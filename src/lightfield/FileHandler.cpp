@@ -57,7 +57,7 @@ bool OpenLF::lightfield::io::FileHandler::readData(map<string,OpenLF::image::Ima
         return false;
     }
     else if(type=="disc") {
-        return read_from_disc(channels);
+        return __readFromDisc__(channels);
     }
     else return false;
 }
@@ -83,7 +83,7 @@ bool OpenLF::lightfield::io::FileHandler::readData(map<string,OpenLF::image::Ima
  * If the source is not an absolute path the method tries to check if the path is a valid
  * path relative to the location of the configfile.
  */
-bool OpenLF::lightfield::io::FileHandler::read_from_disc(map<string,OpenLF::image::ImageChannel>& channels) 
+bool OpenLF::lightfield::io::FileHandler::__readFromDisc__(map<string,OpenLF::image::ImageChannel>& channels) 
 {
     print(1,"lightfield::io::FileHandler::read_from_disc(channels) called...");
     

@@ -99,15 +99,15 @@ void test_lightfield::test_instantiate_Lightfield()
     CPPUNIT_ASSERT(lf->open(imgnames["4D_high_rgb_h5"]));
     
     // test has property method
-    CPPUNIT_ASSERT(lf->has_property("width"));
-    CPPUNIT_ASSERT(!lf->has_property("notThere"));
+    CPPUNIT_ASSERT(lf->hasProperty("width"));
+    CPPUNIT_ASSERT(!lf->hasProperty("notThere"));
     CPPUNIT_ASSERT(lf->type()==LF_4D);
     
     // test getting properties
     float tmp; int tmp2;
-    CPPUNIT_ASSERT(lf->get_property("aperture",tmp));
+    CPPUNIT_ASSERT(lf->getProperty("aperture",tmp));
     CPPUNIT_ASSERT(tmp==2.8f);
-    CPPUNIT_ASSERT(lf->get_property("height",tmp2));
+    CPPUNIT_ASSERT(lf->getProperty("height",tmp2));
     CPPUNIT_ASSERT(tmp2==64);
     
     // create pointer to a map and a MultiArray to keep the addresses of the lf data

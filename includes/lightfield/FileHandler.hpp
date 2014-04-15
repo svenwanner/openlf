@@ -77,7 +77,7 @@ protected:
      \param channels map object of string labels as keys and MultiArrays as data 
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */ 
-    bool read_from_disc(map<string,image::ImageChannel>& channels);
+    bool __readFromDisc__(map<string,image::ImageChannel>& channels);
 };
 
 

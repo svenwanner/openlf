@@ -56,7 +56,7 @@ void OpenLF::operators::Operator::set(OpenLF::lightfield::Lightfield *lf)
     this->lf = lf;
     
     if(this->properties != NULL) {
-        this->lf->append_properties(*properties);
+        this->lf->appendProperties(*properties);
     }
 }
 
@@ -74,6 +74,6 @@ void OpenLF::operators::Operator::set(OpenLF::lightfield::Properties *properties
     // set internal properties pointer 
     this->properties=properties;
     if(this->lf != NULL) {
-        this->lf->append_properties(*this->properties);
+        this->lf->appendProperties(*this->properties);
     }
 }
