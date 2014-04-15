@@ -69,59 +69,6 @@ add_custom_target(
 	    COMMAND ${CMAKE_CURRENT_LIST_DIR}/configure ${CMAKE_CURRENT_LIST_FILE}
 )
 
-
-#TEST: test_image 
-    add_executable(OpenLF_test_image
-	./tests/test_image_run.cpp
-	./tests/test_image.cpp 
-	${SRCS} ${HDRS})
-    target_link_libraries(OpenLF_test_image hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex 
-	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
-
-add_dependencies(OpenLF_test_image Configure)
-
-#TEST: test_imgproc 
-add_executable(OpenLF_test_imgproc
-	./tests/test_imgproc_run.cpp
-	./tests/test_imgproc.cpp 
-	${SRCS} ${HDRS})
-    target_link_libraries(OpenLF_test_imgproc hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex 
-	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
-
-add_dependencies(OpenLF_test_imgproc Configure)
-
-#TEST: test_lightfield_IO 
-add_executable(OpenLF_test_lightfield_IO 
-	./tests/test_lightfield_IO_run.cpp
-	./tests/test_lightfield_IO.cpp 
-	${SRCS} ${HDRS})
-    target_link_libraries(OpenLF_test_lightfield_IO  hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex
-	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
-
-add_dependencies(OpenLF_test_lightfield_IO Configure)
-
-#TEST: test_lightfield 
-add_executable(OpenLF_test_lightfield 
-	./tests/test_lightfield_run.cpp
-	./tests/test_lightfield.cpp 
-	${SRCS} ${HDRS})
-    target_link_libraries(OpenLF_test_lightfield  hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex
-	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
-
-add_dependencies(OpenLF_test_lightfield Configure)
-
-#TEST: test_channel
-add_executable(OpenLF_test_channel 
-	./tests/test_channel_run.cpp
-	./tests/test_channel.cpp 
-	${SRCS} ${HDRS})
-    target_link_libraries(OpenLF_test_channel  hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex
-	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
-
-add_dependencies(OpenLF_test_channel Configure)
-
-
-
 #WORKFLOW: demo 
 add_executable(OpenLF_demo
 	./workflows/demo/demo.cpp
@@ -133,11 +80,5 @@ add_executable(OpenLF_demo
 add_dependencies(OpenLF_demo Configure)
 
 
-enable_testing()
-add_test(OpenLF_test_image ./test_release/OpenLF_test_image)
-add_test(OpenLF_test_channel ./test_release/OpenLF_test_channel)
-add_test(OpenLF_test_imgproc ./test_release/OpenLF_test_imgproc)
-add_test(OpenLF_test_lightfield_IO ./test_release/OpenLF_test_lightfield_IO)
-add_test(OpenLF_test_lightfield ./test_release/OpenLF_test_lightfield)
 
 

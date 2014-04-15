@@ -50,7 +50,7 @@ void OpenLF::operators::Operator::clear()
  * with the values of the additional properties instance. This enables to update 
  * computation parameter during runtime.   
  */
-void OpenLF::operators::Operator::input(OpenLF::lightfield::Lightfield *lf) 
+void OpenLF::operators::Operator::set(OpenLF::lightfield::Lightfield *lf) 
 {
     // set internal lf pointer 
     this->lf = lf;
@@ -69,7 +69,7 @@ void OpenLF::operators::Operator::input(OpenLF::lightfield::Lightfield *lf)
  * with the values of the additional properties instance. This enables to update 
  * computation parameter during runtime.   
  */
-void OpenLF::operators::Operator::input(OpenLF::lightfield::Properties *properties) 
+void OpenLF::operators::Operator::set(OpenLF::lightfield::Properties *properties) 
 {
     // set internal properties pointer 
     this->properties=properties;
