@@ -76,6 +76,11 @@ bool OpenLF::lightfield::Lightfield::open(const char* filename)
 
 
 
+bool OpenLF::lightfield::Lightfield::hasChannel(string name)
+{
+    if (channels.find(name) == channels.end()) return false;
+    else return true;
+}
 
 
 bool OpenLF::lightfield::Lightfield::has_property(string name) {
@@ -106,16 +111,68 @@ bool OpenLF::lightfield::Lightfield::get_property(string name, string &value)
     return properties.get_field(name,value);
 }
 
+
 LF_TYPE OpenLF::lightfield::Lightfield::type()
 {
     LF_TYPE lftype;
     properties.get_lftype(lftype);
     return lftype;
 }
+
+
+int OpenLF::lightfield::Lightfield::imgWidth()
+{
+    int sx;
+    properties.get_field("width",sx);
+    return sx;
+}
+
     
-    
+int OpenLF::lightfield::Lightfield::imgHeight()
+{
+    int sy;
+    properties.get_field("height",sy);
+    return sy;
+}
     
 
+int OpenLF::lightfield::Lightfield::width()
+{
+    int sx;
+    properties.get_field("width",sx);
+    return sx*cams_h();
+}
+
+    
+int OpenLF::lightfield::Lightfield::height()
+{
+    int sy;
+    properties.get_field("height",sy);
+    return sy*cams_v();
+}
+
+
+int OpenLF::lightfield::Lightfield::cams_h()
+{
+    int sh;
+    properties.get_field("cams_h",sh);
+    return sh;
+}
+
+
+int OpenLF::lightfield::Lightfield::cams_v()
+{
+    int sv;
+    properties.get_field("cams_v",sv);
+    return sv;
+}
+    
+    
+float* OpenLF::lightfield::Lightfield::channel_ptr(string channel_name) {
+    print(1,"lightfield::Lightfield::channel_ptr(channel_name,channel_data) called...");
+    if (channels.find(channel_name) == channels.end()) return NULL;
+    else return channels[channel_name].data();
+}
 
 
 void OpenLF::lightfield::Lightfield::data(map<string,OpenLF::image::ImageChannel> **channels) {
@@ -126,9 +183,9 @@ void OpenLF::lightfield::Lightfield::data(map<string,OpenLF::image::ImageChannel
 
 map<string,OpenLF::image::ImageChannel> * OpenLF::lightfield::Lightfield::data() {
     print(1,"lightfield::Lightfield::data(channels) called...");
-    cout << "address of channels : " << &this->channels << endl;
     return &this->channels;
 }
+
 
 OpenLF::image::ImageChannel *OpenLF::lightfield::Lightfield::data(string channel_name) {
     print(1,"lightfield::Lightfield::data(channel_name,channel_data) called...");
@@ -136,11 +193,27 @@ OpenLF::image::ImageChannel *OpenLF::lightfield::Lightfield::data(string channel
     else return &channels[channel_name];
 }
 
+
 void OpenLF::lightfield::Lightfield::data(string channel_name, OpenLF::image::ImageChannel **channel_data) {
     print(1,"lightfield::Lightfield::data(channel_name,channel_data) called...");
     if (channels.find(channel_name) == channels.end()) *channel_data = NULL;
     else *channel_data = &channels[channel_name];
 }
+
+
+void OpenLF::lightfield::Lightfield::allocateChannel(string channel_name) 
+{
+    print(1,"lightfield::Lightfield::allocateChannel(channel_name) called...");
+    if (channels.find(channel_name) == channels.end()) {
+        channels[channel_name] = OpenLF::image::ImageChannel(width(),height());
+    }
+    else {
+       throw OpenLF_Exception("Cannot allocate channel that already exist!");
+    }
+}
+
+
+
 
 
 

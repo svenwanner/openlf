@@ -17,56 +17,29 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef OPERATOR_HPP
-#define	OPERATOR_HPP
+#ifndef MY4DOPERATOR_HPP
+#define	MY4DOPERATOR_HPP
 
+#include <iostream>
+#include "operators/Operator_4D.hpp"
 
-#include "debug.hpp"
-#include "global.hpp"
-#include "lightfield/Lightfield.hpp"
+using namespace std;
 
-
-namespace OpenLF {
-    namespace operators {
-     
-    
-
-class Operator {
+class My4DOperator : public OpenLF::operators::Operator_4D {
 public:
-    Operator();
-    Operator(const Operator& orig);
-    virtual ~Operator();
-    void clear();
+    My4DOperator() : Operator_4D() {};
+    My4DOperator(const My4DOperator& orig);
+    virtual ~My4DOperator();
     
-    //! set interface to set a lightfield 
-    /*!
-     \param lf pointer to a light field instance
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-    */
-    void set(OpenLF::lightfield::Lightfield *lf);
-    
-    //! set interface to set additional properties
-    /*!
-     \param properties pointer to a Properties instance
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-    */
-    void set(OpenLF::lightfield::Properties *properties);
-    
-    virtual void process() = 0;
-        
 protected:
+    void allocate();
+    void precompute();
+    void compute();
+    void postcompute();
     
-    virtual void allocate() = 0;
-    virtual void precompute() = 0;
-    virtual void compute() = 0;
-    virtual void postcompute() = 0;
-    virtual void cleanup() = 0;
+private:
     
-    OpenLF::lightfield::Lightfield *lf;
-    OpenLF::lightfield::Properties *properties;
-    map<string,OpenLF::image::ImageChannel> tmp_memory;
 };
 
-}}
-#endif	/* OPERATOR_HPP */
+#endif	/* MY4DOPERATOR_HPP */
 
