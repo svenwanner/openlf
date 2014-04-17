@@ -11,3 +11,4 @@ tests/data/output/*
 build/
 .directory
 latex/
+/workflows/demo_4DOperator/dist/

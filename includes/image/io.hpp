@@ -53,6 +53,24 @@ void linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2,
 
 //! map the pixel values to a range of [0,255]
 /*!
+ \param fimg float MultiArray to map
+ \param img result MultiArray 
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+void linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2,float>& img);
+
+
+//! map the pixel values to a range of [0,255]
+/*!
+ \param fimg float MultiArray to map
+ \param img result MultiArray 
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+void linear_range_mapping(vigra::MultiArrayView<2,float>& fimg, vigra::MultiArray<2,float>& img);
+
+
+//! map the pixel values to a range of [0,255]
+/*!
  \param ImageChannel& img_channel instance of ImageChannel class
  \param img result MultiArray 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
@@ -82,6 +100,16 @@ bool imread(string filename, map<string,OpenLF::image::ImageChannel> &img_channe
 */ 
 bool imsave(string filename, vigra::MultiArray<2,float> img);
 
+//! saves an rgb image to file
+/*!
+ Saves a 2D rgb MultiArray uint8 image to file.
+ \param filename path to save the file
+ \param img MultiArray float image
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/ 
+bool imsave(string filename, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> img);
+
+
 //! saves an image view to file
 /*!
  Saves a 2D MultiArray float image to file.
@@ -90,6 +118,15 @@ bool imsave(string filename, vigra::MultiArray<2,float> img);
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
 bool imsave(string filename, vigra::MultiArrayView<2,float> img);
+
+//! saves an image view to file
+/*!
+ Saves a 2D MultiArray float image to file.
+ \param filename path to save the file
+ \param img MultiArray uint8 image
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/ 
+bool imsave(string filename, vigra::MultiArrayView<2,vigra::UInt8> img);
 
 //! saves an Channel instance to file
 /*!

@@ -21,6 +21,7 @@
 #define	LIGHTFIELD_HPP
 
 #include "global.hpp"
+#include "image/utils.hpp"
 #include "lightfield/io.hpp"
 #include "lightfield/Properties.hpp"
 #include "lightfield/DataHandler.hpp"
@@ -46,7 +47,6 @@ public:
     //! open lightfields from  hdf5 or config file
     /*!
      \param filename of the .cfg, .h5,.hdf5 or .lf file 
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     bool open(string filename);
     
@@ -54,7 +54,6 @@ public:
     //! open lightfields from  hdf5 or config file
     /*!
      \param filename of the .cfg, .h5,.hdf5 or .lf file 
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     bool open(const char* filename);
     
@@ -62,7 +61,6 @@ public:
     //! save lightfields to hdf5 or config file
     /*!
      \param filename  
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     void save(string filename) {
         OpenLF::lightfield::io::save_to_hdf5(filename,channels,&properties);
@@ -79,11 +77,17 @@ public:
 //////                        G E T    I N F O S 
 ////////////////////////////////////////////////////////////////////////////////
     
+    //! check if rgb data are available
+    bool hasRGB();
+    
+    
+    //! check if bw data are available
+    bool hasBW();
         
+    
     //! check if a specific channel exist
     /*!
      \param name of the channel to check for existence
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     bool hasChannel(string name);
     
@@ -91,7 +95,6 @@ public:
     //! check if a specific property exist
     /*!
      \param name of the property to check for existence
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     bool hasProperty(string name);
     
@@ -100,7 +103,6 @@ public:
     /*!
      \param name of the property
      \param value reference to the value of the property 
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     bool getProperty(string name, int &value);
     
@@ -109,7 +111,6 @@ public:
     /*!
      \param name of the property
      \param value reference to the value of the property 
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     bool getProperty(string name, float &value);
     
@@ -118,7 +119,6 @@ public:
     /*!
      \param name of the property
      \param value reference to the value of the property 
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     bool getProperty(string name, double &value);
     
@@ -127,51 +127,29 @@ public:
     /*!
      \param name of the property
      \param value reference to the value of the property 
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     bool getProperty(string name, string &value);
     
     
     //! get the LF_TYPE
-    /*!
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-    */
     LF_TYPE type();
     
     //! get width of a single image
-    /*!
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-    */
     int imgWidth();
     
     //! get height of a single image
-    /*!
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-    */
     int imgHeight();
     
     //! get width of the entire lf array
-    /*!
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-    */
     int width();
     
     //! get height of the entire lf array
-    /*!
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-    */
     int height();
     
     //! get horizontal number of cameras
-    /*!
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-    */
     int cams_h();
     
     //! get vertical number of cameras
-    /*!
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-    */
     int cams_v();
     
     
@@ -191,10 +169,7 @@ public:
     
     //! get the data pointer of a specific channel 
     /*!
-     Returns the data pointer to the channel specified by the channel_name.
-     If the channel key doesn't exist a NULL pointer is returned.
      \param channel_name the name of the channel
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     float* channel_ptr(string channel_name);
     
@@ -202,7 +177,6 @@ public:
     //! get pointer to data channels
     /*!
      Returns a pointer to the channels map containing the data.
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     map<string,OpenLF::image::ImageChannel> * data();
     
@@ -210,48 +184,35 @@ public:
     //! set pointer passed to address data channels
     /*!
      \param channels pointer to a channels map to get the address of the internal map
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     void data(map< string,OpenLF::image::ImageChannel> **channels);
     
     
     //! get pointer to specific channel
     /*!
-     Returns a pointer to the channel specified by the channel_name.
-     If the channel key doesn't exist a NULL pointer is returned.
      \param channel_name the name of the channel
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     OpenLF::image::ImageChannel *data(string channel_name);
     
     
     //! set pointer passed to the address of the channel specified
     /*!
-     Returns a pointer to the channel specified by the channel_name.
-     If the channel key doesn't exist a NULL pointer is returned.
      \param channel_name the name of the channel
      \param channel_data pointer to a MultiArray to get the address of the internal channel specified
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     void data(string channel_name, OpenLF::image::ImageChannel ** channel_data);
     
     
     //! Allocate a new channel
     /*!
-     Allocates a new channel with the name passed. The channels size is defined by
-     the size of the light field.
      \param channel_name the name of the channel
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     void allocateChannel(string channel_name);
     
     
     //! merge internal properties with properties passed
     /*!
-     Important: If a field of the passed properties instance already exist
-     in the internal properties instance the internal value is overwritten
      \param properties instance
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     void appendProperties(Properties &properties);
     
@@ -261,14 +222,35 @@ public:
      \param h horizontal index
      \param v vertical index
      \param channel_name name of the channel
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+     \param img reference to MultiArrayView
     */
-    vigra::MultiArrayView<2,float> getImage(int h, int v, string channel_name);
+    void getImage(int h, int v,  string channel_name, vigra::MultiArrayView<2,float> &img);
+    
+    //! access a single image of a light field channel
+    /*!
+     \param h horizontal index
+     \param v vertical index
+     \param img reference to bw MultiArray
+    */
+    void getImage(int h, int v, vigra::MultiArray<2,float> &img);
     
     
+    //! access a single rgb image of a light field
+    /*!
+     \param h horizontal index
+     \param v vertical index
+     \param img reference to a rgb float MultiArray
+    */
+    void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<float>> &img);
     
     
-    
+    //! access a single rgb image of a light field
+    /*!
+     \param h horizontal index
+     \param v vertical index
+     \param img reference to a rgb uint8 MultiArray
+    */
+    void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> &img);
     
     
     

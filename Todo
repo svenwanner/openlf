@@ -1,1 +1,2 @@
+14.03. : Lightfield -> viewFromROI muss Spezialfälle noch korrekt behandeln
 31.03. : ROI laden muss noch implementiert werden.

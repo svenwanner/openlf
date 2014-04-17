@@ -57,6 +57,8 @@ void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, v
     print(1,"image::io::linear_range_mapping(fimg,img) called...");
     
     try {
+        if(!img.hasData()) img = vigra::MultiArray<2, vigra::UInt8>(fimg.shape());
+        
         // functor to find range
         vigra::FindMinMax<vigra::FImage::PixelType> minmax;
         
@@ -75,6 +77,78 @@ void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, v
         else {
             nmin = 0;
             nmax = 255;
+        }
+            
+        // transform the range to min/max specified
+        vigra::transformImage(vigra::srcImageRange(fimg), vigra::destImage(img),
+                              vigra::linearRangeMapping( minmax.min, minmax.max, nmin, nmax) );
+    } catch(exception & e) {
+        warning(e.what());
+    }
+}
+
+
+void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2,float>& img) 
+{
+    print(1,"image::io::linear_range_mapping(fimg,img) called...");
+    
+    try {
+        if(!img.hasData()) img = vigra::MultiArray<2,float>(fimg.shape());
+        
+        // functor to find range
+        vigra::FindMinMax<vigra::FImage::PixelType> minmax;
+        
+        // find original range
+        vigra::inspectImage(vigra::srcImageRange(fimg), minmax);
+        if(minmax.max<=minmax.min) throw OpenLF_Exception("image::io::linear_range_mapping failed, no distance in image to map!");
+        
+        
+        float nmin, nmax;
+        // if original range is btw [0,1] keep relative range by multiplying min/max with 255
+        if(minmax.min>=0 && minmax.min<1 && minmax.max>0 && minmax.max<=1) {
+            nmin = minmax.min*255.0f;
+            nmax = minmax.max*255.0f;
+        }
+        // else scale hard to [0,255]
+        else {
+            nmin = 0.0f;
+            nmax = 255.0f;
+        }
+            
+        // transform the range to min/max specified
+        vigra::transformImage(vigra::srcImageRange(fimg), vigra::destImage(img),
+                              vigra::linearRangeMapping( minmax.min, minmax.max, nmin, nmax) );
+    } catch(exception & e) {
+        warning(e.what());
+    }
+}
+
+
+void OpenLF::image::io::linear_range_mapping(vigra::MultiArrayView<2,float>& fimg, vigra::MultiArray<2,float>& img) 
+{
+    print(1,"image::io::linear_range_mapping(fimg,img) called...");
+    
+    try {
+        if(!img.hasData()) img = vigra::MultiArray<2,float>(fimg.shape());
+        
+        // functor to find range
+        vigra::FindMinMax<vigra::FImage::PixelType> minmax;
+        
+        // find original range
+        vigra::inspectImage(vigra::srcImageRange(fimg), minmax);
+        if(minmax.max<=minmax.min) throw OpenLF_Exception("image::io::linear_range_mapping failed, no distance in image to map!");
+        
+        
+        float nmin, nmax;
+        // if original range is btw [0,1] keep relative range by multiplying min/max with 255
+        if(minmax.min>=0 && minmax.min<1 && minmax.max>0 && minmax.max<=1) {
+            nmin = minmax.min*255.0f;
+            nmax = minmax.max*255.0f;
+        }
+        // else scale hard to [0,255]
+        else {
+            nmin = 0.0f;
+            nmax = 255.0f;
         }
             
         // transform the range to min/max specified
@@ -237,6 +311,31 @@ bool OpenLF::image::io::imsave(string filename, vigra::MultiArray<2,float> img)
     return true;
 }
 
+
+bool OpenLF::image::io::imsave(string filename, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> img)
+{
+    print(2,"image::io::imread(filename,img) called...");
+    
+    // get file type
+    string ftype = OpenLF::helpers::find_ftype(filename);
+    
+    try {
+        // allocate memory to store range mapping results
+       // vigra::MultiArray<2,vigra::UInt8> tmp(vigra::Shape2(img.width(),img.height()));
+       // linear_range_mapping(img,tmp);
+
+        if(ftype=="jpg")
+            vigra::exportImage(img, vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=75"));
+        else
+            vigra::exportImage(img, filename.c_str());
+        
+    } catch(exception & e) {
+        warning(e.what());
+        return false;
+    }
+    
+    return true;
+}
 
 
 bool OpenLF::image::io::imsave(string filename, vigra::MultiArrayView<2,float> img)

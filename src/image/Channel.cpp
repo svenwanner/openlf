@@ -304,8 +304,8 @@ void OpenLF::image::ImageChannel::image(vigra::MultiArray<2,float> **pixel)
  */
 vigra::MultiArrayView<2,float> OpenLF::image::ImageChannel::viewToROI(int x, int y, int width, int height) {
 
-    if(x<0 || y<0 || x+width>=pixel.width() || y+height>=pixel.height())
-        throw OpenLF_Exception("out of bounce!");
+   if(x<0 || y<0 || x+width-1>=pixel.width() || y+height-1>=pixel.height())
+        throw OpenLF_Exception("ImageChannel::viewToROI -> out of bounce!");
     else {
         vigra::MultiArrayView<2, float> roi_view = pixel.subarray(vigra::Shape2(x,y), vigra::Shape2(x+width,y+height));
         return roi_view;
