@@ -123,14 +123,14 @@ add_dependencies(OpenLF_test_channel Configure)
 
 
 #WORKFLOW: demo 
-add_executable(OpenLF_demo
-	./workflows/demo/demo.cpp
-	./workflows/demo/My4DOperator.cpp
+add_executable(OpenLF_demo_4DOp
+	./workflows/demo_4DOperator/demo_4DOp.cpp
+	./workflows/demo_4DOperator/My4DOperator.cpp
 	${SRCS} ${HDRS})
-    target_link_libraries(OpenLF_demo hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex 
+    target_link_libraries(OpenLF_demo_4DOp hdf5_cpp hdf5 vigraimpex boost_system boost_filesystem boost_regex 
 	${OpenCV_LIBS} ${HDF5_LIBRARIES} ${CPPUNIT_LIBRARY})
 
-add_dependencies(OpenLF_demo Configure)
+add_dependencies(OpenLF_demo_4DOp Configure)
 
 
 enable_testing()
