@@ -286,6 +286,85 @@ bool OpenLF::image::io::imread(string filename, map<string,OpenLF::image::ImageC
 
 
 
+bool OpenLF::image::io::imread(string filename, OpenLF::ROI roi, map<string,OpenLF::image::ImageChannel> &img_channel)
+{
+    print(2,"image::io::imread(filename,channels) called...");
+    
+    try {
+        // import image info to get the image shape
+        vigra::ImageImportInfo info(filename.c_str());
+    
+        // image size
+        int width = info.width();
+        int height = info.height();
+
+        // load grayscale images
+        if(info.isGrayscale()) {
+            print(3,"image::io::imread(string,map) found grayscale image...");
+         
+            // uint image to import data from file
+            vigra::MultiArray<2, vigra::UInt8> in(width,height);
+
+            // import data
+            if(info.numExtraBands()!=0) {
+                vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(info.width(),info.height()));
+                vigra::importImageAlpha(info, in, alpha);
+            }
+            else {
+                vigra::importImage(info, in);
+            }  
+            
+            // create channel and copy data into object and map to range [1,0]
+            img_channel["bw"] = OpenLF::image::ImageChannel();
+            img_channel["bw"].init(roi.width,roi.height);
+            
+            for(int y=0; y<roi.height; y++)
+                for(int x=0; x<roi.width; x++)
+                    img_channel["bw"](x,y) = in(roi.pos_x+x,roi.pos_y+y);
+        }
+        // load color images
+        else if(info.isColor()) {
+            print(3,"image::io::imread(string,map) found color image...");
+
+            // create channels
+            img_channel["r"] = OpenLF::image::ImageChannel();
+            img_channel["r"].init(roi.width,roi.height);
+            img_channel["g"] = OpenLF::image::ImageChannel(); 
+            img_channel["g"].init(roi.width,roi.height);
+            img_channel["b"] = OpenLF::image::ImageChannel(); 
+            img_channel["b"].init(roi.width,roi.height);
+
+            // uint rgb image to import data from file
+            vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in(info.shape());
+
+            // import data
+            if(info.numExtraBands()!=0) {
+                vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(info.width(),info.height()));
+                vigra::importImageAlpha(info, in, alpha);
+            }
+            else {
+                vigra::importImage(info, in);
+            }                      
+            
+            // copy data into lf container
+            for(int y=0; y<roi.height; y++) {
+                for(int x=0; x<roi.width; x++) {
+                    img_channel["r"](x,y) = in(roi.pos_x+x,roi.pos_y+y)[0]/255.0f;
+                    img_channel["g"](x,y) = in(roi.pos_x+x,roi.pos_y+y)[1]/255.0f;
+                    img_channel["b"](x,y) = in(roi.pos_x+x,roi.pos_y+y)[2]/255.0f;
+                }
+            }
+        }
+    }
+    catch(exception &e) {
+        warning(e.what());
+        return false;
+    }
+    return true;
+}
+
+
+
 bool OpenLF::image::io::imsave(string filename, vigra::MultiArray<2,float> img)
 {
     print(2,"image::io::imread(filename,img) called...");

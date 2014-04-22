@@ -92,3 +92,35 @@ void test_image::test_io() {
 }
 
 
+void test_image::test_roi_io() {
+
+    map< string,OpenLF::image::ImageChannel> channels;
+   
+    OpenLF::ROI roi;
+    roi.pos_x = 235;
+    roi.pos_y = 235;
+    roi.width = 78;
+    roi.height = 64;
+    
+    CPPUNIT_ASSERT(OpenLF::image::io::imread(_lena_bw_dir,roi,channels));
+    CPPUNIT_ASSERT(channels["bw"].width() == 78);
+    CPPUNIT_ASSERT(channels["bw"].height() == 64);
+    CPPUNIT_ASSERT(channels.size()==1);
+    
+    CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_save_img_roi.jpg",channels));
+    channels.clear();
+       
+    // test loading an rgb image
+    CPPUNIT_ASSERT(OpenLF::image::io::imread(_lena_rgb_dir,roi,channels));
+    
+    CPPUNIT_ASSERT(channels["r"].width() == 78);
+    CPPUNIT_ASSERT(channels["r"].height() == 64);
+    CPPUNIT_ASSERT(channels["g"].width() == 78);
+    CPPUNIT_ASSERT(channels["g"].height() == 64);
+    CPPUNIT_ASSERT(channels["b"].width() == 78);
+    CPPUNIT_ASSERT(channels["b"].height() == 64);
+    CPPUNIT_ASSERT(channels.size()==3);
+    
+    CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_save_img_roi.jpg",channels));
+    channels.clear();
+}

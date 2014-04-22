@@ -13,12 +13,14 @@
 #include "global.hpp"
 #include "settings.hpp"
 #include "image/io.hpp"
+#include "image/utils.hpp"
 #include "image/Channel.hpp"
 
 class test_image : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_image);
 
     CPPUNIT_TEST(test_io);
+    CPPUNIT_TEST(test_roi_io);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -29,6 +31,7 @@ public:
     void tearDown();
 
     void test_io();
+    void test_roi_io();
     
 private:
     string _lena_rgb_dir;
