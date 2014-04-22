@@ -21,6 +21,9 @@
 
 
 
+
+
+
 /*!
  \note the user has to ensure that the range of the float channels is as expected,
  the values are converted to uint8 as they are without automatic range adjustments

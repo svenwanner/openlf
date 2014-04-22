@@ -30,6 +30,7 @@ public:
     My4DOperator() : Operator_4D() {};
     My4DOperator(const My4DOperator& orig);
     virtual ~My4DOperator();
+
     
 protected:
     void allocate();

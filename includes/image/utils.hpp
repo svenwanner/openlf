@@ -23,6 +23,21 @@
 #include "debug.hpp"
 #include "global.hpp"
 
+
+//namespace OpenLF {
+//    
+//    struct ROI {
+//        int pos_x;
+//        int pos_y;
+//        int width;
+//        int height;
+//    };
+//}
+
+
+
+
+
 namespace OpenLF { 
     namespace image { 
         namespace utils {

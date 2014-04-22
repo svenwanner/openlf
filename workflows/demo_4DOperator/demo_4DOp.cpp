@@ -31,11 +31,9 @@ int main(int argc, char** argv) {
         OpenLF::image::io::imsave("/home/swanner/Desktop/img_1.png",img_0);
         OpenLF::image::io::imsave("/home/swanner/Desktop/img_2.png",img_1);
 
-        
         vigra::MultiArray<2,float> img_bw;
         vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> img_rgb;
         
-      
         myLf.getImage(4,4,img_bw);
         myLf.getImage(4,4,img_rgb);
         OpenLF::image::io::imsave("/home/swanner/Desktop/img_bw.png",img_bw);
