@@ -96,7 +96,7 @@ void test_image::test_roi_io() {
 
     map< string,OpenLF::image::ImageChannel> channels;
    
-    OpenLF::ROI roi;
+    OpenLF::image::ROI roi;
     roi.pos_x = 235;
     roi.pos_y = 235;
     roi.width = 78;

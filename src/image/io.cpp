@@ -286,7 +286,7 @@ bool OpenLF::image::io::imread(string filename, map<string,OpenLF::image::ImageC
 
 
 
-bool OpenLF::image::io::imread(string filename, OpenLF::ROI roi, map<string,OpenLF::image::ImageChannel> &img_channel)
+bool OpenLF::image::io::imread(string filename, OpenLF::image::ROI roi, map<string,OpenLF::image::ImageChannel> &img_channel)
 {
     print(2,"image::io::imread(filename,channels) called...");
     

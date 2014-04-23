@@ -40,11 +40,30 @@ namespace OpenLF {
  Loads all files in passed directory and creates 4D light field channels depending 
  on color mode into the passed map container using channel names as keys (bw,r,g,b). 
  \note Mandatory for this method is that cams_v and cams_h are set in Property struct
+ * 
+ \param fname_list list of filenames to load
  \param channels map container storing the channels
  \param properties struct storing the important parameter 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 bool load_4D_structure( vector<string> fname_list,
+                        map< string,image::ImageChannel> &channels,
+                        Properties *properties );
+
+
+//! load a region of images of 4D light field from filenames in directory
+/*!
+ Loads all files in passed directory and creates 4D light field channels depending 
+ on color mode into the passed map container using channel names as keys (bw,r,g,b). 
+ \note Mandatory for this method is that cams_v and cams_h are set in Property struct
+ *
+ \param fname_list list of filenames to load
+ \param roi region of interest
+ \param channels map container storing the channels
+ \param properties struct storing the important parameter 
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+bool load_4D_structure( vector<string> fname_list, OpenLF::image::ROI roi,
                         map< string,image::ImageChannel> &channels,
                         Properties *properties );
 

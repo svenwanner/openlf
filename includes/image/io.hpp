@@ -29,6 +29,14 @@
 
 namespace OpenLF { 
     namespace image { 
+        
+        struct ROI {
+            int pos_x;
+            int pos_y;
+            int width;
+            int height;
+        };
+        
         namespace io {
             
 
