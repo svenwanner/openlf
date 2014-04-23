@@ -12,3 +12,4 @@ build/
 .directory
 latex/
 /workflows/demo_4DOperator/dist/
+*.user
