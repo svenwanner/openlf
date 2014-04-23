@@ -78,13 +78,15 @@ void OpenLF::lightfield::Properties::log()
     string text = "\n#### Properties ####\n";
     
     text += "#\n# number fields:\n";
-    for (auto& k : this->number_fields) {
-        text += "# "+k.first+" = "+boost::lexical_cast<string>(k.second)+"\n";
+    for(number_fields_iter iter = number_fields.begin(); iter != number_fields.end(); iter++) {
+    //for (auto& k : this->number_fields) {
+        text += "# "+iter->first+" = "+boost::lexical_cast<string>(iter->second)+"\n";
     }
     
     text += "#\n# string fields:\n";
-    for (auto& k : this->string_fields) {
-        text += "# "+k.first+" = "+k.second+"\n";
+    for(string_fields_iter iter = string_fields.begin(); iter != string_fields.end(); iter++) {
+    //for (auto& k : this->string_fields) {
+        text += "# "+iter->first+" = "+iter->second+"\n";
     }
     
     cout << text << endl;
@@ -99,15 +101,17 @@ OpenLF::lightfield::Properties & OpenLF::lightfield::Properties::operator+=(Open
     double nvalue;
     string svalue;
     
-    for (auto& k : rhs.number_fields) {
-        key = k.first;
+    for(number_fields_iter iter = rhs.number_fields.begin(); iter != rhs.number_fields.end(); iter++) {
+    //for (auto& iter : rhs.number_fields) {
+        key = iter->first;
         rhs.get_field(key,nvalue);
         this->set_field(key,nvalue);
       
     }
     
-    for (auto& k : rhs.string_fields) {
-        key = k.first;
+    for(string_fields_iter iter = rhs.string_fields.begin(); iter != rhs.string_fields.end(); iter++) {
+    //for (auto& iter : rhs.string_fields) {
+        key = iter->first;
         rhs.get_field(key,svalue);
         this->set_field(key,svalue);
     }
@@ -143,15 +147,17 @@ int OpenLF::lightfield::Properties::sizeof_str_field()
 
 void OpenLF::lightfield::Properties::get_num_field_keys(vector<string> &keys)
 {
-    for (auto& k : number_fields) {
-        keys.push_back(k.first);
+    for(number_fields_iter iter = number_fields.begin(); iter != number_fields.end(); iter++) {
+    //for (auto& k : number_fields) {
+        keys.push_back(iter->first);
     }
 }
 
 void OpenLF::lightfield::Properties::get_str_field_keys(vector<string> &keys)
 {
-    for (auto& k : string_fields) {
-        keys.push_back(k.first);
+    for(string_fields_iter iter = string_fields.begin(); iter != string_fields.end(); iter++) {
+    //for (auto& k : string_fields) {
+        keys.push_back(iter->first);
     }
 }
 
@@ -159,12 +165,14 @@ void OpenLF::lightfield::Properties::get_str_field_keys(vector<string> &keys)
 
 bool OpenLF::lightfield::Properties::has_field(string fieldname)
 {
-    for (auto& k : number_fields) {
-        if(k.first==fieldname)
+    for(number_fields_iter iter = number_fields.begin(); iter != number_fields.end(); iter++) {
+    //for (auto& k : number_fields) {
+        if(iter->first==fieldname)
             return true;
     }
-    for (auto& k : string_fields) {
-        if(k.first==fieldname)
+    for(string_fields_iter iter = string_fields.begin(); iter != string_fields.end(); iter++) {
+    //for (auto& k : string_fields) {
+        if(iter->first==fieldname)
             return true;
     }
     return false;

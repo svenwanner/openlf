@@ -25,6 +25,9 @@
 #include "image/io.hpp"
 #include "image/Channel.hpp"
 
+typedef map<string,OpenLF::image::ImageChannel> channel_map;
+typedef map<string,OpenLF::image::ImageChannel>::iterator channel_map_iter;
+
 namespace OpenLF { 
     namespace image { 
         namespace imgproc {

@@ -23,6 +23,13 @@
 #include "global.hpp"
 #include "utils/helpers.hpp"
 
+
+typedef map<string,double> number_fields_map;
+typedef map<string,string> string_fields_map;
+typedef map<string,double>::iterator number_fields_iter;
+typedef map<string,string>::iterator string_fields_iter;
+
+
 struct Parse_Exception : public exception
 {
    string s;
