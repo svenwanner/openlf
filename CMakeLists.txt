@@ -56,6 +56,9 @@ endif()
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/bin/workflows)
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/lib)
 
+Message(CMAKE_RUNTIME_OUTPUT_DIRECTORY " : ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+Message(CMAKE_LIBRARY_OUTPUT_DIRECTORY " : ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+
 # configure a header file to pass some of the CMake settings
 # to the source code
 #find_package(OpenGL)
@@ -120,7 +123,7 @@ endif(WITH_OPENMP)
 #set(CMAKE_CXX_FLAGS "-g -O -Wall -Wshadow -Wextra -std=c++0x -march=native")
 
 # uncomment this for release build to get best code optimization
-set(CMAKE_CXX_FLAGS "-g -O -Wall -Wshadow -Wextra  -std=c++0x -O3 -march=native")
+set(CMAKE_CXX_FLAGS "-g -O -Wall -Wshadow -Wextra  -std=c++11 -O3 -march=native")
 
 execute_process(COMMAND ${CMAKE_CURRENT_LIST_DIR}/configure)
 
@@ -159,7 +162,7 @@ if(BUILD_TEST)
 		./tests/test_image_run.cpp
 		./tests/test_image.cpp 
 		${SRCS} ${HDRS})
-	    target_link_libraries(OpenLF_test_image libopenlf boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
+	    target_link_libraries(OpenLF_test_image libopenlf boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY} )
 
 	add_dependencies(OpenLF_test_image Configure)
 
@@ -202,10 +205,10 @@ if(BUILD_TEST)
 
 
 	enable_testing()
-	add_test(OpenLF_test_image ./bin/tests/OpenLF_test_image)
-	add_test(OpenLF_test_channel ./bin/tests/OpenLF_test_channel)
-	add_test(OpenLF_test_imgproc ./bin/tests/OpenLF_test_imgproc)
-	add_test(OpenLF_test_lightfield_IO ./bin/tests/OpenLF_test_lightfield_IO)
-	add_test(OpenLF_test_lightfield ./bin/tests/OpenLF_test_lightfield)
+	add_test(OpenLF_test_image ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_image)
+	add_test(OpenLF_test_channel ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_channel)
+	add_test(OpenLF_test_imgproc ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_imgproc)
+	add_test(OpenLF_test_lightfield_IO ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_lightfield_IO)
+	add_test(OpenLF_test_lightfield ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_lightfield)
 endif()
 
