@@ -6,17 +6,19 @@ project (OpenLF)
 set (OpenLF_VERSION_MAJOR 1)
 set (OpenLF_VERSION_MINOR 0)
 
+
+
 #--------------------------------------------------------------
 # options
 #--------------------------------------------------------------
 OPTION(BUILD_WORKFLOWS "Build workflows" ON)
-OPTION(BUILD_TEST "Build tests" OFF)
+OPTION(BUILD_TEST "Build tests" ON)
 OPTION(WITH_OPENMP "Include OpenMP" OFF)
 
+file(GLOB_RECURSE SOURCES src/*.cpp)
 include_directories(./src/)
 file(GLOB_RECURSE headers ./include/*.hpp)
 include_directories(./includes/)
-
 
 #--------------------------------------------------------------
 # warning level
@@ -31,19 +33,19 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
    endif()
    # with warning
    if(WARNINGLEVEL STREQUAL "1" )
-     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++98")
+     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
    endif()
    # PEDANTIC -> a lot of warnings
    if(WARNINGLEVEL STREQUAL "2" )
-     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++98 -pedantic -Wno-long-long ")
+     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -pedantic -Wno-long-long ")
    endif() 
    # VERY PEDANTIC -> very lot of warnings
    if(WARNINGLEVEL STREQUAL "3" )
-     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++98 -pedantic -Wno-long-long -Wextra")
+     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -pedantic -Wno-long-long -Wextra")
    endif()
    # SADISTIC -> all warnings become errors
    if(WARNINGLEVEL STREQUAL "4" )
-     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++98 -pedantic -Wno-long-long -Wextra -Werror")
+     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -pedantic -Wno-long-long -Wextra -Werror")
    endif()
 elseif(MSVC)
    add_definitions(-D_SCL_SECURE_NO_WARNINGS)
@@ -51,14 +53,15 @@ endif()
 
 
 
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/test_release)
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/bin/workflows)
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/lib)
 
 # configure a header file to pass some of the CMake settings
 # to the source code
-find_package(OpenGL)
+#find_package(OpenGL)
 find_package(HDF5 REQUIRED )
 find_package(VIGRA REQUIRED )
-find_package(OpenCV)
+#find_package(OpenCV)
 find_package(Boost REQUIRED ) 
 
 add_definitions(${HDF5_CPPFLAGS})
@@ -72,14 +75,10 @@ find_library( CPPUNIT_LIBRARY NAMES cppunit cppunit_dll
             PATH_SUFFIXES release )
 
 MESSAGE(STATUS " libraries : ${CPPUNIT_LIBRARY}")
-
 MESSAGE(STATUS " boost libraries : ${Boost_LIBRARIES_DIR} ${Boost_INCLUDE_DIR}")
 Message(STATUS " vigra : ${VIGRA_IMPEX_LIBRARY}")
 Message(STATUS " hdf5 : ${HDF5_LIBRARIES}")
-
-
-file(GLOB_RECURSE SRCS ./src/*.cpp)
-file(GLOB_RECURSE HDRS ./includes/*.hpp)
+#Message(STATUS " SOURCES : ${SOURCES}")
 
 INCLUDE_DIRECTORIES( ${OPENCV_INCLUDE_DIR} )
 INCLUDE_DIRECTORIES(${HDF5_INCLUDE_DIR})
@@ -91,7 +90,8 @@ ADD_DEFINITIONS(${HDF5_CPPFLAGS})
 # so that we will find TutorialConfig.h
 include_directories("${PROJECT_SOURCE_DIR}")
 
-
+ADD_LIBRARY(libopenlf SHARED ${SOURCES} )
+ 
 
 #-------------------------------------------------------------
 # OpenMP
@@ -142,11 +142,13 @@ add_executable(OpenLF_demo_4DOp
 	./workflows/demo_4DOperator/demo_4DOp.cpp
 	./workflows/demo_4DOperator/My4DOperator.cpp
 	${SRCS} ${HDRS})
-target_link_libraries(OpenLF_demo_4DOp boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY})
+target_link_libraries(OpenLF_demo_4DOp libopenlf boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY})
 
 add_dependencies(OpenLF_demo_4DOp Configure)
 endif()
 
+
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/bin/tests)
 
 #--------------------------------------------------------------
 # TESTS 
@@ -157,7 +159,7 @@ if(BUILD_TEST)
 		./tests/test_image_run.cpp
 		./tests/test_image.cpp 
 		${SRCS} ${HDRS})
-	    target_link_libraries(OpenLF_test_image boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
+	    target_link_libraries(OpenLF_test_image libopenlf boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
 
 	add_dependencies(OpenLF_test_image Configure)
 
@@ -166,7 +168,7 @@ if(BUILD_TEST)
 		./tests/test_imgproc_run.cpp
 		./tests/test_imgproc.cpp 
 		${SRCS} ${HDRS})
-	    target_link_libraries(OpenLF_test_imgproc boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
+	    target_link_libraries(OpenLF_test_imgproc libopenlf boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
 
 	add_dependencies(OpenLF_test_imgproc Configure)
 
@@ -175,7 +177,7 @@ if(BUILD_TEST)
 		./tests/test_lightfield_IO_run.cpp
 		./tests/test_lightfield_IO.cpp 
 		${SRCS} ${HDRS})
-	    target_link_libraries(OpenLF_test_lightfield_IO boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
+	    target_link_libraries(OpenLF_test_lightfield_IO libopenlf boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
 
 	add_dependencies(OpenLF_test_lightfield_IO Configure)
 
@@ -184,7 +186,7 @@ if(BUILD_TEST)
 		./tests/test_lightfield_run.cpp
 		./tests/test_lightfield.cpp 
 		${SRCS} ${HDRS})
-	    target_link_libraries(OpenLF_test_lightfield boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
+	    target_link_libraries(OpenLF_test_lightfield libopenlf boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
 
 	add_dependencies(OpenLF_test_lightfield Configure)
 
@@ -193,17 +195,17 @@ if(BUILD_TEST)
 		./tests/test_channel_run.cpp
 		./tests/test_channel.cpp 
 		${SRCS} ${HDRS})
-	    target_link_libraries(OpenLF_test_channel boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY}) 
+	    target_link_libraries(OpenLF_test_channel libopenlf boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY}) 
 
 	add_dependencies(OpenLF_test_channel Configure)
 
 
 
 	enable_testing()
-	add_test(OpenLF_test_image ./test_release/OpenLF_test_image)
-	add_test(OpenLF_test_channel ./test_release/OpenLF_test_channel)
-	add_test(OpenLF_test_imgproc ./test_release/OpenLF_test_imgproc)
-	add_test(OpenLF_test_lightfield_IO ./test_release/OpenLF_test_lightfield_IO)
-	add_test(OpenLF_test_lightfield ./test_release/OpenLF_test_lightfield)
+	add_test(OpenLF_test_image ./bin/tests/OpenLF_test_image)
+	add_test(OpenLF_test_channel ./bin/tests/OpenLF_test_channel)
+	add_test(OpenLF_test_imgproc ./bin/tests/OpenLF_test_imgproc)
+	add_test(OpenLF_test_lightfield_IO ./bin/tests/OpenLF_test_lightfield_IO)
+	add_test(OpenLF_test_lightfield ./bin/tests/OpenLF_test_lightfield)
 endif()
 
