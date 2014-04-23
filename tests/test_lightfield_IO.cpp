@@ -78,6 +78,53 @@ void test_lightfield_IO::setUp() {
 void test_lightfield_IO::tearDown() {
 }
 
+
+
+
+
+
+
+void test_lightfield_IO::test_ROI_IO_Pipeline_4D()
+{
+    string fname = "/home/swanner/Desktop/TestLF/render/9x9/config_roi.cfg";
+    
+    map< string,OpenLF::image::ImageChannel> channels;
+    map< string,OpenLF::image::ImageChannel> channels_gt;
+    OpenLF::lightfield::Properties properties;
+    
+    
+    // pointer storing the FileHandler instance
+    OpenLF::lightfield::io::DataHandler *dataHandler;
+
+    
+    /*********************************************************************
+     *                     Test from sequence 4D high     
+     *********************************************************************/
+    // init FileHandler and test if read data works
+    dataHandler = new OpenLF::lightfield::io::FileHandler(fname,&properties);
+    properties.log();
+    
+    CPPUNIT_ASSERT(dataHandler->readData(channels));
+    string p = "/home/swanner/Desktop/4D.png";
+    OpenLF::image::io::imsave(p,channels);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void test_lightfield_IO::test_IO_Pipeline_4D()
 {
     string p;

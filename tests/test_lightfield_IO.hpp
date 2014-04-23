@@ -26,13 +26,15 @@
 class test_lightfield_IO : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_lightfield_IO);
 
-    CPPUNIT_TEST(test_IO_Pipeline_4D);
-    CPPUNIT_TEST(test_IO_Pipeline_3DH);
-    CPPUNIT_TEST(test_IO_Pipeline_3DV);
-    CPPUNIT_TEST(test_IO_Pipeline_CROSS);
-    CPPUNIT_TEST(test_Properties_methods);
+    CPPUNIT_TEST(test_ROI_IO_Pipeline_4D);
+//    CPPUNIT_TEST(test_IO_Pipeline_4D);
+//    CPPUNIT_TEST(test_IO_Pipeline_3DH);
+//    CPPUNIT_TEST(test_IO_Pipeline_3DV);
+//    CPPUNIT_TEST(test_IO_Pipeline_CROSS);
+//    CPPUNIT_TEST(test_Properties_methods);
 
     CPPUNIT_TEST_SUITE_END();
+    
 
 public:
     test_lightfield_IO();
@@ -41,6 +43,7 @@ public:
     void tearDown();
 
 private:
+    void test_ROI_IO_Pipeline_4D();
     void test_IO_Pipeline_4D();
     void test_IO_Pipeline_3DH();
     void test_IO_Pipeline_3DV();
