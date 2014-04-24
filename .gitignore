@@ -13,3 +13,4 @@ build/
 latex/
 /workflows/demo_4DOperator/dist/
 *.user
+Viewer/build-ViewLF-Desktop-Debug/
