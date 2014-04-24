@@ -47,6 +47,9 @@ void test_lightfield_IO::setUp() {
     cfgnames["4D_high_rgb_sf"] = test_lf_4D_high+"4D_high_rgb.cfg";
     cfgnames["4D_wide_rgb_sf"] = test_lf_4D_wide+"4D_wide_rgb.cfg";
     
+    cfgnames["4D_roi_bw"] = test_lf_4D_wide+"bw_roi.cfg";
+    cfgnames["4D_roi_rgb"] = test_lf_4D_high+"rgb_roi.cfg";
+    
     cfgnames["3DH_high_bw"] = test_lf_3DH_high+"bw.cfg";
     cfgnames["3DH_wide_bw"] = test_lf_3DH_wide+"bw.cfg";
     cfgnames["3DH_high_rgb"] = test_lf_3DH_high+"rgb.cfg";
@@ -55,6 +58,9 @@ void test_lightfield_IO::setUp() {
     cfgnames["3DH_wide_bw_sf"] = test_lf_3DH_wide+"3DH_wide_bw.cfg";
     cfgnames["3DH_high_rgb_sf"] = test_lf_3DH_high+"3DH_high_rgb.cfg";
     cfgnames["3DH_wide_rgb_sf"] = test_lf_3DH_wide+"3DH_wide_rgb.cfg";
+    
+    cfgnames["3DH_roi_bw"] = test_lf_3DH_wide+"bw_roi.cfg";
+    cfgnames["3DH_roi_rgb"] = test_lf_3DH_high+"rgb_roi.cfg";
      
     cfgnames["3DV_high_bw"] = test_lf_3DV_high+"bw.cfg";
     cfgnames["3DV_wide_bw"] = test_lf_3DV_wide+"bw.cfg";
@@ -65,6 +71,9 @@ void test_lightfield_IO::setUp() {
     cfgnames["3DV_high_rgb_sf"] = test_lf_3DV_high+"3DV_high_rgb.cfg";
     cfgnames["3DV_wide_rgb_sf"] = test_lf_3DV_wide+"3DV_wide_rgb.cfg";
     
+    cfgnames["3DV_roi_bw"] = test_lf_3DV_wide+"bw_roi.cfg";
+    cfgnames["3DV_roi_rgb"] = test_lf_3DV_high+"rgb_roi.cfg";
+    
     cfgnames["CROSS_high_bw"] = test_lf_CROSS_high+"bw.cfg";
     cfgnames["CROSS_wide_bw"] = test_lf_CROSS_wide+"bw.cfg";
     cfgnames["CROSS_high_rgb"] = test_lf_CROSS_high+"rgb.cfg";
@@ -73,10 +82,149 @@ void test_lightfield_IO::setUp() {
     cfgnames["CROSS_wide_bw_sf"] = test_lf_CROSS_wide+"CROSS_wide_bw.cfg";
     cfgnames["CROSS_high_rgb_sf"] = test_lf_CROSS_high+"CROSS_high_rgb.cfg";
     cfgnames["CROSS_wide_rgb_sf"] = test_lf_CROSS_wide+"CROSS_wide_rgb.cfg";
+    
+    cfgnames["CROSS_roi_bw"] = test_lf_CROSS_wide+"bw_roi.cfg";
+    cfgnames["CROSS_roi_rgb"] = test_lf_CROSS_high+"rgb_roi.cfg";
 }
 
 void test_lightfield_IO::tearDown() {
 }
+
+
+
+
+
+
+
+void test_lightfield_IO::test_ROI_IO_Pipeline_4D()
+{
+    /*********************************************************************
+     *                     Test from sequence 4D     
+     *********************************************************************/
+    
+    string fname = cfgnames["4D_roi_rgb"];
+    string p = test_result_dir+"4D_roi.png";
+    
+    map< string,OpenLF::image::ImageChannel> channels;
+    OpenLF::lightfield::Properties *properties = new OpenLF::lightfield::Properties();
+    
+    // pointer storing the FileHandler instance
+    OpenLF::lightfield::io::DataHandler *dataHandler;
+
+    // init FileHandler and test if read data works
+    dataHandler = new OpenLF::lightfield::io::FileHandler(fname,properties);
+    
+    CPPUNIT_ASSERT(dataHandler->readData(channels));
+    OpenLF::image::io::imsave(p,channels);
+    channels.clear();
+    
+    
+    
+    fname = cfgnames["4D_roi_bw"];
+    properties = new OpenLF::lightfield::Properties();
+    
+    dataHandler = new OpenLF::lightfield::io::FileHandler(fname,properties);
+    
+    CPPUNIT_ASSERT(dataHandler->readData(channels));
+    OpenLF::image::io::imsave(p,channels);
+    channels.clear();
+    
+    
+    /*********************************************************************
+     *                     Test from sequence 3DH   
+     *********************************************************************/
+    
+    fname = cfgnames["3DH_roi_rgb"];
+    p = test_result_dir+"3DH_roi.png";
+    
+    properties = new OpenLF::lightfield::Properties();
+    
+    dataHandler = new OpenLF::lightfield::io::FileHandler(fname,properties);
+    
+    CPPUNIT_ASSERT(dataHandler->readData(channels));
+    OpenLF::image::io::imsave(p,channels);
+    channels.clear();
+    
+    fname = cfgnames["3DH_roi_bw"];
+    properties = new OpenLF::lightfield::Properties();
+    
+    dataHandler = new OpenLF::lightfield::io::FileHandler(fname,properties);
+    
+    CPPUNIT_ASSERT(dataHandler->readData(channels));
+    OpenLF::image::io::imsave(p,channels);
+    channels.clear();
+    
+    
+    
+    
+    /*********************************************************************
+     *                     Test from sequence 3DV   
+     *********************************************************************/
+    
+    fname = cfgnames["3DV_roi_rgb"];
+    p = test_result_dir+"3DV_roi.png";
+    
+    properties = new OpenLF::lightfield::Properties();
+    
+    dataHandler = new OpenLF::lightfield::io::FileHandler(fname,properties);
+    
+    CPPUNIT_ASSERT(dataHandler->readData(channels));
+    OpenLF::image::io::imsave(p,channels);
+    channels.clear();
+    
+    fname = cfgnames["3DV_roi_bw"];
+    properties = new OpenLF::lightfield::Properties();
+    
+    dataHandler = new OpenLF::lightfield::io::FileHandler(fname,properties);
+    
+    CPPUNIT_ASSERT(dataHandler->readData(channels));
+    OpenLF::image::io::imsave(p,channels);
+    channels.clear();
+    
+    
+    
+    
+    
+    /*********************************************************************
+     *                     Test from sequence CROSS   
+     *********************************************************************/
+    
+    fname = cfgnames["CROSS_roi_rgb"];
+    p = test_result_dir+"CROSS_roi.png";
+    
+    properties = new OpenLF::lightfield::Properties();
+    
+    dataHandler = new OpenLF::lightfield::io::FileHandler(fname,properties);
+    
+    CPPUNIT_ASSERT(dataHandler->readData(channels));
+    OpenLF::image::io::imsave(p,channels);
+    channels.clear();
+    
+    fname = cfgnames["CROSS_roi_bw"];
+    properties = new OpenLF::lightfield::Properties();
+    
+    dataHandler = new OpenLF::lightfield::io::FileHandler(fname,properties);
+    
+    CPPUNIT_ASSERT(dataHandler->readData(channels));
+    OpenLF::image::io::imsave(p,channels);
+    channels.clear();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void test_lightfield_IO::test_IO_Pipeline_4D()
 {
