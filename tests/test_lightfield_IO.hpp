@@ -35,7 +35,7 @@ class test_lightfield_IO : public CPPUNIT_NS::TestFixture {
 
     CPPUNIT_TEST_SUITE_END();
     
-
+    
 public:
     test_lightfield_IO();
     virtual ~test_lightfield_IO();

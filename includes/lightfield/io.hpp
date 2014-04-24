@@ -39,6 +39,8 @@ namespace OpenLF {
 /*!
  Loads all files in passed directory and creates 4D light field channels depending 
  on color mode into the passed map container using channel names as keys (bw,r,g,b). 
+ If in properties a region of interest is set (mandatory is width and height of the roi
+ and the values roi_pos_x and roi_pos_y) the channels are only filled with the roi. 
  \note Mandatory for this method is that cams_v and cams_h are set in Property struct
  * 
  \param fname_list list of filenames to load
@@ -56,6 +58,8 @@ bool load_4D_structure( vector<string> fname_list,
 /*!
  Loads all files in passed directory and creates 3DH light field channels depending 
  on color mode into the passed map container using channel names as keys (bw,r,g,b).
+ If in properties a region of interest is set (mandatory is width and height of the roi
+ and the values roi_pos_x and roi_pos_y) the channels are only filled with the roi. 
  \note Mandatory for this method is that cams_v and cams_h are set in Property struct 
  \param channels map container storing the channels
  \param properties struct storing the important parameter 
@@ -70,6 +74,8 @@ bool load_3DH_structure( vector<string> fname_list,
 /*!
  Loads all files in passed directory and creates 3DV light field channels depending 
  on color mode into the passed map container using channel names as keys (bw,r,g,b). 
+ If in properties a region of interest is set (mandatory is width and height of the roi
+ and the values roi_pos_x and roi_pos_y) the channels are only filled with the roi. 
  \note Mandatory for this method is that cams_v and cams_h are set in Property struct
  \param channels map container storing the channels
  \param properties struct storing the important parameter 
@@ -84,6 +90,8 @@ bool load_3DV_structure( vector<string> fname_list,
 /*!
  Loads all files in passed directory and creates cross light field channels depending 
  on color mode into the passed map container using channel names as keys (bw,r,g,b). 
+ If in properties a region of interest is set (mandatory is width and height of the roi
+ and the values roi_pos_x and roi_pos_y) the channels are only filled with the roi. 
  \note Mandatory for this method is that cams_v and cams_h are set in Property struct
  \param channels map container storing the channels
  \param properties struct storing the important parameter 
@@ -98,7 +106,6 @@ bool load_cross_structure( vector<string> fname_list,
 /*!
  Loads all files in passed directory and creates light field channels depending 
  on color mode into the passed map container using channel names as keys (bw,r,g,b).
- Ensure that the images contain no alpha alpha channel, handling them is not yet supported.
  \note Mandatory for this method is that "type", "cams_v" and "cams_h" are set in 
  the Property struct. Ensure to specifiy those via an configfile or during runtime 
  before calling the method.
