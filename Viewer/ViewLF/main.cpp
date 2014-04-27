@@ -1,11 +1,16 @@
-#include "viewer.h"
+#include "LF_viewer.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    Viewer w;
+
+    QApplication LightFieldViewer(argc, argv);
+
+    LightFieldViewer.setOrganizationName("HCI");
+    LightFieldViewer.setApplicationName("Light Field Viewer");
+
+    LF_Viewer w;
     w.show();
     
-    return a.exec();
+    return LightFieldViewer.exec();
 }
