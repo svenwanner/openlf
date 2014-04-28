@@ -253,6 +253,7 @@ public:
     void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> &img);
     
     
+    void getHorizontalEpi();
     
     
     

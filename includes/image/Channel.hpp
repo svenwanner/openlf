@@ -254,7 +254,20 @@ public:
      \param height of the ROI
     */
     vigra::MultiArrayView<2,float> viewToROI(int x, int y, int width, int height);
-   
+    
+    
+    //! get a view to a row of the channel image
+    /*!
+     \param fix_y the y coordinate of the row
+    */
+    vigra::MultiArrayView<1,float> viewToRow(int fix_y);
+    
+    
+    //! get a view to a column of the channel image
+    /*!
+     \param fix_y the y coordinate of the column
+    */
+    vigra::MultiArrayView<1,float> viewToColumn(int fix_x);
    
    
 ////////////////////////////////////////////////////////////////////////////////

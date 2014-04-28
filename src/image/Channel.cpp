@@ -313,6 +313,32 @@ vigra::MultiArrayView<2,float> OpenLF::image::ImageChannel::viewToROI(int x, int
 }
 
 
+/*!
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+ */
+vigra::MultiArrayView<1,float> OpenLF::image::ImageChannel::viewToRow(int fix_y)
+{
+    if(fix_y>=0 && fix_y<pixel.height())
+    {
+        return pixel.bind<1>(fix_y);
+    }
+    else
+        throw OpenLF_Exception("viewToRow access out of bounce!");
+}
+    
+
+/*!
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+ */
+vigra::MultiArrayView<1,float> OpenLF::image::ImageChannel::viewToColumn(int fix_x)
+{
+    if(fix_x>=0 && fix_x<pixel.width())
+    {
+        return pixel.bind<0>(fix_x);
+    }
+    else
+        throw OpenLF_Exception("viewToRow access out of bounce!");
+}
 
 
 
