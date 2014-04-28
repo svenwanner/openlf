@@ -65,8 +65,17 @@ Message(CMAKE_LIBRARY_OUTPUT_DIRECTORY " : ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 find_package(HDF5 REQUIRED )
 find_package(VIGRA REQUIRED )
 #find_package(OpenCV)
-find_package(Boost REQUIRED ) 
-
+#find_package(Boost REQUIRED ) 
+find_package(Boost
+             #1.55.0
+             COMPONENTS thread
+			 			filesystem
+                        system
+                        log
+                        log_setup
+                        program_options
+             REQUIRED)
+			 
 add_definitions(${HDF5_CPPFLAGS})
 
 find_library( CPPUNIT_LIBRARY NAMES cppunit cppunit_dll
@@ -92,6 +101,8 @@ ADD_DEFINITIONS(${HDF5_CPPFLAGS})
 # add the binary tree to the search path for include files
 # so that we will find TutorialConfig.h
 include_directories("${PROJECT_SOURCE_DIR}")
+
+set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} /opt/local/lib)
 
 ADD_LIBRARY(libopenlf SHARED ${SOURCES} )
  
@@ -136,6 +147,10 @@ add_custom_target(
 	    COMMAND ${CMAKE_CURRENT_LIST_DIR}/configure ${CMAKE_CURRENT_LIST_FILE}
 )
 
+set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} /opt/local/lib)
+#target_link_libraries(libopenlf boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY})
+target_link_libraries(libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY})
+
 #--------------------------------------------------------------
 # WORKFLOWS 
 #-------------------------------------------------------------- 
@@ -145,7 +160,7 @@ add_executable(OpenLF_demo_4DOp
 	./workflows/demo_4DOperator/demo_4DOp.cpp
 	./workflows/demo_4DOperator/My4DOperator.cpp
 	${SRCS} ${HDRS})
-target_link_libraries(OpenLF_demo_4DOp libopenlf boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY})
+target_link_libraries(OpenLF_demo_4DOp libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY})
 
 add_dependencies(OpenLF_demo_4DOp Configure)
 endif()
@@ -162,7 +177,7 @@ if(BUILD_TEST)
 		./tests/test_image_run.cpp
 		./tests/test_image.cpp 
 		${SRCS} ${HDRS})
-	    target_link_libraries(OpenLF_test_image libopenlf boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY} )
+	    target_link_libraries(OpenLF_test_image libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY} )
 
 	add_dependencies(OpenLF_test_image Configure)
 
@@ -171,7 +186,7 @@ if(BUILD_TEST)
 		./tests/test_imgproc_run.cpp
 		./tests/test_imgproc.cpp 
 		${SRCS} ${HDRS})
-	    target_link_libraries(OpenLF_test_imgproc libopenlf boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
+	    target_link_libraries(OpenLF_test_imgproc libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
 
 	add_dependencies(OpenLF_test_imgproc Configure)
 
@@ -180,7 +195,7 @@ if(BUILD_TEST)
 		./tests/test_lightfield_IO_run.cpp
 		./tests/test_lightfield_IO.cpp 
 		${SRCS} ${HDRS})
-	    target_link_libraries(OpenLF_test_lightfield_IO libopenlf boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
+	    target_link_libraries(OpenLF_test_lightfield_IO libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
 
 	add_dependencies(OpenLF_test_lightfield_IO Configure)
 
@@ -189,7 +204,7 @@ if(BUILD_TEST)
 		./tests/test_lightfield_run.cpp
 		./tests/test_lightfield.cpp 
 		${SRCS} ${HDRS})
-	    target_link_libraries(OpenLF_test_lightfield libopenlf boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
+	    target_link_libraries(OpenLF_test_lightfield libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
 
 	add_dependencies(OpenLF_test_lightfield Configure)
 
@@ -198,7 +213,7 @@ if(BUILD_TEST)
 		./tests/test_channel_run.cpp
 		./tests/test_channel.cpp 
 		${SRCS} ${HDRS})
-	    target_link_libraries(OpenLF_test_channel libopenlf boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY}) 
+	    target_link_libraries(OpenLF_test_channel libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY}) 
 
 	add_dependencies(OpenLF_test_channel Configure)
 
