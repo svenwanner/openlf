@@ -452,6 +452,16 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
 */
 void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<float>> &img) 
 {
+    if(!img.hasData())
+    {
+        img = vigra::MultiArray<2,vigra::RGBValue<float>>(vigra::Shape2(imgWidth(),imgHeight()));
+    }
+    else
+    {
+        if(img.width() != imgWidth() || img.height() != imgHeight())
+            throw OpenLF_Exception("Lightfield::getImage -> shape mismatch!");
+    }
+    
     if(hasRGB()) {
         vigra::MultiArrayView<2,float> img_r;
         getImage(h,v,"r",img_r);
@@ -462,7 +472,23 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
         
         OpenLF::image::utils::mergeChannels(img_r,img_b,img_b,img);
     }
-    else throw OpenLF_Exception("Lightfield::getImage -> no rgb image data available!");
+    else if(hasBW())
+    {
+        vigra::MultiArrayView<2,float> img_bw;
+        getImage(h,v,"bw",img_bw);
+        
+        for(int c=0; c<3; c++)
+        {
+            for(int y=0; y<imgHeight(); y++)
+            {
+                for(int x=0; x<imgWidth(); x++)
+                {
+                    img(x,y)[c] = img_bw(x,y);
+                }
+            }
+        }
+    }
+    else throw OpenLF_Exception("Lightfield::getImage -> no rgb or bw image data available!");
 }
 
 
@@ -482,6 +508,16 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
 */
 void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> &img) 
 {
+    if(!img.hasData())
+    {
+        img = vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>>(vigra::Shape2(imgWidth(),imgHeight()));
+    }
+    else
+    {
+        if(img.width() != imgWidth() || img.height() != imgHeight())
+            throw OpenLF_Exception("Lightfield::getImage -> shape mismatch!");
+    }
+    
     if(hasRGB()) {
         vigra::MultiArrayView<2,float> img_r;
         getImage(h,v,"r",img_r);
@@ -493,11 +529,143 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
         vigra::MultiArray<2,float> fimg_r = vigra::MultiArrayView<2,float>(img_r);
         vigra::MultiArray<2,float> fimg_g = vigra::MultiArrayView<2,float>(img_g);
         vigra::MultiArray<2,float> fimg_b = vigra::MultiArrayView<2,float>(img_b);
+        
         OpenLF::image::io::linear_range_mapping(img_r,fimg_r);
         OpenLF::image::io::linear_range_mapping(img_g,fimg_g);
         OpenLF::image::io::linear_range_mapping(img_b,fimg_b);
         
         OpenLF::image::utils::mergeChannels(fimg_r,fimg_g,fimg_b,img);
     }
+    else if(hasBW())
+    {
+        vigra::MultiArrayView<2,float> img_bw;
+        getImage(h,v,"bw",img_bw);
+        
+        vigra::MultiArray<2,float> fimg_bw = vigra::MultiArrayView<2,float>(img_bw);
+        OpenLF::image::io::linear_range_mapping(img_bw,fimg_bw);
+        
+        for(int c=0; c<3; c++)
+        {
+            for(int y=0; y<imgHeight(); y++)
+            {
+                for(int x=0; x<imgWidth(); x++)
+                {
+                    img(x,y)[c] = (vigra::UInt8)(fimg_bw(x,y));
+                }
+            }
+        }
+    }
     else throw OpenLF_Exception("Lightfield::getImage -> no rgb image data available!");
+}
+
+
+void OpenLF::lightfield::Lightfield::getHorizontalEpiChannel(int v, int y, string channel_name, vigra::MultiArrayView<2,float> &img)
+{
+    if(hasChannel(channel_name))
+    {
+        vigra::MultiArrayView<1,float> data;
+        data = channels[channel_name].viewToRow(v*imgHeight()+y);
+        img = vigra::MultiArrayView<2,float>(vigra::Shape2(imgWidth(),cams_h()),data.data()); 
+    }
+    else
+        throw OpenLF_Exception("Lightfield::getHorizontalEpi -> channel not available!");
+}
+
+
+void OpenLF::lightfield::Lightfield::getVerticalEpiChannel(int h, int x, string channel_name, vigra::MultiArrayView<2,float> &img)
+{
+    if(hasChannel(channel_name))
+    {
+        vigra::MultiArrayView<1,float> data;
+        data = channels[channel_name].viewToColumn(h*imgWidth()+x);
+        img = vigra::MultiArrayView<2,float>(vigra::Shape2(cams_v(),imgHeight()),vigra::Shape2(imgHeight()*width(),width()),data.data());   
+    }
+    else
+        throw OpenLF_Exception("Lightfield::getHorizontalEpi -> channel not available!");
+}
+
+
+
+void OpenLF::lightfield::Lightfield::getHorizontalEpi(int v, int y, vigra::MultiArray<2,float> &img)
+{
+    if(!img.hasData()) {
+        img = vigra::MultiArray<2,float>(vigra::Shape2(imgWidth(),cams_h()));
+    }
+    else
+    {
+        if(img.width() != imgWidth() || img.height() != cams_h())
+            throw OpenLF_Exception("Lightfield::getHorizontalEpi -> shape mismatch!");
+    }
+    
+    if(hasRGB()) {
+        vigra::MultiArrayView<2,float> epi_r;
+        getHorizontalEpiChannel(v,y,"r",epi_r);
+        vigra::MultiArrayView<2,float> epi_g;
+        getHorizontalEpiChannel(v,y,"g",epi_g);
+        vigra::MultiArrayView<2,float> epi_b;
+        getHorizontalEpiChannel(v,y,"b",epi_b);
+        
+        for(int n=0; n<imgWidth()*cams_h(); n++)
+        {
+            img.data()[n] = 0.3*epi_r.data()[n]+0.59*epi_g.data()[n]+0.11*epi_b.data()[n];
+        }
+    }
+    else if(hasBW())
+    {
+        vigra::MultiArrayView<2,float> epi_bw;
+        getHorizontalEpiChannel(v,y,"bw",epi_bw);
+        img = vigra::MultiArray<2,float>(vigra::Shape2(imgWidth(),cams_h()),epi_bw.data());
+    }
+    else
+    {
+        throw OpenLF_Exception("Lightfield::getHorizontalEpi -> channel not available!");
+    }
+}
+
+
+void OpenLF::lightfield::Lightfield::getVerticalEpi(int h, int x, vigra::MultiArray<2,float> &img)
+{
+    if(!img.hasData()) {
+        img = vigra::MultiArray<2,float>(vigra::Shape2(cams_v(),imgHeight()));
+    }
+    else
+    {
+        if(img.width() != cams_v() || img.height() != imgHeight())
+            throw OpenLF_Exception("Lightfield::getVerticalEpi -> shape mismatch!");
+    }
+    
+    if(hasRGB()) {
+        vigra::MultiArrayView<2,float> epi_r;
+        getVerticalEpiChannel(h,x,"r",epi_r);
+        vigra::MultiArrayView<2,float> epi_g;
+        getVerticalEpiChannel(h,x,"g",epi_g);
+        vigra::MultiArrayView<2,float> epi_b;
+        getVerticalEpiChannel(h,x,"b",epi_b);
+              
+
+        for(int y=0; y<imgHeight(); y++)
+        {
+            for(int x=0; x<cams_v(); x++)
+            {
+                img(x,y) = 0.3*epi_r(x,y)+0.59*epi_g(x,y)+0.11*epi_b(x,y);
+            }
+        }
+                
+    }
+    else if(hasBW())
+    {
+        vigra::MultiArrayView<2,float> epi_bw;
+        getVerticalEpiChannel(h,x,"bw",epi_bw);
+        for(int y=0; y<imgHeight(); y++)
+        {
+            for(int x=0; x<cams_v(); x++)
+            {
+                img(x,y) = epi_bw(x,y);
+            }
+        }
+    }
+    else
+    {
+        throw OpenLF_Exception("Lightfield::getHorizontalEpi -> channel not available!");
+    }
 }

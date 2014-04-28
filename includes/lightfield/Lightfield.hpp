@@ -253,9 +253,13 @@ public:
     void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> &img);
     
     
-    void getHorizontalEpi();
+    void getHorizontalEpiChannel(int v, int y, string channel_name, vigra::MultiArrayView<2,float> &img);
     
+    void getVerticalEpiChannel(int h, int x, string channel_name, vigra::MultiArrayView<2,float> &img);
     
+    void getHorizontalEpi(int v, int y, vigra::MultiArray<2,float> &img);
+    
+    void getVerticalEpi(int h, int x, vigra::MultiArray<2,float> &img);
     
 protected:
     map< string,OpenLF::image::ImageChannel> channels;  //!< map to store the light field channels

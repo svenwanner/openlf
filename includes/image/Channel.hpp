@@ -268,6 +268,7 @@ public:
      \param fix_y the y coordinate of the column
     */
     vigra::MultiArrayView<1,float> viewToColumn(int fix_x);
+    
    
    
 ////////////////////////////////////////////////////////////////////////////////
