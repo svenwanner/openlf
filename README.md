@@ -1,7 +1,7 @@
 # This is my README
 
 installation:
-==============
+-------------
 
 - $ cd /your/home/.../openlf
 - $ mkdir build
