@@ -68,12 +68,12 @@ find_package(VIGRA REQUIRED )
 #find_package(Boost REQUIRED ) 
 find_package(Boost
              #1.55.0
-             COMPONENTS thread
-			 			filesystem
+             COMPONENTS filesystem
                         system
-                        log
-                        log_setup
-                        program_options
+                        #log
+                        #log_setup
+                        #program_options
+						#thread
              REQUIRED)
 			 
 add_definitions(${HDF5_CPPFLAGS})
