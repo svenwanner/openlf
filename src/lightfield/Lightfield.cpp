@@ -559,32 +559,33 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
 }
 
 
-void OpenLF::lightfield::Lightfield::getHorizontalEpiChannel(int v, int y, string channel_name, vigra::MultiArrayView<2,float> &img)
-{
-    if(hasChannel(channel_name))
-    {
-        vigra::MultiArrayView<1,float> data;
-        data = channels[channel_name].viewToRow(v*imgHeight()+y);
-        img = vigra::MultiArrayView<2,float>(vigra::Shape2(imgWidth(),cams_h()),data.data()); 
-    }
-    else
-        throw OpenLF_Exception("Lightfield::getHorizontalEpi -> channel not available!");
-}
+//void OpenLF::lightfield::Lightfield::getHorizontalEpiChannel(int v, int y, string channel_name, vigra::MultiArrayView<2,float> &img)
+//{
+//    if(hasChannel(channel_name))
+//    {
+//        vigra::MultiArrayView<1,float> data;
+//        data = channels[channel_name].viewToRow(v*imgHeight()+y);
+//        img = vigra::MultiArrayView<2,float>(vigra::Shape2(imgWidth(),cams_h()),data.data()); 
+//    }
+//    else
+//        throw OpenLF_Exception("Lightfield::getHorizontalEpi -> channel not available!");
+//}
 
-void OpenLF::lightfield::Lightfield::getHorizontalEpiChannel(int v, int y, int focus, string channel_name, vigra::MultiArrayView<2,float> &img)
+vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getHorizontalEpiChannel(int v, int y, string channel_name, int focus)
 {
-    if(focus%2!=0)
-        throw OpenLF_Exception("Lightfield::getHorizontalEpi -> only even focus shifts allowed!");
+    focus*=2;
                 
     if(hasChannel(channel_name))
     {
         vigra::MultiArrayView<1,float> data;
         data = channels[channel_name].viewToRow(v*imgHeight()+y);
-        img = vigra::MultiArrayView<2,float>(vigra::Shape2(imgWidth()-focus,cams_h()),vigra::Shape2(1,imgWidth()-focus),data.data()); 
+        return vigra::MultiArrayView<2,float>(vigra::Shape2(imgWidth()-focus,cams_h()),vigra::Shape2(1,imgWidth()-focus),data.data()+focus); 
     }
     else
         throw OpenLF_Exception("Lightfield::getHorizontalEpi -> channel not available!");
 }
+
+
 
 
 void OpenLF::lightfield::Lightfield::getVerticalEpiChannel(int h, int x, string channel_name, vigra::MultiArrayView<2,float> &img)
@@ -599,9 +600,7 @@ void OpenLF::lightfield::Lightfield::getVerticalEpiChannel(int h, int x, string 
         throw OpenLF_Exception("Lightfield::getHorizontalEpi -> channel not available!");
 }
 
-
-
-void OpenLF::lightfield::Lightfield::getHorizontalEpi(int v, int y, vigra::MultiArray<2,float> &img)
+void OpenLF::lightfield::Lightfield::getHorizontalEpi(int v, int y, int focus, vigra::MultiArray<2,float> &img)
 {
     if(!img.hasData()) {
         img = vigra::MultiArray<2,float>(vigra::Shape2(imgWidth(),cams_h()));
@@ -614,22 +613,32 @@ void OpenLF::lightfield::Lightfield::getHorizontalEpi(int v, int y, vigra::Multi
     
     if(hasRGB()) {
         vigra::MultiArrayView<2,float> epi_r;
-        getHorizontalEpiChannel(v,y,"r",epi_r);
+        epi_r = getHorizontalEpiChannel(v,y,"r",focus);
         vigra::MultiArrayView<2,float> epi_g;
-        getHorizontalEpiChannel(v,y,"g",epi_g);
+        epi_g = getHorizontalEpiChannel(v,y,"g",focus);
         vigra::MultiArrayView<2,float> epi_b;
-        getHorizontalEpiChannel(v,y,"b",epi_b);
+        epi_b = getHorizontalEpiChannel(v,y,"b",focus);
         
-        for(int n=0; n<imgWidth()*cams_h(); n++)
+        for(int y=0; y<cams_h(); y++)
         {
-            img.data()[n] = 0.3*epi_r.data()[n]+0.59*epi_g.data()[n]+0.11*epi_b.data()[n];
+            for(int x=0; x<imgWidth()-2*focus; x++)
+            {
+                img(x+focus,y) = 0.3*epi_r(x,y)+0.59*epi_g(x,y)+0.11*epi_b(x,y);
+            }
         }
     }
     else if(hasBW())
     {
         vigra::MultiArrayView<2,float> epi_bw;
-        getHorizontalEpiChannel(v,y,"bw",epi_bw);
-        img = vigra::MultiArray<2,float>(vigra::Shape2(imgWidth(),cams_h()),epi_bw.data());
+        epi_bw = getHorizontalEpiChannel(v,y,"bw",focus);
+                
+        for(int y=0; y<cams_h(); y++)
+        {
+            for(int x=0; x<imgWidth()-2*focus; x++)
+            {
+                img(x+focus,y) = epi_bw(x,y);
+            }
+        }
     }
     else
     {
