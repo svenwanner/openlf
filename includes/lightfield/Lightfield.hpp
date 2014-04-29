@@ -255,6 +255,8 @@ public:
     
     void getHorizontalEpiChannel(int v, int y, string channel_name, vigra::MultiArrayView<2,float> &img);
     
+    void getHorizontalEpiChannel(int v, int y, int focus, string channel_name, vigra::MultiArrayView<2,float> &img);
+    
     void getVerticalEpiChannel(int h, int x, string channel_name, vigra::MultiArrayView<2,float> &img);
     
     void getHorizontalEpi(int v, int y, vigra::MultiArray<2,float> &img);

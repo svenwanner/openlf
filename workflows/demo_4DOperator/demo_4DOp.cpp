@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
         
         // get epi channel
         vigra::MultiArrayView<2,float> epi_h;
-        myLf.getHorizontalEpiChannel(4,124,"bw",epi_h);
+        myLf.getHorizontalEpiChannel(4,124,2,"bw",epi_h);
         OpenLF::image::io::imsave("/home/swanner/Desktop/epi_h.png",epi_h);
         
         vigra::MultiArrayView<2,float> epi_v;

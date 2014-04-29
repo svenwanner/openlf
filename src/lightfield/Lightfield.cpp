@@ -571,6 +571,21 @@ void OpenLF::lightfield::Lightfield::getHorizontalEpiChannel(int v, int y, strin
         throw OpenLF_Exception("Lightfield::getHorizontalEpi -> channel not available!");
 }
 
+void OpenLF::lightfield::Lightfield::getHorizontalEpiChannel(int v, int y, int focus, string channel_name, vigra::MultiArrayView<2,float> &img)
+{
+    if(focus%2!=)
+        throw OpenLF_Exception("Lightfield::getHorizontalEpi -> only even focus shifts allowed!");
+                
+    if(hasChannel(channel_name))
+    {
+        vigra::MultiArrayView<1,float> data;
+        data = channels[channel_name].viewToRow(v*imgHeight()+y);
+        img = vigra::MultiArrayView<2,float>(vigra::Shape2(imgWidth()-focus,cams_h()),vigra::Shape2(1,imgWidth()-focus),data.data()); 
+    }
+    else
+        throw OpenLF_Exception("Lightfield::getHorizontalEpi -> channel not available!");
+}
+
 
 void OpenLF::lightfield::Lightfield::getVerticalEpiChannel(int h, int x, string channel_name, vigra::MultiArrayView<2,float> &img)
 {
