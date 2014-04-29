@@ -573,7 +573,7 @@ void OpenLF::lightfield::Lightfield::getHorizontalEpiChannel(int v, int y, strin
 
 void OpenLF::lightfield::Lightfield::getHorizontalEpiChannel(int v, int y, int focus, string channel_name, vigra::MultiArrayView<2,float> &img)
 {
-    if(focus%2!=)
+    if(focus%2!=0)
         throw OpenLF_Exception("Lightfield::getHorizontalEpi -> only even focus shifts allowed!");
                 
     if(hasChannel(channel_name))

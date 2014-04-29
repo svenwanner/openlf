@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
         try {
             // the argument is the filename of a lightfield
             // either of a hdf5 or a config file
-            cout << "load... ";
+            cout << "load lightfield... ";
             myLf.open(argv[1]);
             cout << "ok" << endl;
         }
@@ -30,8 +30,9 @@ int main(int argc, char** argv) {
         
         
         // get epi channel
+        cout << "dsdsdsdsdsdsdsdsd" << endl;
         vigra::MultiArrayView<2,float> epi_h;
-        myLf.getHorizontalEpiChannel(4,124,2,"bw",epi_h);
+        myLf.getHorizontalEpiChannel(4,124,4,"bw",epi_h);
         OpenLF::image::io::imsave("/home/swanner/Desktop/epi_h.png",epi_h);
         
         vigra::MultiArrayView<2,float> epi_v;
