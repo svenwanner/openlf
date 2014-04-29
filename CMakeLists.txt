@@ -102,8 +102,6 @@ ADD_DEFINITIONS(${HDF5_CPPFLAGS})
 # so that we will find TutorialConfig.h
 include_directories("${PROJECT_SOURCE_DIR}")
 
-set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} /opt/local/lib)
-
 ADD_LIBRARY(libopenlf SHARED ${SOURCES} )
  
 
@@ -140,15 +138,13 @@ execute_process(COMMAND ${CMAKE_CURRENT_LIST_DIR}/configure)
 
 # add the executable
 
-message( "INFO: RELEASE BUILD" )
+#message( "INFO: RELEASE BUILD" )
 
 add_custom_target(
 	    Configure
 	    COMMAND ${CMAKE_CURRENT_LIST_DIR}/configure ${CMAKE_CURRENT_LIST_FILE}
 )
 
-set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} /opt/local/lib)
-#target_link_libraries(libopenlf boost_system boost_filesystem boost_regex ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY})
 target_link_libraries(libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY})
 
 #--------------------------------------------------------------
