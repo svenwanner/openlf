@@ -421,7 +421,11 @@ bool OpenLF::image::io::imsave(string filename, vigra::MultiArrayView<2,float> i
 {
     print(2,"image::io::imread(filename,img_view) called...");
     
-    vigra::MultiArray<2,float> img_tmp = vigra::MultiArray<2,float>(img);
+    vigra::MultiArray<2,float> img_tmp = vigra::MultiArray<2,float>(img.shape());
+    for(int y=0; y<img.height(); y++)
+        for(int x=0; x<img.width(); x++) {
+            img_tmp(x,y) = img(x,y); 
+        }
     return imsave(filename,img_tmp);
 }
 

@@ -32,19 +32,26 @@ int main(int argc, char** argv) {
         vigra::MultiArrayView<2,float> epi_h = myLf.getHorizontalEpiChannel(4,124,"r",3);
         OpenLF::image::io::imsave("/home/swanner/Desktop/epi_h.png",epi_h);
         
-        vigra::MultiArrayView<2,float> epi_v;
-        myLf.getVerticalEpiChannel(4,178,"r",epi_v);
+        vigra::MultiArrayView<2,float> epi_v = myLf.getVerticalEpiChannel(4,178,"r",3);
+        
+        for(int y=0; y<epi_v.height(); y++)
+            for(int x=0; x<epi_v.width(); x++) {
+                cout << "("<<y<<","<<x<<") = "<<epi_v(x,y)<<endl; 
+            }
+        
+        cout << "----------------------------------------------"<<endl;
+        
         OpenLF::image::io::imsave("/home/swanner/Desktop/epi_v.png",epi_v);
-        
-        
-        // get epi bw images copies
-        vigra::MultiArray<2,float> epi_bw_h;
-        myLf.getHorizontalEpi(4,124,3,epi_bw_h);
-        OpenLF::image::io::imsave("/home/swanner/Desktop/epi_bw_h.png",epi_bw_h);
-        
-        vigra::MultiArray<2,float> epi_bw_v;
-        myLf.getVerticalEpi(4,178,epi_bw_v);
-        OpenLF::image::io::imsave("/home/swanner/Desktop/epi_bw_v.png",epi_bw_v);
+//        
+//        
+//        // get epi bw images copies
+//        vigra::MultiArray<2,float> epi_bw_h;
+//        myLf.getHorizontalEpi(4,124,3,epi_bw_h);
+//        OpenLF::image::io::imsave("/home/swanner/Desktop/epi_bw_h.png",epi_bw_h);
+//        
+//        vigra::MultiArray<2,float> epi_bw_v;
+//        myLf.getVerticalEpi(4,178,epi_bw_v);
+//        OpenLF::image::io::imsave("/home/swanner/Desktop/epi_bw_v.png",epi_bw_v);
         
 
         // get rgb or bw image copies

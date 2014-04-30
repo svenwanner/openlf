@@ -454,7 +454,7 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
 {
     if(!img.hasData())
     {
-        img = vigra::MultiArray<2,vigra::RGBValue<float>>(vigra::Shape2(imgWidth(),imgHeight()));
+        img = vigra::MultiArray<2,vigra::RGBValue<float>>(shape(imgWidth(),imgHeight()));
     }
     else
     {
@@ -510,7 +510,7 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
 {
     if(!img.hasData())
     {
-        img = vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>>(vigra::Shape2(imgWidth(),imgHeight()));
+        img = vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>>(shape(imgWidth(),imgHeight()));
     }
     else
     {
@@ -559,137 +559,229 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
 }
 
 
-//void OpenLF::lightfield::Lightfield::getHorizontalEpiChannel(int v, int y, string channel_name, vigra::MultiArrayView<2,float> &img)
-//{
-//    if(hasChannel(channel_name))
-//    {
-//        vigra::MultiArrayView<1,float> data;
-//        data = channels[channel_name].viewToRow(v*imgHeight()+y);
-//        img = vigra::MultiArrayView<2,float>(vigra::Shape2(imgWidth(),cams_h()),data.data()); 
-//    }
-//    else
-//        throw OpenLF_Exception("Lightfield::getHorizontalEpi -> channel not available!");
-//}
 
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//////             E P I   H A N D L I N G     M E T H O D S
+////////////////////////////////////////////////////////////////////////////////
+
+/*!
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
 vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getHorizontalEpiChannel(int v, int y, string channel_name, int focus)
 {
+    if(type()==LF_4D) {
+        return _getHorizontalEpiChannel_4D(v,y,channel_name,focus);
+    }
+    else if(type()==LF_3DH) {
+        
+    }
+    else if(type()==LF_3DV) {
+        
+    }
+    else if(type()==LF_CROSS) {
+        
+    }
+}
+
+
+/*!
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+ vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getVerticalEpiChannel(int h, int x, string channel_name, int focus)
+{
+    if(type()==LF_4D) {
+        int a =0;
+        vigra::MultiArrayView<2,float> tmp = _getVerticalEpiChannel_4D(h,x,channel_name,focus);
+        return tmp;
+    }
+    else if(type()==LF_3DH) {
+        
+    }
+    else if(type()==LF_3DV) {
+        
+    }
+    else if(type()==LF_CROSS) {
+        
+    }
+}
+
+
+/*!
+This is the efficient variant of accessing epipolar plane images due to the concatenated memory access.
+Accessing the vertical epipolar plane images using _getVerticalEpiChannel_4D is inefficient compared to this
+due to the column accessing. To achieve the same efficiency for vertical access transpose the data and use
+the horizontal access. 
+
+\author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::_getHorizontalEpiChannel_4D(int v, int y, string channel_name, int focus)
+{
+    // double the global shift
+    // to get the offset
     focus*=2;
                 
+    // if channel exist
     if(hasChannel(channel_name))
     {
-        vigra::MultiArrayView<1,float> data;
-        data = channels[channel_name].viewToRow(v*imgHeight()+y);
-        return vigra::MultiArrayView<2,float>(vigra::Shape2(imgWidth()-focus,cams_h()),vigra::Shape2(1,imgWidth()-focus),data.data()+focus); 
-    }
-    else
-        throw OpenLF_Exception("Lightfield::getHorizontalEpi -> channel not available!");
-}
-
-
-
-
-void OpenLF::lightfield::Lightfield::getVerticalEpiChannel(int h, int x, string channel_name, vigra::MultiArrayView<2,float> &img)
-{
-    if(hasChannel(channel_name))
-    {
-        vigra::MultiArrayView<1,float> data;
-        data = channels[channel_name].viewToColumn(h*imgWidth()+x);
-        img = vigra::MultiArrayView<2,float>(vigra::Shape2(cams_v(),imgHeight()),vigra::Shape2(imgHeight()*width(),width()),data.data());   
-    }
-    else
-        throw OpenLF_Exception("Lightfield::getHorizontalEpi -> channel not available!");
-}
-
-void OpenLF::lightfield::Lightfield::getHorizontalEpi(int v, int y, int focus, vigra::MultiArray<2,float> &img)
-{
-    if(!img.hasData()) {
-        img = vigra::MultiArray<2,float>(vigra::Shape2(imgWidth(),cams_h()));
-    }
-    else
-    {
-        if(img.width() != imgWidth() || img.height() != cams_h())
-            throw OpenLF_Exception("Lightfield::getHorizontalEpi -> shape mismatch!");
-    }
-    
-    if(hasRGB()) {
-        vigra::MultiArrayView<2,float> epi_r;
-        epi_r = getHorizontalEpiChannel(v,y,"r",focus);
-        vigra::MultiArrayView<2,float> epi_g;
-        epi_g = getHorizontalEpiChannel(v,y,"g",focus);
-        vigra::MultiArrayView<2,float> epi_b;
-        epi_b = getHorizontalEpiChannel(v,y,"b",focus);
+        // get view to row for v,y
+        vigra::MultiArrayView<1,float> data = channels[channel_name].viewToRow(v*imgHeight()+y);
+        if(!data.hasData())
+            throw OpenLF_Exception("Lightfield::_getHorizontalEpi_4D -> bad alloc from channel data!");
         
-        for(int y=0; y<cams_h(); y++)
-        {
-            for(int x=0; x<imgWidth()-2*focus; x++)
-            {
-                img(x+focus,y) = 0.3*epi_r(x,y)+0.59*epi_g(x,y)+0.11*epi_b(x,y);
-            }
-        }
-    }
-    else if(hasBW())
-    {
-        vigra::MultiArrayView<2,float> epi_bw;
-        epi_bw = getHorizontalEpiChannel(v,y,"bw",focus);
-                
-        for(int y=0; y<cams_h(); y++)
-        {
-            for(int x=0; x<imgWidth()-2*focus; x++)
-            {
-                img(x+focus,y) = epi_bw(x,y);
-            }
-        }
+        // the refocused epi view is defined by specifing the new shape which is the original image width
+        // minus the offset given by the global shift paramter and the number of horizontal cameras. To ensure
+        // the correct refocusing shift in the data a strided tag is defined via strideTag(1,imgWidth()-focus)
+        // defining a neighbored pixel distance of 1 and a new row jump at imgWidth()-focus. Finally data pointer
+        // needs to be shifted by focus. 
+        return vigra::MultiArrayView<2,float>(shape(imgWidth()-focus,cams_h()),strideTag(1,imgWidth()-focus),data.data()+focus); 
     }
     else
-    {
-        throw OpenLF_Exception("Lightfield::getHorizontalEpi -> channel not available!");
-    }
+        throw OpenLF_Exception("Lightfield::_getHorizontalEpi_4D -> channel not available!");
 }
 
 
-void OpenLF::lightfield::Lightfield::getVerticalEpi(int h, int x, vigra::MultiArray<2,float> &img)
+
+/*!
+This is the inefficient variant of accessing epipolar plane images due to the 
+column accessing. To achieve the same efficiency for vertical access transpose 
+the data and use the horizontal access. 
+ 
+\author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+vigra::MultiArrayView<2,float>  OpenLF::lightfield::Lightfield::_getVerticalEpiChannel_4D(int h, int x, string channel_name, int focus)
 {
-    if(!img.hasData()) {
-        img = vigra::MultiArray<2,float>(vigra::Shape2(cams_v(),imgHeight()));
-    }
-    else
-    {
-        if(img.width() != cams_v() || img.height() != imgHeight())
-            throw OpenLF_Exception("Lightfield::getVerticalEpi -> shape mismatch!");
-    }
+    // double the global shift
+    // to get the offset
+    focus*=2;
     
-    if(hasRGB()) {
-        vigra::MultiArrayView<2,float> epi_r;
-        getVerticalEpiChannel(h,x,"r",epi_r);
-        vigra::MultiArrayView<2,float> epi_g;
-        getVerticalEpiChannel(h,x,"g",epi_g);
-        vigra::MultiArrayView<2,float> epi_b;
-        getVerticalEpiChannel(h,x,"b",epi_b);
-              
-
-        for(int y=0; y<imgHeight(); y++)
-        {
-            for(int x=0; x<cams_v(); x++)
-            {
-                img(x,y) = 0.3*epi_r(x,y)+0.59*epi_g(x,y)+0.11*epi_b(x,y);
-            }
-        }
-                
-    }
-    else if(hasBW())
+    // if channel exist
+    if(hasChannel(channel_name))
     {
-        vigra::MultiArrayView<2,float> epi_bw;
-        getVerticalEpiChannel(h,x,"bw",epi_bw);
-        for(int y=0; y<imgHeight(); y++)
-        {
-            for(int x=0; x<cams_v(); x++)
-            {
-                img(x,y) = epi_bw(x,y);
-            }
-        }
+        // get view to column for h,x
+        float* data = channels[channel_name].data();
+        //vigra::MultiArrayView<1,float> data = channels[channel_name].viewToColumn(h*imgWidth()+x);
+        //cout << "stride: " << data.stride()[0] << "," << data.stride()[1] << endl;
+        //if(!data.hasData())
+        //    throw OpenLF_Exception("Lightfield::_getVerticalEpiChannel_4D -> bad alloc from channel data!");
+        
+        // the refocused epi view is defined by specifing the new shape which is 
+        // the original image height minus the offset given by the global shift 
+        // paramter and the number of vertical cameras. To ensure the correct 
+        // refocusing shift in the data a strided tag is defined via 
+        // strideTag(width(),(imgHeight()-focus)*width())
+        // defining a neighbored pixel distance of width() and a new row jump at 
+        // (imgHeight()-focus)*width(). Finally data pointer needs to be shifted 
+        // by focus times the total lf image width.
+       
+        int offset = h*imgWidth() + x + focus*width();
+        cout << "offset " << offset << endl;
+        shape epi_shape = shape(cams_v(),imgHeight()-focus);
+        cout << "epi_shape (" << epi_shape[0] << "," << epi_shape[1] << ")" << endl;
+        strideTag stride = strideTag(width(),(imgHeight()-focus)*width());
+        cout << "stride (" << stride[0] << "," << stride[1] << ")" << endl;
+        return vigra::MultiArrayView<2,float>(epi_shape, stride,data+offset);   
     }
     else
-    {
-        throw OpenLF_Exception("Lightfield::getHorizontalEpi -> channel not available!");
-    }
+        throw OpenLF_Exception("Lightfield::_getVerticalEpiChannel_4D -> channel not available!");
 }
+//
+//void OpenLF::lightfield::Lightfield::getHorizontalEpi(int v, int y, int focus, vigra::MultiArray<2,float> &img)
+//{
+//    if(!img.hasData()) {
+//        img = vigra::MultiArray<2,float>(shape(imgWidth(),cams_h()));
+//    }
+//    else
+//    {
+//        if(img.width() != imgWidth() || img.height() != cams_h())
+//            throw OpenLF_Exception("Lightfield::getHorizontalEpi -> shape mismatch!");
+//    }
+//    
+//    if(hasRGB()) {
+//        vigra::MultiArrayView<2,float> epi_r;
+//        epi_r = getHorizontalEpiChannel(v,y,"r",focus);
+//        vigra::MultiArrayView<2,float> epi_g;
+//        epi_g = getHorizontalEpiChannel(v,y,"g",focus);
+//        vigra::MultiArrayView<2,float> epi_b;
+//        epi_b = getHorizontalEpiChannel(v,y,"b",focus);
+//        
+//        for(int y=0; y<cams_h(); y++)
+//        {
+//            for(int x=0; x<imgWidth()-2*focus; x++)
+//            {
+//                img(x+focus,y) = 0.3*epi_r(x,y)+0.59*epi_g(x,y)+0.11*epi_b(x,y);
+//            }
+//        }
+//    }
+//    else if(hasBW())
+//    {
+//        vigra::MultiArrayView<2,float> epi_bw;
+//        epi_bw = getHorizontalEpiChannel(v,y,"bw",focus);
+//                
+//        for(int y=0; y<cams_h(); y++)
+//        {
+//            for(int x=0; x<imgWidth()-2*focus; x++)
+//            {
+//                img(x+focus,y) = epi_bw(x,y);
+//            }
+//        }
+//    }
+//    else
+//    {
+//        throw OpenLF_Exception("Lightfield::getHorizontalEpi -> channel not available!");
+//    }
+//}
+//
+//
+//void OpenLF::lightfield::Lightfield::getVerticalEpi(int h, int x, vigra::MultiArray<2,float> &img)
+//{
+//    if(!img.hasData()) {
+//        img = vigra::MultiArray<2,float>(shape(cams_v(),imgHeight()));
+//    }
+//    else
+//    {
+//        if(img.width() != cams_v() || img.height() != imgHeight())
+//            throw OpenLF_Exception("Lightfield::getVerticalEpi -> shape mismatch!");
+//    }
+//    
+//    if(hasRGB()) {
+//        vigra::MultiArrayView<2,float> epi_r;
+//        getVerticalEpiChannel(h,x,"r",epi_r);
+//        vigra::MultiArrayView<2,float> epi_g;
+//        getVerticalEpiChannel(h,x,"g",epi_g);
+//        vigra::MultiArrayView<2,float> epi_b;
+//        getVerticalEpiChannel(h,x,"b",epi_b);
+//              
+//
+//        for(int y=0; y<imgHeight(); y++)
+//        {
+//            for(int x=0; x<cams_v(); x++)
+//            {
+//                img(x,y) = 0.3*epi_r(x,y)+0.59*epi_g(x,y)+0.11*epi_b(x,y);
+//            }
+//        }
+//                
+//    }
+//    else if(hasBW())
+//    {
+//        vigra::MultiArrayView<2,float> epi_bw;
+//        getVerticalEpiChannel(h,x,"bw",epi_bw);
+//        for(int y=0; y<imgHeight(); y++)
+//        {
+//            for(int x=0; x<cams_v(); x++)
+//            {
+//                img(x,y) = epi_bw(x,y);
+//            }
+//        }
+//    }
+//    else
+//    {
+//        throw OpenLF_Exception("Lightfield::getHorizontalEpi -> channel not available!");
+//    }
+//}

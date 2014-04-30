@@ -28,6 +28,9 @@
 #include "lightfield/FileHandler.hpp"
 
 
+typedef vigra::Shape2 shape;
+typedef vigra::Shape2 strideTag;
+
 namespace OpenLF { 
     namespace lightfield { 
 
@@ -253,20 +256,58 @@ public:
     void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> &img);
     
     
-    //void getHorizontalEpiChannel(int v, int y, string channel_name, vigra::MultiArrayView<2,float> &img);
-    
+    //! get a view to a horizontal epi of the channel specified
+    /*!
+     \param v fixed vertical camera index
+     \param y fixed row image domain index
+     \param channel_name name of the channel to extract the epi from
+     \param focus global shift paramter in pixel
+    */
     vigra::MultiArrayView<2,float> getHorizontalEpiChannel(int v, int y, string channel_name, int focus=0);
     
-    void getVerticalEpiChannel(int h, int x, string channel_name, vigra::MultiArrayView<2,float> &img);
     
-    void getHorizontalEpi(int v, int y, int focus, vigra::MultiArray<2,float> &img);
+    //! get a view to a vertical epi of the channel specified
+    /*!
+     \param h fixed horizontal camera index
+     \param x fixed column image domain index
+     \param channel_name name of the channel to extract the epi from
+     \param focus global shift paramter in pixel
+    */
+    vigra::MultiArrayView<2,float> getVerticalEpiChannel(int h, int x, string channel_name, int focus=0);
     
-    void getVerticalEpi(int h, int x, vigra::MultiArray<2,float> &img);
+    
+//    void getVerticalEpiChannel(int h, int x, string channel_name, vigra::MultiArrayView<2,float> &img);
+//    
+//    void getHorizontalEpi(int v, int y, int focus, vigra::MultiArray<2,float> &img);
+//    
+//    void getVerticalEpi(int h, int x, vigra::MultiArray<2,float> &img);
     
 protected:
     map< string,OpenLF::image::ImageChannel> channels;  //!< map to store the light field channels
     OpenLF::lightfield::io::DataHandler *dataHandler;   //!< instance of a dataHandler to read data
     OpenLF::lightfield::Properties properties;          //!< properties instance to hold all parameters
+
+    
+protected:
+    
+    //! get a view to a horizontal epi of the channel specified for the 4D lightfield case
+    /*!
+     \param v fixed vertical camera index
+     \param y fixed row image domain index
+     \param channel_name name of the channel to extract the epi from
+     \param focus global shift paramter in pixel
+    */
+    vigra::MultiArrayView<2,float> _getHorizontalEpiChannel_4D(int v, int y, string channel_name, int focus);
+    
+    //! get a view to a vertical epi of the channel specified for the 4D lightfield case
+    /*!
+     \param h fixed horizontal camera index
+     \param x fixed column image domain index
+     \param channel_name name of the channel to extract the epi from
+     \param focus global shift paramter in pixel
+    */
+    vigra::MultiArrayView<2,float> _getVerticalEpiChannel_4D(int h, int x, string channel_name, int focus);
+    
 };
 
 }}
