@@ -538,10 +538,11 @@ bool OpenLF::image::io::imsave(string filename, map<string,OpenLF::image::ImageC
         }
 
         // check for other channels and save them
-        for(map<string, OpenLF::image::ImageChannel>::iterator i = channels.begin(); i != channels.end(); ++i)
+        map<string, OpenLF::image::ImageChannel>::iterator it = channels.begin();
+        for( unsigned int i=0; i<channels.size() && it != channels.end(); ++i)
         {
             // get key
-            string key = i->first;
+            string key = it->first;
 
             // adapt filename to set the appendix
             string tmp_filename = string(filename);
@@ -552,7 +553,7 @@ bool OpenLF::image::io::imsave(string filename, map<string,OpenLF::image::ImageC
 
             // save and delete channel
             imsave(tmp_filename,channels[key]);
-            channels.erase(key);
+            it = channels.erase(it);
         }
         
     } catch(exception & e) {
