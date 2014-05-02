@@ -23,6 +23,22 @@ int main(int argc, char** argv) {
             return -1;
         }
         
+        cout << "0,0,0,0 r:" << myLf.getLoxel(0,0,0,0,"r") << endl;
+        cout << "0,0,0,0 g:" << myLf.getLoxel(0,0,0,0,"g") << endl;
+        cout << "0,0,0,0 b:" << myLf.getLoxel(0,0,0,0,"b") << endl;
+        cout << "8,0,3203,2231 r:" << myLf.getLoxel(8,0,3203,2231,"r") << endl;
+        cout << "8,0,3203,2231 g:" << myLf.getLoxel(8,0,3203,2231,"g") << endl;
+        cout << "8,0,3203,2231 b:" << myLf.getLoxel(8,0,3203,2231,"b") << endl;
+        
+        vector<string> chs {"r","g"};
+        vector<float> vals;
+        myLf.getLoxel(0,0,0,0,chs,vals);
+        cout << "0,0,0,0 vr:" << vals[0] << endl;
+        cout << "0,0,0,0 vg:" << vals[1] << endl;
+        myLf.getLoxel(8,0,3203,2231,chs,vals);
+        cout << "8,0,3203,2231 vr:" << vals[0] << endl;
+        cout << "8,0,3203,2231 vg:" << vals[1] << endl;
+        
         // get image channel
         vigra::MultiArrayView<2,float> img_4;
         myLf.getImage(4,4,"r",img_4);

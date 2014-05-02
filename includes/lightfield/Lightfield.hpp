@@ -169,7 +169,29 @@ public:
     
 ////////////////////////////////////////////////////////////////////////////////
 //////                      A C C E S S    D A T A
-////////////////////////////////////////////////////////////////////////////////    
+//////////////////////////////////////////////////////////////////////////////// 
+    
+    //! access a single intensity value of the channel specified
+    /*!
+     \param v vertical camera index
+     \param h horizontal camera index
+     \param x position index
+     \param y position index
+     \param channel_name name of the channel to access
+    */
+    float getLoxel(int v, int h, int x, int y, string channel_name);
+    
+    //! access a single intensity value of the channels specified
+    /*!
+     \param v vertical camera index
+     \param h horizontal camera index
+     \param x position index
+     \param y position index
+     \param channel_name name of the channel to access
+     \param values reference to float vector to store the results
+    */
+    void getLoxel(int v, int h, int x, int y, vector<string> channel_names, vector<float> &values);
+    
     
     //! get the data pointer of a specific channel 
     /*!
