@@ -28,19 +28,16 @@ int main(int argc, char** argv) {
         myLf.getImage(4,4,"r",img_4);
         OpenLF::image::io::imsave("/home/swanner/Desktop/img_cv.png",img_4);
         
+        vigra::MultiArrayView<2,float> img_full;
+        map<string,OpenLF::image::ImageChannel> *lf = myLf.data();
+        OpenLF::image::io::imsave("/home/swanner/Desktop/lf.png",*lf);
+        
         // get epi channel
-        vigra::MultiArrayView<2,float> epi_h = myLf.getHorizontalEpiChannel(4,124,"r",3);
+        vigra::MultiArrayView<2,float> epi_h = myLf.getHorizontalEpiChannel(4,124,"r",5);
         OpenLF::image::io::imsave("/home/swanner/Desktop/epi_h.png",epi_h);
         
-        vigra::MultiArrayView<2,float> epi_v = myLf.getVerticalEpiChannel(4,178,"r",3);
-        
-        for(int y=0; y<epi_v.height(); y++)
-            for(int x=0; x<epi_v.width(); x++) {
-                cout << "("<<y<<","<<x<<") = "<<epi_v(x,y)<<endl; 
-            }
-        
-        cout << "----------------------------------------------"<<endl;
-        
+        vigra::MultiArrayView<2,float> epi_v = myLf.getVerticalEpiChannel(4,178,"r",5);
+        cout << "epi_v.shape: " << epi_v.shape()[0] << "," << epi_v.shape()[1] << endl;
         OpenLF::image::io::imsave("/home/swanner/Desktop/epi_v.png",epi_v);
 //        
 //        

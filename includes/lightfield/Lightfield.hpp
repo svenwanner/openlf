@@ -30,6 +30,7 @@
 
 typedef vigra::Shape2 shape;
 typedef vigra::Shape2 strideTag;
+typedef vigra::MultiArrayView<2, float> view_2D;
 
 namespace OpenLF { 
     namespace lightfield { 
