@@ -35,12 +35,12 @@ typedef vigra::MultiArrayView<2, float> view_2D;
 namespace OpenLF { 
     namespace lightfield { 
 
-class Lightfield {
+template <class dtype> class Lightfield {
     
 public:
     Lightfield();
     Lightfield(std::string filename);
-    Lightfield(const Lightfield& orig);
+    //Lightfield(const Lightfield& orig);
     virtual ~Lightfield();
 
     

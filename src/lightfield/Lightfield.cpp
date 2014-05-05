@@ -41,8 +41,8 @@ OpenLF::lightfield::Lightfield::Lightfield(std::string filename)
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-OpenLF::lightfield::Lightfield::Lightfield(const Lightfield& orig) {
-}
+//OpenLF::lightfield::Lightfield::Lightfield(const Lightfield& orig) {
+//}
 
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
@@ -642,18 +642,24 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
 */
 vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getHorizontalEpiChannel(int v, int y, std::string channel_name, int focus)
 {
+    vigra::MultiArrayView<2,float> tmp;
+      
     if(type()==LF_4D) {
-        return _getHorizontalEpiChannel_4D(v,y,channel_name,focus);
+        tmp = _getHorizontalEpiChannel_4D(v,y,channel_name,focus);
     }
     else if(type()==LF_3DH) {
-        
+
     }
     else if(type()==LF_3DV) {
-        
+
     }
     else if(type()==LF_CROSS) {
-        
+
     }
+    else
+        throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> unknown light field type!");
+    
+    return tmp;
 }
 
 
@@ -662,8 +668,10 @@ vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getHorizontalEpiC
 */
  vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getVerticalEpiChannel(int h, int x, std::string channel_name, int focus)
 {
+    vigra::MultiArrayView<2,float> tmp;
+    
     if(type()==LF_4D) {
-        return _getVerticalEpiChannel_4D(h,x,channel_name,focus);
+        tmp = _getVerticalEpiChannel_4D(h,x,channel_name,focus);
     }
     else if(type()==LF_3DH) {
         
@@ -674,6 +682,10 @@ vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getHorizontalEpiC
     else if(type()==LF_CROSS) {
         
     }
+    else
+        throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> unknown light field type!");
+    
+    return tmp;
 }
  
  

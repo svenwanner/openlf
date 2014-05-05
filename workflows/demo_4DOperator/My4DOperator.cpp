@@ -19,8 +19,8 @@
 
 #include "My4DOperator.hpp"
 
-My4DOperator::My4DOperator(const My4DOperator& orig) {
-}
+//My4DOperator::My4DOperator(const My4DOperator& orig) {
+//}
 
 My4DOperator::~My4DOperator() {
 }

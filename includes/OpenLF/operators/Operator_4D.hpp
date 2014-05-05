@@ -35,7 +35,7 @@ namespace OpenLF {
 class Operator_4D : public Operator {
 public:
     Operator_4D() : Operator() {};
-    Operator_4D(const Operator_4D& orig);
+    //Operator_4D(const Operator_4D& orig);
     virtual ~Operator_4D();
     
     void process();

@@ -19,8 +19,8 @@
 
 #include "OpenLF/operators/Operator_4D.hpp"
 
-OpenLF::operators::Operator_4D::Operator_4D(const Operator_4D& orig) {
-}
+//OpenLF::operators::Operator_4D::Operator_4D(const Operator_4D& orig) {
+//}
 
 OpenLF::operators::Operator_4D::~Operator_4D() {
 }

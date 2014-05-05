@@ -33,6 +33,10 @@ bool OpenLF::lightfield::io::load_4D_structure( std::vector<std::string> fname_l
     try {
         // create roi if needed
         OpenLF::image::ROI roi;
+        roi.height = 0;
+        roi.width = 0;
+        roi.pos_x = 0;
+        roi.pos_y = 0;
         bool use_roi = false;
                 
         // import image info to get the image shape
@@ -208,6 +212,10 @@ bool OpenLF::lightfield::io::load_3DH_structure( std::vector<std::string> fname_
      
     // create roi if needed
     OpenLF::image::ROI roi;
+    roi.height = 0;
+    roi.width = 0;
+    roi.pos_x = 0;
+    roi.pos_y = 0;
     bool use_roi = false;
     
     // camera grid info
@@ -377,6 +385,10 @@ bool OpenLF::lightfield::io::load_3DV_structure( std::vector<std::string> fname_
  
     // create roi if needed
     OpenLF::image::ROI roi;
+    roi.height = 0;
+    roi.width = 0;
+    roi.pos_x = 0;
+    roi.pos_y = 0;
     bool use_roi = false;
     
     // camera grid info
@@ -548,6 +560,10 @@ bool OpenLF::lightfield::io::load_cross_structure( std::vector<std::string> fnam
     
     // create roi if needed
     OpenLF::image::ROI roi;
+    roi.height = 0;
+    roi.width = 0;
+    roi.pos_x = 0;
+    roi.pos_y = 0;
     bool use_roi = false;
      
     // camera grid info
