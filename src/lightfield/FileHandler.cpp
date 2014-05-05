@@ -17,7 +17,7 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "lightfield/FileHandler.hpp"
+#include "OpenLF/lightfield/FileHandler.hpp"
 
 
 OpenLF::lightfield::io::FileHandler::FileHandler() : DataHandler()

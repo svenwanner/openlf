@@ -17,7 +17,7 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "utils/helpers.hpp"
+#include "OpenLF/utils/helpers.hpp"
 
 string OpenLF::helpers::find_ftype(string filepath) 
 {

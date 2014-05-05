@@ -20,8 +20,8 @@
 #ifndef PROPERTIES_HPP
 #define	PROPERTIES_HPP
 
-#include "global.hpp"
-#include "utils/helpers.hpp"
+#include "OpenLF/global.hpp"
+#include "OpenLF/utils/helpers.hpp"
 
 
 typedef map<string,double> number_fields_map;

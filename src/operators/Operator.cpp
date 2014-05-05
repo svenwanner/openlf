@@ -17,7 +17,7 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "operators/Operator.hpp"
+#include "OpenLF/operators/Operator.hpp"
 
 OpenLF::operators::Operator::Operator() 
 {

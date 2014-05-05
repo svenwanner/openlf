@@ -20,10 +20,10 @@
 #ifndef IMGPROC_HPP
 #define	IMGPROC_HPP
 
-#include "debug.hpp"
-#include "global.hpp"
-#include "image/io.hpp"
-#include "image/Channel.hpp"
+#include "OpenLF/debug.hpp"
+#include "OpenLF/global.hpp"
+#include "OpenLF/image/io.hpp"
+#include "OpenLF/image/Channel.hpp"
 
 typedef map<string,OpenLF::image::ImageChannel> channel_map;
 typedef map<string,OpenLF::image::ImageChannel>::iterator channel_map_iter;

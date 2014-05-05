@@ -20,8 +20,8 @@
 #ifndef IMAGEUTILS_HPP
 #define	IMAGEUTILS_HPP
 
-#include "debug.hpp"
-#include "global.hpp"
+#include "OpenLF/debug.hpp"
+#include "OpenLF/global.hpp"
 
 
 

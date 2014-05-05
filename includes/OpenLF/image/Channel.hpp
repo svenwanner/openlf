@@ -20,8 +20,8 @@
 #ifndef CHANNEL_HPP
 #define	CHANNEL_HPP
 
-#include "global.hpp"
-#include "debug.hpp"
+#include "OpenLF/global.hpp"
+#include "OpenLF/debug.hpp"
 
 
 typedef vigra::MultiArray<2,float> array_2d;

@@ -20,13 +20,13 @@
 #ifndef FILEHANDLER_HPP
 #define	FILEHANDLER_HPP
 
-#include "debug.hpp"
-#include "global.hpp"
-#include "image/io.hpp"
-#include "lightfield/io.hpp"
-#include "image/Channel.hpp"
-#include "lightfield/Properties.hpp"
-#include "lightfield/DataHandler.hpp"
+#include "OpenLF/debug.hpp"
+#include "OpenLF/global.hpp"
+#include "OpenLF/image/io.hpp"
+#include "OpenLF/lightfield/io.hpp"
+#include "OpenLF/image/Channel.hpp"
+#include "OpenLF/lightfield/Properties.hpp"
+#include "OpenLF/lightfield/DataHandler.hpp"
 
 
 

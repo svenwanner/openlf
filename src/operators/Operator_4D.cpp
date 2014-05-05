@@ -17,7 +17,7 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "operators/Operator_4D.hpp"
+#include "OpenLF/operators/Operator_4D.hpp"
 
 OpenLF::operators::Operator_4D::Operator_4D(const Operator_4D& orig) {
 }

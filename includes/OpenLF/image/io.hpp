@@ -21,11 +21,11 @@
 #ifndef IO_IMAGE_HPP
 #define	IO_IMAGE_HPP
 
-#include "debug.hpp"
-#include "global.hpp"
-#include "image/utils.hpp"
-#include "utils/helpers.hpp"
-#include "image/Channel.hpp"
+#include "OpenLF/debug.hpp"
+#include "OpenLF/global.hpp"
+#include "OpenLF/image/utils.hpp"
+#include "OpenLF/utils/helpers.hpp"
+#include "OpenLF/image/Channel.hpp"
 
 namespace OpenLF { 
     namespace image { 

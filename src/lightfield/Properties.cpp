@@ -17,7 +17,7 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "lightfield/Properties.hpp"
+#include "OpenLF/lightfield/Properties.hpp"
 
 OpenLF::lightfield::Properties::Properties() 
 {

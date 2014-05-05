@@ -17,7 +17,7 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "image/imgproc.hpp"
+#include "OpenLF/image/imgproc.hpp"
 
 
 

@@ -17,8 +17,8 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "lightfield/Lightfield.hpp"
-#include "image/utils.hpp"
+#include "OpenLF/lightfield/Lightfield.hpp"
+#include "OpenLF/image/utils.hpp"
 
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)

@@ -21,7 +21,7 @@
 #define	MY4DOPERATOR_HPP
 
 #include <iostream>
-#include "operators/Operator_4D.hpp"
+#include "OpenLF/operators/Operator_4D.hpp"
 
 using namespace std;
 

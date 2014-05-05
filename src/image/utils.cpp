@@ -17,7 +17,7 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "image/utils.hpp"
+#include "OpenLF/image/utils.hpp"
 
 
 

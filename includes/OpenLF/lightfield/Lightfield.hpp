@@ -20,12 +20,12 @@
 #ifndef LIGHTFIELD_HPP
 #define	LIGHTFIELD_HPP
 
-#include "global.hpp"
-#include "image/utils.hpp"
-#include "lightfield/io.hpp"
-#include "lightfield/Properties.hpp"
-#include "lightfield/DataHandler.hpp"
-#include "lightfield/FileHandler.hpp"
+#include "OpenLF/global.hpp"
+#include "OpenLF/image/utils.hpp"
+#include "OpenLF/lightfield/io.hpp"
+#include "OpenLF/lightfield/Properties.hpp"
+#include "OpenLF/lightfield/DataHandler.hpp"
+#include "OpenLF/lightfield/FileHandler.hpp"
 
 
 typedef vigra::Shape2 shape;

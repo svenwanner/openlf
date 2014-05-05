@@ -21,12 +21,12 @@
 #ifndef IO_LIGHTFIELD_HPP
 #define	IO_LIGHTFIELD_HPP
 
-#include "debug.hpp"
-#include "global.hpp"
-#include "image/io.hpp"
-#include "utils/helpers.hpp"
-#include "image/Channel.hpp"
-#include "lightfield/Properties.hpp"
+#include "OpenLF/debug.hpp"
+#include "OpenLF/global.hpp"
+#include "OpenLF/image/io.hpp"
+#include "OpenLF/utils/helpers.hpp"
+#include "OpenLF/image/Channel.hpp"
+#include "OpenLF/lightfield/Properties.hpp"
 
 
 namespace OpenLF { 

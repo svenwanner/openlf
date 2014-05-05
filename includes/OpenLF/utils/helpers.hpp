@@ -18,8 +18,8 @@
 */
 
 
-#include "debug.hpp"
-#include "global.hpp"
+#include "OpenLF/debug.hpp"
+#include "OpenLF/global.hpp"
 
 #ifndef HELPERS_HPP
 #define	HELPERS_HPP

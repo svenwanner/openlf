@@ -3,7 +3,7 @@
 using namespace std;
 
 #include "My4DOperator.hpp"
-#include "lightfield/Lightfield.hpp"
+#include "OpenLF/lightfield/Lightfield.hpp"
 
 int main(int argc, char** argv) {
     

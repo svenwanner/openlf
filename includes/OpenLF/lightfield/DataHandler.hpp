@@ -21,9 +21,9 @@
 #ifndef DATAHANDLER_HPP
 #define	DATAHANDLER_HPP
 
-#include "global.hpp"
-#include "image/Channel.hpp"
-#include "lightfield/Properties.hpp"
+#include "OpenLF/global.hpp"
+#include "OpenLF/image/Channel.hpp"
+#include "OpenLF/lightfield/Properties.hpp"
 
 
 
