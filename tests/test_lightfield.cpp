@@ -6,7 +6,6 @@
  */
 
 #include "test_lightfield.hpp"
-#include "image/imgproc.hpp"
 
 
 

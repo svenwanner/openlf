@@ -110,13 +110,10 @@ void OpenLF::image::imgproc::abs_difference(OpenLF::image::ImageChannel &img1,
             throw OpenLF_Exception("Input/input shape mismatch in compute difference!");
         if(img1!=result)
             throw OpenLF_Exception("input/result shape mismatch in compute difference!");
-        
-        float* data_ptr1 = img1.data();
-        float* data_ptr2 = img2.data();
-        float* data_ptr_res = result.data();
 
-        for(int n=0; n<img1.width()*img1.height(); n++)
-            data_ptr_res[n] = abs(data_ptr1[n]-data_ptr2[n]);
+        for(int y=0; y<img1.height(); y++)
+            for(int x=0; x<img1.width(); x++)
+                result(x,y) = std::abs(img1(x,y)-img2(x,y));
         
     } catch(std::exception &e) {
         warning(e.what());

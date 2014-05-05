@@ -8,12 +8,13 @@
 #ifndef TEST_CHANNEL_HPP
 #define	TEST_CHANNEL_HPP
 
-#include "global.hpp"
+#include "OpenLF/global.hpp"
 #include "settings.hpp"
-#include "image/Channel.hpp" 
+#include "OpenLF/image/Channel.hpp" 
 
 #include <cppunit/extensions/HelperMacros.h>
 
+using namespace std;
 
 
 class test_channel : public CPPUNIT_NS::TestFixture {

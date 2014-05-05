@@ -57,8 +57,10 @@ void test_imgproc::test_diff_abs_mse()
     
     OpenLF::image::imgproc::difference(ic_b,ic_r,ic_res_1);
     OpenLF::image::imgproc::difference(ic_r,ic_r,ic_res_2);
+    
         
-    CPPUNIT_ASSERT(ic_res_1.sum()<60000.0f);
+
+    CPPUNIT_ASSERT(ic_res_1.sum()>-70000 && ic_res_1.sum()<-68000);
     CPPUNIT_ASSERT(ic_res_2.sum()==0.0f);
     
     
@@ -69,9 +71,8 @@ void test_imgproc::test_diff_abs_mse()
     OpenLF::image::imgproc::abs_difference(ic_r,ic_b,ic_res_1);
     OpenLF::image::imgproc::abs_difference(ic_r,ic_r,ic_res_2);
     
-    CPPUNIT_ASSERT(ic_res_1.sum()>60000.0f);
+    CPPUNIT_ASSERT(ic_res_1.sum()<70000 && ic_res_1.sum()>68000);
     CPPUNIT_ASSERT(ic_res_2.sum()==0.0f);
-    
     
     // test mse 
     double mse = 0;

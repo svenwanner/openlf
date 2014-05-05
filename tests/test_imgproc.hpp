@@ -10,12 +10,15 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "global.hpp"
-#include "image/io.hpp"
-#include "settings.hpp"
-#include "image/imgproc.hpp"
 
-#include "image/Channel.hpp"
+#include "settings.hpp"
+
+#include "OpenLF/global.hpp"
+#include "OpenLF/image/io.hpp"
+#include "OpenLF/image/imgproc.hpp"
+#include "OpenLF/image/Channel.hpp"
+
+using namespace std;
 
 
 class test_imgproc : public CPPUNIT_NS::TestFixture {

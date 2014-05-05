@@ -14,17 +14,18 @@
 
 #include "settings.hpp"
 
-#include "debug.hpp"
-#include "global.hpp"
-#include "image/io.hpp"
-#include "image/imgproc.hpp"
-#include "utils/helpers.hpp"
-#include "lightfield/io.hpp"
-#include "image/Channel.hpp"
-#include "lightfield/Properties.hpp"
-#include "lightfield/FileHandler.hpp"
-#include "lightfield/Lightfield.hpp"
+#include "OpenLF/debug.hpp"
+#include "OpenLF/global.hpp"
+#include "OpenLF/image/io.hpp"
+#include "OpenLF/image/imgproc.hpp"
+#include "OpenLF/utils/helpers.hpp"
+#include "OpenLF/lightfield/io.hpp"
+#include "OpenLF/image/Channel.hpp"
+#include "OpenLF/lightfield/Properties.hpp"
+#include "OpenLF/lightfield/FileHandler.hpp"
+#include "OpenLF/lightfield/Lightfield.hpp"
 
+using namespace std;
 
 class test_lightfield : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_lightfield);
