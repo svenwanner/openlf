@@ -43,7 +43,7 @@ namespace OpenLF {
 class DataHandler {
 public:
     DataHandler();
-    DataHandler(string config_filename, Properties *properties);
+    DataHandler(std::string config_filename, Properties *properties);
     DataHandler(const char* config_filename, Properties *properties);
     virtual ~DataHandler();
     
@@ -53,7 +53,7 @@ public:
      \param properties an instance of a Properties instance to parse and hold the paramter
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */ 
-    void setConfigfile(string config_filename);
+    void setConfigfile(std::string config_filename);
     
     //! set the config file
     /*!
@@ -63,11 +63,11 @@ public:
     */ 
     void setConfigfile(const char* config_filename);
     
-    virtual bool readData(map<string,OpenLF::image::ImageChannel>& channels) = 0;
+    virtual bool readData(std::map<std::string,OpenLF::image::ImageChannel>& channels) = 0;
     
 protected:
-    string type;            //!< type of input config_filename, disc or buffer
-    string config_filename; //!< the passed config_filename string
+    std::string type;            //!< type of input config_filename, disc or buffer
+    std::string config_filename; //!< the passed config_filename string
     Properties *properties; //!< pointer to store the address of a properties instance
 
 };

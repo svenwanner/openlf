@@ -458,7 +458,7 @@ OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator/=(float valu
             this->pixel.data()[n] /= value;
         }
         return *this;
-    } else throw overflow_error("Divide by zero exception");
+    } else throw std::overflow_error("Divide by zero exception");
 }
 
 /*!
@@ -487,9 +487,9 @@ OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator/=(OpenLF::im
             try {
                 this->pixel.data()[n] /= in_data[n];
             }
-            catch(exception &e) {
-                cout << e.what() << endl;
-                this->pixel.data()[n] = numeric_limits<float>::max();
+            catch(std::exception &e) {
+                std::cout << e.what() << std::endl;
+                this->pixel.data()[n] = std::numeric_limits<float>::max();
             }
         }
         return *this;

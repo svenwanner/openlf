@@ -34,7 +34,7 @@ namespace OpenLF {
 class Operator {
 public:
     Operator();
-    Operator(const Operator& orig);
+    //Operator(const Operator& orig);
     virtual ~Operator();
     void clear();
     
@@ -64,7 +64,7 @@ protected:
     
     OpenLF::lightfield::Lightfield *lf;
     OpenLF::lightfield::Properties *properties;
-    map<string,OpenLF::image::ImageChannel> tmp_memory;
+    std::map<std::string,OpenLF::image::ImageChannel> tmp_memory;
 };
 
 }}

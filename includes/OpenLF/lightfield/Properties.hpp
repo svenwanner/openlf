@@ -24,16 +24,16 @@
 #include "OpenLF/utils/helpers.hpp"
 
 
-typedef map<string,double> number_fields_map;
-typedef map<string,string> string_fields_map;
-typedef map<string,double>::iterator number_fields_iter;
-typedef map<string,string>::iterator string_fields_iter;
+typedef std::map<std::string,double> number_fields_map;
+typedef std::map<std::string,std::string> string_fields_map;
+typedef std::map<std::string,double>::iterator number_fields_iter;
+typedef std::map<std::string,std::string>::iterator string_fields_iter;
 
 
-struct Parse_Exception : public exception
+struct Parse_Exception : public std::exception
 {
-   string s;
-   Parse_Exception(string ss) : s(ss) {}
+   std::string s;
+   Parse_Exception(std::string ss) : s(ss) {}
    ~Parse_Exception() throw () {} // Updated
    const char* what() const throw() { return s.c_str(); }
 };
@@ -56,7 +56,7 @@ namespace OpenLF {
 class Properties {
 public:
     Properties();
-    Properties(string filename);
+    Properties(std::string filename);
     Properties(const char* filename);
     //Properties(const Properties& orig);
     virtual ~Properties();
@@ -107,7 +107,7 @@ public:
      \param keys reference to a vector of strings to store the keys
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void get_num_field_keys(vector<string> &keys);
+    void get_num_field_keys(std::vector<std::string> &keys);
     
     
     //! get list of string_fields map keys
@@ -115,7 +115,7 @@ public:
      \param keys reference to a vector of strings to store the keys
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void get_str_field_keys(vector<string> &keys);
+    void get_str_field_keys(std::vector<std::string> &keys);
     
     
 
@@ -126,7 +126,7 @@ public:
      \param fieldname
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    bool has_field(string fieldname);
+    bool has_field(std::string fieldname);
     
     
     
@@ -150,7 +150,7 @@ public:
      \param value variable to pass the value to
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    bool get_field(string name, string &value);
+    bool get_field(std::string name, std::string &value);
     
     
     //! access value by name
@@ -159,7 +159,7 @@ public:
      \param value variable to pass the value to
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    bool get_field(string name, int &value);
+    bool get_field(std::string name, int &value);
     
     
     //! access value by name
@@ -168,7 +168,7 @@ public:
      \param value variable to pass the value to
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    bool get_field(string name, float &value);
+    bool get_field(std::string name, float &value);
     
     
     //! access value by name
@@ -177,7 +177,7 @@ public:
      \param value variable to pass the value to
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    bool get_field(string name, double &value);
+    bool get_field(std::string name, double &value);
     
     
     //! set LF_TYPE parsed
@@ -194,7 +194,7 @@ public:
      \param value variable to pass the value to
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void set_field(string name, string value);
+    void set_field(std::string name, std::string value);
     
     
     //! set value by name
@@ -203,7 +203,7 @@ public:
      \param value variable to pass the value to
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void set_field(string name, int value);
+    void set_field(std::string name, int value);
     
     
     //! set value by name
@@ -212,7 +212,7 @@ public:
      \param value variable to pass the value to
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void set_field(string name, float value);
+    void set_field(std::string name, float value);
     
     
     //! set value by name
@@ -221,7 +221,7 @@ public:
      \param value variable to pass the value to
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void set_field(string name, double value);
+    void set_field(std::string name, double value);
     
     
     
@@ -240,7 +240,7 @@ public:
      \param filename cfgfile the ifstream object of the file loaded
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void parse(string filename);
+    void parse(std::string filename);
 
     
 private:
@@ -250,10 +250,10 @@ private:
      \param cfgfile the ifstream object of the file loaded
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void __parse__(ifstream &cfgfile);
+    void __parse__(std::ifstream &cfgfile);
     
-    map<string,double> number_fields; //!< map to store the number fields and values
-    map<string,string> string_fields; //!< map to store the string fields and values 
+    std::map<std::string,double> number_fields; //!< map to store the number fields and values
+    std::map<std::string,std::string> string_fields; //!< map to store the string fields and values 
     
 };
 }}

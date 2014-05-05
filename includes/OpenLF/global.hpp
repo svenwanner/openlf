@@ -76,15 +76,15 @@
 
 #include <H5Cpp.h>
 
-using namespace std;
+//using namespace std;
 
 
 typedef enum {NONE,LF_4D,LF_3DH,LF_3DV,LF_CROSS} LF_TYPE;
 
-struct OpenLF_Exception : public exception
+struct OpenLF_Exception : public std::exception
 {
-   string s;
-   OpenLF_Exception(string ss) : s(ss) {}
+   std::string s;
+   OpenLF_Exception(std::string ss) : s(ss) {}
    ~OpenLF_Exception() throw () {} // Updated
    const char* what() const throw() { return s.c_str(); }
 };

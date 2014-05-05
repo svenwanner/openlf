@@ -28,7 +28,7 @@ OpenLF::lightfield::io::DataHandler::DataHandler()
     type = "";
 }
 
-OpenLF::lightfield::io::DataHandler::DataHandler(string config_filename, Properties *properties) 
+OpenLF::lightfield::io::DataHandler::DataHandler(std::string config_filename, Properties *properties) 
 {
     print(1,"lightfield::io::DataHandler::DataHandler(config_filename,*properties) called...");
     
@@ -69,13 +69,13 @@ OpenLF::lightfield::io::DataHandler::~DataHandler()
 * interpreted as a filename of a single image file containing the light field, a hdf5 file
 * or a path storing the images as single image files. 
 */
-void OpenLF::lightfield::io::DataHandler::setConfigfile(string config_filename)
+void OpenLF::lightfield::io::DataHandler::setConfigfile(std::string config_filename)
 {
     print(1,"lightfield::io:::DataHandler::set_configfile(config_filename,&properties) called...");
     
     this->config_filename = config_filename;
     
-    string ftype = OpenLF::helpers::find_ftype(config_filename);
+    std::string ftype = OpenLF::helpers::find_ftype(config_filename);
     
     
     if(ftype=="cfg") {
@@ -83,11 +83,11 @@ void OpenLF::lightfield::io::DataHandler::setConfigfile(string config_filename)
         // parse configfile
         try {
             properties->parse(config_filename);
-        } catch(exception &e) {
+        } catch(std::exception &e) {
             warning(e.what());
         }
         
-        string source_type;
+        std::string source_type;
         properties->get_field("source",source_type);
         
         // check if source is a camera then handle data from buffer else handle from disc
@@ -108,6 +108,6 @@ void OpenLF::lightfield::io::DataHandler::setConfigfile(const char* config_filen
 {
     print(1,"lightfield::io:::DataHandler::set_configfile(config_filename) called...");
     
-    string tmp(config_filename);
+    std::string tmp(config_filename);
     setConfigfile(tmp);
 }

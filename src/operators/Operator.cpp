@@ -24,9 +24,9 @@ OpenLF::operators::Operator::Operator()
     clear();
 }
 
-OpenLF::operators::Operator::Operator(const Operator& orig) 
-{
-}
+//OpenLF::operators::Operator::Operator(const Operator& orig) 
+//{
+//}
 
 OpenLF::operators::Operator::~Operator() 
 {

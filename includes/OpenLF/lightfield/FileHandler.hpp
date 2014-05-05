@@ -47,7 +47,7 @@ namespace OpenLF {
 class FileHandler : public DataHandler {
 public:
     FileHandler();
-    FileHandler(string config_filename, Properties *properties);
+    FileHandler(std::string config_filename, Properties *properties);
     FileHandler(const char* config_filename, Properties *properties);
     virtual ~FileHandler();   
     
@@ -59,13 +59,13 @@ public:
      \param channels map object of string labels as keys and MultiArrays as data 
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */ 
-    bool readData(map<string,image::ImageChannel>& channels);
+    bool readData(std::map<std::string,image::ImageChannel>& channels);
     
     
     
     
 protected:
-    string disc_source;         //!< is "cam" or the path to the data on the harddrive
+    std::string disc_source;         //!< is "cam" or the path to the data on the harddrive
     
 
 
@@ -77,7 +77,7 @@ protected:
      \param channels map object of string labels as keys and MultiArrays as data 
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */ 
-    bool __readFromDisc__(map<string,image::ImageChannel>& channels);
+    bool __readFromDisc__(std::map<std::string,image::ImageChannel>& channels);
 };
 
 

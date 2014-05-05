@@ -19,14 +19,14 @@
 
 #include "OpenLF/utils/helpers.hpp"
 
-string OpenLF::helpers::find_ftype(string filepath) 
+std::string OpenLF::helpers::find_ftype(std::string filepath) 
 {
-    vector<std::string> splited;
+    std::vector<std::string> splited;
     boost::split(splited, filepath, boost::is_any_of("."));
     return splited[splited.size()-1];
 }
 
-bool OpenLF::helpers::filenames_from_directory(string dir, vector<string> &list)
+bool OpenLF::helpers::filenames_from_directory(std::string dir, std::vector<std::string> &list)
 {
     
     // read filenames from directory
@@ -35,15 +35,15 @@ bool OpenLF::helpers::filenames_from_directory(string dir, vector<string> &list)
         list.push_back(iterator->path().filename().generic_string());
     }
     
-    sort (list.begin(), list.end());
+    std::sort (list.begin(), list.end());
     
     if(list.size()>0) return true;
     return false;
 }
 
-void OpenLF::helpers::remove_leading_spaces_from_string(string input,string &result) 
+void OpenLF::helpers::remove_leading_spaces_from_string(std::string input,std::string &result) 
 {   result="";
-    vector<string> strVec; 
+    std::vector<std::string> strVec; 
     boost::algorithm::split(strVec,input,boost::is_any_of("\t "),boost::token_compress_on);
         
     bool placeholder = false;
@@ -52,7 +52,7 @@ void OpenLF::helpers::remove_leading_spaces_from_string(string input,string &res
     for(unsigned int i=0; i<strVec.size(); i++) {
         if(strVec[i].size()>0) {
             pos = strVec[i].find('"');
-            if(pos!=string::npos)
+            if(pos!=std::string::npos)
                 placeholder=!placeholder;
             
             if(strVec[i].at(0)=='"' && strVec[i].at(strVec[i].size()-1)=='"')
@@ -66,9 +66,9 @@ void OpenLF::helpers::remove_leading_spaces_from_string(string input,string &res
 }
 
 
-string OpenLF::helpers::make_absolute_path(string filename, string relative_part) 
+std::string OpenLF::helpers::make_absolute_path(std::string filename, std::string relative_part) 
 {
-    string abs_path;
+    std::string abs_path;
     // make a path object of the filename
     boost::filesystem::path fpath(filename);
     // get the directory path of the filename
@@ -79,7 +79,7 @@ string OpenLF::helpers::make_absolute_path(string filename, string relative_part
 } 
 
 
-bool OpenLF::helpers::remove_by_value(vector<string> &list, string value) 
+bool OpenLF::helpers::remove_by_value(std::vector<std::string> &list, std::string value) 
 {
     for( auto iter = list.begin(); iter != list.end(); ++iter )
     {
@@ -92,7 +92,7 @@ bool OpenLF::helpers::remove_by_value(vector<string> &list, string value)
 }
 
 
-void OpenLF::helpers::get_attribute_list(string filename, string GroupID, vector<string> &attrs, vector<bool> &isString) {
+void OpenLF::helpers::get_attribute_list(std::string filename, std::string GroupID, std::vector<std::string> &attrs, std::vector<bool> &isString) {
     H5::H5File file = H5::H5File( filename.c_str(), vigra::HDF5File::Open );
     H5::Group group = file.openGroup(GroupID.c_str());
     H5::Attribute attr;

@@ -48,8 +48,8 @@ namespace OpenLF {
  \param properties struct storing the important parameter 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool load_4D_structure( vector<string> fname_list,
-                        map< string,image::ImageChannel> &channels,
+bool load_4D_structure( std::vector<std::string> fname_list,
+                        std::map< std::string,image::ImageChannel> &channels,
                         Properties *properties );
 
 
@@ -65,8 +65,8 @@ bool load_4D_structure( vector<string> fname_list,
  \param properties struct storing the important parameter 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool load_3DH_structure( vector<string> fname_list,
-                         map< string,image::ImageChannel> &channels,
+bool load_3DH_structure( std::vector<std::string> fname_list,
+                         std::map< std::string,image::ImageChannel> &channels,
                          Properties *properties );
 
 
@@ -81,8 +81,8 @@ bool load_3DH_structure( vector<string> fname_list,
  \param properties struct storing the important parameter 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool load_3DV_structure( vector<string> fname_list,
-                         map< string,image::ImageChannel> &channels,
+bool load_3DV_structure( std::vector<std::string> fname_list,
+                         std::map< std::string,image::ImageChannel> &channels,
                          Properties *properties );
 
 
@@ -97,8 +97,8 @@ bool load_3DV_structure( vector<string> fname_list,
  \param properties struct storing the important parameter 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool load_cross_structure( vector<string> fname_list,
-                           map< string,image::ImageChannel> &channels,
+bool load_cross_structure( std::vector<std::string> fname_list,
+                           std::map< std::string,image::ImageChannel> &channels,
                            Properties *properties );
             
 
@@ -115,8 +115,8 @@ bool load_cross_structure( vector<string> fname_list,
  \param properties struct storing the important parameter
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool load_from_filesequence( string dir, 
-                             map< string,image::ImageChannel> &channels,
+bool load_from_filesequence( std::string dir, 
+                             std::map< std::string,image::ImageChannel> &channels,
                              Properties *properties);
 
 
@@ -131,8 +131,8 @@ bool load_from_filesequence( string dir,
  \param properties struct storing the important parameter
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool load_from_hdf5( string file_name, 
-                     map< string,image::ImageChannel> &channels,
+bool load_from_hdf5( std::string file_name, 
+                     std::map< std::string,image::ImageChannel> &channels,
                      Properties *properties);
 
 
@@ -146,8 +146,8 @@ bool load_from_hdf5( string file_name,
  \param properties struct storing the important parameter
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool save_to_hdf5( string file_name, 
-                   map< string,image::ImageChannel> &channels,
+bool save_to_hdf5( std::string file_name, 
+                   std::map< std::string,image::ImageChannel> &channels,
                    Properties *properties);
 
 

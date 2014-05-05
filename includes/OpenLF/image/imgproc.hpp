@@ -25,8 +25,8 @@
 #include "OpenLF/image/io.hpp"
 #include "OpenLF/image/Channel.hpp"
 
-typedef map<string,OpenLF::image::ImageChannel> channel_map;
-typedef map<string,OpenLF::image::ImageChannel>::iterator channel_map_iter;
+typedef std::map<std::string,OpenLF::image::ImageChannel> channel_map;
+typedef std::map<std::string,OpenLF::image::ImageChannel>::iterator channel_map_iter;
 
 namespace OpenLF { 
     namespace image { 
@@ -57,8 +57,8 @@ namespace OpenLF {
  \param result image reference
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-void difference(map<string,ImageChannel> &channels1,
-                map<string,ImageChannel> &channels2,
+void difference(std::map<std::string,ImageChannel> &channels1,
+                std::map<std::string,ImageChannel> &channels2,
                 ImageChannel &result);
             
           
@@ -107,8 +107,8 @@ void difference(ImageChannel &img1,
  \param result ImageChannel reference
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-void abs_difference(map<string,ImageChannel> &channels1,
-                    map<string,ImageChannel> &channels2,
+void abs_difference(std::map<std::string,ImageChannel> &channels1,
+                    std::map<std::string,ImageChannel> &channels2,
                     ImageChannel &result);
 
 
@@ -159,9 +159,9 @@ void abs_difference(ImageChannel &img1,
  \param results float vector storing the MSE for each channel
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-void MSE(map<string,ImageChannel> &channels1,
-         map<string,ImageChannel> &channels2,
-         map<string,double> &results);
+void MSE(std::map<std::string,ImageChannel> &channels1,
+         std::map<std::string,ImageChannel> &channels2,
+         std::map<std::string,double> &results);
 
 
 //! computes the mean square error 1/N Sum(img1(x,y)-img2(x,y))^2)

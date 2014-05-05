@@ -24,8 +24,8 @@
 
 
     
-bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list, 
-                                                map< string,OpenLF::image::ImageChannel> &channels, 
+bool OpenLF::lightfield::io::load_4D_structure( std::vector<std::string> fname_list, 
+                                                std::map< std::string,OpenLF::image::ImageChannel> &channels, 
                                                 Properties *properties )
 {
     print(2,"lightfield::io::load_4D_structure(fname_list,channels,properties) called...");
@@ -200,8 +200,8 @@ bool OpenLF::lightfield::io::load_4D_structure( vector<string> fname_list,
 
 
 
-bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list, 
-                                                 map< string,OpenLF::image::ImageChannel> &channels, 
+bool OpenLF::lightfield::io::load_3DH_structure( std::vector<std::string> fname_list, 
+                                                 std::map< std::string,OpenLF::image::ImageChannel> &channels, 
                                                  Properties *properties ) 
 {
     print(2,"lightfield::io::load_3DH_structure(fname_list,channels,properties) called...");
@@ -368,8 +368,8 @@ bool OpenLF::lightfield::io::load_3DH_structure( vector<string> fname_list,
 
 
 
-bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list, 
-                                                 map< string,OpenLF::image::ImageChannel> &channels, 
+bool OpenLF::lightfield::io::load_3DV_structure( std::vector<std::string> fname_list, 
+                                                 std::map< std::string,OpenLF::image::ImageChannel> &channels, 
                                                  Properties *properties )
 
 {
@@ -540,8 +540,8 @@ bool OpenLF::lightfield::io::load_3DV_structure( vector<string> fname_list,
 
 
 
-bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list, 
-                                                   map< string,OpenLF::image::ImageChannel> &channels, 
+bool OpenLF::lightfield::io::load_cross_structure( std::vector<std::string> fname_list, 
+                                                   std::map< std::string,OpenLF::image::ImageChannel> &channels, 
                                                    Properties *properties )
 {
     print(2,"lightfield::io::load_cross_structure(fname_list,channels,properties) called...");
@@ -848,8 +848,8 @@ bool OpenLF::lightfield::io::load_cross_structure( vector<string> fname_list,
 
 
 
-bool OpenLF::lightfield::io::load_from_filesequence(string dir, 
-                                                    map< string,OpenLF::image::ImageChannel> &channels, 
+bool OpenLF::lightfield::io::load_from_filesequence(std::string dir, 
+                                                    std::map< std::string,OpenLF::image::ImageChannel> &channels, 
                                                     Properties *properties)
 
 /*TEST: test_lightfield::test_loading_from_imagefiles() */
@@ -857,10 +857,10 @@ bool OpenLF::lightfield::io::load_from_filesequence(string dir,
     print(1,"lightfield::io::load_from_filesequence(dir,channels,properties) called...");
      
     // get list of filenames
-    vector<string> list;
+    std::vector<std::string> list;
     if(OpenLF::helpers::filenames_from_directory(dir, list)) {
         
-        vector<string> fname_list;
+        std::vector<std::string> fname_list;
         for(unsigned int i=0; i<list.size(); i++) {
             fname_list.push_back(dir+list[i]);
             print(3,fname_list[i].c_str());
@@ -891,16 +891,16 @@ bool OpenLF::lightfield::io::load_from_filesequence(string dir,
 
 
 
-bool OpenLF::lightfield::io::load_from_hdf5( string filename, 
-                     map< string,OpenLF::image::ImageChannel> &channels,
+bool OpenLF::lightfield::io::load_from_hdf5( std::string filename, 
+                     std::map< std::string,OpenLF::image::ImageChannel> &channels,
                      Properties *properties ) 
 {    
     print(2,"lightfield::io::load_from_hdf5(filename,channels,properties) called...");
     
     
     // read all attribute names 
-    vector<string> attrs;
-    vector<bool> isStr;
+    std::vector<std::string> attrs;
+    std::vector<bool> isStr;
     OpenLF::helpers::get_attribute_list(filename,"LF",attrs,isStr);
     if(attrs.size()==0) throw OpenLF_Exception("No attributes found while loading from hdf5!");
     
@@ -918,17 +918,17 @@ bool OpenLF::lightfield::io::load_from_hdf5( string filename,
         if((file.existsDataset("r") && file.existsDataset("g") && file.existsDataset("b")) || file.existsDataset("bw")) {
             
             // read the dataset names
-            vector<string> ds_tree;
+            std::vector<std::string> ds_tree;
             ds_tree = file.ls();
             
             while(true) {
                 if(isStr.size()==0 || attrs.size()==0) break;
                 
-                string name = attrs.back();
+                std::string name = attrs.back();
                 bool str = isStr.back();
                 float num_fval = 0.0;
                 int num_ival = 0.0;
-                string str_val = "";
+                std::string str_val = "";
                 
                 if(str) {
                     file.readAttribute("",name,str_val);
@@ -973,7 +973,7 @@ bool OpenLF::lightfield::io::load_from_hdf5( string filename,
             
         } else throw OpenLF_Exception("Loading light field from HDF5 failed, at least rgb or a bw channel is obligatory!");
     }
-    catch(exception & e) {
+    catch(std::exception & e) {
         warning(e.what());
         return false;
     }
@@ -983,23 +983,23 @@ bool OpenLF::lightfield::io::load_from_hdf5( string filename,
 
 
 
-bool OpenLF::lightfield::io::save_to_hdf5( string file_name, 
-                   map< string,OpenLF::image::ImageChannel> &channels,
+bool OpenLF::lightfield::io::save_to_hdf5( std::string file_name, 
+                   std::map< std::string,OpenLF::image::ImageChannel> &channels,
                    Properties *properties ) 
 {
     print(2,"lightfield::io::save_to_hdf5(filename,channels,properties) called...");
     
     try {
-        string dset_name;
+        std::string dset_name;
         
         // open hdf5 file and define group name
         vigra::HDF5File file(file_name.c_str(),vigra::HDF5File::New);
         file.mkdir("LF");
         
         // loop over channels and save each using its key as dataset names
-        for(map<string, OpenLF::image::ImageChannel>::iterator i = channels.begin(); i != channels.end(); ++i)
+        for(std::map<std::string, OpenLF::image::ImageChannel>::iterator i = channels.begin(); i != channels.end(); ++i)
         {
-            string key = i->first;
+            std::string key = i->first;
             dset_name = "/LF/"+key;
             vigra::MultiArray<2,float> *tmp;
             channels[key].image(&tmp);
@@ -1008,8 +1008,8 @@ bool OpenLF::lightfield::io::save_to_hdf5( string file_name,
         
         int itmp;
         float ftmp;
-        string stmp;
-        vector<string> fields;
+        std::string stmp;
+        std::vector<std::string> fields;
         properties->get_num_field_keys(fields);
         
         
@@ -1058,7 +1058,7 @@ bool OpenLF::lightfield::io::save_to_hdf5( string file_name,
         }
         fields.clear();    
     }
-    catch(exception & e) {
+    catch(std::exception & e) {
         warning(e.what());
         return false;
     }

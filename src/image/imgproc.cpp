@@ -28,7 +28,7 @@ void OpenLF::image::imgproc::difference(channel_map &channels1,
 {
     try {
         result=0.0f;
-        string key;
+        std::string key;
         OpenLF::image::ImageChannel tmp(result.width(),result.height());
         
         for ( channel_map_iter iter = channels1.begin(); iter != channels1.end(); iter++ ) {
@@ -44,7 +44,7 @@ void OpenLF::image::imgproc::difference(channel_map &channels1,
                 
             }
         } 
-    } catch(exception &e) {
+    } catch(std::exception &e) {
         warning(e.what());
     }
 }
@@ -68,7 +68,7 @@ void OpenLF::image::imgproc::difference(OpenLF::image::ImageChannel &img1,
         for(int n=0; n<img1.width()*img1.height(); n++)
             data_ptr_res[n] = data_ptr1[n]-data_ptr2[n];
         
-    } catch(exception &e) {
+    } catch(std::exception &e) {
         warning(e.what());
     }
 }
@@ -79,7 +79,7 @@ void OpenLF::image::imgproc::abs_difference(channel_map &channels1,
                                             OpenLF::image::ImageChannel &result) 
 {
     try {
-        string key;
+        std::string key;
         result = 0.0;
         
         OpenLF::image::ImageChannel tmp(result.width(),result.height());
@@ -94,7 +94,7 @@ void OpenLF::image::imgproc::abs_difference(channel_map &channels1,
                 result+=tmp;
             }
         }        
-    } catch(exception &e) {
+    } catch(std::exception &e) {
         warning(e.what());
     }
 }
@@ -118,7 +118,7 @@ void OpenLF::image::imgproc::abs_difference(OpenLF::image::ImageChannel &img1,
         for(int n=0; n<img1.width()*img1.height(); n++)
             data_ptr_res[n] = abs(data_ptr1[n]-data_ptr2[n]);
         
-    } catch(exception &e) {
+    } catch(std::exception &e) {
         warning(e.what());
     }
 }
@@ -127,10 +127,10 @@ void OpenLF::image::imgproc::abs_difference(OpenLF::image::ImageChannel &img1,
 
 void OpenLF::image::imgproc::MSE(channel_map &channels1,
                                  channel_map &channels2,
-                                 map<string,double> &results)
+                                 std::map<std::string,double> &results)
 {
     try {
-        string key;
+        std::string key;
         double mse;
         
         for ( channel_map_iter iter = channels1.begin(); iter != channels1.end(); iter++ ) {
@@ -143,7 +143,7 @@ void OpenLF::image::imgproc::MSE(channel_map &channels1,
                 results[key]=mse;
             }
         } 
-    } catch(exception &e) {
+    } catch(std::exception &e) {
         warning(e.what());
     }
 }
