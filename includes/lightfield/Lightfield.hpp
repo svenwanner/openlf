@@ -188,7 +188,7 @@ public:
      \param x position index
      \param y position index
      \param channel_name name of the channel to access
-     \param values reference to float vector to store the results
+     \param values reference to a float vector storing the results
     */
     void getLoxel(int v, int h, int x, int y, vector<string> channel_names, vector<float> &values);
     

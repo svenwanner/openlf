@@ -278,15 +278,41 @@ int OpenLF::lightfield::Lightfield::cams_v()
 float OpenLF::lightfield::Lightfield::getLoxel(int v, int h, int x, int y, string channel_name)
 {
     float val = 0;
-    try {
-        val = channels[channel_name](h*imgWidth()+x,v*imgHeight()+y);
+    
+    if(type()==LF_4D) {
+        
+        try {
+            val = channels[channel_name](h*imgWidth()+x,v*imgHeight()+y);
+        }
+        catch(exception &e)
+        {
+            e = OpenLF_Exception("Lightfield::loxel -> channel access exception!");
+            cout << e.what() << endl;
+        }
+        return val;
     }
-    catch(exception &e)
-    {
-        e = OpenLF_Exception("Lightfield::getLoxel -> channel access exception!");
-        cout << e.what() << endl;
+    else if(type()==LF_3DV) {
+        return val;
     }
-    return val;
+    
+    else if(type()==LF_3DH) {
+        
+        try {
+            val = channels[channel_name](h*imgWidth()+x,y);
+        }
+        catch(exception &e)
+        {
+            e = OpenLF_Exception("Lightfield::loxel -> channel access exception!");
+            cout << e.what() << endl;
+        }
+        return val;
+    }
+    
+    else if(type()==LF_CROSS) {
+        return val;
+    }
+    
+    else throw OpenLF_Exception("Lightfield::loxel -> unknown LF_TYPE!");
 }
 
 /*!
