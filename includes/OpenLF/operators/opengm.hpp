@@ -58,7 +58,7 @@ protected:
   void buildModel();
 private:  
   size_t getID(int x, int y, int h, int v){
-    return  x + lf->width()*(y + lf->height()*(h*lf->cams_v() + v));
+    return  x + lf->imgWidth()*(y + lf->imgHeight()*(h*lf->cams_v() + v));
   };
     
 };
@@ -66,7 +66,7 @@ private:
 
 template <bool FLAG> void OpenGM<FLAG>::buildModel() {
  
-  IndexType numVar = lf->width()*lf->height()*lf->cams_h()*lf->cams_v();
+  IndexType numVar = lf->imgWidth()*lf->imgHeight()*lf->cams_h()*lf->cams_v();
   LabelType numL   = 2;
 
 
@@ -81,8 +81,8 @@ template <bool FLAG> void OpenGM<FLAG>::buildModel() {
   //float* g_ptr = lf->channel_ptr("g");
   //float* b_ptr = lf->channel_ptr("b");
   IndexType var[2] = {0,0};
-  for(int x=0; x<lf->width(); ++x){
-    for(int y=0; y<lf->height(); ++y){
+  for(int x=0; x<lf->imgWidth(); ++x){
+    for(int y=0; y<lf->imgHeight(); ++y){
       for(int h=0; h<lf->cams_h(); ++h){
 	for(int v=0; v<lf->cams_v(); ++v){
 	  float val = lf->getLoxel(v,h,x,y,channel); 
@@ -91,11 +91,11 @@ template <bool FLAG> void OpenGM<FLAG>::buildModel() {
 	  f(1) = ValueType(1-val);
 	  GmType::FunctionIdentifier idExplicit = gm.addFunction(f);
 	  gm.addFactor(idExplicit, var, var + 1);
-	  if(x<lf->width()-1){
+	  if(x<lf->imgWidth()-1){
 	    var[1] = getID(x+1,y,h,v);
 	    gm.addFactor(pottsid, var, var + 2);
 	  }
-	  if(y<lf->height()-1){
+	  if(y<lf->imgHeight()-1){
 	    var[1] = getID(1,y+1,h,v);
 	    gm.addFactor(pottsid, var, var + 2);
 	  }  

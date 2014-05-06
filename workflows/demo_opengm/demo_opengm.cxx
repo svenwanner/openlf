@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
         try {
             // the argument is the filename of a lightfield
             // either of a hdf5 or a config file
-	    std::cout << "load lightfield... ";
+	    std::cout << "load lightfield... "<<std::flush;
             myLf.open(argv[1]);
 	    std::cout << "ok" << std::endl;
         }
@@ -22,7 +22,9 @@ int main(int argc, char** argv) {
         }
 
         
-	std::cout << "process... ";
+	std::cout << myLf.cams_h()<< " x " << myLf.cams_v() <<" :: " << myLf.imgWidth() << " x " << myLf.imgHeight() <<std::endl;
+
+	std::cout << "process... "<<std::flush;
         // create your operator
         OpenGM<> myOp;
         // link the light field to it
