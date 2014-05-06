@@ -179,7 +179,7 @@ public:
      \param y position index
      \param channel_name name of the channel to access
     */
-    float getLoxel(int v, int h, int x, int y, std::string channel_name);
+    float getLoxel(int h, int v, int x, int y, std::string channel_name);
     
     //! access a single intensity value of the channels specified
     /*!
@@ -190,7 +190,7 @@ public:
      \param channel_name name of the channel to access
      \param values reference to a float vector storing the results
     */
-    void getLoxel(int v, int h, int x, int y, std::vector<std::string> channel_names, std::vector<float> &values);
+    void getLoxel(int h, int v, int x, int y, std::vector<std::string> channel_names, std::vector<float> &values);
     
     
     //! get the data pointer of a specific channel 
@@ -281,22 +281,22 @@ public:
     
     //! get a view to a horizontal epi of the channel specified
     /*!
-     \param v fixed vertical camera index
-     \param y fixed row image domain index
      \param channel_name name of the channel to extract the epi from
-     \param focus global shift paramter in pixel
+     \param y fixed row image domain index
+     \param v fixed horizontal camera index (default=0)
+     \param focus global shift paramter in pixel (default=0)
     */
-    vigra::MultiArrayView<2,float> getHorizontalEpiChannel(int v, int y, std::string channel_name, int focus=0);
+    vigra::MultiArrayView<2,float> getHorizontalEpiChannel(std::string channel_name, int y, int v=0,  int focus=0);
     
     
     //! get a view to a vertical epi of the channel specified
     /*!
-     \param h fixed horizontal camera index
-     \param x fixed column image domain index
      \param channel_name name of the channel to extract the epi from
-     \param focus global shift paramter in pixel
+     \param x fixed column image domain index
+     \param h fixed horizontal camera index (default=0)
+     \param focus global shift paramter in pixel (default=0)
     */
-    vigra::MultiArrayView<2,float> getVerticalEpiChannel(int h, int x, std::string channel_name, int focus=0);
+    vigra::MultiArrayView<2,float> getVerticalEpiChannel(std::string channel_name, int x, int h=0, int focus=0);
     
     
 //    void getVerticalEpiChannel(int h, int x, string channel_name, vigra::MultiArrayView<2,float> &img);

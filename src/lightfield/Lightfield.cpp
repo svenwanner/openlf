@@ -275,7 +275,7 @@ int OpenLF::lightfield::Lightfield::cams_v()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-float OpenLF::lightfield::Lightfield::getLoxel(int v, int h, int x, int y, std::string channel_name)
+float OpenLF::lightfield::Lightfield::getLoxel(int h, int v, int x, int y, std::string channel_name)
 {
     float val = 0;
     
@@ -318,7 +318,7 @@ float OpenLF::lightfield::Lightfield::getLoxel(int v, int h, int x, int y, std::
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void OpenLF::lightfield::Lightfield::getLoxel(int v, int h, int x, int y, std::vector<std::string> channel_names, std::vector<float> &values)
+void OpenLF::lightfield::Lightfield::getLoxel(int h, int v, int x, int y, std::vector<std::string> channel_names, std::vector<float> &values)
 {
     if(!values.empty())
         values.clear();
@@ -640,21 +640,30 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getHorizontalEpiChannel(int v, int y, std::string channel_name, int focus)
+vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getHorizontalEpiChannel(std::string channel_name, int y, int v, int focus)
 {
     vigra::MultiArrayView<2,float> tmp;
       
     if(type()==LF_4D) {
-        tmp = _getHorizontalEpiChannel_4D(v,y,channel_name,focus);
+        if(v>=0 && v<=cams_v() && y>=0 && y<imgHeight())
+            tmp = _getHorizontalEpiChannel_4D(v,y,channel_name,focus);
+        else
+            throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> out of bounce!");
     }
     else if(type()==LF_3DH) {
-
+        if(y>=0 && y<imgHeight())
+            tmp = _getHorizontalEpiChannel_4D(0,y,channel_name,focus);
+        else
+            throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> out of bounce!");
     }
     else if(type()==LF_3DV) {
-
+        throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> no epis available for this LF_TYPE!");
     }
     else if(type()==LF_CROSS) {
-
+        if(y>=0 && y<imgHeight())
+            tmp = _getHorizontalEpiChannel_4D(0,y,channel_name,focus);
+        else
+            throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> out of bounce!");
     }
     else
         throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> unknown light field type!");
@@ -666,21 +675,30 @@ vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getHorizontalEpiC
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
- vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getVerticalEpiChannel(int h, int x, std::string channel_name, int focus)
+ vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getVerticalEpiChannel(std::string channel_name, int x, int h, int focus)
 {
     vigra::MultiArrayView<2,float> tmp;
     
     if(type()==LF_4D) {
-        tmp = _getVerticalEpiChannel_4D(h,x,channel_name,focus);
+        if(h>=0 && h<=cams_h() && x>=0 && x<imgWidth())
+            tmp = _getVerticalEpiChannel_4D(h,x,channel_name,focus);
+        else
+            throw OpenLF_Exception("Lightfield::getVerticalEpiChannel -> out of bounce!");
     }
     else if(type()==LF_3DH) {
-        
+        throw OpenLF_Exception("Lightfield::getVerticalEpiChannel -> no epis available for this LF_TYPE!");
     }
     else if(type()==LF_3DV) {
-        
+        if(x>=0 && x<imgWidth())
+            tmp = _getHorizontalEpiChannel_4D(0,x,channel_name,focus);
+        else
+            throw OpenLF_Exception("Lightfield::getVerticalEpiChannel -> out of bounce!");
     }
     else if(type()==LF_CROSS) {
-        
+        if(x>=0 && x<imgWidth())
+            tmp = _getHorizontalEpiChannel_4D(1,x,channel_name,focus);
+        else
+            throw OpenLF_Exception("Lightfield::getVerticalEpiChannel -> out of bounce!");
     }
     else
         throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> unknown light field type!");

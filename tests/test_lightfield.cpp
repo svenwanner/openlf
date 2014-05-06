@@ -88,6 +88,62 @@ void test_lightfield::tearDown() {
 
 
 
+void test_lightfield::test_epi_access()
+{
+    string p = test_result_dir+"4D_wide_rgb_epi_h.png";
+    
+    OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield();
+    // test open from hdf5
+    CPPUNIT_ASSERT(lf->open(cfgnames["4D_wide_rgb"]));
+    
+    // get epi channel
+    vigra::MultiArrayView<2,float> epi_h = lf->getHorizontalEpiChannel("r",24,2,1);
+    OpenLF::image::io::imsave(p,epi_h);
+
+    p = test_result_dir+"4D_wide_rgb_epi_v.png";
+    
+    vigra::MultiArrayView<2,float> epi_v = lf->getVerticalEpiChannel("r",32,3,1);
+    OpenLF::image::io::imsave(p,epi_v);
+    
+    
+    lf = new OpenLF::lightfield::Lightfield();
+    // test open from hdf5
+    CPPUNIT_ASSERT(lf->open(cfgnames["3DH_wide_rgb"]));
+    
+    lf = new OpenLF::lightfield::Lightfield();
+    // test open from hdf5
+    CPPUNIT_ASSERT(lf->open(cfgnames["3DV_wide_rgb"]));
+    
+    lf = new OpenLF::lightfield::Lightfield();
+    // test open from hdf5
+    CPPUNIT_ASSERT(lf->open(cfgnames["CROSS_wide_rgb"]));
+}
+
+
+
+void test_lightfield::test_loxel_access()
+{
+    // test instancing via the default constructor and open
+    OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield();
+    // test open from hdf5
+    CPPUNIT_ASSERT(lf->open(imgnames["4D_high_rgb_h5"]));
+    
+    float val = 0.0f;
+    val = 255*lf->getLoxel(2,3,24,32,"r");
+    CPPUNIT_ASSERT(val==107);
+    val = 255*lf->getLoxel(2,3,24,32,"g");
+    CPPUNIT_ASSERT(val==78);
+    val = 255*lf->getLoxel(2,3,24,32,"b");
+    CPPUNIT_ASSERT(val==44);
+    
+    vector<string> names {"r","g","b"};
+    vector<float> vals;
+    lf->getLoxel(2,3,24,32, names, vals);
+    
+    CPPUNIT_ASSERT(255*vals[0]==107);
+    CPPUNIT_ASSERT(255*vals[1]==78);
+    CPPUNIT_ASSERT(255*vals[2]==44);
+}
 
 
 void test_lightfield::test_instantiate_Lightfield()
