@@ -193,13 +193,14 @@ bool OpenLF::lightfield::io::load_4D_structure( std::vector<std::string> fname_l
                 }
             }
         }
-        return true;
     }
     catch(int a) {
         return false;
         
         warning("Exception in lightfield::io::load_4D_structure...");
     }
+    
+    return true;
 }
 
 

@@ -66,7 +66,7 @@ void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, v
         vigra::inspectImage(vigra::srcImageRange(fimg), minmax);
         if(minmax.max<=minmax.min) throw OpenLF_Exception("image::io::linear_range_mapping failed, no distance in image to map!");
         
-        
+       
         int nmin, nmax;
         // if original range is btw [0,1] keep relative range by multiplying min/max with 255
         if(minmax.min>=0 && minmax.min<1 && minmax.max>0 && minmax.max<=1) {
@@ -399,10 +399,6 @@ bool OpenLF::image::io::imsave(std::string filename, vigra::MultiArray<2,vigra::
     std::string ftype = OpenLF::helpers::find_ftype(filename);
     
     try {
-        // allocate memory to store range mapping results
-       // vigra::MultiArray<2,vigra::UInt8> tmp(vigra::Shape2(img.width(),img.height()));
-       // linear_range_mapping(img,tmp);
-
         if(ftype=="jpg")
             vigra::exportImage(img, vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=75"));
         else

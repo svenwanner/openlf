@@ -30,9 +30,6 @@ using namespace std;
 class test_lightfield : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_lightfield);
     
-    
-    CPPUNIT_TEST(test_epi_access);
-    CPPUNIT_TEST(test_loxel_access);
     CPPUNIT_TEST(test_instantiate_Lightfield);
 
     CPPUNIT_TEST_SUITE_END();
@@ -45,9 +42,9 @@ public:
 
 private:
     
-    void test_epi_access();
-    void test_loxel_access();
+    
     void test_instantiate_Lightfield();
+    
     
     map<string,string> cfgnames;
     map<string,string> imgnames;

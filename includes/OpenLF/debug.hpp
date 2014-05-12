@@ -27,7 +27,7 @@ const std::vector<const char*> DEBUGCOLOR = {"\033[0;40;37m","\033[1;40;32m","\0
 inline bool debug(int debug_level) {
     if(DEBUG_LEVEL >= debug_level) return true;
     else return false;
-};
+}
 
 /// This method causes console output for specific debug level
 inline void print(int debug_level, const char* text) {
@@ -38,7 +38,7 @@ inline void print(int debug_level, const char* text) {
         space.append("> ");
         std::cout << DEBUGCOLOR[debug_level] << space.c_str() << text << DEBUGCOLOR[0] << std::endl;
     }
-};
+}
 
 /// This method causes console output for specific debug level
 inline void print(int debug_level, const char* text1, const char* text2) {
@@ -49,7 +49,7 @@ inline void print(int debug_level, const char* text1, const char* text2) {
         space.append("> ");
         std::cout << DEBUGCOLOR[debug_level] << space.c_str() << text1 << " " << text2 << DEBUGCOLOR[0] << std::endl;
     }
-};
+}
 
 /// This method causes console output for specific debug level
 inline void print(int debug_level, const char* text1, int text2) {
@@ -60,7 +60,7 @@ inline void print(int debug_level, const char* text1, int text2) {
         space.append("> ");
         std::cout << DEBUGCOLOR[debug_level] << space.c_str() << text1 << " " << text2 << DEBUGCOLOR[0] << std::endl;
     }
-};
+}
 
 /// This method causes console output for specific debug level
 inline void print(int debug_level, const char* text1, float text2) {
@@ -71,16 +71,16 @@ inline void print(int debug_level, const char* text1, float text2) {
         space.append("> ");
         std::cout << DEBUGCOLOR[debug_level] << space.c_str() << text1 << " " << text2 << DEBUGCOLOR[0] << std::endl;
     }
-};
+}
 
 inline void warning(const char* text) 
 {
     std::cout << RED << "WARNING: " << text << "!" << DEBUGCOLOR[0] << std::endl; 
-};
+}
 
 inline void warning(std::string text) 
 {
     std::cout << RED << "WARNING: " << text << "!" << DEBUGCOLOR[0] << std::endl; 
-};
+}
 #endif	/* DEBUG_HPP */
 
