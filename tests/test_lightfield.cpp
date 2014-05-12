@@ -80,10 +80,140 @@ void test_lightfield::setUp() {
     cfgnames["CROSS_wide_bw_sf"] = test_lf_CROSS_wide+"CROSS_wide_bw.cfg";
     cfgnames["CROSS_high_rgb_sf"] = test_lf_CROSS_high+"CROSS_high_rgb.cfg";
     cfgnames["CROSS_wide_rgb_sf"] = test_lf_CROSS_wide+"CROSS_wide_rgb.cfg";
+    
+    
+    imgnames["4D_wide_r_epi_h0"] = test_lf_4D_wide+"epi_h0.png";
+    imgnames["4D_wide_r_epi_h1"] = test_lf_4D_wide+"epi_h1.png";
+    imgnames["4D_wide_r_epi_v0"] = test_lf_4D_wide+"epi_v0.png";
+    imgnames["4D_wide_r_epi_v1"] = test_lf_4D_wide+"epi_v1.png";
 }
 
 void test_lightfield::tearDown() {
     cout << "\n\ntest suite runs through!" << endl;
+}
+
+
+
+
+
+
+void test_lightfield::test_epi_access()
+{
+    // get ground truth epis
+    map<string,OpenLF::image::ImageChannel> epi_r_h0;
+    OpenLF::image::io::imread(imgnames["4D_wide_r_epi_h0"],epi_r_h0);
+    map<string,OpenLF::image::ImageChannel> epi_r_h1;
+    OpenLF::image::io::imread(imgnames["4D_wide_r_epi_h1"],epi_r_h1);
+    map<string,OpenLF::image::ImageChannel> epi_r_v0;
+    OpenLF::image::io::imread(imgnames["4D_wide_r_epi_v0"],epi_r_v0);
+    map<string,OpenLF::image::ImageChannel> epi_r_v1;
+    OpenLF::image::io::imread(imgnames["4D_wide_r_epi_v1"],epi_r_v1);
+    
+    
+    //==========================================================================
+    // test 4D epi access
+    //==========================================================================
+    OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield();
+    CPPUNIT_ASSERT(lf->open(cfgnames["4D_wide_rgb"]));
+    
+     //get epi channel
+    vigra::MultiArrayView<2,float> epi_h0 = lf->getHorizontalEpiChannel("r",24,2,0);
+    vigra::MultiArrayView<2,float> epi_h1 = lf->getHorizontalEpiChannel("r",24,2,1);
+    vigra::MultiArrayView<2,float> epi_v0 = lf->getVerticalEpiChannel("r",32,3,0);
+    vigra::MultiArrayView<2,float> epi_v1 = lf->getVerticalEpiChannel("r",32,3,1);
+    
+    float sum_h0,sum_h1,sum_v0,sum_v1;
+    sum_h0=0; sum_h1=0; sum_v0=0; sum_v1=0;
+    
+    for( int i=0; i<5; i++)
+    {
+        for( int j=0; j<15; j++)
+        {
+            sum_h0 += abs(epi_h0(j,i)-epi_r_h0["bw"](j,i));
+            sum_h1 += abs(epi_h1(j,i)-epi_r_h1["bw"](j,i));
+            sum_v0 += abs(epi_v0(i,j)-epi_r_v0["bw"](i,j));
+            sum_v1 += abs(epi_v1(i,j)-epi_r_v1["bw"](i,j));
+        }   
+    }
+    
+    CPPUNIT_ASSERT(sum_h0<0.000001);
+    CPPUNIT_ASSERT(sum_h1<0.000001);
+    CPPUNIT_ASSERT(sum_v0<0.000001);
+    CPPUNIT_ASSERT(sum_v1<0.000001);
+    
+    sum_h0=0; sum_h1=0; sum_v0=0; sum_v1=0;
+    
+    
+    
+    //==========================================================================
+    // test 3DH epi access
+    //==========================================================================
+    lf = new OpenLF::lightfield::Lightfield();
+    CPPUNIT_ASSERT(lf->open(cfgnames["3DH_wide_rgb"]));
+    
+    vigra::MultiArrayView<2,float> epi_3DH_h0 = lf->getHorizontalEpiChannel("r",24,0,0);
+    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_h.png",epi_3DH_h0);
+    
+    vigra::MultiArrayView<2,float> epi_3DH_h1 = lf->getHorizontalEpiChannel("r",24,0,1);
+    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_h1.png",epi_3DH_h1);
+    
+    for( int i=0; i<5; i++)
+    {
+        for( int j=0; j<15; j++)
+        {
+            sum_h0 += abs(epi_3DH_h0(j,i)-epi_r_h0["bw"](j,i));
+            sum_h1 += abs(epi_3DH_h1(j,i)-epi_r_h1["bw"](j,i));
+        }   
+    }
+    
+    CPPUNIT_ASSERT(sum_h0<0.000001);
+    CPPUNIT_ASSERT(sum_h1<0.000001);
+    
+    sum_h0=0; sum_h1=0;
+    
+    
+    //==========================================================================
+    // test 3DV epi access
+    //==========================================================================
+    lf = new OpenLF::lightfield::Lightfield();
+    CPPUNIT_ASSERT(lf->open(cfgnames["3DV_wide_rgb"]));
+    
+    vigra::MultiArrayView<2,float> epi_3DV_v0 = lf->getVerticalEpiChannel("r",32,0,0);
+    cout << "epi_3DV_v0 shape:" << epi_3DV_v0.shape() << endl;
+    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_v.png",epi_3DV_v0);
+    
+    vigra::MultiArrayView<2,float> epi_3DV_v1 = lf->getVerticalEpiChannel("r",32,0,1);
+    cout << "epi_3DV_v1 shape:" << epi_3DV_v1.shape() << endl;
+    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_v1.png",epi_3DV_v1);
+    
+    for( int i=0; i<5; i++)
+    {
+        for( int j=0; j<15; j++)
+        {
+            sum_v0 += abs(epi_3DV_v0(i,j)-epi_r_v0["bw"](i,j));
+            sum_v1 += abs(epi_3DV_v1(i,j)-epi_r_v1["bw"](i,j));
+        }   
+    }
+    
+    CPPUNIT_ASSERT(sum_v0<0.000001);
+    CPPUNIT_ASSERT(sum_v1<0.000001);
+    
+    sum_v0=0; sum_v1=0;
+    
+    //==========================================================================
+    // test CROSS epi access
+    //==========================================================================
+    lf = new OpenLF::lightfield::Lightfield();
+    CPPUNIT_ASSERT(lf->open(cfgnames["CROSS_wide_rgb"]));
+}
+
+
+
+
+
+void test_lightfield::test_loxel_access()
+{
+    
 }
 
 
