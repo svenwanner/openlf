@@ -20,6 +20,9 @@
 #include "OpenLF/lightfield/Lightfield.hpp"
 #include "OpenLF/image/utils.hpp"
 
+
+
+
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
@@ -901,5 +904,30 @@ view_2D OpenLF::lightfield::Lightfield::_getVerticalEpiChannel_4D(int h, int x, 
     } else
         throw OpenLF_Exception("Lightfield::_getHorizontalEpi_4D -> channel not available!");
 }
+
+OpenLF::lightfield::EpiIterator* OpenLF::lightfield::Lightfield::createEpiIterator() const
+{
+    return new OpenLF::lightfield::EpiIterator(this);
+}
+
+
+
+
+
+
+
+
+
+
+
+OpenLF::lightfield::EpiIterator::EpiIterator(const OpenLF::lightfield::Lightfield *lf) 
+{
+    this->lf = lf;
+}
+
+OpenLF::lightfield::EpiIterator::~EpiIterator() {
+}
+
+
 
 
