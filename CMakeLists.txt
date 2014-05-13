@@ -181,5 +181,6 @@ endif()
 if(BUILD_TEST)
   set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/bin/tests)
   add_subdirectory(tests)
+  enable_testing()
 endif()
 

@@ -13,8 +13,6 @@ if(BUILD_TEST_IMAGE)
 	    target_link_libraries(OpenLF_test_image libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY} )
 
 	add_dependencies(OpenLF_test_image Configure)
-
-	enable_testing()
 	add_test(OpenLF_test_image ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_image)
 endif()
 
@@ -27,8 +25,6 @@ if(BUILD_TEST_IMGPROC)
 	    target_link_libraries(OpenLF_test_imgproc libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
 
 	add_dependencies(OpenLF_test_imgproc Configure)
-
-	enable_testing()
 	add_test(OpenLF_test_imgproc ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_imgproc)
 endif()
 
@@ -41,8 +37,6 @@ if(BUILD_TEST_LIGHTFIELD_IO)
 	    target_link_libraries(OpenLF_test_lightfield_IO libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
 
 	add_dependencies(OpenLF_test_lightfield_IO Configure)
-
-	enable_testing()
 	add_test(OpenLF_test_lightfield_IO ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_lightfield_IO)
 endif()
 
@@ -55,8 +49,6 @@ if(BUILD_TEST_LIGHTFIELD)
 	    target_link_libraries(OpenLF_test_lightfield libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY})
 
 	add_dependencies(OpenLF_test_lightfield Configure)
-
-	enable_testing()
 	add_test(OpenLF_test_lightfield ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_lightfield)
 endif()
 
@@ -69,10 +61,9 @@ if(BUILD_TEST_CHANNEL)
 	    target_link_libraries(OpenLF_test_channel libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY}) 
 
 	add_dependencies(OpenLF_test_channel Configure)
-
-	enable_testing()
 	add_test(OpenLF_test_channel ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_channel)
 endif()
+
 
 
 	
