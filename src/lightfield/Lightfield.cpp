@@ -640,6 +640,102 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
+void OpenLF::lightfield::Lightfield::getHorizontalEpi(int y, int v, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img)
+{
+    if(hasRGB()) {
+        vigra::MultiArrayView<2,float> r = getHorizontalEpiChannel("r", y, v, focus);
+        vigra::MultiArrayView<2,float> g = getHorizontalEpiChannel("g", y, v, focus);
+        vigra::MultiArrayView<2,float> b = getHorizontalEpiChannel("b", y, v, focus);
+        
+        if(img.hasData()) {
+            if(img.shape() != r.shape())
+                throw OpenLF_Exception("Lightfield::getHorizontalEpi -> shape mismatch!");
+        }
+        else
+            img = vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >(r.shape());
+        
+        for(int y=0; y<r.shape()[1]; y++) {
+            for(int x=0; x<r.shape()[0]; x++) {
+                img(x,y)[0] = (vigra::UInt8)(r(x,y)*255);
+                img(x,y)[1] = (vigra::UInt8)(g(x,y)*255);
+                img(x,y)[2] = (vigra::UInt8)(b(x,y)*255);
+            }
+        }
+    }
+    else if(hasBW()) {
+        vigra::MultiArrayView<2,float> bw = getHorizontalEpiChannel("bw", y, v, focus);
+        
+        if(img.hasData()) 
+        {
+            if(img.shape() != bw.shape())
+                throw OpenLF_Exception("Lightfield::getHorizontalEpi -> shape mismatch!");
+        }
+        else
+            img = vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >(bw.shape());
+        
+        for(int y=0; y<bw.shape()[1]; y++) {
+            for(int x=0; x<bw.shape()[0]; x++) {
+                for(int c=0; c<3; c++)
+                    img(x,y)[c] = (vigra::UInt8)(bw(x,y)*255);
+            }
+        }
+    }
+    else throw OpenLF_Exception("Lightfield::getHorizontalEpi -> no suitable channel available!");
+}
+
+
+
+/*!
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+void OpenLF::lightfield::Lightfield::getVerticalEpi(int x, int h, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img)
+{
+    if(hasRGB()) {
+        vigra::MultiArrayView<2,float> r = getVerticalEpiChannel("r", x, h, focus);
+        vigra::MultiArrayView<2,float> g = getVerticalEpiChannel("g", x, h, focus);
+        vigra::MultiArrayView<2,float> b = getVerticalEpiChannel("b", x, h, focus);
+        
+        if(img.hasData()) {
+            if(img.shape() != r.shape())
+                throw OpenLF_Exception("Lightfield::getHorizontalEpi -> shape mismatch!");
+        }
+        else
+            img = vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >(r.shape());
+        
+        for(int y=0; y<r.shape()[1]; y++) {
+            for(int x=0; x<r.shape()[0]; x++) {
+                img(x,y)[0] = (vigra::UInt8)(r(x,y)*255);
+                img(x,y)[1] = (vigra::UInt8)(g(x,y)*255);
+                img(x,y)[2] = (vigra::UInt8)(b(x,y)*255);
+            }
+        }
+    }
+    else if(hasBW()) {
+        vigra::MultiArrayView<2,float> bw = getHorizontalEpiChannel("bw", x, h, focus);
+        
+        if(img.hasData()) 
+        {
+            if(img.shape() != bw.shape())
+                throw OpenLF_Exception("Lightfield::getHorizontalEpi -> shape mismatch!");
+        }
+        else
+            img = vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >(bw.shape());
+        
+        for(int y=0; y<bw.shape()[1]; y++) {
+            for(int x=0; x<bw.shape()[0]; x++) {
+                for(int c=0; c<3; c++)
+                    img(x,y)[c] = (vigra::UInt8)(bw(x,y)*255);
+            }
+        }
+    }
+    else throw OpenLF_Exception("Lightfield::getHorizontalEpi -> no suitable channel available!");
+}
+
+
+
+/*!
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
 vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getHorizontalEpiChannel(std::string channel_name, int y, int v, int focus)
 {
     vigra::MultiArrayView<2,float> tmp;
@@ -800,7 +896,7 @@ view_2D OpenLF::lightfield::Lightfield::_getVerticalEpiChannel_4D(int h, int x, 
         vigra::MultiArrayView<1, float> col = channels[channel_name].viewToColumn(h * imgWidth() + x);
         shape epi_shape = shape(cams_v(),imgHeight()-(cams_v()-1)*focus);
         strideTag stride = strideTag((imgHeight()-focus)*width(),col.stride()[0]);
-        return view_2D(epi_shape, stride, col.data() + offset);
+        return view_2D(epi_shape, stride, col.data() + offset).transpose();
         
     } else
         throw OpenLF_Exception("Lightfield::_getHorizontalEpi_4D -> channel not available!");

@@ -86,6 +86,10 @@ void test_lightfield::setUp() {
     imgnames["4D_wide_r_epi_h1"] = test_lf_4D_wide+"epi_h1.png";
     imgnames["4D_wide_r_epi_v0"] = test_lf_4D_wide+"epi_v0.png";
     imgnames["4D_wide_r_epi_v1"] = test_lf_4D_wide+"epi_v1.png";
+    imgnames["4D_wide_rgb_epi_h1"] = test_lf_4D_wide+"rgb_epi_h1.png";
+    imgnames["4D_wide_rgb_epi_v1"] = test_lf_4D_wide+"rgb_epi_v1.png";
+    imgnames["4D_wide_bw_epi_h1"] = test_lf_4D_wide+"bw_epi_h1.png";
+    imgnames["4D_wide_bw_epi_v1"] = test_lf_4D_wide+"bw_epi_v1.png";
 }
 
 void test_lightfield::tearDown() {
@@ -109,6 +113,15 @@ void test_lightfield::test_epi_access()
     map<string,OpenLF::image::ImageChannel> epi_r_v1;
     OpenLF::image::io::imread(imgnames["4D_wide_r_epi_v1"],epi_r_v1);
     
+    map<string,OpenLF::image::ImageChannel> rgb_epi_h1;
+    OpenLF::image::io::imread(imgnames["4D_wide_rgb_epi_h1"],rgb_epi_h1);
+    map<string,OpenLF::image::ImageChannel> rgb_epi_v1;
+    OpenLF::image::io::imread(imgnames["4D_wide_rgb_epi_v1"],rgb_epi_v1);
+    map<string,OpenLF::image::ImageChannel> bw_epi_h1;
+    OpenLF::image::io::imread(imgnames["4D_wide_bw_epi_h1"],bw_epi_h1);
+    map<string,OpenLF::image::ImageChannel> bw_epi_v1;
+    OpenLF::image::io::imread(imgnames["4D_wide_bw_epi_v1"],bw_epi_v1);
+    
     
     //==========================================================================
     // test 4D epi access
@@ -131,8 +144,8 @@ void test_lightfield::test_epi_access()
         {
             sum_h0 += abs(epi_h0(j,i)-epi_r_h0["bw"](j,i));
             sum_h1 += abs(epi_h1(j,i)-epi_r_h1["bw"](j,i));
-            sum_v0 += abs(epi_v0(i,j)-epi_r_v0["bw"](i,j));
-            sum_v1 += abs(epi_v1(i,j)-epi_r_v1["bw"](i,j));
+            sum_v0 += abs(epi_v0(j,i)-epi_r_v0["bw"](j,i));
+            sum_v1 += abs(epi_v1(j,i)-epi_r_v1["bw"](j,i));
         }   
     }
     
@@ -142,6 +155,48 @@ void test_lightfield::test_epi_access()
     CPPUNIT_ASSERT(sum_v1<0.00000001);
     
     sum_h0=0; sum_h1=0; sum_v0=0; sum_v1=0;
+    
+    
+    vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> > epi_h;
+    lf->getHorizontalEpi(24, 2, 1, epi_h);
+    
+    vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> > epi_v;
+    lf->getHorizontalEpi(32, 3, 1, epi_v);
+    
+    for( int i=0; i<5; i++)
+    {
+        for( int j=0; j<15; j++)
+        {
+            sum_h1 += abs(epi_h(j,i)[0]-255*rgb_epi_h1["r"](j,i));
+            sum_v1 += abs(epi_v(j,i)[0]-255*rgb_epi_v1["r"](j,i));
+        }   
+    }
+    
+    CPPUNIT_ASSERT(sum_h1<0.00000001);
+    CPPUNIT_ASSERT(sum_v1<0.00000001);
+    
+    sum_h1=0; sum_v1=0;
+    
+    lf = new OpenLF::lightfield::Lightfield();
+    CPPUNIT_ASSERT(lf->open(cfgnames["4D_wide_bw"]));
+    lf->getHorizontalEpi(24, 2, 1, epi_h);
+    
+    lf->getHorizontalEpi(32, 3, 1, epi_v);
+    
+    for( int i=0; i<5; i++)
+    {
+        for( int j=0; j<15; j++)
+        {
+            sum_h1 += abs(epi_h(j,i)[0]-255*bw_epi_h1["r"](j,i));
+            sum_v1 += abs(epi_v(j,i)[0]-255*bw_epi_v1["r"](j,i));
+        }   
+    }
+    
+    CPPUNIT_ASSERT(sum_h1<0.00000001);
+    CPPUNIT_ASSERT(sum_v1<0.00000001);
+    
+    sum_h1=0; sum_v1=0;
+    
     
     
     
@@ -177,15 +232,13 @@ void test_lightfield::test_epi_access()
     
     vigra::MultiArrayView<2,float> epi_3DV_v0 = lf->getVerticalEpiChannel("r",32,0,0);
     vigra::MultiArrayView<2,float> epi_3DV_v1 = lf->getVerticalEpiChannel("r",32,0,1);
-    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_3DV_v0.png",epi_3DV_v0);
-    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_3DV_v1.png",epi_3DV_v1);
     
-    for( int i=0; i<5; i++)
+    for( int i=0; i<15; i++)
     {
-        for( int j=0; j<15; j++)
+        for( int j=0; j<5; j++)
         {
-            sum_v0 += abs(epi_3DV_v0(j,i)-epi_r_v0["bw"](i,j));
-            sum_v1 += abs(epi_3DV_v1(j,i)-epi_r_v1["bw"](i,j));
+            sum_v0 += abs(epi_3DV_v0(i,j)-epi_r_v0["bw"](i,j));
+            sum_v1 += abs(epi_3DV_v1(i,j)-epi_r_v1["bw"](i,j));
         }   
     }
     
@@ -199,19 +252,12 @@ void test_lightfield::test_epi_access()
     //==========================================================================
     lf = new OpenLF::lightfield::Lightfield();
     CPPUNIT_ASSERT(lf->open(cfgnames["CROSS_wide_rgb"]));
-    
-    map< string,OpenLF::image::ImageChannel>* channels = lf->data();
-    OpenLF::image::io::imsave("/home/swanner/Desktop/cross.png",channels->operator []("r"));
-    
+       
      //get epi channel
     vigra::MultiArrayView<2,float> epi_Cross_h0 = lf->getHorizontalEpiChannel("r",24,2,0);
-    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_h0.png",epi_Cross_h0);
     vigra::MultiArrayView<2,float> epi_Cross_h1 = lf->getHorizontalEpiChannel("r",24,2,1);
-    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_h1.png",epi_Cross_h1);
     vigra::MultiArrayView<2,float> epi_Cross_v0 = lf->getVerticalEpiChannel("r",32,3,0);
-    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_v0.png",epi_Cross_v0);
     vigra::MultiArrayView<2,float> epi_Cross_v1 = lf->getVerticalEpiChannel("r",32,3,1);
-    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_v1.png",epi_Cross_v1);
      
     for( int i=0; i<5; i++)
     {
@@ -219,8 +265,8 @@ void test_lightfield::test_epi_access()
         {
             sum_h0 += abs(epi_Cross_h0(j,i)-epi_r_h0["bw"](j,i));
             sum_h1 += abs(epi_Cross_h1(j,i)-epi_r_h1["bw"](j,i));
-            sum_v0 += abs(epi_Cross_v0(j,i)-epi_r_v0["bw"](i,j));
-            sum_v1 += abs(epi_Cross_v1(j,i)-epi_r_v1["bw"](i,j));
+            sum_v0 += abs(epi_Cross_v0(j,i)-epi_r_v0["bw"](j,i));
+            sum_v1 += abs(epi_Cross_v1(j,i)-epi_r_v1["bw"](j,i));
         }   
     }
     

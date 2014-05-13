@@ -276,15 +276,35 @@ public:
      \param v vertical index
      \param img reference to a rgb uint8 MultiArray
     */
-    void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> &img);
+    void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> > &img);
+    
+    
+    //! get a horizontal epi of either gray value or rgb if available
+    /*!
+     \param y fixed row image domain index
+     \param v fixed vertical camera index
+     \param focus global shift parameter in pixel
+     \param img vigra rgb image reference
+    */
+    void getHorizontalEpi(int y, int v, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img);
+    
+    
+    //! get a horizontal epi of either gray value or rgb if available
+    /*!
+     \param y fixed row image domain index
+     \param v vertical camera index
+     \param focus global shift parameter in pixel
+     \param img vigra rgb image reference
+    */
+    void getVerticalEpi(int x, int h, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img);
     
     
     //! get a view to a horizontal epi of the channel specified
     /*!
      \param channel_name name of the channel to extract the epi from
-     \param y fixed row image domain index
-     \param v fixed horizontal camera index (default=0)
-     \param focus global shift paramter in pixel (default=0)
+     \param x fixed column image domain index
+     \param h fixed horizontal camera index (default=0)
+     \param focus global shift parameter in pixel (default=0)
     */
     vigra::MultiArrayView<2,float> getHorizontalEpiChannel(std::string channel_name, int y, int v=0,  int focus=0);
     
