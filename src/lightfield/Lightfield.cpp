@@ -901,3 +901,5 @@ view_2D OpenLF::lightfield::Lightfield::_getVerticalEpiChannel_4D(int h, int x, 
     } else
         throw OpenLF_Exception("Lightfield::_getHorizontalEpi_4D -> channel not available!");
 }
+
+

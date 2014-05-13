@@ -26,6 +26,7 @@
 #include "OpenLF/lightfield/Properties.hpp"
 #include "OpenLF/lightfield/DataHandler.hpp"
 #include "OpenLF/lightfield/FileHandler.hpp"
+#include "OpenLF/lightfield/EpiIterator.hpp"
 
 
 typedef vigra::Shape2 shape;
@@ -38,6 +39,7 @@ namespace OpenLF {
 class Lightfield {
     
 public:
+    friend class OpenLF::lightfield::EpiIterator;
     Lightfield();
     Lightfield(std::string filename);
     //Lightfield(const Lightfield& orig);
@@ -319,11 +321,8 @@ public:
     vigra::MultiArrayView<2,float> getVerticalEpiChannel(std::string channel_name, int x, int h=0, int focus=0);
     
     
-//    void getVerticalEpiChannel(int h, int x, string channel_name, vigra::MultiArrayView<2,float> &img);
-//    
-//    void getHorizontalEpi(int v, int y, int focus, vigra::MultiArray<2,float> &img);
-//    
-//    void getVerticalEpi(int h, int x, vigra::MultiArray<2,float> &img);
+
+    OpenLF::lightfield::EpiIterator *createEpiIterator() const;
     
 protected:
     std::map< std::string,OpenLF::image::ImageChannel> channels;  //!< map to store the light field channels
