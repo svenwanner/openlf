@@ -5,7 +5,11 @@ void LF_Viewer::createActions()
  {
     openAct = new QAction(QIcon(":/images/open.png"), tr("&Open..."), this);
     openAct->setShortcut(tr("Ctrl+O"));
-    connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
+    connect(openAct, SIGNAL(triggered()), this, SLOT(open_as_Widget()));
+
+    toggleInsideOutAct = new QAction(QIcon(":/images/open.png"), tr("&Open..."), this);
+    toggleInsideOutAct->setShortcut(tr("Ctrl+O"));
+    connect(toggleInsideOutAct, SIGNAL(triggered()), this, SLOT(open_as_Subwidget()));
 
     printAct = new QAction(QIcon(":/images/print.png"), tr("&Print..."), this);
     printAct->setShortcut(tr("Ctrl+P"));

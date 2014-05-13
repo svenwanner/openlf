@@ -1,29 +1,16 @@
 #include "LF_viewer.h"
 #include "ui_MainWindow.h"
 #include <QDockWidget>
-
+#include "LF_viewer_child.h"
 
 LF_Viewer::LF_Viewer()
  {
     ui->setupUi(this);
 
-    imageLabel = new QLabel;
-    imageLabel->setBackgroundRole(QPalette::Base);
-    imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    imageLabel->setScaledContents(true);
-
-    scrollArea = new QScrollArea;
-    scrollArea->setBackgroundRole(QPalette::Dark);
-    scrollArea->setWidget(imageLabel);
-    //setCentralWidget(scrollArea);
-
     mdiArea = new QMdiArea;
     mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setCentralWidget(mdiArea);
-
-    mdiArea->addSubWindow(scrollArea);
-
 
     createActions();
     createMenus();
@@ -81,6 +68,7 @@ void LF_Viewer::createToolBars()
     fileToolBar->addAction(zoomInAct);
     fileToolBar->addAction(zoomOutAct);
     fileToolBar->addAction(infoAct);
+    //fileToolBar->addAction(toggleInsideOutAct);
     fileToolBar->addAction(exitAct);
 
 }
@@ -90,10 +78,26 @@ void LF_Viewer::createStatusBar()
     statusBar()->showMessage(tr("Ready"));
 }
 
+/*
+MdiChild *MainWindow::activeMdiChild()
+ {
+    if (QMdiSubWindow *activeSubWindow = mdiArea->activeSubWindow())
+        return qobject_cast<MdiChild *>(activeSubWindow->widget());
+    return 0;
+}
 
+QMdiSubWindow *MainWindow::findMdiChild(const QString &fileName)
+ {
+    QString canonicalFilePath = QFileInfo(fileName).canonicalFilePath();
 
-
-
+    foreach (QMdiSubWindow *window, mdiArea->subWindowList())  {
+        MdiChild *mdiChild = qobject_cast<MdiChild *>(window->widget());
+        if (mdiChild->currentFile() == canonicalFilePath)
+            return window;
+    }
+    return 0;
+}
+*/
 
 
 

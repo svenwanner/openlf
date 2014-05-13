@@ -23,25 +23,27 @@ SOURCES += main.cpp \
            LF_dockWidgets.cpp \
            LF_viewer_child.cpp
 
-#LIBS = -L./../../build/lib -llibopenlf
-#LIBS += -L/usr/local/lib
-#LIBS += -L/usr/lib/X86_64-linux-gnu
+LIBS  = -L./../../build/lib -llibopenlf
+LIBS += -L/usr/local/lib
+LIBS += -L/usr/lib/X86_64-linux-gnu
 
-#LIBS += -lhdf5
-#LIBS += -lhdf5_cpp
-#LIBS += -lhdf5_hl
-#LIBS += -lhdf5_hl_cpp
+LIBS += -lhdf5
+LIBS += -lhdf5_cpp
+LIBS += -lhdf5_hl
+LIBS += -lhdf5_hl_cpp
 
-#LIBS += -lboost_iostreams
-#LIBS += -lboost_context
-#LIBS += -lboost_filesystem
-#LIBS += -lboost_system
+LIBS += -lboost_iostreams
+LIBS += -lboost_context
+LIBS += -lboost_filesystem
+LIBS += -lboost_system
 
-#LIBS += -lvigraimpex
+LIBS += -lvigraimpex
 
 HEADERS  += LF_viewer.h \
             LF_viewer_child.h
-#INCLUDEPATH += ./../../includes
+
+INCLUDEPATH += ./../../includes
+
 
 FORMS    += \
     MainWindow.ui

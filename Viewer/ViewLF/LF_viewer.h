@@ -11,10 +11,10 @@
 #include <QListWidget>
 #include <QPrintDialog>
 #include <QPrinter>
+#include <LF_viewer_child.h>
 
 #include <QtGui>
-
-//#include <lightfield/Lightfield.hpp>
+#include <OpenLF/lightfield/Lightfield.hpp>
 
 // Grafic Frontends
 namespace Ui{
@@ -29,7 +29,9 @@ public:
     LF_Viewer();
 
 private slots:
-    void open();
+    void open_as_Subwidget();
+    void open_as_Widget();
+    //void openLightField();
     void save();
     void saveAs();
     void print();
@@ -41,6 +43,8 @@ private slots:
     void info();
 
 private:
+
+    //OpenLF::lightfield::Lightfield *lf;
     Ui::MainWindow *ui;
 
     void createActions();
@@ -56,6 +60,10 @@ private:
     QScrollArea *scrollArea;
     double scaleFactor;
 
+    LF_Viewer_Child *activeMdiChild();
+    QMdiSubWindow *findMdiChild(const QString &fileName);
+
+
 #ifndef QT_NO_PRINTER
     QPrinter printer;
 #endif
@@ -64,6 +72,7 @@ private:
     QAction *saveAct;
     QAction *saveAsAct;
     QAction *infoAct;
+    QAction *toggleInsideOutAct;
     QAction *printAct;
     QAction *exitAct;
     QAction *zoomInAct;

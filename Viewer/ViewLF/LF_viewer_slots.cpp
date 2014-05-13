@@ -2,29 +2,7 @@
 #include <QMessageBox>
 #include <QPrinter>
 #include <QPrintDialog>
-
-/*void Viewer::openLightField() {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Files (*.lf *.h5)"));
-    ui->debugLabel->setText(QString("Try to open file: ")+fileName);
-
-    lf = OpenLF::lightfield::Lightfield(fileName.toStdString());
-
-    int w = lf.width();
-    int h = lf.height();
-    int ch = lf.cams_h();
-    int cv = lf.cams_v();
-
-    QString dbg = "loaded LightField of size: ("+QString::number(ch)+","+QString::number(cv)+","+QString::number(w)+","+QString::number(h)+")";
-    ui->debugLabel->setText(dbg);
-}
-
-
-
-    statusBar()->showMessage(tr("Ready"), 2000);
-#endif
-}
-
-*/
+#include "LF_viewer_child.h"
 
 
 
@@ -138,30 +116,32 @@ void LF_Viewer::saveAs()
 }
 
 
-void LF_Viewer::open()
- {
-    QString fileName = QFileDialog::getOpenFileName(this,
-                                    tr("Open File"), QDir::currentPath());
-    if (!fileName.isEmpty())  {
-        QImage image(fileName);
-        if (image.isNull())  {
-            QMessageBox::information(this, tr("Image Viewer"),
-                                     tr("Cannot load %1.").arg(fileName));
-            return;
-        }
-        imageLabel->setPixmap(QPixmap::fromImage(image));
-        scaleFactor = 1.0;
-
-        printAct->setEnabled(true);
-        fitToWindowAct->setEnabled(true);
-        updateActions();
-
-        if (!fitToWindowAct->isChecked())
-            imageLabel->adjustSize();
-    }
-
-
-
-
-
+void LF_Viewer::open_as_Subwidget()
+{
+  LF_Viewer_Child *test = new LF_Viewer_Child();
+  mdiArea->addSubWindow(test->scrollArea);
+  //if (activeMdiChild()) cout << "test" << endl;
+  test->open();
 }
+
+void LF_Viewer::open_as_Widget()
+ {
+   LF_Viewer_Child *test = new LF_Viewer_Child();
+   test->open();
+}
+
+
+/*void LF_Viewer::openLightField() {
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Files (*.lf *.h5)"));
+    ui->debugLabel->setText(QString("Try to open file: ")+fileName);
+
+    lf = new OpenLF::lightfield::Lightfield(fileName.toStdString());
+
+    int w = lf->width();
+    int h = lf->height();
+    int ch = lf->cams_h();
+    int cv = lf->cams_v();
+
+    QString dbg = "loaded LightField of size: ("+QString::number(ch)+","+QString::number(cv)+","+QString::number(w)+","+QString::number(h)+")";
+    ui->debugLabel->setText(dbg);
+}*/
