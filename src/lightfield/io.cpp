@@ -599,7 +599,8 @@ bool OpenLF::lightfield::io::load_cross_structure( std::vector<std::string> fnam
             properties->set_field("height",height);
         }
         
-        int cv_index = cams_h/2;
+        int cv_v_index = cams_v/2;
+        int cv_h_index = cams_h/2;
         
         int lf_width=0;
         int lf_height=0;
@@ -660,8 +661,8 @@ bool OpenLF::lightfield::io::load_cross_structure( std::vector<std::string> fnam
                 try {
                             
                     // load image infos from fname_list
-                    if(v==cv_index) {
-                        vigra::ImageImportInfo info_bw(fname_list[cv_index].c_str());
+                    if(v==cv_v_index) {
+                        vigra::ImageImportInfo info_bw(fname_list[cv_h_index].c_str());
                         
                         // uint image to import data from file
                         vigra::MultiArray<2, vigra::UInt8> in(info_bw.width(), info_bw.height());
@@ -775,8 +776,8 @@ bool OpenLF::lightfield::io::load_cross_structure( std::vector<std::string> fnam
                 try {
                             
                     // load image infos from fname_list
-                    if(v==cv_index) {
-                        vigra::ImageImportInfo info_rgb(fname_list[cv_index].c_str());
+                    if(v==cv_v_index) {
+                        vigra::ImageImportInfo info_rgb(fname_list[cv_h_index].c_str());
                         
                         // uint image to import data from file
                         vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in_rgb(info_rgb.width(), info_rgb.height());

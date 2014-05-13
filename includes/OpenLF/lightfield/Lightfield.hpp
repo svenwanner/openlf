@@ -322,6 +322,25 @@ protected:
     */
     vigra::MultiArrayView<2,float> _getHorizontalEpiChannel_4D(int v, int y, std::string channel_name, int focus);
     
+    
+    //! get a view to a vertical epi of the channel specified for the 3DV lightfield case
+    /*!
+     \param x fixed column image domain index
+     \param channel_name name of the channel to extract the epi from
+     \param focus global shift paramter in pixel
+    */
+    vigra::MultiArrayView<2,float> _getVerticalEpiChannel_3DV(int x, std::string channel_name, int focus);
+    
+    
+    //! get a view to a vertical epi of the channel specified for the 3DV lightfield case
+    /*!
+     \param x fixed column image domain index
+     \param channel_name name of the channel to extract the epi from
+     \param focus global shift paramter in pixel
+    */
+    vigra::MultiArrayView<2,float> _getVerticalEpiChannel_Cross(int x, std::string channel_name, int focus);
+    
+    
     //! get a view to a vertical epi of the channel specified for the 4D lightfield case
     /*!
      \param h fixed horizontal camera index

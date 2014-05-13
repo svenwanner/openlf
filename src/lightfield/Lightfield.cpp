@@ -690,13 +690,13 @@ vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getHorizontalEpiC
     }
     else if(type()==LF_3DV) {
         if(x>=0 && x<imgWidth())
-            tmp = _getHorizontalEpiChannel_4D(0,x,channel_name,focus);
+            tmp = _getVerticalEpiChannel_3DV(x,channel_name,focus);
         else
             throw OpenLF_Exception("Lightfield::getVerticalEpiChannel -> out of bounce!");
     }
     else if(type()==LF_CROSS) {
         if(x>=0 && x<imgWidth())
-            tmp = _getHorizontalEpiChannel_4D(1,x,channel_name,focus);
+            tmp = _getVerticalEpiChannel_Cross(x,channel_name,focus);
         else
             throw OpenLF_Exception("Lightfield::getVerticalEpiChannel -> out of bounce!");
     }
@@ -730,6 +730,59 @@ view_2D OpenLF::lightfield::Lightfield::_getHorizontalEpiChannel_4D(int v, int y
         throw OpenLF_Exception("Lightfield::_getHorizontalEpi_4D -> channel not available!");
 }
 
+
+/*!
+This is the efficient variant of accessing epipolar plane images due to the concatenated memory access.
+Accessing the vertical epipolar plane images using _getVerticalEpiChannel_4D is inefficient compared to this
+due to the column accessing. To achieve the same efficiency for vertical access transpose the data and use
+the horizontal access. 
+
+\author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+view_2D OpenLF::lightfield::Lightfield::_getVerticalEpiChannel_3DV(int x, std::string channel_name, int focus) 
+{
+    // if channel exist
+    if (hasChannel(channel_name)) {
+        
+        int offset = (cams_v()-1)*focus;
+        vigra::MultiArrayView<1, float> row = channels[channel_name].viewToRow(x);
+        shape epi_shape = shape(imgHeight()-(cams_v()-1)*focus,cams_v());
+        strideTag stride = strideTag(1, imgHeight() - focus);
+        return view_2D(epi_shape, stride, row.data() + offset);        
+    } else
+        throw OpenLF_Exception("Lightfield::_getHorizontalEpi_3DV -> channel not available!");
+}
+
+
+/*!
+This is the efficient variant of accessing epipolar plane images due to the concatenated memory access.
+Accessing the vertical epipolar plane images using _getVerticalEpiChannel_4D is inefficient compared to this
+due to the column accessing. To achieve the same efficiency for vertical access transpose the data and use
+the horizontal access. 
+
+\author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+view_2D OpenLF::lightfield::Lightfield::_getVerticalEpiChannel_Cross(int x, std::string channel_name, int focus) 
+{
+    // if channel exist
+    if (hasChannel(channel_name)) {
+        
+//        int offset = (cams_v()-1)*focus;
+//        //vigra::MultiArrayView<2, float> row = channels[channel_name].viewToROI(0, imgHeight()+x, cams_v()*imgHeight());
+//        vigra::MultiArrayView<1, float> row = channels[channel_name].viewToRow(imgHeight()+x);
+//        shape epi_shape = shape(imgHeight()-(cams_v()-1)*focus,cams_v());
+//        strideTag stride = strideTag(1, imgHeight() - focus);
+//        return view_2D(epi_shape, stride, row.data() + offset);
+        
+        int offset = (cams_v()-1)*focus;
+        vigra::MultiArrayView<1, float> row = channels[channel_name].viewToRow(imgHeight() + x);
+        shape epi_shape = shape(imgHeight()-(cams_v()-1)*focus,cams_v());
+        strideTag stride = strideTag(1, imgHeight() - focus);
+        return view_2D(epi_shape, stride, row.data() + offset);
+        
+    } else
+        throw OpenLF_Exception("Lightfield::_getHorizontalEpi_3DV -> channel not available!");
+}
 
 
 /*!

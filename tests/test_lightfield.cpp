@@ -136,10 +136,10 @@ void test_lightfield::test_epi_access()
         }   
     }
     
-    CPPUNIT_ASSERT(sum_h0<0.000001);
-    CPPUNIT_ASSERT(sum_h1<0.000001);
-    CPPUNIT_ASSERT(sum_v0<0.000001);
-    CPPUNIT_ASSERT(sum_v1<0.000001);
+    CPPUNIT_ASSERT(sum_h0<0.00000001);
+    CPPUNIT_ASSERT(sum_h1<0.00000001);
+    CPPUNIT_ASSERT(sum_v0<0.00000001);
+    CPPUNIT_ASSERT(sum_v1<0.00000001);
     
     sum_h0=0; sum_h1=0; sum_v0=0; sum_v1=0;
     
@@ -152,10 +152,7 @@ void test_lightfield::test_epi_access()
     CPPUNIT_ASSERT(lf->open(cfgnames["3DH_wide_rgb"]));
     
     vigra::MultiArrayView<2,float> epi_3DH_h0 = lf->getHorizontalEpiChannel("r",24,0,0);
-    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_h.png",epi_3DH_h0);
-    
     vigra::MultiArrayView<2,float> epi_3DH_h1 = lf->getHorizontalEpiChannel("r",24,0,1);
-    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_h1.png",epi_3DH_h1);
     
     for( int i=0; i<5; i++)
     {
@@ -166,8 +163,8 @@ void test_lightfield::test_epi_access()
         }   
     }
     
-    CPPUNIT_ASSERT(sum_h0<0.000001);
-    CPPUNIT_ASSERT(sum_h1<0.000001);
+    CPPUNIT_ASSERT(sum_h0<0.00000001);
+    CPPUNIT_ASSERT(sum_h1<0.00000001);
     
     sum_h0=0; sum_h1=0;
     
@@ -179,24 +176,21 @@ void test_lightfield::test_epi_access()
     CPPUNIT_ASSERT(lf->open(cfgnames["3DV_wide_rgb"]));
     
     vigra::MultiArrayView<2,float> epi_3DV_v0 = lf->getVerticalEpiChannel("r",32,0,0);
-    cout << "epi_3DV_v0 shape:" << epi_3DV_v0.shape() << endl;
-    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_v.png",epi_3DV_v0);
-    
     vigra::MultiArrayView<2,float> epi_3DV_v1 = lf->getVerticalEpiChannel("r",32,0,1);
-    cout << "epi_3DV_v1 shape:" << epi_3DV_v1.shape() << endl;
-    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_v1.png",epi_3DV_v1);
+    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_3DV_v0.png",epi_3DV_v0);
+    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_3DV_v1.png",epi_3DV_v1);
     
     for( int i=0; i<5; i++)
     {
         for( int j=0; j<15; j++)
         {
-            sum_v0 += abs(epi_3DV_v0(i,j)-epi_r_v0["bw"](i,j));
-            sum_v1 += abs(epi_3DV_v1(i,j)-epi_r_v1["bw"](i,j));
+            sum_v0 += abs(epi_3DV_v0(j,i)-epi_r_v0["bw"](i,j));
+            sum_v1 += abs(epi_3DV_v1(j,i)-epi_r_v1["bw"](i,j));
         }   
     }
     
-    CPPUNIT_ASSERT(sum_v0<0.000001);
-    CPPUNIT_ASSERT(sum_v1<0.000001);
+    CPPUNIT_ASSERT(sum_v0<0.00000001);
+    CPPUNIT_ASSERT(sum_v1<0.00000001);
     
     sum_v0=0; sum_v1=0;
     
@@ -205,6 +199,35 @@ void test_lightfield::test_epi_access()
     //==========================================================================
     lf = new OpenLF::lightfield::Lightfield();
     CPPUNIT_ASSERT(lf->open(cfgnames["CROSS_wide_rgb"]));
+    
+    map< string,OpenLF::image::ImageChannel>* channels = lf->data();
+    OpenLF::image::io::imsave("/home/swanner/Desktop/cross.png",channels->operator []("r"));
+    
+     //get epi channel
+    vigra::MultiArrayView<2,float> epi_Cross_h0 = lf->getHorizontalEpiChannel("r",24,2,0);
+    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_h0.png",epi_Cross_h0);
+    vigra::MultiArrayView<2,float> epi_Cross_h1 = lf->getHorizontalEpiChannel("r",24,2,1);
+    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_h1.png",epi_Cross_h1);
+    vigra::MultiArrayView<2,float> epi_Cross_v0 = lf->getVerticalEpiChannel("r",32,3,0);
+    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_v0.png",epi_Cross_v0);
+    vigra::MultiArrayView<2,float> epi_Cross_v1 = lf->getVerticalEpiChannel("r",32,3,1);
+    OpenLF::image::io::imsave("/home/swanner/Desktop/epi_v1.png",epi_Cross_v1);
+     
+    for( int i=0; i<5; i++)
+    {
+        for( int j=0; j<15; j++)
+        {
+            sum_h0 += abs(epi_Cross_h0(j,i)-epi_r_h0["bw"](j,i));
+            sum_h1 += abs(epi_Cross_h1(j,i)-epi_r_h1["bw"](j,i));
+            sum_v0 += abs(epi_Cross_v0(j,i)-epi_r_v0["bw"](i,j));
+            sum_v1 += abs(epi_Cross_v1(j,i)-epi_r_v1["bw"](i,j));
+        }   
+    }
+    
+    CPPUNIT_ASSERT(sum_h0<0.00000001);
+    CPPUNIT_ASSERT(sum_h1<0.00000001);
+    CPPUNIT_ASSERT(sum_v0<0.00000001);
+    CPPUNIT_ASSERT(sum_v1<0.00000001);
 }
 
 
@@ -213,7 +236,37 @@ void test_lightfield::test_epi_access()
 
 void test_lightfield::test_loxel_access()
 {
+    OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield();
+    CPPUNIT_ASSERT(lf->open(cfgnames["4D_wide_rgb"]));
     
+    float r,g,b;
+    
+    r = lf->getLoxel(3,2,9,7,"r");
+    g = lf->getLoxel(3,2,9,7,"g");
+    b = lf->getLoxel(3,2,9,7,"b");
+    
+    CPPUNIT_ASSERT(r*255==62);
+    CPPUNIT_ASSERT(g*255==74);
+    CPPUNIT_ASSERT(b*255==26);
+    
+    r = lf->getLoxel(3,2,31,36,"r");
+    g = lf->getLoxel(3,2,31,36,"g");
+    b = lf->getLoxel(3,2,31,36,"b");
+    
+    CPPUNIT_ASSERT(r*255==49);
+    CPPUNIT_ASSERT(g*255==30);
+    CPPUNIT_ASSERT(b*255==11);
+    
+    vector<float> rgb;
+    vector<string> chls {"r","b"};
+    
+    lf->getLoxel(3,2,9,7,chls,rgb);
+    CPPUNIT_ASSERT(rgb[0]*255==62);
+    CPPUNIT_ASSERT(rgb[1]*255==26);
+    
+    lf->getLoxel(3,2,31,36,chls,rgb);
+    CPPUNIT_ASSERT(rgb[0]*255==49);
+    CPPUNIT_ASSERT(rgb[1]*255==11);
 }
 
 
