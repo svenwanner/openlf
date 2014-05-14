@@ -100,6 +100,30 @@ void test_lightfield::tearDown() {
 
 
 
+void test_lightfield::test_epi_iterator()
+{
+    OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield();
+    CPPUNIT_ASSERT(lf->open(cfgnames["4D_wide_rgb"]));
+    
+    OpenLF::lightfield::EpiIterator *iter = lf->createEpiIterator(VERTICAL);
+    
+    int n=0;
+    for(iter->first(); !iter->end(); iter->next())
+    {
+        vigra::MultiArrayView<2,float> epi = iter->get("r",1);
+        string fname;
+        OpenLF::helpers::insert_leading_zeros("/home/swanner/Desktop/tmp/",n,".png",fname);
+        cout << fname << endl;
+        CPPUNIT_ASSERT(OpenLF::image::io::imsave(fname,epi));
+        n++;
+    }
+    
+    delete iter;
+}
+
+
+
+
 
 void test_lightfield::test_epi_access()
 {

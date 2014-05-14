@@ -327,7 +327,7 @@ public:
     
     
 
-    EpiIterator* createEpiIterator() const;
+    EpiIterator* createEpiIterator(DIRECTION direction);
     
 protected:
     std::map< std::string,OpenLF::image::ImageChannel> channels;  //!< map to store the light field channels
@@ -389,22 +389,26 @@ protected:
 
 class EpiIterator {
     
-    const Lightfield *lf;
+    Lightfield *lf;
+    DIRECTION direction;
+    int camera_index;
+    int epi_index;
+    bool finished;
     
 public:
-    EpiIterator(const Lightfield *lf);
-    EpiIterator(const EpiIterator& orig);
+    EpiIterator(Lightfield *lf, DIRECTION direction);
+    //EpiIterator(const EpiIterator& orig);
     
     void first();
     void next();
     bool end();
-    vigra::MultiArrayView<2,float> get(std::string channel);
+    
+    view_2D get(std::string channel_name, int focus);
     
     
     
     virtual ~EpiIterator();
-private:
-
+    
 };
 
 
