@@ -4,6 +4,8 @@ OPTION(BUILD_TEST_CHANNEL "Build test_channel" ON)
 OPTION(BUILD_TEST_LIGHTFIELD_IO "Build test_lightfield_io" ON)
 OPTION(BUILD_TEST_LIGHTFIELD "Build test_lightfield" ON)
 
+enable_testing()
+
 if(BUILD_TEST_IMAGE)
 	#TEST: test_image 
 	    add_executable(OpenLF_test_image
