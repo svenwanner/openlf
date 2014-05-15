@@ -539,7 +539,7 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
         vigra::MultiArrayView<2,float> img_b;
         getImage(h,v,"b",img_b);
         
-        OpenLF::image::utils::mergeChannels(img_r,img_b,img_g,img);
+        OpenLF::image::utils::mergeChannels(img_r,img_g,img_b,img);
     }
     else if(hasBW())
     {
