@@ -43,7 +43,6 @@ protected:
     virtual void compute() = 0;
     virtual void postcompute() = 0;
     
-    std::map<std::string,view_2D*> data;
     
 private:
     void cleanup();
