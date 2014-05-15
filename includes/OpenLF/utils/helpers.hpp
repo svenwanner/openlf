@@ -30,6 +30,17 @@ namespace OpenLF {
         
 //! find filetype.
 /*!
+ Inserts a number with leading zeros in between two strings
+ \param s1 string 1
+ \param index integer to be inserted 
+ \param s2 string 2
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+void insert_leading_zeros(std::string s1, int index, std::string s2, std::string &result);
+        
+
+//! find filetype.
+/*!
  Checks filepath string for filetype and returns it 
  \param filepath 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)

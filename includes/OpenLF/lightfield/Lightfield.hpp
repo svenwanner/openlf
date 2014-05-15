@@ -34,10 +34,17 @@ typedef vigra::MultiArrayView<2, float> view_2D;
 
 namespace OpenLF { 
     namespace lightfield { 
+        
+ 
+        
+class EpiIterator;
+        
+        
 
 class Lightfield {
     
 public:
+    friend class EpiIterator;
     Lightfield();
     Lightfield(std::string filename);
     //Lightfield(const Lightfield& orig);
@@ -319,11 +326,8 @@ public:
     vigra::MultiArrayView<2,float> getVerticalEpiChannel(std::string channel_name, int x, int h=0, int focus=0);
     
     
-//    void getVerticalEpiChannel(int h, int x, string channel_name, vigra::MultiArrayView<2,float> &img);
-//    
-//    void getHorizontalEpi(int v, int y, int focus, vigra::MultiArray<2,float> &img);
-//    
-//    void getVerticalEpi(int h, int x, vigra::MultiArray<2,float> &img);
+
+    EpiIterator* createEpiIterator(DIRECTION direction);
     
 protected:
     std::map< std::string,OpenLF::image::ImageChannel> channels;  //!< map to store the light field channels
@@ -371,6 +375,44 @@ protected:
     vigra::MultiArrayView<2,float> _getVerticalEpiChannel_4D(int h, int x, std::string channel_name, int focus);
     
 };
+
+
+
+
+
+
+
+
+
+
+
+
+class EpiIterator {
+    
+    Lightfield *lf;
+    DIRECTION direction;
+    int camera_index;
+    int epi_index;
+    bool finished;
+    
+public:
+    EpiIterator(Lightfield *lf, DIRECTION direction);
+    //EpiIterator(const EpiIterator& orig);
+    
+    void first();
+    void next();
+    bool end();
+    
+    view_2D get(std::string channel_name, int focus);
+    
+    
+    
+    virtual ~EpiIterator();
+    
+};
+
+
+
 
 }}
 #endif	/* LIGHTFIELD_HPP */

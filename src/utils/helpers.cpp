@@ -19,6 +19,18 @@
 
 #include "OpenLF/utils/helpers.hpp"
 
+void OpenLF::helpers::insert_leading_zeros(std::string s1, int index, std::string s2, std::string &result)
+{
+    result = "";
+    result += s1;
+    
+    std::ostringstream ss;
+    ss << std::setw(4) << std::setfill('0') << index;
+    result += ss.str();
+    result += s2;
+}
+
+
 std::string OpenLF::helpers::find_ftype(std::string filepath) 
 {
     std::vector<std::string> splited;

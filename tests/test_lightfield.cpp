@@ -90,12 +90,172 @@ void test_lightfield::setUp() {
     imgnames["4D_wide_rgb_epi_v1"] = test_lf_4D_wide+"rgb_epi_v1.png";
     imgnames["4D_wide_bw_epi_h1"] = test_lf_4D_wide+"bw_epi_h1.png";
     imgnames["4D_wide_bw_epi_v1"] = test_lf_4D_wide+"bw_epi_v1.png";
+    
+    fnames["Horizontal_EpiIterTest_4D"] = test_lf_4D_wide+"horizontal_epiIterTest.txt";
+    fnames["Vertical_EpiIterTest_4D"] = test_lf_4D_wide+"vertical_epiIterTest.txt";
+    fnames["Horizontal_EpiIterTest_3DH"] = test_lf_3DH_wide+"horizontal_epiIterTest.txt";
+    fnames["Vertical_EpiIterTest_3DV"] = test_lf_3DV_wide+"vertical_epiIterTest.txt";
+    fnames["Horizontal_EpiIterTest_CROSS"] = test_lf_CROSS_wide+"horizontal_epiIterTest.txt";
+    fnames["Vertical_EpiIterTest_CROSS"] = test_lf_CROSS_wide+"vertical_epiIterTest.txt";
 }
 
 void test_lightfield::tearDown() {
     cout << "\n\ntest suite runs through!" << endl;
 }
 
+
+
+
+
+void test_lightfield::test_epi_iterator()
+{
+    
+    //==========================================================================
+    // test 4D 
+    //==========================================================================
+
+    OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield();
+    CPPUNIT_ASSERT(lf->open(cfgnames["4D_wide_rgb"]));
+    
+    string line;
+    ifstream gt_h;
+    ifstream gt_v;
+    gt_h.open (fnames["Horizontal_EpiIterTest_4D"], ios::in);
+    gt_v.open (fnames["Vertical_EpiIterTest_4D"], ios::in);
+    
+    if (gt_h.is_open()) { 
+        OpenLF::lightfield::EpiIterator *iter_h = lf->createEpiIterator(HORIZONTAL);
+
+        for(iter_h->first(); !iter_h->end(); iter_h->next())
+        {
+            getline (gt_h,line);
+            vigra::MultiArrayView<2,float> epi = iter_h->get("r",1); 
+            stringstream ss;
+            ss << 255*epi(0,0);
+            CPPUNIT_ASSERT(line==ss.str());
+        }
+        delete iter_h;
+    }
+    gt_h.close();
+    
+    if (gt_v.is_open()) {
+        OpenLF::lightfield::EpiIterator *iter_v = lf->createEpiIterator(VERTICAL);
+
+        for(iter_v->first(); !iter_v->end(); iter_v->next())
+        {
+            getline (gt_v,line);
+            vigra::MultiArrayView<2,float> epi = iter_v->get("r",1);  
+            stringstream ss;
+            ss << 255*epi(0,0);
+            CPPUNIT_ASSERT(line==ss.str());
+        }
+        delete iter_v;
+    }
+    gt_v.close();
+    
+    
+    
+    
+    
+    //==========================================================================
+    // test 3DH
+    //==========================================================================
+    
+    lf = new OpenLF::lightfield::Lightfield();
+    CPPUNIT_ASSERT(lf->open(cfgnames["3DH_wide_rgb"]));
+    
+    gt_h.open (fnames["Horizontal_EpiIterTest_3DH"], ios::in);
+    
+    if (gt_h.is_open()) { 
+        OpenLF::lightfield::EpiIterator *iter_h = lf->createEpiIterator(HORIZONTAL);
+
+        for(iter_h->first(); !iter_h->end(); iter_h->next())
+        {
+            getline (gt_h,line);
+            vigra::MultiArrayView<2,float> epi = iter_h->get("r",1);
+            
+            stringstream ss;
+            ss << 255*epi(0,0);
+            CPPUNIT_ASSERT(line==ss.str());
+        }
+        delete iter_h;
+    }
+    gt_h.close();
+    
+    
+    
+    //==========================================================================
+    // test 3DV
+    //==========================================================================
+    
+    lf = new OpenLF::lightfield::Lightfield();
+    CPPUNIT_ASSERT(lf->open(cfgnames["3DV_wide_rgb"]));
+    
+    gt_v.open (fnames["Vertical_EpiIterTest_3DV"], ios::in);
+    
+    if (gt_h.is_open()) { 
+        OpenLF::lightfield::EpiIterator *iter_h = lf->createEpiIterator(VERTICAL);
+        
+        for(iter_h->first(); !iter_h->end(); iter_h->next())
+        {
+            getline (gt_h,line);
+            vigra::MultiArrayView<2,float> epi = iter_h->get("r",1);  
+            
+            stringstream ss;
+            ss << 255*epi(0,0);
+            CPPUNIT_ASSERT(line==ss.str());
+        }
+        delete iter_h;
+    }
+    gt_v.close();
+    
+    
+    
+    
+    //==========================================================================
+    // test CROSS
+    //==========================================================================
+    
+    
+    lf = new OpenLF::lightfield::Lightfield();
+    CPPUNIT_ASSERT(lf->open(cfgnames["CROSS_wide_rgb"]));
+
+    gt_h.open (fnames["Horizontal_EpiIterTest_CROSS"], ios::in);
+    gt_v.open (fnames["Vertical_EpiIterTest_CROSS"], ios::in);
+    
+    if (gt_h.is_open()) { 
+        OpenLF::lightfield::EpiIterator *iter_h = lf->createEpiIterator(HORIZONTAL);
+
+        for(iter_h->first(); !iter_h->end(); iter_h->next())
+        {
+            getline (gt_h,line);
+            vigra::MultiArrayView<2,float> epi = iter_h->get("r",1);  
+
+            stringstream ss;
+            ss << 255*epi(0,0);
+            CPPUNIT_ASSERT(line==ss.str());
+        }
+        delete iter_h;
+    }
+    gt_h.close();
+
+     
+    if (gt_v.is_open()) {
+        OpenLF::lightfield::EpiIterator *iter_v = lf->createEpiIterator(VERTICAL);
+
+        for(iter_v->first(); !iter_v->end(); iter_v->next())
+        {
+            getline (gt_v,line);
+            vigra::MultiArrayView<2,float> epi = iter_v->get("r",1);  
+
+            stringstream ss;
+            ss << 255*epi(0,0);
+            CPPUNIT_ASSERT(line==ss.str());
+        }
+        delete iter_v;
+    }
+    gt_v.close();
+}
 
 
 

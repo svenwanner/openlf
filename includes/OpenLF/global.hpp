@@ -37,7 +37,9 @@
 #include <stdexcept>
 #include <iostream>
 #include <stdlib.h>
+#include <sstream>
 #include <stdio.h>
+#include <fstream>
 #include <limits> 
 #include <vector>
 #include <string>
@@ -80,6 +82,7 @@
 
 
 typedef enum {NONE,LF_4D,LF_3DH,LF_3DV,LF_CROSS} LF_TYPE;
+typedef enum {HORIZONTAL,VERTICAL} DIRECTION;
 
 struct OpenLF_Exception : public std::exception
 {

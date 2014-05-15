@@ -13,7 +13,6 @@
 
 
 #include "settings.hpp"
-
 #include "OpenLF/debug.hpp"
 #include "OpenLF/global.hpp"
 #include "OpenLF/image/io.hpp"
@@ -21,15 +20,16 @@
 #include "OpenLF/utils/helpers.hpp"
 #include "OpenLF/lightfield/io.hpp"
 #include "OpenLF/image/Channel.hpp"
+#include "OpenLF/lightfield/Lightfield.hpp"
 #include "OpenLF/lightfield/Properties.hpp"
 #include "OpenLF/lightfield/FileHandler.hpp"
-#include "OpenLF/lightfield/Lightfield.hpp"
 
 using namespace std;
 
 class test_lightfield : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_lightfield);
     
+    CPPUNIT_TEST(test_epi_iterator);
     CPPUNIT_TEST(test_epi_access);
     CPPUNIT_TEST(test_loxel_access);
     CPPUNIT_TEST(test_instantiate_Lightfield);
@@ -43,7 +43,7 @@ public:
     void tearDown();
 
 private:
-    
+    void test_epi_iterator();
     void test_epi_access();
     void test_loxel_access();
     void test_instantiate_Lightfield();
@@ -51,6 +51,7 @@ private:
     
     map<string,string> cfgnames;
     map<string,string> imgnames;
+    map<string,string> fnames;
 };
 
 #endif	/* TEST_LIGHTFIELD_HPP */

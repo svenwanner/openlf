@@ -20,6 +20,9 @@
 #include "OpenLF/lightfield/Lightfield.hpp"
 #include "OpenLF/image/utils.hpp"
 
+
+
+
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
@@ -901,3 +904,167 @@ view_2D OpenLF::lightfield::Lightfield::_getVerticalEpiChannel_4D(int h, int x, 
     } else
         throw OpenLF_Exception("Lightfield::_getHorizontalEpi_4D -> channel not available!");
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*!
+\author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+OpenLF::lightfield::EpiIterator::EpiIterator(OpenLF::lightfield::Lightfield *lf, DIRECTION direction) 
+{
+    this->lf = lf;
+    this->direction = direction;
+    finished = false;
+}
+
+
+/*!
+\author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+OpenLF::lightfield::EpiIterator::~EpiIterator() 
+{
+    
+}
+
+
+/*!
+\author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+OpenLF::lightfield::EpiIterator* OpenLF::lightfield::Lightfield::createEpiIterator(DIRECTION direction)
+{
+    return new OpenLF::lightfield::EpiIterator(this,direction);
+}
+
+
+/*!
+\author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+void OpenLF::lightfield::EpiIterator::first()
+{
+    camera_index = 0;
+    epi_index = 0;
+}
+
+
+/*!
+\author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+void OpenLF::lightfield::EpiIterator::next()
+{
+    epi_index++;
+    
+    if(lf->type() == LF_4D)
+    {
+        if(direction == VERTICAL)
+        {
+            if(epi_index >= lf->imgWidth())
+            {
+                epi_index = 0;
+                camera_index++;
+            }
+            if(camera_index >= lf->cams_h())
+                finished = true;
+        }
+        else if(direction == HORIZONTAL)
+        {
+            if(epi_index >= lf->imgHeight())
+            {
+                epi_index = 0;
+                camera_index++;
+            }
+            if(camera_index >= lf->cams_v())
+                finished = true;
+        }
+    }
+    if(lf->type() == LF_3DH)
+    {
+        if(direction == VERTICAL)
+        {
+            throw OpenLF_Exception("EpiIterator::get -> unknown direction!");
+        }
+        else if(direction == HORIZONTAL)
+        {
+            if(epi_index >= lf->imgHeight())
+            {
+                finished = true;
+            }
+                
+        }
+    }
+    if(lf->type() == LF_3DV)
+    {
+        if(direction == VERTICAL)
+        {
+            if(epi_index >= lf->imgWidth())
+            {
+                finished = true;
+            }
+        }
+        else if(direction == HORIZONTAL)
+        {
+            throw OpenLF_Exception("EpiIterator::get -> unknown direction!");
+        }
+    }
+    if(lf->type() == LF_CROSS)
+    {
+        if(direction == VERTICAL)
+        {
+            if(epi_index >= lf->imgWidth())
+            {
+                finished = true;
+            }
+        }
+        else if(direction == HORIZONTAL)
+        {
+            if(epi_index >= lf->imgHeight())
+            {
+                finished = true;
+            }
+        }
+    }
+}
+
+
+/*!
+\author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+bool OpenLF::lightfield::EpiIterator::end()
+{
+    return finished;
+}
+    
+
+/*!
+\author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
+view_2D OpenLF::lightfield::EpiIterator::get(std::string channel_name, int focus)
+{
+    if(!this->lf->hasChannel(channel_name))
+        throw OpenLF_Exception("EpiIterator::get -> channel not available!");
+    
+    if(direction == VERTICAL)
+        return lf->getVerticalEpiChannel(channel_name, epi_index, camera_index, focus);
+    else if(direction == HORIZONTAL)
+        return lf->getHorizontalEpiChannel(channel_name, epi_index, camera_index, focus);
+    else
+        throw OpenLF_Exception("EpiIterator::get -> unknown direction!");
+}
+
+
+
+
+
+
+
