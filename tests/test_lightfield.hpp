@@ -51,6 +51,7 @@ private:
     
     map<string,string> cfgnames;
     map<string,string> imgnames;
+    map<string,string> fnames;
 };
 
 #endif	/* TEST_LIGHTFIELD_HPP */

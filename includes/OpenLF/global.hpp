@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <sstream>
 #include <stdio.h>
+#include <fstream>
 #include <limits> 
 #include <vector>
 #include <string>

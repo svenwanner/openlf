@@ -992,33 +992,46 @@ void OpenLF::lightfield::EpiIterator::next()
     {
         if(direction == VERTICAL)
         {
-
+            throw OpenLF_Exception("EpiIterator::get -> unknown direction!");
         }
         else if(direction == HORIZONTAL)
         {
-
+            if(epi_index >= lf->imgHeight())
+            {
+                finished = true;
+            }
+                
         }
     }
     if(lf->type() == LF_3DV)
     {
         if(direction == VERTICAL)
         {
-
+            if(epi_index >= lf->imgWidth())
+            {
+                finished = true;
+            }
         }
         else if(direction == HORIZONTAL)
         {
-
+            throw OpenLF_Exception("EpiIterator::get -> unknown direction!");
         }
     }
     if(lf->type() == LF_CROSS)
     {
         if(direction == VERTICAL)
         {
-
+            if(epi_index >= lf->imgWidth())
+            {
+                finished = true;
+            }
         }
         else if(direction == HORIZONTAL)
         {
-
+            if(epi_index >= lf->imgHeight())
+            {
+                finished = true;
+            }
         }
     }
 }
