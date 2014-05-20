@@ -96,26 +96,37 @@ void LF_Viewer::openChannel(const QString &name)
     LF_Viewer_Child *test = new LF_Viewer_Child();
     mdiArea->addSubWindow(test);
 
-    QImage img((uchar*)lf->data(), lf->width(), lf->height(), QImage::Format_RGB32);
-    QPixmap pixmap = QPixmap::fromImage(img);
-
-    test->setImage(&pixmap);
+    test->open();
     test->show();
-    //test->open();
 
     QString dbg = "Show Channel: " + name;
     statusBar()->showMessage(dbg,3000);
 
 }
 
-//void LF_Viewer::openChannel(const QString &name)
-//{
-//    if (name.isEmpty())
-//        return;
-//    std::cout << name.toStdString() << std::endl;
-//    LF_Viewer_Child *test = new LF_Viewer_Child();
-//    mdiArea->addSubWindow(test->scrollArea);
-//    //if (activeMdiChild()) cout << "test" << endl;
-//    test->open();
+void LF_Viewer::openView(const QString &name)
+{
+    if (name.isEmpty())
+        return;
+    std::cout << name.toStdString() << std::endl;
+    LF_Viewer_Child *test = new LF_Viewer_Child();
+    mdiArea->addSubWindow(test);
 
-//}
+ /*   QImage img((uchar*)lf->data(), lf->width(), lf->height(), QImage::Format_RGB32);
+    QPixmap pixmap = QPixmap::fromImage(img);
+
+    test->setImage(&pixmap);
+    test->show();
+    //test->open();
+*/
+    QString dbg = "Show View: " + name;
+    statusBar()->showMessage(dbg,3000);
+
+}
+
+
+inline QImage LF_Viewer::convertToRGBImage(){
+    //vigra::MultiArrayView tmp<3,float>(vigra::Shape3(3,lf->width(),lf->height()),lf->data());
+   QImage A;
+    return A;
+}

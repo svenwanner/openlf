@@ -39,10 +39,13 @@ private slots:
     void info();
 
     void openChannel(const QString &name);
+    void openView(const QString &name);
 
 private:
 
     OpenLF::lightfield::Lightfield *lf;
+
+    inline QImage convertToRGBImage();
 
     void createActions();
     void createMenus();

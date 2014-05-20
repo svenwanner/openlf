@@ -52,8 +52,8 @@ void LF_Viewer::createDockWindows()
 
     connect(ChannelList, SIGNAL(currentTextChanged(QString)),
            this, SLOT(openChannel(QString)));
-    //connect(ParameterList, SIGNAL(currentTextChanged(QString)),
-      //     this, SLOT(updateProperties(QString)));
+    connect(ParameterList, SIGNAL(currentTextChanged(QString)),
+         this, SLOT(openView(QString)));
 
 
 }
