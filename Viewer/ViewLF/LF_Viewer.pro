@@ -15,13 +15,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = ViewLF
 TEMPLATE = app
 
-CONFIG += debug_and_release
-CONFIG += c++11
-
-macx {
-#QMAKE_CXXFLAGS += -stdlib=libc++
-#QMAKE_CXXFLAGS += -mmacosx-version-min=10.7
-}
 
 SOURCES += main.cpp \
            LF_viewer.cpp \
@@ -29,15 +22,11 @@ SOURCES += main.cpp \
            LF_viewer_slots.cpp \
            LF_dockWidgets.cpp \
            LF_viewer_child.cpp
-linux-g++ {
-LIBS += -L/usr/lib/X86_64-linux-gnu
-}
-macx {
-LIBS += -L/opt/local/lib
-}
-LIBS += -L../../../build/lib
-LIBS += -L./../../build/lib
+
+LIBS  = -L./../../build/lib
 LIBS += -L/usr/local/lib
+LIBS += -L/usr/lib/X86_64-linux-gnu
+
 LIBS += -llibopenlf
 
 LIBS += -lhdf5
@@ -55,8 +44,7 @@ LIBS += -lvigraimpex
 HEADERS  += LF_viewer.h \
             LF_viewer_child.h
 
-INCLUDEPATH += ./../../includes \
-				/usr/local/include/
+INCLUDEPATH += ./../../includes
 
 
 FORMS    += \
@@ -64,3 +52,4 @@ FORMS    += \
 
 RESOURCES += \
     recources.qrc
+

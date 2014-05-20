@@ -3,51 +3,12 @@
 #include <QPrinter>
 #include <QPrintDialog>
 #include "LF_viewer_child.h"
+#include <iostream>
 
 
 
-void LF_Viewer::print()
- {
-    Q_ASSERT(imageLabel->pixmap());
-#ifndef QT_NO_PRINTER
-    QPrintDialog dialog(&printer, this);
-    if (dialog.exec())  {
-        QPainter painter(&printer);
-        QRect rect = painter.viewport();
-        QSize size = imageLabel->pixmap()->size();
-        size.scale(rect.size(), Qt::KeepAspectRatio);
-        painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
-        painter.setWindow(imageLabel->pixmap()->rect());
-        painter.drawPixmap(0, 0, *imageLabel->pixmap());
-    }
-#endif
-}
 
-void LF_Viewer::zoomIn()
- {
-    scaleImage(1.25);
-}
 
-void LF_Viewer::zoomOut()
- {
-    scaleImage(0.8);
-}
-
-void LF_Viewer::normalSize()
- {
-    imageLabel->adjustSize();
-    scaleFactor = 1.0;
-}
-
-void LF_Viewer::fitToWindow()
- {
-    bool fitToWindow = fitToWindowAct->isChecked();
-    scrollArea->setWidgetResizable(fitToWindow);
-    if (!fitToWindow)  {
-        normalSize();
-    }
-    updateActions();
-}
 
 void LF_Viewer::about()
  {
@@ -66,25 +27,7 @@ void LF_Viewer::about()
                "shows how to use QPainter to print an image.</p>"));
 }
 
-void LF_Viewer::updateActions()
- {
-    zoomInAct->setEnabled(!fitToWindowAct->isChecked());
-    zoomOutAct->setEnabled(!fitToWindowAct->isChecked());
-    normalSizeAct->setEnabled(!fitToWindowAct->isChecked());
-}
 
-void LF_Viewer::scaleImage(double factor)
- {
-    Q_ASSERT(imageLabel->pixmap());
-    scaleFactor *= factor;
-    imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
-
-    adjustScrollBar(scrollArea->horizontalScrollBar(), factor);
-    adjustScrollBar(scrollArea->verticalScrollBar(), factor);
-
-    zoomInAct->setEnabled(scaleFactor < 3.0);
-    zoomOutAct->setEnabled(scaleFactor > 0.333);
-}
 
 void LF_Viewer::adjustScrollBar(QScrollBar *scrollBar, double factor)
  {
@@ -107,13 +50,9 @@ void LF_Viewer::info()
                   "zooming and scaling features. </p><p>In addition the example "
                   "shows how to use QPainter to print an image.</p>"));
 }
-void LF_Viewer::save()
- {
-}
 
-void LF_Viewer::saveAs()
- {
-}
+
+
 
 
 void LF_Viewer::open_as_Subwidget()
@@ -131,9 +70,10 @@ void LF_Viewer::open_as_Widget()
 }
 
 
-/*void LF_Viewer::openLightField() {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Files (*.lf *.h5)"));
-    ui->debugLabel->setText(QString("Try to open file: ")+fileName);
+void LF_Viewer::openLightField() {
+
+    QString fileName = QFileDialog::getOpenFileName(this,tr("Open File"), path , tr("LF (*.lf) ;; HDF5 (*.h5 *.hdf5) ;; All files (*.*)"));
+    path = QFileInfo(fileName).path(); // store path for next time
 
     lf = new OpenLF::lightfield::Lightfield(fileName.toStdString());
 
@@ -143,5 +83,39 @@ void LF_Viewer::open_as_Widget()
     int cv = lf->cams_v();
 
     QString dbg = "loaded LightField of size: ("+QString::number(ch)+","+QString::number(cv)+","+QString::number(w)+","+QString::number(h)+")";
-    ui->debugLabel->setText(dbg);
-}*/
+    statusBar()->showMessage(dbg,3000);
+
+    createDockWindows();
+}
+
+void LF_Viewer::openChannel(const QString &name)
+{
+    if (name.isEmpty())
+        return;
+    std::cout << name.toStdString() << std::endl;
+    LF_Viewer_Child *test = new LF_Viewer_Child();
+    mdiArea->addSubWindow(test);
+
+    QImage img((uchar*)lf->data(), lf->width(), lf->height(), QImage::Format_RGB32);
+    QPixmap pixmap = QPixmap::fromImage(img);
+
+    test->setImage(&pixmap);
+    test->show();
+    //test->open();
+
+    QString dbg = "Show Channel: " + name;
+    statusBar()->showMessage(dbg,3000);
+
+}
+
+//void LF_Viewer::openChannel(const QString &name)
+//{
+//    if (name.isEmpty())
+//        return;
+//    std::cout << name.toStdString() << std::endl;
+//    LF_Viewer_Child *test = new LF_Viewer_Child();
+//    mdiArea->addSubWindow(test->scrollArea);
+//    //if (activeMdiChild()) cout << "test" << endl;
+//    test->open();
+
+//}

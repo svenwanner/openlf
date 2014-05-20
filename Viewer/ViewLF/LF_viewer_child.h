@@ -17,21 +17,20 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QLabel>
-#include <QMenu>
-#include <QMenuBar>
+#include <QToolBar>
+#include <QVBoxLayout>
+
 
 class LF_Viewer_Child : public QWidget
  {
     Q_OBJECT
 
 public:
-    LF_Viewer_Child();
+    LF_Viewer_Child(QWidget *parent = 0);
 
     void open();
-    QPixmap *pxmap;
-    bool save();
-    bool saveAs();
-    bool saveFile(const QString &fileName);
+    void setImage(QPixmap *pxmap);
+
     QString userFriendlyCurrentFile();
     QString currentFile()  { return curFile; }
 
@@ -41,10 +40,13 @@ public:
 
 private slots:
 
+    void save();
+    void saveAs();
     void print();
-    void zoomOut();
     void zoomIn();
-
+    void zoomOut();
+    void normalSize();
+    void fitToWindow();
 
 private:
 
@@ -56,25 +58,30 @@ private:
     void updateActions();
     void scaleImage(double factor);
     void adjustScrollBar(QScrollBar *scrollBar, double factor);
-    void createToolBars();
-    void createMenus();
-    void normalSize();
+    void createToolbar();
     void createActions();
 
+
+    QAction *saveAct;
+    QAction *saveAsAct;
+    QAction *exitAct;
     QAction *infoAct;
     QAction *printAct;
-    QAction *exitAct;
     QAction *zoomInAct;
     QAction *zoomOutAct;
     QAction *normalSizeAct;
     QAction *fitToWindowAct;
 
+
+    QVBoxLayout* vbox;
+
     QMenuBar *menuBar;
     QMainWindow *inner;
-    QToolBar *fileToolBar;
-    QMenu *fileMenu;
-    QMenu *ImageMenu;
+    QMenu *viewMenu;
 
+    QToolBar *fileToolBar;
+
+    QPixmap *pxmap;
 
     QLabel *imageLabel;
 

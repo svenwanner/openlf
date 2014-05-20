@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include "ui_MainWindow.h"
+#include <QDockWidget>
 #include <QMessageBox>
 #include <QScrollArea>
 #include <QScrollBar>
@@ -11,6 +12,7 @@
 #include <QListWidget>
 #include <QPrintDialog>
 #include <QPrinter>
+
 #include <LF_viewer_child.h>
 
 #include <QtGui>
@@ -31,21 +33,16 @@ public:
 private slots:
     void open_as_Subwidget();
     void open_as_Widget();
-    //void openLightField();
-    void save();
-    void saveAs();
-    void print();
-    void zoomIn();
-    void zoomOut();
-    void normalSize();
-    void fitToWindow();
+    void openLightField();
+
     void about();
     void info();
 
+    void openChannel(const QString &name);
+
 private:
 
-    //OpenLF::lightfield::Lightfield *lf;
-    Ui::MainWindow *ui;
+    OpenLF::lightfield::Lightfield *lf;
 
     void createActions();
     void createMenus();
@@ -55,6 +52,10 @@ private:
     void updateActions();
     void scaleImage(double factor);
     void adjustScrollBar(QScrollBar *scrollBar, double factor);
+
+
+    QDockWidget *dock;
+    QDockWidget *dock2;
 
     QLabel *imageLabel;
     QScrollArea *scrollArea;
@@ -68,29 +69,24 @@ private:
     QPrinter printer;
 #endif
 
+    QString path;
+
     QAction *openAct;
     QAction *saveAct;
     QAction *saveAsAct;
     QAction *infoAct;
     QAction *toggleInsideOutAct;
-    QAction *printAct;
     QAction *exitAct;
-    QAction *zoomInAct;
-    QAction *zoomOutAct;
-    QAction *normalSizeAct;
-    QAction *fitToWindowAct;
     QAction *aboutAct;
     QAction *aboutQtAct;
 
     QMenu *fileMenu;
-    QMenu *ImageMenu;
-    QMenu *LFMenu;
-    QMenu *viewMenu;
     QMenu *helpMenu;
+    QMenu *viewMenu;
 
     QToolBar *fileToolBar;
 
-    QListWidget *List1;
+    QListWidget *ChannelList;
     QListWidget *ParameterList;
 
     QMdiArea *mdiArea;
