@@ -32,8 +32,10 @@ void OpenLF::operators::Operator_4D::process()
             
             allocate();
             precompute();
+            
             compute();
             postcompute();
+            
             cleanup();
         }
         else throw OpenLF_Exception("Wrong lightfield input type exception!");
