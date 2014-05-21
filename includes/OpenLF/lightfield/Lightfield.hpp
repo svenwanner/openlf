@@ -103,6 +103,10 @@ public:
     bool hasChannel(std::string name);
     
     
+    //! get list of available channels
+    std::vector<std::string> getListOfChannels();
+    
+    
     //! check if a specific property exist
     /*!
      \param name of the property to check for existence
