@@ -104,7 +104,7 @@ public:
     
     
     //! get list of available channels
-    std::vector<std::string> getListOfChannels();
+    std::vector<std::string> getListOfChannelNames();
     
     
     //! check if a specific property exist

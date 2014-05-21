@@ -146,7 +146,7 @@ bool OpenLF::lightfield::Lightfield::hasChannel(std::string name)
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-std::vector<std::string> OpenLF::lightfield::Lightfield::getListOfChannels()
+std::vector<std::string> OpenLF::lightfield::Lightfield::getListOfChannelNames()
 {
   
     std::vector<std::string> v;
