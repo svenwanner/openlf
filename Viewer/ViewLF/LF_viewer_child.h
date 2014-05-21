@@ -28,8 +28,8 @@ class LF_Viewer_Child : public QWidget
 public:
     LF_Viewer_Child(QWidget *parent = 0);
 
-    void open();
-    void setImage(QPixmap *pxmap);
+    void open(const QString &title);
+    void setImage(const QString &title,QPixmap *pxmap);
 
     QString userFriendlyCurrentFile();
     QString currentFile()  { return curFile; }
@@ -55,7 +55,6 @@ private:
     QPrinter printer;
 #endif
 
-    void updateActions();
     void scaleImage(double factor);
     void adjustScrollBar(QScrollBar *scrollBar, double factor);
     void createToolbar();

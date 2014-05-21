@@ -31,8 +31,8 @@ public:
     LF_Viewer();
 
 private slots:
-    void open_as_Subwidget();
-    void open_as_Widget();
+    //void open_as_Subwidget();
+    //void open_as_Widget();
     void openLightField();
 
     void about();
@@ -43,9 +43,13 @@ private slots:
 
 private:
 
+    bool is_Clicked;
+
+
     OpenLF::lightfield::Lightfield *lf;
 
-    inline QImage convertToRGBImage();
+    inline QImage makeRGBImage();
+    inline QImage makeGRAYImage(std::string name);
 
     void createActions();
     void createMenus();
@@ -78,7 +82,7 @@ private:
     QAction *saveAct;
     QAction *saveAsAct;
     QAction *infoAct;
-    QAction *toggleInsideOutAct;
+    //QAction *toggleInsideOutAct;
     QAction *exitAct;
     QAction *aboutAct;
     QAction *aboutQtAct;

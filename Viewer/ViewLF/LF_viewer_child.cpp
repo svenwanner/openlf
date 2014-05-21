@@ -1,12 +1,14 @@
 #include <QtGui>
 #include <QPixmap>
 #include "LF_viewer_child.h"
-
+#include <string>
 
 
 LF_Viewer_Child::LF_Viewer_Child(QWidget *parent)
     : QWidget(parent)
  {
+
+    this->setMinimumSize(600,600);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -21,8 +23,6 @@ LF_Viewer_Child::LF_Viewer_Child(QWidget *parent)
 
     createActions();
     createToolbar();
-
-    setWindowTitle(tr("Image Viewer"));
 }
 
 void LF_Viewer_Child::createActions()
@@ -39,26 +39,21 @@ void LF_Viewer_Child::createActions()
 
     printAct = new QAction(QIcon(":/images/print.png"), tr("&Print..."), this);
     printAct->setShortcut(tr("Ctrl+P"));
-    printAct->setEnabled(false);
     connect(printAct, SIGNAL(triggered()), this, SLOT(print()));
 
     zoomInAct = new QAction(QIcon(":/images/Zoom-In.png"),tr("Zoom &In (25%)"), this);
     zoomInAct->setShortcut(tr("Ctrl++"));
-    zoomInAct->setEnabled(false);
     connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
 
     zoomOutAct = new QAction(QIcon(":/images/Zoom-Out.png"),tr("Zoom &Out (25%)"), this);
     zoomOutAct->setShortcut(tr("Ctrl+-"));
-    zoomOutAct->setEnabled(false);
     connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
 
     normalSizeAct = new QAction(tr("&Normal Size"), this);
     normalSizeAct->setShortcut(tr("Ctrl+S"));
-    normalSizeAct->setEnabled(false);
     connect(normalSizeAct, SIGNAL(triggered()), this, SLOT(normalSize()));
 
     fitToWindowAct = new QAction(tr("&Fit to Window"), this);
-    fitToWindowAct->setEnabled(false);
     fitToWindowAct->setCheckable(true);
     fitToWindowAct->setShortcut(tr("Ctrl+F"));
     connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
@@ -71,9 +66,12 @@ void LF_Viewer_Child::createToolbar()
  {
 
     QToolBar* toolBar = new QToolBar(this);
+    toolBar->addAction(printAct);
     toolBar->addAction(saveAct);
     toolBar->addAction(zoomInAct);
     toolBar->addAction(zoomOutAct);
+    toolBar->addAction(normalSizeAct);
+    toolBar->addAction(fitToWindowAct);
 
     QVBoxLayout* vbox = new QVBoxLayout(this);
     vbox->addWidget(toolBar);
@@ -81,29 +79,39 @@ void LF_Viewer_Child::createToolbar()
     vbox->addWidget(scrollArea);
     vbox->setContentsMargins(0,0,0,0);
     vbox->setSpacing(0);
-    this->setMinimumSize(300,300);
+
     //setLayout(vbox);
 
 }
 
 
 
-void LF_Viewer_Child::open()
+void LF_Viewer_Child::open(const QString &title)
  {
     QPixmap *pxmap = new QPixmap(":images/lenna.png");
     imageLabel->setPixmap(*pxmap);
     imageLabel->resize(imageLabel->pixmap()->size());
     scaleFactor = 1.0;
 
+    std::string tmp = title.toStdString();
+    setWindowTitle(tr(tmp.c_str()));
+
 }
 
-void LF_Viewer_Child::setImage(QPixmap *pxmap)
+void LF_Viewer_Child::setImage(const QString &title,QPixmap *pxmap)
  {
     imageLabel->setPixmap(*pxmap);
     imageLabel->resize(imageLabel->pixmap()->size());
     scaleFactor = 1.0;
 
+    std::string tmp = title.toStdString();
+    setWindowTitle(tr(tmp.c_str()));
+
 }
+
+
+/** Section of slots needed for toolbar **/
+
 
 void LF_Viewer_Child::save()
  {
@@ -112,6 +120,7 @@ void LF_Viewer_Child::save()
 void LF_Viewer_Child::saveAs()
  {
 }
+
 
 void LF_Viewer_Child::print()
  {
@@ -146,12 +155,6 @@ void LF_Viewer_Child::zoomOut()
     scaleImage(0.8);
 }
 
-void LF_Viewer_Child::updateActions()
- {
-    zoomInAct->setEnabled(!fitToWindowAct->isChecked());
-    zoomOutAct->setEnabled(!fitToWindowAct->isChecked());
-}
-
 void LF_Viewer_Child::fitToWindow()
 {
     bool fitToWindow = fitToWindowAct->isChecked();
@@ -159,11 +162,12 @@ void LF_Viewer_Child::fitToWindow()
     if (!fitToWindow) {
         normalSize();
     }
-    updateActions();
+    zoomInAct->setEnabled(!fitToWindowAct->isChecked());
+    zoomOutAct->setEnabled(!fitToWindowAct->isChecked());
 }
 
 void LF_Viewer_Child::scaleImage(double factor)
- {
+{
     Q_ASSERT(imageLabel->pixmap());
     scaleFactor *= factor;
     imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
@@ -176,7 +180,7 @@ void LF_Viewer_Child::scaleImage(double factor)
 }
 
 void LF_Viewer_Child::adjustScrollBar(QScrollBar *scrollBar, double factor)
- {
+{
     scrollBar->setValue(int(factor * scrollBar->value()
                             + ((factor - 1) * scrollBar->pageStep()/2)));
 }

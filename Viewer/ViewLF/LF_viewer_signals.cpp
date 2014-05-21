@@ -7,9 +7,9 @@ void LF_Viewer::createActions()
     openAct->setShortcut(tr("Ctrl+O"));
     connect(openAct, SIGNAL(triggered()), this, SLOT(openLightField())) ;
 
-    toggleInsideOutAct = new QAction(QIcon(":/images/open.png"), tr("&Open..."), this);
-    toggleInsideOutAct->setShortcut(tr("Ctrl+O"));
-    connect(toggleInsideOutAct, SIGNAL(triggered()), this, SLOT(open_as_Subwidget()));
+    //toggleInsideOutAct = new QAction(QIcon(":/images/open.png"), tr("&Open..."), this);
+    //toggleInsideOutAct->setShortcut(tr("Ctrl+O"));
+    //connect(toggleInsideOutAct, SIGNAL(triggered()), this, SLOT(open_as_Subwidget()));
 
     exitAct = new QAction(QIcon(":/images/exit.png"),tr("E&xit"), this);
     exitAct->setShortcut(tr("Ctrl+Q"));

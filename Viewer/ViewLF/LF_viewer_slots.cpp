@@ -55,19 +55,19 @@ void LF_Viewer::info()
 
 
 
-void LF_Viewer::open_as_Subwidget()
-{
-  LF_Viewer_Child *test = new LF_Viewer_Child();
-  mdiArea->addSubWindow(test->scrollArea);
-  //if (activeMdiChild()) cout << "test" << endl;
-  test->open();
-}
+//void LF_Viewer::open_as_Subwidget()
+//{
+//  LF_Viewer_Child *test = new LF_Viewer_Child();
+//  mdiArea->addSubWindow(test->scrollArea);
+//  //if (activeMdiChild()) cout << "test" << endl;
+//  test->open();
+//}
 
-void LF_Viewer::open_as_Widget()
- {
-   LF_Viewer_Child *test = new LF_Viewer_Child();
-   test->open();
-}
+//void LF_Viewer::open_as_Widget()
+// {
+//   LF_Viewer_Child *test = new LF_Viewer_Child();
+//   test->open();
+//}
 
 
 void LF_Viewer::openLightField() {
@@ -92,41 +92,116 @@ void LF_Viewer::openChannel(const QString &name)
 {
     if (name.isEmpty())
         return;
-    std::cout << name.toStdString() << std::endl;
+    //std::cout << name.toStdString() << std::endl;
+
+// generate Child as subwindow
     LF_Viewer_Child *test = new LF_Viewer_Child();
     mdiArea->addSubWindow(test);
+    QImage A;
 
-    test->open();
+
+    if(name == "color")
+    {
+
+    }
+    else if(name == "r"){
+        A = makeGRAYImage(name.toStdString());
+    }
+    else if(name == "g"){
+        A = makeGRAYImage(name.toStdString());
+    }
+    else if(name == "b"){
+        A = makeGRAYImage(name.toStdString());
+    }
+    else{
+
+    }
+
+
+    QPixmap pixmap = QPixmap::fromImage(A);
+//Transfer Image to Child and show child
+    test->setImage(name,&pixmap);
     test->show();
+
 
     QString dbg = "Show Channel: " + name;
     statusBar()->showMessage(dbg,3000);
-
 }
 
 void LF_Viewer::openView(const QString &name)
 {
     if (name.isEmpty())
         return;
-    std::cout << name.toStdString() << std::endl;
+
+// generate Child as subwindow
     LF_Viewer_Child *test = new LF_Viewer_Child();
+// if this isn't there the window will be generated as own window
     mdiArea->addSubWindow(test);
 
- /*   QImage img((uchar*)lf->data(), lf->width(), lf->height(), QImage::Format_RGB32);
-    QPixmap pixmap = QPixmap::fromImage(img);
+//Extract numbers XX from names of singe viewXX
+    std::string tmp = name.toStdString();
+    const char firstNumber_char = tmp[4];
+    int firstNumber_int = atoi(&firstNumber_char);
+    const char secondNumber_char = tmp[5];
+    int secondNumber_int = atoi(&secondNumber_char);
+    //std::cout << first_int << second_string << std::endl;
 
-    test->setImage(&pixmap);
+//get Image related to the view number
+    vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> > img;
+    lf->getImage(firstNumber_int,secondNumber_int,img);
+
+//convert image to pixmap
+    QImage img1((uchar*)img.data(), img.width(), img.height(), QImage::Format_RGB888);
+    QPixmap pixmap = QPixmap::fromImage(img1);
+
+//Transfer Image to Child and show child
+    test->setImage(name,&pixmap);
     test->show();
-    //test->open();
-*/
+
+//Show in status bar that image is loaded from LF
     QString dbg = "Show View: " + name;
     statusBar()->showMessage(dbg,3000);
 
 }
 
 
-inline QImage LF_Viewer::convertToRGBImage(){
+inline QImage LF_Viewer::makeRGBImage(){
+
+    float* red = lf->channel_ptr("r");
+    float* green = lf->channel_ptr("g");
+    float* blue = lf->channel_ptr("b");
+
+    QImage A(lf->width(),lf->height(),QImage::Format_RGB888);
+
+    for(int i = 0; i<lf->width()*lf->height();i++){
+        uchar tmpr = (uchar)red[i]*255;
+        uchar tmpg = (uchar)green[i]*255;
+        uchar tmpb = (uchar)blue[i]*255;
+        QColor a(255,tmpr,tmpg,tmpb);
+        A.setColor(i,a.rgb());
+
+    }
+
+    return A;
+}
+
+inline QImage LF_Viewer::makeGRAYImage(std::string name){
+
+    float* channel = lf->channel_ptr(name);
+    QImage A(lf->width(),lf->height(),QImage::Format_RGB888);
+
+    for(int i = 0; i<lf->width()*lf->height();i++){
+        uchar tmp = (uchar)channel[i]*255;
+        QColor a(255,tmp,tmp,tmp);
+        A.setColor(i,a.rgb());
+    }
+
+
     //vigra::MultiArrayView tmp<3,float>(vigra::Shape3(3,lf->width(),lf->height()),lf->data());
-   QImage A;
+
+
+   //A.setColor ( int index, QRgb colorValue );
+
+
     return A;
 }

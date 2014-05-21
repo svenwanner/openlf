@@ -2,6 +2,8 @@
 
 LF_Viewer::LF_Viewer()
  {
+    is_Clicked = false;
+
     mdiArea = new QMdiArea;
     mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -17,7 +19,7 @@ LF_Viewer::LF_Viewer()
     //vbox->setContentsMargins(20,20,1000,1000);
     //vbox->setSpacing(0);
 
-
+    this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 
 
 
