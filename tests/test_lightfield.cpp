@@ -129,6 +129,7 @@ void test_lightfield::test_epi_iterator()
     OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield();
     CPPUNIT_ASSERT(lf->open(cfgnames["4D_wide_rgb"]));
     
+    
     string line;
     ifstream gt_h;
     ifstream gt_v;
