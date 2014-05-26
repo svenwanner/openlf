@@ -48,8 +48,9 @@ private:
 
     OpenLF::lightfield::Lightfield *lf;
 
-    inline QImage makeRGBImage();
-    inline QImage makeGRAYImage(std::string name);
+    void makeGRAYImage(std::string name,QImage &A);
+    void makeCOLORImage(QImage &A);
+    void makeCHANNELImage(std::string name,QImage &A);
 
     void createActions();
     void createMenus();

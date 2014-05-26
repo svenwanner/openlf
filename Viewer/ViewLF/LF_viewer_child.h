@@ -36,7 +36,13 @@ public:
 
     QScrollArea *scrollArea;
 
-//protected:
+protected:
+    void mouseReleaseEvent ( QMouseEvent * e );
+    void mousePressEvent ( QMouseEvent * e );
+
+signals:
+    void mouseClick();
+
 
 private slots:
 
@@ -50,6 +56,11 @@ private slots:
 
 private:
 
+    // member variable to store click position
+    QPoint m_lastPoint;
+    // member variable - flag of click beginning
+    bool m_mouseClick;
+
 
 #ifndef QT_NO_PRINTER
     QPrinter printer;
@@ -60,7 +71,7 @@ private:
     void createToolbar();
     void createActions();
 
-
+    QAction *MousePosition;
     QAction *saveAct;
     QAction *saveAsAct;
     QAction *exitAct;
@@ -70,6 +81,7 @@ private:
     QAction *zoomOutAct;
     QAction *normalSizeAct;
     QAction *fitToWindowAct;
+
 
 
     QVBoxLayout* vbox;

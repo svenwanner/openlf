@@ -72,10 +72,13 @@ void LF_Viewer::info()
 
 void LF_Viewer::openLightField() {
 
-    QString fileName = QFileDialog::getOpenFileName(this,tr("Open File"), path , tr("LF (*.lf) ;; HDF5 (*.h5 *.hdf5) ;; All files (*.*)"));
+    QString fileName = QFileDialog::getOpenFileName(this,tr("Open File"), path , tr("All files (*.*) ;; LF (*.lf) ;; HDF5 (*.h5 *.hdf5)"));
     path = QFileInfo(fileName).path(); // store path for next time
 
     lf = new OpenLF::lightfield::Lightfield(fileName.toStdString());
+
+
+
 
     int w = lf->width();
     int h = lf->height();
@@ -92,40 +95,32 @@ void LF_Viewer::openChannel(const QString &name)
 {
     if (name.isEmpty())
         return;
-    //std::cout << name.toStdString() << std::endl;
-
-// generate Child as subwindow
-    LF_Viewer_Child *test = new LF_Viewer_Child();
-    mdiArea->addSubWindow(test);
-    QImage A;
-
-
-    if(name == "color")
-    {
-
-    }
-    else if(name == "r"){
-        A = makeGRAYImage(name.toStdString());
-    }
-    else if(name == "g"){
-        A = makeGRAYImage(name.toStdString());
-    }
-    else if(name == "b"){
-        A = makeGRAYImage(name.toStdString());
-    }
     else{
+// generate Child as subwindow
+        LF_Viewer_Child *test = new LF_Viewer_Child();
+        mdiArea->addSubWindow(test);
+        QImage OutputImage(lf->width(),lf->height(),QImage::Format_RGB888);
 
+        if(name == "Color")
+        {
+            makeCOLORImage(OutputImage);
+        }
+        else if(name == "r" || name == "g" || name == "b"){
+            makeCHANNELImage(name.toStdString(),OutputImage);
+        }
+        else{
+
+        }
+
+        QPixmap pixmap = QPixmap::fromImage(OutputImage);
+    //Transfer Image to Child and show child
+        test->setImage(name,&pixmap);
+        test->show();
+
+
+        QString dbg = "Show Channel: " + name;
+        statusBar()->showMessage(dbg,3000);
     }
-
-
-    QPixmap pixmap = QPixmap::fromImage(A);
-//Transfer Image to Child and show child
-    test->setImage(name,&pixmap);
-    test->show();
-
-
-    QString dbg = "Show Channel: " + name;
-    statusBar()->showMessage(dbg,3000);
 }
 
 void LF_Viewer::openView(const QString &name)
@@ -165,43 +160,58 @@ void LF_Viewer::openView(const QString &name)
 }
 
 
-inline QImage LF_Viewer::makeRGBImage(){
+//Functions to get either a color image or a gray of for each channel an Image
+
+void LF_Viewer::makeCOLORImage(QImage &A){
 
     float* red = lf->channel_ptr("r");
     float* green = lf->channel_ptr("g");
-    float* blue = lf->channel_ptr("b");
+    float* blue = lf->channel_ptr("b");;
 
-    QImage A(lf->width(),lf->height(),QImage::Format_RGB888);
-
-    for(int i = 0; i<lf->width()*lf->height();i++){
-        uchar tmpr = (uchar)red[i]*255;
-        uchar tmpg = (uchar)green[i]*255;
-        uchar tmpb = (uchar)blue[i]*255;
-        QColor a(255,tmpr,tmpg,tmpb);
-        A.setColor(i,a.rgb());
-
+    for(int i = 0; i<lf->height();i++){
+         for(int j = 0; j<lf->width();j++){
+        //std::cout << *channel << std::endl;
+            QRgb value = qRgb((uchar)((float)255.0 * *red),(uchar)((float)255.0 * *green),(uchar)((float)255.0 * *blue));
+            red++;
+            green++;
+            blue++;
+            //std::cout << value << std::endl;
+            A.setPixel(j,i,value);
+         }
     }
-
-    return A;
 }
 
-inline QImage LF_Viewer::makeGRAYImage(std::string name){
+void LF_Viewer::makeGRAYImage(std::string name,QImage &A){
 
     float* channel = lf->channel_ptr(name);
-    QImage A(lf->width(),lf->height(),QImage::Format_RGB888);
 
-    for(int i = 0; i<lf->width()*lf->height();i++){
-        uchar tmp = (uchar)channel[i]*255;
-        QColor a(255,tmp,tmp,tmp);
-        A.setColor(i,a.rgb());
+    for(int i = 0; i<lf->height();i++){
+         for(int j = 0; j<lf->width();j++){
+        //std::cout << *channel << std::endl;
+            QRgb value = qRgb((uchar)((float)255.0 * *channel),(uchar)((float)255.0 * *channel),(uchar)((float)255.0 * *channel));
+            channel++;
+            //std::cout << value << std::endl;
+            A.setPixel(j,i,value);
+         }
     }
+}
 
+void LF_Viewer::makeCHANNELImage(std::string name,QImage &A){
 
-    //vigra::MultiArrayView tmp<3,float>(vigra::Shape3(3,lf->width(),lf->height()),lf->data());
+    float* channel = lf->channel_ptr(name);
 
+    for(int i = 0; i<lf->height();i++){
+         for(int j = 0; j<lf->width();j++){
+             uchar tmp = (uchar)((float)255.0 * *channel);
+            channel++;
+        //std::cout << *channel << std::endl;
+            QRgb value;
+            if (name == "r") value = qRgb(tmp,0,0);
+            if (name == "g") value = qRgb(0,tmp,0);
+            if (name == "b") value = qRgb(0,0,tmp);
 
-   //A.setColor ( int index, QRgb colorValue );
-
-
-    return A;
+            //std::cout << value << std::endl;
+            A.setPixel(j,i,value);
+         }
+    }
 }

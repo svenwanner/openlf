@@ -2,13 +2,16 @@
 #include <QPixmap>
 #include "LF_viewer_child.h"
 #include <string>
-
+#include <iostream>
 
 LF_Viewer_Child::LF_Viewer_Child(QWidget *parent)
     : QWidget(parent)
  {
 
-    this->setMinimumSize(600,600);
+//    this->setMinimumSize(600,600);
+
+    m_mouseClick = false;
+    this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -23,6 +26,7 @@ LF_Viewer_Child::LF_Viewer_Child(QWidget *parent)
 
     createActions();
     createToolbar();
+
 }
 
 void LF_Viewer_Child::createActions()
@@ -73,7 +77,10 @@ void LF_Viewer_Child::createToolbar()
     toolBar->addAction(normalSizeAct);
     toolBar->addAction(fitToWindowAct);
 
+
     QVBoxLayout* vbox = new QVBoxLayout(this);
+
+
     vbox->addWidget(toolBar);
     //vbox->addWidget(view);
     vbox->addWidget(scrollArea);
@@ -185,3 +192,22 @@ void LF_Viewer_Child::adjustScrollBar(QScrollBar *scrollBar, double factor)
                             + ((factor - 1) * scrollBar->pageStep()/2)));
 }
 
+void LF_Viewer_Child::mousePressEvent ( QMouseEvent * e )
+{
+    // store click position
+    m_lastPoint = e->pos();
+    QString dbg = "("+QString::number(e->pos().x())+","+QString::number(e->pos().y())+")";
+
+    // set the flag meaning "click begin"
+    m_mouseClick = true;
+}
+
+void LF_Viewer_Child::mouseReleaseEvent ( QMouseEvent * e )
+{
+    // check if cursor not moved since click beginning
+    if ((m_mouseClick) && (e->pos() == m_lastPoint))
+    {
+        // do something: for example emit Click signal
+        emit mouseClick();
+    }
+}
