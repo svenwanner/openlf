@@ -146,6 +146,19 @@ bool OpenLF::lightfield::Lightfield::hasChannel(std::string name)
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
+std::vector<std::string> OpenLF::lightfield::Lightfield::getListOfChannelNames()
+{
+  
+    std::vector<std::string> v;
+    for(std::map<std::string,OpenLF::image::ImageChannel>::iterator it = channels.begin(); it != channels.end(); ++it) 
+        v.push_back(it->first);
+        return v;
+}
+
+
+/*!
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/
 bool OpenLF::lightfield::Lightfield::hasProperty(std::string name) {
     return properties.has_field(name);
 }
