@@ -24,6 +24,7 @@ SOURCES += main.cpp \
            LF_viewer_child.cpp
 
 LIBS  = -L./../../build/lib
+LIBS += -L../../../build/lib
 LIBS += -L/usr/local/lib
 LIBS += -L/usr/lib/X86_64-linux-gnu
 
