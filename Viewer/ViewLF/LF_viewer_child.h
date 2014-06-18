@@ -12,14 +12,13 @@
 #include <QLabel>
 #include <QAction>
 #include <QToolBar>
-#include <QPrintDialog>
-#include <QPrinter>
 #include <QMenu>
 #include <QMenuBar>
 #include <QLabel>
 #include <QToolBar>
 #include <QVBoxLayout>
-
+#include <QPrintDialog>
+#include <QPrinter>
 
 class LF_Viewer_Child : public QWidget
  {
@@ -30,18 +29,30 @@ public:
 
     void open(const QString &title);
     void setImage(const QString &title,QPixmap *pxmap);
+    void enableEPI(bool enable);
 
     QString userFriendlyCurrentFile();
     QString currentFile()  { return curFile; }
 
     QScrollArea *scrollArea;
 
+//<<<<<<< Updated upstream
+//protected:
+//    void mouseReleaseEvent ( QMouseEvent * e );
+//    void mousePressEvent ( QMouseEvent * e );
+
+//signals:
+//    void mouseClick();
+//=======
+
 protected:
     void mouseReleaseEvent ( QMouseEvent * e );
     void mousePressEvent ( QMouseEvent * e );
+    void mouseMoveEvent(QMouseEvent* event);
 
 signals:
-    void mouseClick();
+    void mouseClick(QPoint position);
+//>>>>>>> Stashed changes
 
 
 private slots:
@@ -54,13 +65,18 @@ private slots:
     void normalSize();
     void fitToWindow();
 
+
 private:
 
     // member variable to store click position
     QPoint m_lastPoint;
     // member variable - flag of click beginning
     bool m_mouseClick;
+//<<<<<<< Updated upstream
 
+//=======
+    bool showEPI;
+//>>>>>>> Stashed changes
 
 #ifndef QT_NO_PRINTER
     QPrinter printer;
@@ -83,6 +99,10 @@ private:
     QAction *fitToWindowAct;
 
 
+//<<<<<<< Updated upstream
+//=======
+    const int ToolBar_Height = 40;
+//>>>>>>> Stashed changes
 
     QVBoxLayout* vbox;
 

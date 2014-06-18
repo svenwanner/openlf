@@ -8,5 +8,6 @@
         <file>images/lenna.png</file>
         <file>images/Zoom-In.png</file>
         <file>images/Zoom-Out.png</file>
+        <file>images/arrow.png</file>
     </qresource>
 </RCC>

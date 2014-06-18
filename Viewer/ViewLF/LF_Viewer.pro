@@ -15,6 +15,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = ViewLF
 TEMPLATE = app
 
+CONFIG += console
 
 SOURCES += main.cpp \
            LF_viewer.cpp \

@@ -6,21 +6,28 @@
 void LF_Viewer::createDockWindows()
  {
 
+    if(dock != NULL){
+        delete dock;
+     }
     dock = new QDockWidget(tr("Light Field Channels:"), this);
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     ChannelList = new QListWidget(dock);
     dock->setWidget(ChannelList);
     addDockWidget(Qt::RightDockWidgetArea, dock);
-    //viewMenu->addAction(dock->toggleViewAction());
+    viewMenu->addAction(dock->toggleViewAction());
 
+    if(dock2 != NULL){
+        delete dock2;
+     }
     dock2 = new QDockWidget(tr("Light Field Properies:"), this);
     dock2->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     ParameterList = new QListWidget(dock2);
     dock2->setWidget(ParameterList);
     addDockWidget(Qt::RightDockWidgetArea, dock2);
-    //viewMenu->addAction(dock2->toggleViewAction());
+    viewMenu->addAction(dock2->toggleViewAction());
 
-
+    ParameterList->clear();
+    ChannelList->clear();
 
 // Load Items to dock
     std::string *channel_list = new std::string[40];

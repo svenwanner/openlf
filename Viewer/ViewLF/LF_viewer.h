@@ -10,8 +10,7 @@
 #include <QScrollBar>
 #include <QMdiArea>
 #include <QListWidget>
-#include <QPrintDialog>
-#include <QPrinter>
+#include <QSpinBox>
 
 #include <LF_viewer_child.h>
 
@@ -29,22 +28,28 @@ class LF_Viewer : public QMainWindow
 
 public:
     LF_Viewer();
+    //virtual bool event(QEvent *);
 
 private slots:
-    //void open_as_Subwidget();
-    //void open_as_Widget();
-    void openLightField();
 
-    void about();
+    void openLightField();
     void info();
 
     void openChannel(const QString &name);
     void openView(const QString &name);
+    void close();
+    void closeAll();
+    void setValue(int value);
+    void showEPI(QPoint position);
+    void on_action_Pop_Out_triggered();
+
+signals:
+    void test();
 
 private:
 
     bool is_Clicked;
-
+    double scaleFactor;
 
     OpenLF::lightfield::Lightfield *lf;
 
@@ -67,15 +72,10 @@ private:
 
     QLabel *imageLabel;
     QScrollArea *scrollArea;
-    double scaleFactor;
 
     LF_Viewer_Child *activeMdiChild();
     QMdiSubWindow *findMdiChild(const QString &fileName);
 
-
-#ifndef QT_NO_PRINTER
-    QPrinter printer;
-#endif
 
     QString path;
 
@@ -83,16 +83,17 @@ private:
     QAction *saveAct;
     QAction *saveAsAct;
     QAction *infoAct;
-    //QAction *toggleInsideOutAct;
+    QAction *closeAct;
     QAction *exitAct;
-    QAction *aboutAct;
-    QAction *aboutQtAct;
+    QAction *popOutAct;
 
     QMenu *fileMenu;
     QMenu *helpMenu;
     QMenu *viewMenu;
 
     QToolBar *fileToolBar;
+    QSlider *slider;
+    QSpinBox *spinBox;
 
     QListWidget *ChannelList;
     QListWidget *ParameterList;

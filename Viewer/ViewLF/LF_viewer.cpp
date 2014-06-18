@@ -3,17 +3,23 @@
 LF_Viewer::LF_Viewer()
  {
     is_Clicked = false;
+    lf = NULL;
+    dock = NULL;
+    dock2 = NULL;
 
     mdiArea = new QMdiArea;
     mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setCentralWidget(mdiArea);
 
+    slider = new QSlider(Qt::Horizontal);
+    spinBox = new QSpinBox();
+
+
     createActions();
     createMenus();
     createToolBars();
     createStatusBar();
-
 
     //vbox->addWidget(view);
     //vbox->setContentsMargins(20,20,1000,1000);
@@ -21,10 +27,8 @@ LF_Viewer::LF_Viewer()
 
     this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 
-
-
     setWindowTitle(tr("Light Field Viewer"));
-    //resize(500, 400);
+
 }
 
 
@@ -33,16 +37,15 @@ void LF_Viewer::createMenus()
  {
     fileMenu = new QMenu(tr("&File"), this);
     fileMenu->addAction(openAct);
+    fileMenu->addAction(popOutAct);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
 
     helpMenu = new QMenu(tr("&Help"), this);
-    helpMenu->addAction(aboutAct);
-    helpMenu->addAction(aboutQtAct);
-
     menuBar()->addMenu(fileMenu);
-    //menuBar()->addSeparator();
     menuBar()->addMenu(helpMenu);
+
+    viewMenu = menuBar()->addMenu(tr("&View"));
 }
 
 
@@ -52,9 +55,24 @@ void LF_Viewer::createToolBars()
     fileToolBar = addToolBar(tr("File"));
     fileToolBar->addAction(openAct);
     fileToolBar->addAction(infoAct);
-    //fileToolBar->addAction(aboutAct);
+    fileToolBar->addAction(closeAct);
     fileToolBar->addAction(exitAct);
 
+    //QSpinBox *spinBox = new QSpinBox;
+    fileToolBar->addSeparator();
+    fileToolBar->addAction(popOutAct);
+    fileToolBar->addSeparator();
+    fileToolBar->addWidget(spinBox);
+    fileToolBar->addWidget(slider);
+    spinBox->setToolTip("Horoptor");
+    slider->setToolTip("Horoptor");
+    slider->setEnabled(false);
+    spinBox->setEnabled(false);
+    slider->setFixedWidth(400);
+    spinBox->setRange(0, 30);
+    slider->setRange(0, 30);
+
+    fileToolBar->setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
 }
 
 void LF_Viewer::createStatusBar()

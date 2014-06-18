@@ -3,6 +3,11 @@
 #include "LF_viewer_child.h"
 #include <string>
 #include <iostream>
+//<<<<<<< Updated upstream
+//=======
+#include <QToolTip>
+#include <vigra/impexalpha.hxx>
+//>>>>>>> Stashed changes
 
 LF_Viewer_Child::LF_Viewer_Child(QWidget *parent)
     : QWidget(parent)
@@ -11,9 +16,15 @@ LF_Viewer_Child::LF_Viewer_Child(QWidget *parent)
 //    this->setMinimumSize(600,600);
 
     m_mouseClick = false;
+//<<<<<<< Updated upstream
+//=======
+    showEPI = false;
+
+//>>>>>>> Stashed changes
     this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     setAttribute(Qt::WA_DeleteOnClose);
+    setMouseTracking(true);
 
     imageLabel = new QLabel(this);
     imageLabel->setBackgroundRole(QPalette::Base);
@@ -61,8 +72,6 @@ void LF_Viewer_Child::createActions()
     fitToWindowAct->setCheckable(true);
     fitToWindowAct->setShortcut(tr("Ctrl+F"));
     connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
-
-
 }
 
 
@@ -70,6 +79,7 @@ void LF_Viewer_Child::createToolbar()
  {
 
     QToolBar* toolBar = new QToolBar(this);
+    toolBar->setFixedHeight(ToolBar_Height);
     toolBar->addAction(printAct);
     toolBar->addAction(saveAct);
     toolBar->addAction(zoomInAct);
@@ -192,22 +202,77 @@ void LF_Viewer_Child::adjustScrollBar(QScrollBar *scrollBar, double factor)
                             + ((factor - 1) * scrollBar->pageStep()/2)));
 }
 
-void LF_Viewer_Child::mousePressEvent ( QMouseEvent * e )
+//<<<<<<< Updated upstream
+//void LF_Viewer_Child::mousePressEvent ( QMouseEvent * e )
+//{
+//    // store click position
+//    m_lastPoint = e->pos();
+//    QString dbg = "("+QString::number(e->pos().x())+","+QString::number(e->pos().y())+")";
+
+//=======
+void LF_Viewer_Child::mousePressEvent ( QMouseEvent * event )
 {
     // store click position
-    m_lastPoint = e->pos();
-    QString dbg = "("+QString::number(e->pos().x())+","+QString::number(e->pos().y())+")";
+    m_lastPoint = event->pos();
 
+    if (event->pos().x() < imageLabel->pixmap()->size().width()+1 && event->pos().y()-ToolBar_Height < imageLabel->pixmap()->size().height()+1 && event->pos().y()-ToolBar_Height > 0 && event->pos().x() > 0){
+    QToolTip::showText(event->globalPos(),
+                       //  In most scenarios you will have to change these for
+                       //  the coordinate system you are working in.
+                       QString::number( event->pos().x()-1 ) + ", " +
+                       QString::number( event->pos().y()-ToolBar_Height-1 ),
+                       this, rect() );
+    }
+//>>>>>>> Stashed changes
     // set the flag meaning "click begin"
     m_mouseClick = true;
 }
 
-void LF_Viewer_Child::mouseReleaseEvent ( QMouseEvent * e )
+//<<<<<<< Updated upstream
+//void LF_Viewer_Child::mouseReleaseEvent ( QMouseEvent * e )
+//{
+//    // check if cursor not moved since click beginning
+//    if ((m_mouseClick) && (e->pos() == m_lastPoint))
+//    {
+//        // do something: for example emit Click signal
+//        emit mouseClick();
+//    }
+//}
+//=======
+void LF_Viewer_Child::mouseReleaseEvent ( QMouseEvent * event )
 {
     // check if cursor not moved since click beginning
-    if ((m_mouseClick) && (e->pos() == m_lastPoint))
-    {
-        // do something: for example emit Click signal
-        emit mouseClick();
+    if (event->pos().x() < imageLabel->pixmap()->size().width()+1 && event->pos().y()-ToolBar_Height < imageLabel->pixmap()->size().height()+1 && event->pos().y()-ToolBar_Height > 0 && event->pos().x() > 0){
+        if ((m_mouseClick) && (event->pos() == m_lastPoint) && showEPI)
+        {
+            // do something: for example emit Click signal
+            emit mouseClick(event->pos());
+            //QToolTip::showText(event->globalPos(),"release",this);
+        }
     }
 }
+
+void LF_Viewer_Child::mouseMoveEvent(QMouseEvent* event)
+{
+    if (event->pos().x() < imageLabel->pixmap()->size().width()+1 && event->pos().y()-ToolBar_Height < imageLabel->pixmap()->size().height()+1 && event->pos().y()-ToolBar_Height > 0 && event->pos().x() > 0){
+    QToolTip::showText(event->globalPos(),
+                       //  In most scenarios you will have to change these for
+                       //  the coordinate system you are working in.
+                       QString::number( event->pos().x()-1 ) + ", " +
+                       QString::number( event->pos().y()-ToolBar_Height-1 ),
+                       this, rect() );
+    // store click position
+    m_lastPoint = event->pos();
+    }
+    QWidget::mouseMoveEvent(event);  // Or whatever the base class is.
+}
+
+void LF_Viewer_Child::enableEPI(bool enable){
+    showEPI = enable;
+}
+
+
+//void LF_Viewer_Child::close(){
+//    LF_Viewer_Child::parentWidget()->close();
+//}
+//>>>>>>> Stashed changes
