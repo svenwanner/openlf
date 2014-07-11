@@ -33,7 +33,7 @@ namespace OpenLF {
 
 class Operator {
 public:
-    Operator();
+    Operator(std::vector<std::string> inslots, std::vector<std::string> outslots);
     //Operator(const Operator& orig);
     virtual ~Operator();
     void clear();
@@ -65,6 +65,8 @@ protected:
     OpenLF::lightfield::Lightfield *lf;
     OpenLF::lightfield::Properties *properties;
     std::map<std::string,OpenLF::image::ImageChannel> tmp_memory;
+    std::vector<std::string> inslots;
+    std::vector<std::string> outslots;
 };
 
 }}

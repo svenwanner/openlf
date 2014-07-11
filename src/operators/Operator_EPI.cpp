@@ -7,10 +7,6 @@
 
 #include "OpenLF/operators/Operator_EPI.hpp"
 
-OpenLF::operators::Operator_EPI::Operator_EPI() : Operator() {
-   
-}
-
 OpenLF::operators::Operator_EPI::~Operator_EPI() {
 }
 

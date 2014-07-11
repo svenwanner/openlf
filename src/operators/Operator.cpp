@@ -19,8 +19,10 @@
 
 #include "OpenLF/operators/Operator.hpp"
 
-OpenLF::operators::Operator::Operator() 
+OpenLF::operators::Operator::Operator(std::vector<std::string> inslots, std::vector<std::string> outslots) 
 {
+    this->inslots = inslots;
+    this->outslots = outslots;
     clear();
 }
 

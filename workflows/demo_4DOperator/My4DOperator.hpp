@@ -27,7 +27,7 @@ using namespace std;
 
 class My4DOperator : public OpenLF::operators::Operator_4D {
 public:
-    My4DOperator() : Operator_4D() {};
+    My4DOperator(std::vector<std::string> inslots, std::vector<std::string> outslots) : Operator_4D(inslots,outslots) {};
     //My4DOperator(const My4DOperator& orig);
     virtual ~My4DOperator();
 

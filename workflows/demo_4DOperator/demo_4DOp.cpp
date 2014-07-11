@@ -79,7 +79,9 @@ int main(int argc, char** argv) {
         
         cout << "process... ";
         // create your operator
-        My4DOperator myOp;
+        std::vector<std::string> inslots;
+        std::vector<std::string> outslots;
+        My4DOperator myOp(inslots,outslots);
         // link the light field to it
         myOp.set(&myLf);
         // apply the operator

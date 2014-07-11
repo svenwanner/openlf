@@ -31,7 +31,7 @@ namespace OpenLF {
 
 class Operator_EPI : public Operator {
 public:
-    Operator_EPI();
+    Operator_EPI(std::vector<std::string> inslots, std::vector<std::string> outslots) : Operator(inslots,outslots) {};
     virtual ~Operator_EPI();
     
     void process();

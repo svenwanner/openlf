@@ -34,7 +34,7 @@ namespace OpenLF {
 
 class Operator_4D : public Operator {
 public:
-    Operator_4D() : Operator() {};
+    Operator_4D(std::vector<std::string> inslots, std::vector<std::string> outslots) : Operator(inslots,outslots) {};
     //Operator_4D(const Operator_4D& orig);
     virtual ~Operator_4D();
     
