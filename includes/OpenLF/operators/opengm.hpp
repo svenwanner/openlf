@@ -48,7 +48,8 @@ public:
     > GmType;
 
 
-  OpenGM() : Operator_4D() {};
+  OpenGM(std::vector<std::string> inslots, std::vector<std::string> outslots) :
+      Operator_4D(inslots,outslots) {};
   ~OpenGM() {};    
 protected:
   void allocate(){};
@@ -74,7 +75,7 @@ template <bool FLAG> void OpenGM<FLAG>::buildModel() {
   GmType gm(opengm::DiscreteSpace<>(numbersOfLabels.begin(), numbersOfLabels.end()));
   opengm::PottsFunction<ValueType> potts(numL, numL, 0.0, 1.0);
   GmType::FunctionIdentifier pottsid = gm.addFunction(potts);
-  std::string channel = "r";
+  std::string channel = inslots[0];
   size_t shape[] = {2};
   opengm::ExplicitFunction<ValueType> f(shape, shape + 1);
   //float* r_ptr = lf->channel_ptr("r");

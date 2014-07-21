@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
 
 	std::cout << "process... "<<std::flush;
         // create your operator
-        OpenGM<> myOp;
+        OpenGM<> myOp({"r"}, {});
         // link the light field to it
         myOp.set(&myLf);
         // apply the operator
