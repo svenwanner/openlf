@@ -929,7 +929,7 @@ bool OpenLF::lightfield::io::load_from_hdf5( std::string filename,
     
     try {
         // navigate to group LF
-        file.cd_mk("LF");
+        file.cd("LF");
        
         
         // if no bw or rgb channels available throw exception
