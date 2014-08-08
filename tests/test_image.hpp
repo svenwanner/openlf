@@ -8,6 +8,7 @@
 #ifndef TEST_IMAGE_HPP
 #define	TEST_IMAGE_HPP
 
+
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "OpenLF/global.hpp"
