@@ -21,6 +21,9 @@
 
 
 
+namespace OpenLF {
+namespace image {
+namespace utils {
 
 
 
@@ -29,7 +32,7 @@
  the values are converted to uint8 as they are without automatic range adjustments
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-void OpenLF::image::utils::mergeChannels(vigra::MultiArray<2,float> &r, 
+void mergeChannels(vigra::MultiArray<2,float> &r,
                                          vigra::MultiArray<2,float> &g, 
                                          vigra::MultiArray<2,float> &b,
                                          vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8>> &img) 
@@ -54,7 +57,7 @@ void OpenLF::image::utils::mergeChannels(vigra::MultiArray<2,float> &r,
  the values are converted to uint8 as they are without automatic range adjustments
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-void OpenLF::image::utils::mergeChannels(vigra::MultiArray<2,float> &r, 
+void mergeChannels(vigra::MultiArray<2,float> &r,
                                          vigra::MultiArray<2,float> &g, 
                                          vigra::MultiArray<2,float> &b,
                                          vigra::MultiArray<2,vigra::UInt8> &img) 
@@ -76,7 +79,7 @@ void OpenLF::image::utils::mergeChannels(vigra::MultiArray<2,float> &r,
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-void OpenLF::image::utils::mergeChannels(vigra::MultiArray<2,float> &r, 
+void mergeChannels(vigra::MultiArray<2,float> &r,
                                          vigra::MultiArray<2,float> &g, 
                                          vigra::MultiArray<2,float> &b,
                                          vigra::MultiArray<2, vigra::RGBValue<float>> &img) 
@@ -100,7 +103,7 @@ void OpenLF::image::utils::mergeChannels(vigra::MultiArray<2,float> &r,
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-void OpenLF::image::utils::mergeChannels(vigra::MultiArrayView<2,float> &r, 
+void mergeChannels(vigra::MultiArrayView<2,float> &r,
                                          vigra::MultiArrayView<2,float> &g, 
                                          vigra::MultiArrayView<2,float> &b,
                                          vigra::MultiArray<2, vigra::RGBValue<float>> &img) 
@@ -124,7 +127,7 @@ void OpenLF::image::utils::mergeChannels(vigra::MultiArrayView<2,float> &r,
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-void OpenLF::image::utils::mergeChannels(vigra::MultiArray<2,float> &r, 
+void mergeChannels(vigra::MultiArray<2,float> &r,
                                          vigra::MultiArray<2,float> &g, 
                                          vigra::MultiArray<2,float> &b,
                                          vigra::MultiArray<2,float> &img) 
@@ -146,7 +149,7 @@ void OpenLF::image::utils::mergeChannels(vigra::MultiArray<2,float> &r,
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-void OpenLF::image::utils::mergeChannels(vigra::MultiArrayView<2,float> &r, 
+void mergeChannels(vigra::MultiArrayView<2,float> &r,
                                          vigra::MultiArrayView<2,float> &g, 
                                          vigra::MultiArrayView<2,float> &b,
                                          vigra::MultiArray<2,float> &img) 
@@ -162,3 +165,7 @@ void OpenLF::image::utils::mergeChannels(vigra::MultiArrayView<2,float> &r,
         }
     }
 }
+
+} // namespace utils
+} // namespace image
+} // namespace OpenLF

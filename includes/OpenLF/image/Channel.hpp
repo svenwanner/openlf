@@ -322,8 +322,9 @@ private:
 };
 
 
-}}
 
+} // namespace image
+} // namespace OpenLF
 
 
 

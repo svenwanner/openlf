@@ -20,16 +20,18 @@
 #include "OpenLF/image/imgproc.hpp"
 
 
+namespace OpenLF {
+namespace image {
+namespace imgproc {
 
 
-void OpenLF::image::imgproc::difference(channel_map &channels1,
-                                        channel_map &channels2,
-                                        OpenLF::image::ImageChannel &result) 
+void difference(channel_map &channels1, channel_map &channels2,
+        ImageChannel &result)
 {
     try {
         result=0.0f;
         std::string key;
-        OpenLF::image::ImageChannel tmp(result.width(),result.height());
+        ImageChannel tmp(result.width(),result.height());
         
         for ( channel_map_iter iter = channels1.begin(); iter != channels1.end(); iter++ ) {
             key=iter->first;
@@ -51,9 +53,7 @@ void OpenLF::image::imgproc::difference(channel_map &channels1,
 
 
 
-void OpenLF::image::imgproc::difference(OpenLF::image::ImageChannel &img1, 
-                                        OpenLF::image::ImageChannel &img2, 
-                                        OpenLF::image::ImageChannel &result)
+void difference(ImageChannel &img1, ImageChannel &img2, ImageChannel &result)
 {
     try {
         
@@ -74,15 +74,14 @@ void OpenLF::image::imgproc::difference(OpenLF::image::ImageChannel &img1,
 }
 
 
-void OpenLF::image::imgproc::abs_difference(channel_map &channels1,
-                                            channel_map &channels2,
-                                            OpenLF::image::ImageChannel &result) 
+void abs_difference(channel_map &channels1, channel_map &channels2,
+        ImageChannel &result)
 {
     try {
         std::string key;
         result = 0.0;
         
-        OpenLF::image::ImageChannel tmp(result.width(),result.height());
+        ImageChannel tmp(result.width(),result.height());
         tmp.set(0.0f);
         
         for ( channel_map_iter iter = channels1.begin(); iter != channels1.end(); iter++ ) {
@@ -101,9 +100,8 @@ void OpenLF::image::imgproc::abs_difference(channel_map &channels1,
 
 
 
-void OpenLF::image::imgproc::abs_difference(OpenLF::image::ImageChannel &img1, 
-                                            OpenLF::image::ImageChannel &img2, 
-                                            OpenLF::image::ImageChannel &result) 
+void abs_difference(ImageChannel &img1, ImageChannel &img2,
+        ImageChannel &result)
 {
     try {
         if(img1!=img2)
@@ -122,9 +120,8 @@ void OpenLF::image::imgproc::abs_difference(OpenLF::image::ImageChannel &img1,
 
 
 
-void OpenLF::image::imgproc::MSE(channel_map &channels1,
-                                 channel_map &channels2,
-                                 std::map<std::string,double> &results)
+void MSE(channel_map &channels1, channel_map &channels2,
+        std::map<std::string,double> &results)
 {
     try {
         std::string key;
@@ -147,9 +144,7 @@ void OpenLF::image::imgproc::MSE(channel_map &channels1,
 
 
 
-double OpenLF::image::imgproc::MSE(OpenLF::image::ImageChannel &img1, 
-                                   OpenLF::image::ImageChannel &img2) 
-
+double MSE(ImageChannel &img1, ImageChannel &img2)
 {
     if(img1!=img2)
         throw OpenLF_Exception("Input/input shape mismatch in compute difference!");
@@ -163,3 +158,7 @@ double OpenLF::image::imgproc::MSE(OpenLF::image::ImageChannel &img1,
 
     return sum/(img1.width()*img1.height());
 }
+
+} // namespace imgproc
+} // namespace image
+} // namespace OpenLF

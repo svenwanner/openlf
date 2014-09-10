@@ -19,13 +19,16 @@
 
 #include "OpenLF/operators/Operator_4D.hpp"
 
-//OpenLF::operators::Operator_4D::Operator_4D(const Operator_4D& orig) {
+namespace OpenLF {
+namespace operators {
+
+//Operator_4D::Operator_4D(const Operator_4D& orig) {
 //}
 
-OpenLF::operators::Operator_4D::~Operator_4D() {
+Operator_4D::~Operator_4D() {
 }
 
-void OpenLF::operators::Operator_4D::process() 
+void Operator_4D::process()
 {
     if(lf!=NULL) {
         if(lf->type()==LF_4D) {
@@ -43,7 +46,10 @@ void OpenLF::operators::Operator_4D::process()
     else throw OpenLF_Exception("missing lightfield exception!");
 }
 
-void OpenLF::operators::Operator_4D::cleanup() 
+void Operator_4D::cleanup()
 {
     tmp_memory.clear();
 }
+
+} // namespace operators
+} // namespace OpenLF

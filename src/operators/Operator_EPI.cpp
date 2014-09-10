@@ -7,17 +7,23 @@
 
 #include "OpenLF/operators/Operator_EPI.hpp"
 
-OpenLF::operators::Operator_EPI::~Operator_EPI() {
+namespace OpenLF {
+namespace operators {
+
+Operator_EPI::~Operator_EPI() {
 }
 
 
-void OpenLF::operators::Operator_EPI::process() 
+void Operator_EPI::process()
 {
     
 }
 
 
-void OpenLF::operators::Operator_EPI::cleanup() 
+void Operator_EPI::cleanup()
 {
     tmp_memory.clear();
 }
+
+} // namespace operators
+} // namespace OpenLF

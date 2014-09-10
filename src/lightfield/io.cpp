@@ -20,19 +20,21 @@
 #include "OpenLF/lightfield/io.hpp"
 
 
-
+namespace OpenLF {
+namespace lightfield {
+namespace io {
 
 
     
-bool OpenLF::lightfield::io::load_4D_structure( std::vector<std::string> fname_list, 
-                                                std::map< std::string,OpenLF::image::ImageChannel> &channels, 
+bool load_4D_structure( std::vector<std::string> fname_list,
+                                                std::map< std::string,image::ImageChannel> &channels,
                                                 Properties *properties )
 {
     print(2,"lightfield::io::load_4D_structure(fname_list,channels,properties) called...");
     
     try {
         // create roi if needed
-        OpenLF::image::ROI roi;
+        image::ROI roi;
         roi.height = 0;
         roi.width = 0;
         roi.pos_x = 0;
@@ -99,7 +101,7 @@ bool OpenLF::lightfield::io::load_4D_structure( std::vector<std::string> fname_l
             print(3,"cams_h =",cams_h);
             print(3,"cams_v =",cams_v);
             
-            channels["bw"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_h*width,cams_v*height));
+            channels["bw"] = image::ImageChannel(vigra::Shape2(cams_h*width,cams_v*height));
             
             // loop over images
             for(int v=0; v<cams_v; v++) {
@@ -144,9 +146,9 @@ bool OpenLF::lightfield::io::load_4D_structure( std::vector<std::string> fname_l
             print(3,"cams_h =",cams_h);
             print(3,"cams_v =",cams_v);
             
-            channels["r"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_h*width,cams_v*height)); 
-            channels["g"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_h*width,cams_v*height)); 
-            channels["b"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_h*width,cams_v*height)); 
+            channels["r"] = image::ImageChannel(vigra::Shape2(cams_h*width,cams_v*height));
+            channels["g"] = image::ImageChannel(vigra::Shape2(cams_h*width,cams_v*height));
+            channels["b"] = image::ImageChannel(vigra::Shape2(cams_h*width,cams_v*height));
 
             for(int v=0; v<cams_v; v++) {
                 for(int h=0; h<cams_h; h++) {
@@ -205,14 +207,14 @@ bool OpenLF::lightfield::io::load_4D_structure( std::vector<std::string> fname_l
 
 
 
-bool OpenLF::lightfield::io::load_3DH_structure( std::vector<std::string> fname_list, 
-                                                 std::map< std::string,OpenLF::image::ImageChannel> &channels, 
+bool load_3DH_structure( std::vector<std::string> fname_list,
+                                                 std::map< std::string,image::ImageChannel> &channels,
                                                  Properties *properties ) 
 {
     print(2,"lightfield::io::load_3DH_structure(fname_list,channels,properties) called...");
      
     // create roi if needed
-    OpenLF::image::ROI roi;
+    image::ROI roi;
     roi.height = 0;
     roi.width = 0;
     roi.pos_x = 0;
@@ -277,7 +279,7 @@ bool OpenLF::lightfield::io::load_3DH_structure( std::vector<std::string> fname_
         // load grayscale images
         if(info.isGrayscale()) {
             print(3,"lightfield::io::load_3DH_structure found grayscale image...");
-            channels["bw"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_h*width,height));
+            channels["bw"] = image::ImageChannel(vigra::Shape2(cams_h*width,height));
 
             // loop over images
             for(int h=0; h<cams_h; h++) {
@@ -317,9 +319,9 @@ bool OpenLF::lightfield::io::load_3DH_structure( std::vector<std::string> fname_
         else if(info.isColor()) {
             print(3,"lightfield::io::load_3DH_structure found color image...");
             
-            channels["r"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_h*width,height)); 
-            channels["g"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_h*width,height)); 
-            channels["b"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_h*width,height)); 
+            channels["r"] = image::ImageChannel(vigra::Shape2(cams_h*width,height));
+            channels["g"] = image::ImageChannel(vigra::Shape2(cams_h*width,height));
+            channels["b"] = image::ImageChannel(vigra::Shape2(cams_h*width,height));
 
 
             for(int h=0; h<cams_h; h++) {
@@ -377,15 +379,15 @@ bool OpenLF::lightfield::io::load_3DH_structure( std::vector<std::string> fname_
 
 
 
-bool OpenLF::lightfield::io::load_3DV_structure( std::vector<std::string> fname_list, 
-                                                 std::map< std::string,OpenLF::image::ImageChannel> &channels, 
+bool load_3DV_structure( std::vector<std::string> fname_list,
+                                                 std::map< std::string,image::ImageChannel> &channels,
                                                  Properties *properties )
 
 {
     print(2,"lightfield::io::load_3DV_structure(fname_list,channels,properties) called...");
  
     // create roi if needed
-    OpenLF::image::ROI roi;
+    image::ROI roi;
     roi.height = 0;
     roi.width = 0;
     roi.pos_x = 0;
@@ -449,7 +451,7 @@ bool OpenLF::lightfield::io::load_3DV_structure( std::vector<std::string> fname_
         // load grayscale images
         if(info.isGrayscale()) {
             print(3,"lightfield::io::load_3DV_structure found grayscale image...");
-            channels["bw"] = OpenLF::image::ImageChannel(cams_v*height,width);
+            channels["bw"] = image::ImageChannel(cams_v*height,width);
             //vigra::MultiArray<2,float> tmp(vigra::Shape2(cams_v*info.height(),info.width()));
 
             // loop over images
@@ -492,9 +494,9 @@ bool OpenLF::lightfield::io::load_3DV_structure( std::vector<std::string> fname_
         else if(info.isColor()) {
             print(3,"lightfield::io::load_3DV_structure found color image...");
             
-            channels["r"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_v*height,width)); 
-            channels["g"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_v*height,width)); 
-            channels["b"] = OpenLF::image::ImageChannel(vigra::Shape2(cams_v*height,width));
+            channels["r"] = image::ImageChannel(vigra::Shape2(cams_v*height,width));
+            channels["g"] = image::ImageChannel(vigra::Shape2(cams_v*height,width));
+            channels["b"] = image::ImageChannel(vigra::Shape2(cams_v*height,width));
             
             for(int v=0; v<cams_v; v++) {
 
@@ -553,14 +555,14 @@ bool OpenLF::lightfield::io::load_3DV_structure( std::vector<std::string> fname_
 
 
 
-bool OpenLF::lightfield::io::load_cross_structure( std::vector<std::string> fname_list, 
-                                                   std::map< std::string,OpenLF::image::ImageChannel> &channels, 
+bool load_cross_structure( std::vector<std::string> fname_list,
+                                                   std::map< std::string,image::ImageChannel> &channels,
                                                    Properties *properties )
 {
     print(2,"lightfield::io::load_cross_structure(fname_list,channels,properties) called...");
     
     // create roi if needed
-    OpenLF::image::ROI roi;
+    image::ROI roi;
     roi.height = 0;
     roi.width = 0;
     roi.pos_x = 0;
@@ -620,7 +622,7 @@ bool OpenLF::lightfield::io::load_cross_structure( std::vector<std::string> fnam
         // load grayscale images
         if(info.isGrayscale()) {
             print(3,"lightfield::io::load_CROSS_structure found grayscale image...");
-            channels["bw"] = OpenLF::image::ImageChannel(vigra::Shape2(lf_width,lf_height));
+            channels["bw"] = image::ImageChannel(vigra::Shape2(lf_width,lf_height));
 
             // loop over horizontal images
             for(int h=0; h<cams_h; h++) {
@@ -722,9 +724,9 @@ bool OpenLF::lightfield::io::load_cross_structure( std::vector<std::string> fnam
         else if(info.isColor()) {
             print(3,"lightfield::io::load_CROSS_structure found color image...");
             
-            channels["r"] = OpenLF::image::ImageChannel(vigra::Shape2(lf_width,lf_height)); 
-            channels["g"] = OpenLF::image::ImageChannel(vigra::Shape2(lf_width,lf_height)); 
-            channels["b"] = OpenLF::image::ImageChannel(vigra::Shape2(lf_width,lf_height)); 
+            channels["r"] = image::ImageChannel(vigra::Shape2(lf_width,lf_height));
+            channels["g"] = image::ImageChannel(vigra::Shape2(lf_width,lf_height));
+            channels["b"] = image::ImageChannel(vigra::Shape2(lf_width,lf_height));
             
             // loop over horizontal images
             for(int h=0; h<cams_h; h++) {
@@ -866,8 +868,8 @@ bool OpenLF::lightfield::io::load_cross_structure( std::vector<std::string> fnam
 
 
 
-bool OpenLF::lightfield::io::load_from_filesequence(std::string dir, 
-                                                    std::map< std::string,OpenLF::image::ImageChannel> &channels, 
+bool load_from_filesequence(std::string dir,
+                                                    std::map< std::string,image::ImageChannel> &channels,
                                                     Properties *properties)
 
 /*TEST: test_lightfield::test_loading_from_imagefiles() */
@@ -876,7 +878,7 @@ bool OpenLF::lightfield::io::load_from_filesequence(std::string dir,
      
     // get list of filenames
     std::vector<std::string> list;
-    if(OpenLF::helpers::filenames_from_directory(dir, list)) {
+    if(helpers::filenames_from_directory(dir, list)) {
         
         std::vector<std::string> fname_list;
         for(unsigned int i=0; i<list.size(); i++) {
@@ -909,8 +911,8 @@ bool OpenLF::lightfield::io::load_from_filesequence(std::string dir,
 
 
 
-bool OpenLF::lightfield::io::load_from_hdf5( std::string filename, 
-                     std::map< std::string,OpenLF::image::ImageChannel> &channels,
+bool load_from_hdf5( std::string filename,
+                     std::map< std::string,image::ImageChannel> &channels,
                      Properties *properties ) 
 {    
     print(2,"lightfield::io::load_from_hdf5(filename,channels,properties) called...");
@@ -919,7 +921,7 @@ bool OpenLF::lightfield::io::load_from_hdf5( std::string filename,
     // read all attribute names 
     std::vector<std::string> attrs;
     std::vector<bool> isStr;
-    OpenLF::helpers::get_attribute_list(filename,"LF",attrs,isStr);
+    helpers::get_attribute_list(filename,"LF",attrs,isStr);
     if(attrs.size()==0) throw OpenLF_Exception("No attributes found while loading from hdf5!");
     
     // open hdf5 file
@@ -983,7 +985,7 @@ bool OpenLF::lightfield::io::load_from_hdf5( std::string filename,
                 ds_shape = file.getDatasetShape(ds_tree[id]);
                 
                 // allocate memory and read channels
-                channels[ds_tree[id]] = OpenLF::image::ImageChannel(ds_shape[0],ds_shape[1]);
+                channels[ds_tree[id]] = image::ImageChannel(ds_shape[0],ds_shape[1]);
                 vigra::MultiArray<2,float> *tmp;
                 channels[ds_tree[id]].image(&tmp);
                 file.read(ds_tree[id], *tmp);
@@ -1001,8 +1003,8 @@ bool OpenLF::lightfield::io::load_from_hdf5( std::string filename,
 
 
 
-bool OpenLF::lightfield::io::save_to_hdf5( std::string file_name, 
-                   std::map< std::string,OpenLF::image::ImageChannel> &channels,
+bool save_to_hdf5( std::string file_name,
+                   std::map< std::string,image::ImageChannel> &channels,
                    Properties *properties ) 
 {
     print(2,"lightfield::io::save_to_hdf5(filename,channels,properties) called...");
@@ -1015,7 +1017,7 @@ bool OpenLF::lightfield::io::save_to_hdf5( std::string file_name,
         file.mkdir("LF");
         
         // loop over channels and save each using its key as dataset names
-        for(std::map<std::string, OpenLF::image::ImageChannel>::iterator i = channels.begin(); i != channels.end(); ++i)
+        for(std::map<std::string, image::ImageChannel>::iterator i = channels.begin(); i != channels.end(); ++i)
         {
             std::string key = i->first;
             dset_name = "/LF/"+key;
@@ -1033,30 +1035,30 @@ bool OpenLF::lightfield::io::save_to_hdf5( std::string file_name,
         
         // write obligatory attributes
         if(properties->get_field("type",itmp)) {
-            if(OpenLF::helpers::remove_by_value(fields, "type"))
+            if(helpers::remove_by_value(fields, "type"))
                 file.writeAttribute("/LF/","LF_TYPE",itmp);
             else warning("Missing obligatory property (LF_TYPE) while saving to hdf5!");
         }
         
         if(properties->get_field("width",itmp)) {
-            if(OpenLF::helpers::remove_by_value(fields, "width"))
+            if(helpers::remove_by_value(fields, "width"))
                 file.writeAttribute("/LF/","width",itmp);
             else warning("Missing obligatory property (width) while saving to hdf5!");
         }
         if(properties->get_field("height",itmp)) {
-            if(OpenLF::helpers::remove_by_value(fields, "height"))
+            if(helpers::remove_by_value(fields, "height"))
                 file.writeAttribute("/LF/","height",itmp);
             else warning("Missing obligatory property (height) while saving to hdf5!");
         }
         
         if(properties->get_field("cams_h",itmp)) {
-            if(OpenLF::helpers::remove_by_value(fields, "cams_h"))
+            if(helpers::remove_by_value(fields, "cams_h"))
                 file.writeAttribute("/LF/","cams_h",itmp);
             else warning("Missing obligatory property (cams_h) while saving to hdf5!");
         }
         
         if(properties->get_field("cams_v",itmp)) {
-            if(OpenLF::helpers::remove_by_value(fields, "cams_v"))
+            if(helpers::remove_by_value(fields, "cams_v"))
                 file.writeAttribute("/LF/","cams_v",itmp);
             else warning("Missing obligatory property (cams_v) while saving to hdf5!");
         }
@@ -1083,3 +1085,7 @@ bool OpenLF::lightfield::io::save_to_hdf5( std::string file_name,
     
     return true;
 }
+
+} // namespace io
+} // namespace lightfield
+} // namespace OpenLF

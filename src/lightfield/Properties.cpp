@@ -19,12 +19,15 @@
 
 #include "OpenLF/lightfield/Properties.hpp"
 
-OpenLF::lightfield::Properties::Properties() 
+namespace OpenLF {
+namespace lightfield {
+
+Properties::Properties()
 {
     print(1,"lightfield::Properties() called...");
 }
 
-OpenLF::lightfield::Properties::Properties(std::string filename)
+Properties::Properties(std::string filename)
 {
     print(1,"lightfield::Properties(filename) called...");
     
@@ -43,7 +46,7 @@ OpenLF::lightfield::Properties::Properties(std::string filename)
     else throw Parse_Exception("Properties: error while parsing configfile!");
 }
 
-OpenLF::lightfield::Properties::Properties(const char* filename)
+Properties::Properties(const char* filename)
 {
     print(1,"lightfield::Properties(filename) called...");
     
@@ -62,10 +65,10 @@ OpenLF::lightfield::Properties::Properties(const char* filename)
     else throw Parse_Exception("Properties: error while parsing configfile!");
 }
 
-//OpenLF::Properties::Properties(const Properties& orig) {
+//Properties::Properties(const Properties& orig) {
 //}
 
-OpenLF::lightfield::Properties::~Properties() 
+Properties::~Properties()
 {
     print(1,"lightfield::~Properties() called...");
     number_fields.clear();
@@ -73,7 +76,7 @@ OpenLF::lightfield::Properties::~Properties()
 }
 
 
-void OpenLF::lightfield::Properties::log() 
+void Properties::log()
 {
     std::string text = "\n#### Properties ####\n";
     
@@ -93,7 +96,7 @@ void OpenLF::lightfield::Properties::log()
 
 
 
-OpenLF::lightfield::Properties & OpenLF::lightfield::Properties::operator+=(OpenLF::lightfield::Properties &rhs)
+Properties & Properties::operator+=(Properties &rhs)
 { 
     std::string key;
     double nvalue;
@@ -117,7 +120,7 @@ OpenLF::lightfield::Properties & OpenLF::lightfield::Properties::operator+=(Open
 }
 
 
-void OpenLF::lightfield::Properties::clear() {
+void Properties::clear() {
     number_fields.clear();
     string_fields.clear();
 }
@@ -129,21 +132,21 @@ void OpenLF::lightfield::Properties::clear() {
 
 
 
-int OpenLF::lightfield::Properties::sizeof_num_field()
+int Properties::sizeof_num_field()
 {
     print(1,"lightfield::Properties::sizeof_num_fields() called...");
     
     return number_fields.size();
 }
 
-int OpenLF::lightfield::Properties::sizeof_str_field() 
+int Properties::sizeof_str_field()
 {
     print(1,"lightfield::Properties::sizeof_str_fields() called...");
     
     return string_fields.size();
 }
 
-void OpenLF::lightfield::Properties::get_num_field_keys(std::vector<std::string> &keys)
+void Properties::get_num_field_keys(std::vector<std::string> &keys)
 {
     for(number_fields_iter iter = number_fields.begin(); iter != number_fields.end(); iter++) {
     //for (auto& k : number_fields) {
@@ -151,7 +154,7 @@ void OpenLF::lightfield::Properties::get_num_field_keys(std::vector<std::string>
     }
 }
 
-void OpenLF::lightfield::Properties::get_str_field_keys(std::vector<std::string> &keys)
+void Properties::get_str_field_keys(std::vector<std::string> &keys)
 {
     for(string_fields_iter iter = string_fields.begin(); iter != string_fields.end(); iter++) {
     //for (auto& k : string_fields) {
@@ -161,7 +164,7 @@ void OpenLF::lightfield::Properties::get_str_field_keys(std::vector<std::string>
 
 
 
-bool OpenLF::lightfield::Properties::has_field(std::string fieldname)
+bool Properties::has_field(std::string fieldname)
 {
     for(number_fields_iter iter = number_fields.begin(); iter != number_fields.end(); iter++) {
     //for (auto& k : number_fields) {
@@ -180,7 +183,7 @@ bool OpenLF::lightfield::Properties::has_field(std::string fieldname)
 
 
 
-bool OpenLF::lightfield::Properties::get_lftype(LF_TYPE &lftype)
+bool Properties::get_lftype(LF_TYPE &lftype)
 {
     print(1,"lightfield::Properties::get_lftype(&lftype) called...");
     
@@ -201,7 +204,7 @@ bool OpenLF::lightfield::Properties::get_lftype(LF_TYPE &lftype)
     }
 }
 
-bool OpenLF::lightfield::Properties::get_field(std::string name, std::string &value)
+bool Properties::get_field(std::string name, std::string &value)
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     
@@ -213,7 +216,7 @@ bool OpenLF::lightfield::Properties::get_field(std::string name, std::string &va
     }
 }
 
-bool OpenLF::lightfield::Properties::get_field(std::string name, int &value)
+bool Properties::get_field(std::string name, int &value)
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     
@@ -225,7 +228,7 @@ bool OpenLF::lightfield::Properties::get_field(std::string name, int &value)
     }
 }
 
-bool OpenLF::lightfield::Properties::get_field(std::string name, float &value)
+bool Properties::get_field(std::string name, float &value)
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     
@@ -237,7 +240,7 @@ bool OpenLF::lightfield::Properties::get_field(std::string name, float &value)
     }
 }
 
-bool OpenLF::lightfield::Properties::get_field(std::string name, double &value) 
+bool Properties::get_field(std::string name, double &value)
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     
@@ -249,35 +252,35 @@ bool OpenLF::lightfield::Properties::get_field(std::string name, double &value)
     }
 }
 
-void OpenLF::lightfield::Properties::set_lftype(LF_TYPE lftype)
+void Properties::set_lftype(LF_TYPE lftype)
 {
     print(1,"lightfield::Properties::set_lftype(lftype) called...");
     
     number_fields["type"] = (double)lftype;
 }
 
-void OpenLF::lightfield::Properties::set_field(std::string name, std::string value)
+void Properties::set_field(std::string name, std::string value)
 {
     print(1,"lightfield::Properties::set_field(name,value) called...");
     
     string_fields[name] = value;
 }
 
-void OpenLF::lightfield::Properties::set_field(std::string name, int value)
+void Properties::set_field(std::string name, int value)
 {
     print(1,"lightfield::Properties::set_field(name,value) called...");
     
     number_fields[name] = (double)value;
 }
 
-void OpenLF::lightfield::Properties::set_field(std::string name, float value)
+void Properties::set_field(std::string name, float value)
 {
     print(1,"lightfield::Properties::set_field(name,value) called...");
     
     number_fields[name] = (double)value;
 }
 
-void OpenLF::lightfield::Properties::set_field(std::string name, double value)
+void Properties::set_field(std::string name, double value)
 {
     print(1,"lightfield::Properties::set_field(name,value) called...");
     
@@ -293,7 +296,7 @@ void OpenLF::lightfield::Properties::set_field(std::string name, double value)
 
 
 
-void OpenLF::lightfield::Properties::parse(const char* filename)
+void Properties::parse(const char* filename)
 {
     print(1,"lightfield::Properties::parse(filename) called...");
     
@@ -316,7 +319,7 @@ void OpenLF::lightfield::Properties::parse(const char* filename)
 }
     
 
-void OpenLF::lightfield::Properties::parse(std::string filename)
+void Properties::parse(std::string filename)
 {
     print(1,"lightfield::Properties::parse(filename) called...");
     
@@ -324,7 +327,7 @@ void OpenLF::lightfield::Properties::parse(std::string filename)
 }
 
 
-void OpenLF::lightfield::Properties::__parse__(std::ifstream &cfgfile)
+void Properties::__parse__(std::ifstream &cfgfile)
 {
     print(1,"lightfield::Properties::__parse__(cfgfile) called...");
     
@@ -346,11 +349,11 @@ void OpenLF::lightfield::Properties::__parse__(std::ifstream &cfgfile)
                     boost::split( fields, line, boost::is_any_of(":="), boost::token_compress_on );
 
                     std::string tmp;
-                    OpenLF::helpers::remove_leading_spaces_from_string(fields[0],tmp);
+                    helpers::remove_leading_spaces_from_string(fields[0],tmp);
                     fields[0]=tmp;
                     if(fields.size()>1) {
                         size_t pos=-1;
-                        OpenLF::helpers::remove_leading_spaces_from_string(fields[1],tmp);
+                        helpers::remove_leading_spaces_from_string(fields[1],tmp);
                         fields[1]=tmp;
                         
                         // if value is in quotation marks handle as string else as number 
@@ -372,3 +375,5 @@ void OpenLF::lightfield::Properties::__parse__(std::ifstream &cfgfile)
     }        
 }
 
+} // namespace lightfield
+} // namespace OpenLF

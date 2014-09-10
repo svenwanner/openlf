@@ -97,7 +97,7 @@ void linear_range_mapping(ImageChannel& img_channel, vigra::MultiArray<2, vigra:
  \param channels map of string labels as keys and Channel instance as data 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-bool imread(std::string filename, std::map<std::string,OpenLF::image::ImageChannel> &img_channel);
+bool imread(std::string filename, std::map<std::string,ImageChannel> &img_channel);
 
 
 //! read an region of interest of an image from file and store channels in map structure
@@ -110,7 +110,7 @@ bool imread(std::string filename, std::map<std::string,OpenLF::image::ImageChann
  \param channels map of string labels as keys and Channel instance as data 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-bool imread(std::string filename, ROI roi, std::map<std::string,OpenLF::image::ImageChannel> &img_channel);
+bool imread(std::string filename, ROI roi, std::map<std::string,ImageChannel> &img_channel);
 
 
 //! saves an image to file

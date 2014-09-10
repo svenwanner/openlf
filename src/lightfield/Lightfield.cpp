@@ -21,12 +21,14 @@
 #include "OpenLF/image/utils.hpp"
 
 
+namespace OpenLF {
+namespace lightfield {
 
 
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-OpenLF::lightfield::Lightfield::Lightfield() 
+Lightfield::Lightfield()
 {
     print(1,"lightfield::Lightfield::Lightfield() called...");
 }
@@ -34,7 +36,7 @@ OpenLF::lightfield::Lightfield::Lightfield()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-OpenLF::lightfield::Lightfield::Lightfield(std::string filename) 
+Lightfield::Lightfield(std::string filename)
 {
     print(1,"lightfield::Lightfield::Lightfield(filename) called...");
     
@@ -44,13 +46,13 @@ OpenLF::lightfield::Lightfield::Lightfield(std::string filename)
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-//OpenLF::lightfield::Lightfield::Lightfield(const Lightfield& orig) {
+//Lightfield::Lightfield(const Lightfield& orig) {
 //}
 
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-OpenLF::lightfield::Lightfield::~Lightfield() {
+Lightfield::~Lightfield() {
 }
 
 
@@ -67,7 +69,7 @@ OpenLF::lightfield::Lightfield::~Lightfield() {
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool OpenLF::lightfield::Lightfield::open(std::string filename) 
+bool Lightfield::open(std::string filename)
 {
     print(1,"lightfield::Lightfield::open(filename) called");
     
@@ -75,13 +77,13 @@ bool OpenLF::lightfield::Lightfield::open(std::string filename)
     channels.clear();
     
     std::string ftype;
-    ftype = OpenLF::helpers::find_ftype(filename);
+    ftype = helpers::find_ftype(filename);
     
     if(ftype=="h5" || ftype=="lf" || ftype=="hdf5") {
-        return OpenLF::lightfield::io::load_from_hdf5( filename, channels, &properties ); 
+        return io::load_from_hdf5( filename, channels, &properties );
     }
     else if(ftype=="cfg") {
-        dataHandler = new OpenLF::lightfield::io::FileHandler(filename,&properties);
+        dataHandler = new io::FileHandler(filename,&properties);
         return dataHandler->readData(channels);
     }
     else {
@@ -94,7 +96,7 @@ bool OpenLF::lightfield::Lightfield::open(std::string filename)
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool OpenLF::lightfield::Lightfield::open(const char* filename) 
+bool Lightfield::open(const char* filename)
 {
     return open(std::string(filename));
 }
@@ -114,7 +116,7 @@ bool OpenLF::lightfield::Lightfield::open(const char* filename)
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool OpenLF::lightfield::Lightfield::hasRGB()
+bool Lightfield::hasRGB()
 {
     if (channels.find("r") == channels.end()) return false;
     if (channels.find("g") == channels.end()) return false;
@@ -126,7 +128,7 @@ bool OpenLF::lightfield::Lightfield::hasRGB()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool OpenLF::lightfield::Lightfield::hasBW()
+bool Lightfield::hasBW()
 {
     if (channels.find("bw") == channels.end()) return false;
     return true;
@@ -136,7 +138,7 @@ bool OpenLF::lightfield::Lightfield::hasBW()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool OpenLF::lightfield::Lightfield::hasChannel(std::string name)
+bool Lightfield::hasChannel(std::string name)
 {
     if (channels.find(name) == channels.end()) return false;
     else return true;
@@ -146,11 +148,11 @@ bool OpenLF::lightfield::Lightfield::hasChannel(std::string name)
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-std::vector<std::string> OpenLF::lightfield::Lightfield::getListOfChannelNames()
+std::vector<std::string> Lightfield::getListOfChannelNames()
 {
   
     std::vector<std::string> v;
-    for(std::map<std::string,OpenLF::image::ImageChannel>::iterator it = channels.begin(); it != channels.end(); ++it) 
+    for(std::map<std::string,image::ImageChannel>::iterator it = channels.begin(); it != channels.end(); ++it)
         v.push_back(it->first);
         return v;
 }
@@ -159,7 +161,7 @@ std::vector<std::string> OpenLF::lightfield::Lightfield::getListOfChannelNames()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool OpenLF::lightfield::Lightfield::hasProperty(std::string name) {
+bool Lightfield::hasProperty(std::string name) {
     return properties.has_field(name);
 }
 
@@ -167,7 +169,7 @@ bool OpenLF::lightfield::Lightfield::hasProperty(std::string name) {
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool OpenLF::lightfield::Lightfield::getProperty(std::string name, int &value) 
+bool Lightfield::getProperty(std::string name, int &value)
 {
     return properties.get_field(name,value);
 }
@@ -176,7 +178,7 @@ bool OpenLF::lightfield::Lightfield::getProperty(std::string name, int &value)
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool OpenLF::lightfield::Lightfield::getProperty(std::string name, float &value)
+bool Lightfield::getProperty(std::string name, float &value)
 {
     return properties.get_field(name,value);
 }
@@ -185,7 +187,7 @@ bool OpenLF::lightfield::Lightfield::getProperty(std::string name, float &value)
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool OpenLF::lightfield::Lightfield::getProperty(std::string name, double &value)
+bool Lightfield::getProperty(std::string name, double &value)
 {
     return properties.get_field(name,value);
 }
@@ -194,7 +196,7 @@ bool OpenLF::lightfield::Lightfield::getProperty(std::string name, double &value
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool OpenLF::lightfield::Lightfield::getProperty(std::string name, std::string &value)
+bool Lightfield::getProperty(std::string name, std::string &value)
 {
     return properties.get_field(name,value);
 }
@@ -203,7 +205,7 @@ bool OpenLF::lightfield::Lightfield::getProperty(std::string name, std::string &
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-LF_TYPE OpenLF::lightfield::Lightfield::type()
+LF_TYPE Lightfield::type()
 {
     LF_TYPE lftype;
     properties.get_lftype(lftype);
@@ -214,7 +216,7 @@ LF_TYPE OpenLF::lightfield::Lightfield::type()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-int OpenLF::lightfield::Lightfield::imgWidth()
+int Lightfield::imgWidth()
 {
     int sx;
     properties.get_field("width",sx);
@@ -225,7 +227,7 @@ int OpenLF::lightfield::Lightfield::imgWidth()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-int OpenLF::lightfield::Lightfield::imgHeight()
+int Lightfield::imgHeight()
 {
     int sy;
     properties.get_field("height",sy);
@@ -236,7 +238,7 @@ int OpenLF::lightfield::Lightfield::imgHeight()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-int OpenLF::lightfield::Lightfield::width()
+int Lightfield::width()
 {
     int sx;
     properties.get_field("width",sx);
@@ -247,7 +249,7 @@ int OpenLF::lightfield::Lightfield::width()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-int OpenLF::lightfield::Lightfield::height()
+int Lightfield::height()
 {
     int sy;
     properties.get_field("height",sy);
@@ -258,7 +260,7 @@ int OpenLF::lightfield::Lightfield::height()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-int OpenLF::lightfield::Lightfield::cams_h()
+int Lightfield::cams_h()
 {
     int sh;
     properties.get_field("cams_h",sh);
@@ -269,7 +271,7 @@ int OpenLF::lightfield::Lightfield::cams_h()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-int OpenLF::lightfield::Lightfield::cams_v()
+int Lightfield::cams_v()
 {
     int sv;
     properties.get_field("cams_v",sv);
@@ -291,7 +293,7 @@ int OpenLF::lightfield::Lightfield::cams_v()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-float OpenLF::lightfield::Lightfield::getLoxel(int h, int v, int x, int y, std::string channel_name)
+float Lightfield::getLoxel(int h, int v, int x, int y, std::string channel_name)
 {
     float val = 0;
     
@@ -334,7 +336,7 @@ float OpenLF::lightfield::Lightfield::getLoxel(int h, int v, int x, int y, std::
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void OpenLF::lightfield::Lightfield::getLoxel(int h, int v, int x, int y, std::vector<std::string> channel_names, std::vector<float> &values)
+void Lightfield::getLoxel(int h, int v, int x, int y, std::vector<std::string> channel_names, std::vector<float> &values)
 {
     if(!values.empty())
         values.clear();
@@ -359,7 +361,7 @@ void OpenLF::lightfield::Lightfield::getLoxel(int h, int v, int x, int y, std::v
  * 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-float* OpenLF::lightfield::Lightfield::channel_ptr(std::string channel_name) {
+float* Lightfield::channel_ptr(std::string channel_name) {
     print(1,"lightfield::Lightfield::channel_ptr(channel_name,channel_data) called...");
     
     // check if channel exists
@@ -371,7 +373,7 @@ float* OpenLF::lightfield::Lightfield::channel_ptr(std::string channel_name) {
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void OpenLF::lightfield::Lightfield::data(std::map<std::string,OpenLF::image::ImageChannel> **channels) {
+void Lightfield::data(std::map<std::string,image::ImageChannel> **channels) {
     print(1,"lightfield::Lightfield::data(channels) called...");
     
     *channels = &this->channels;
@@ -381,7 +383,7 @@ void OpenLF::lightfield::Lightfield::data(std::map<std::string,OpenLF::image::Im
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-std::map<std::string,OpenLF::image::ImageChannel> * OpenLF::lightfield::Lightfield::data() {
+std::map<std::string,image::ImageChannel> * Lightfield::data() {
     print(1,"lightfield::Lightfield::data(channels) called...");
     
     return &this->channels;
@@ -393,7 +395,7 @@ std::map<std::string,OpenLF::image::ImageChannel> * OpenLF::lightfield::Lightfie
  If the channel key doesn't exist a NULL pointer is returned.
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-OpenLF::image::ImageChannel *OpenLF::lightfield::Lightfield::data(std::string channel_name) {
+image::ImageChannel *Lightfield::data(std::string channel_name) {
     print(1,"lightfield::Lightfield::data(channel_name,channel_data) called...");
     
     // check if channel exists
@@ -407,7 +409,7 @@ OpenLF::image::ImageChannel *OpenLF::lightfield::Lightfield::data(std::string ch
  If the channel key doesn't exist a NULL pointer is returned.
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void OpenLF::lightfield::Lightfield::data(std::string channel_name, OpenLF::image::ImageChannel **channel_data) {
+void Lightfield::data(std::string channel_name, image::ImageChannel **channel_data) {
     print(1,"lightfield::Lightfield::data(channel_name,channel_data) called...");
     
     // check if channel exists
@@ -421,13 +423,13 @@ void OpenLF::lightfield::Lightfield::data(std::string channel_name, OpenLF::imag
  the size of the light field.
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void OpenLF::lightfield::Lightfield::allocateChannel(std::string channel_name) 
+void Lightfield::allocateChannel(std::string channel_name)
 {
     print(1,"lightfield::Lightfield::allocateChannel(channel_name) called...");
     
     // check if channel doesn't exists otherwise throw Exception
     if (channels.find(channel_name) == channels.end()) {
-        channels[channel_name] = OpenLF::image::ImageChannel(width(),height());
+        channels[channel_name] = image::ImageChannel(width(),height());
     }
     else {
        throw OpenLF_Exception("Cannot allocate channel that already exist!");
@@ -440,7 +442,7 @@ void OpenLF::lightfield::Lightfield::allocateChannel(std::string channel_name)
  in the internal properties instance the internal value is overwritten.
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void OpenLF::lightfield::Lightfield::appendProperties(OpenLF::lightfield::Properties &properties) {
+void Lightfield::appendProperties(Properties &properties) {
     this->properties += properties;
 }
 
@@ -457,7 +459,7 @@ void OpenLF::lightfield::Lightfield::appendProperties(OpenLF::lightfield::Proper
  *  
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void OpenLF::lightfield::Lightfield::getImage(int h, int v, std::string channel_name, vigra::MultiArrayView<2,float> &img) 
+void Lightfield::getImage(int h, int v, std::string channel_name, vigra::MultiArrayView<2,float> &img)
 {
     // check if channel exists
     if (channels.find(channel_name) == channels.end())
@@ -497,7 +499,7 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, std::string channel_
  *  
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,float> &img) 
+void Lightfield::getImage(int h, int v, vigra::MultiArray<2,float> &img)
 {
     if(hasRGB()) {
         vigra::MultiArrayView<2,float> img_r;
@@ -507,7 +509,7 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
         vigra::MultiArrayView<2,float> img_b;
         getImage(h,v,"b",img_b);
         
-        OpenLF::image::utils::mergeChannels(img_r,img_b,img_b,img);
+        image::utils::mergeChannels(img_r,img_b,img_b,img);
     }
     else if(hasBW()) {
         vigra::MultiArrayView<2,float> img_bw;
@@ -532,7 +534,7 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
  *  
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<float>> &img) 
+void Lightfield::getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<float>> &img)
 {
     if(!img.hasData())
     {
@@ -552,7 +554,7 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
         vigra::MultiArrayView<2,float> img_b;
         getImage(h,v,"b",img_b);
         
-        OpenLF::image::utils::mergeChannels(img_r,img_g,img_b,img);
+        image::utils::mergeChannels(img_r,img_g,img_b,img);
     }
     else if(hasBW())
     {
@@ -588,7 +590,7 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
  *  
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> &img) 
+void Lightfield::getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> &img)
 {
     if(!img.hasData())
     {
@@ -612,11 +614,11 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
         vigra::MultiArray<2,float> fimg_g = vigra::MultiArrayView<2,float>(img_g);
         vigra::MultiArray<2,float> fimg_b = vigra::MultiArrayView<2,float>(img_b);
         
-        OpenLF::image::io::linear_range_mapping(img_r,fimg_r);
-        OpenLF::image::io::linear_range_mapping(img_g,fimg_g);
-        OpenLF::image::io::linear_range_mapping(img_b,fimg_b);
+        image::io::linear_range_mapping(img_r,fimg_r);
+        image::io::linear_range_mapping(img_g,fimg_g);
+        image::io::linear_range_mapping(img_b,fimg_b);
         
-        OpenLF::image::utils::mergeChannels(fimg_r,fimg_g,fimg_b,img);
+        image::utils::mergeChannels(fimg_r,fimg_g,fimg_b,img);
     }
     else if(hasBW())
     {
@@ -624,7 +626,7 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
         getImage(h,v,"bw",img_bw);
         
         vigra::MultiArray<2,float> fimg_bw = vigra::MultiArrayView<2,float>(img_bw);
-        OpenLF::image::io::linear_range_mapping(img_bw,fimg_bw);
+        image::io::linear_range_mapping(img_bw,fimg_bw);
         
         for(int c=0; c<3; c++)
         {
@@ -656,7 +658,7 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void OpenLF::lightfield::Lightfield::getHorizontalEpi(int y, int v, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img)
+void Lightfield::getHorizontalEpi(int y, int v, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img)
 {
     if(hasRGB()) {
         vigra::MultiArrayView<2,float> r = getHorizontalEpiChannel("r", y, v, focus);
@@ -704,7 +706,7 @@ void OpenLF::lightfield::Lightfield::getHorizontalEpi(int y, int v, int focus, v
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void OpenLF::lightfield::Lightfield::getVerticalEpi(int x, int h, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img)
+void Lightfield::getVerticalEpi(int x, int h, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img)
 {
     if(hasRGB()) {
         vigra::MultiArrayView<2,float> r = getVerticalEpiChannel("r", x, h, focus);
@@ -752,7 +754,7 @@ void OpenLF::lightfield::Lightfield::getVerticalEpi(int x, int h, int focus, vig
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getHorizontalEpiChannel(std::string channel_name, int y, int v, int focus)
+vigra::MultiArrayView<2,float> Lightfield::getHorizontalEpiChannel(std::string channel_name, int y, int v, int focus)
 {
     vigra::MultiArrayView<2,float> tmp;
       
@@ -787,7 +789,7 @@ vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getHorizontalEpiC
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
- vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield::getVerticalEpiChannel(std::string channel_name, int x, int h, int focus)
+ vigra::MultiArrayView<2,float> Lightfield::getVerticalEpiChannel(std::string channel_name, int x, int h, int focus)
 {
     vigra::MultiArrayView<2,float> tmp;
     
@@ -827,7 +829,7 @@ the horizontal access.
 
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-view_2D OpenLF::lightfield::Lightfield::_getHorizontalEpiChannel_4D(int v, int y, std::string channel_name, int focus) 
+view_2D Lightfield::_getHorizontalEpiChannel_4D(int v, int y, std::string channel_name, int focus)
 {
     // if channel exist
     if (hasChannel(channel_name)) {
@@ -851,7 +853,7 @@ the horizontal access.
 
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-view_2D OpenLF::lightfield::Lightfield::_getVerticalEpiChannel_3DV(int x, std::string channel_name, int focus) 
+view_2D Lightfield::_getVerticalEpiChannel_3DV(int x, std::string channel_name, int focus)
 {
     // if channel exist
     if (hasChannel(channel_name)) {
@@ -874,7 +876,7 @@ the horizontal access.
 
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-view_2D OpenLF::lightfield::Lightfield::_getVerticalEpiChannel_Cross(int x, std::string channel_name, int focus) 
+view_2D Lightfield::_getVerticalEpiChannel_Cross(int x, std::string channel_name, int focus)
 {
     // if channel exist
     if (hasChannel(channel_name)) {
@@ -903,7 +905,7 @@ For optimal performance during computation transpose the whole lightfield and us
 
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-view_2D OpenLF::lightfield::Lightfield::_getVerticalEpiChannel_4D(int h, int x, std::string channel_name, int focus) 
+view_2D Lightfield::_getVerticalEpiChannel_4D(int h, int x, std::string channel_name, int focus)
 {
     // if channel exist
     if (hasChannel(channel_name)) {
@@ -935,7 +937,7 @@ view_2D OpenLF::lightfield::Lightfield::_getVerticalEpiChannel_4D(int h, int x, 
 /*!
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-OpenLF::lightfield::EpiIterator::EpiIterator(OpenLF::lightfield::Lightfield *lf, DIRECTION direction) 
+EpiIterator::EpiIterator(Lightfield *lf, DIRECTION direction)
 {
     this->lf = lf;
     this->direction = direction;
@@ -946,7 +948,7 @@ OpenLF::lightfield::EpiIterator::EpiIterator(OpenLF::lightfield::Lightfield *lf,
 /*!
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-OpenLF::lightfield::EpiIterator::~EpiIterator() 
+EpiIterator::~EpiIterator()
 {
     
 }
@@ -955,16 +957,16 @@ OpenLF::lightfield::EpiIterator::~EpiIterator()
 /*!
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-OpenLF::lightfield::EpiIterator* OpenLF::lightfield::Lightfield::createEpiIterator(DIRECTION direction)
+EpiIterator* Lightfield::createEpiIterator(DIRECTION direction)
 {
-    return new OpenLF::lightfield::EpiIterator(this,direction);
+    return new EpiIterator(this,direction);
 }
 
 
 /*!
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void OpenLF::lightfield::EpiIterator::first()
+void EpiIterator::first()
 {
     camera_index = 0;
     epi_index = 0;
@@ -974,7 +976,7 @@ void OpenLF::lightfield::EpiIterator::first()
 /*!
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void OpenLF::lightfield::EpiIterator::next()
+void EpiIterator::next()
 {
     epi_index++;
     
@@ -1053,7 +1055,7 @@ void OpenLF::lightfield::EpiIterator::next()
 /*!
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool OpenLF::lightfield::EpiIterator::end()
+bool EpiIterator::end()
 {
     return finished;
 }
@@ -1062,7 +1064,7 @@ bool OpenLF::lightfield::EpiIterator::end()
 /*!
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-view_2D OpenLF::lightfield::EpiIterator::get(std::string channel_name, int focus)
+view_2D EpiIterator::get(std::string channel_name, int focus)
 {
     if(!this->lf->hasChannel(channel_name))
         throw OpenLF_Exception("EpiIterator::get -> channel not available!");
@@ -1077,7 +1079,5 @@ view_2D OpenLF::lightfield::EpiIterator::get(std::string channel_name, int focus
 
 
 
-
-
-
-
+} // namespace lightfield
+} // namespace OpenLF

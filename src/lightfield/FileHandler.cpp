@@ -19,36 +19,40 @@
 
 #include "OpenLF/lightfield/FileHandler.hpp"
 
+namespace OpenLF {
+namespace lightfield {
+namespace io {
 
-OpenLF::lightfield::io::FileHandler::FileHandler() : DataHandler()
+
+FileHandler::FileHandler() : DataHandler()
 {
     print(1,"lightfield::io::FileHandler::FileHandler() called...");
     
     disc_source = "";
 }
 
-OpenLF::lightfield::io::FileHandler::FileHandler(std::string config_filename, Properties *properties) : DataHandler(config_filename,properties)
+FileHandler::FileHandler(std::string config_filename, Properties *properties) : DataHandler(config_filename,properties)
 {
     print(1,"lightfield::io::FileHandler::FileHandler(config_filename,*properties) called...");
     
     disc_source = "";
 }
 
-OpenLF::lightfield::io::FileHandler::FileHandler(const char* config_filename, Properties *properties) : DataHandler(config_filename,properties)
+FileHandler::FileHandler(const char* config_filename, Properties *properties) : DataHandler(config_filename,properties)
 {
     print(1,"lightfield::io::FileHandler::FileHandler(config_filename,*properties) called...");
     
     disc_source = "";
 }
 
-OpenLF::lightfield::io::FileHandler::~FileHandler() 
+FileHandler::~FileHandler()
 {
     print(1,"lightfield::io::FileHandler::~FileHandler() called...");
 }
 
 
 
-bool OpenLF::lightfield::io::FileHandler::readData(std::map<std::string,OpenLF::image::ImageChannel>& channels) 
+bool FileHandler::readData(std::map<std::string,image::ImageChannel>& channels)
 {
     print(1,"lightfield::io:::FileHandler::readData(channels) called...");
     
@@ -83,7 +87,7 @@ bool OpenLF::lightfield::io::FileHandler::readData(std::map<std::string,OpenLF::
  * If the source is not an absolute path the method tries to check if the path is a valid
  * path relative to the location of the configfile.
  */
-bool OpenLF::lightfield::io::FileHandler::__readFromDisc__(std::map<std::string,OpenLF::image::ImageChannel>& channels) 
+bool FileHandler::__readFromDisc__(std::map<std::string,image::ImageChannel>& channels)
 {
     print(1,"lightfield::io::FileHandler::read_from_disc(channels) called...");
     
@@ -92,7 +96,7 @@ bool OpenLF::lightfield::io::FileHandler::__readFromDisc__(std::map<std::string,
     
     // check if source is path or filename by checking the filetype
     std::string source_check;
-    source_check = OpenLF::helpers::find_ftype(disc_source);
+    source_check = helpers::find_ftype(disc_source);
     
     
     //##########################################################################
@@ -105,18 +109,18 @@ bool OpenLF::lightfield::io::FileHandler::__readFromDisc__(std::map<std::string,
         if (boost::filesystem::exists( disc_source )) {
             print(2,"lightfield::io::FileHandler::read_from_disc(channels) got an absolute hdf5 path...");
                 
-            return OpenLF::lightfield::io::load_from_hdf5(disc_source,channels,properties);
+            return load_from_hdf5(disc_source,channels,properties);
         }
         // if not, check if path of configfile plus the value of source is a valid filename
         else {
             // make an absolute path from configfile name and the string relative path from configfile source variable
-            std::string abs_path = OpenLF::helpers::make_absolute_path(config_filename,disc_source);
+            std::string abs_path = helpers::make_absolute_path(config_filename,disc_source);
             
             // check if this is now a valid path
             if(boost::filesystem::exists(abs_path)) {
                 print(2,"lightfield::io::FileHandler::read_from_disc(channels) got an relative image path...");
             
-                return OpenLF::lightfield::io::load_from_hdf5(abs_path,channels,properties);
+                return load_from_hdf5(abs_path,channels,properties);
             }
             // if not there is nothing more to do
             else {
@@ -140,18 +144,18 @@ bool OpenLF::lightfield::io::FileHandler::__readFromDisc__(std::map<std::string,
         if (boost::filesystem::exists( disc_source )) {
             print(2,"lightfield::io::FileHandler::read_from_disc(channels) got an absolute image path...");
                 
-            return OpenLF::image::io::imread(disc_source,channels);
+            return image::io::imread(disc_source,channels);
         }
         // if not, check if path of configfile plus the value of source is a valid filename
         else {
             // make an absolute path from configfile name and the string relative path from configfile source variable
-            std::string abs_path = OpenLF::helpers::make_absolute_path(config_filename,disc_source);
+            std::string abs_path = helpers::make_absolute_path(config_filename,disc_source);
             
             // check if this is now a valid path
             if(boost::filesystem::exists(abs_path)) {
                 print(2,"lightfield::io::FileHandler::read_from_disc(channels) got an relative image path...");
             
-                return OpenLF::image::io::imread(abs_path,channels);
+                return image::io::imread(abs_path,channels);
             }
             // if not there is nothing more to do
             else {
@@ -173,17 +177,17 @@ bool OpenLF::lightfield::io::FileHandler::__readFromDisc__(std::map<std::string,
         // if the source property in the configfile is a absolute path read from file sequence
         if(boost::filesystem::is_directory(source_check)) {
             print(2,"lightfield::io::FileHandler::read_from_disc(channels) got an absolute path...");
-            return OpenLF::lightfield::io::load_from_filesequence(source_check,channels,properties);
+            return load_from_filesequence(source_check,channels,properties);
         }
         // if not, check if path of configfile plus the value of source is a valid path
         else {
             // make an absolute path from configfile name and the string relative path from configfile source variable
-            std::string abs_path = OpenLF::helpers::make_absolute_path(config_filename,source_check);
+            std::string abs_path = helpers::make_absolute_path(config_filename,source_check);
             
             // check if this is now a valid path
             if(boost::filesystem::is_directory(abs_path)) {
                 print(2,"lightfield::io::FileHandler::read_from_disc(channels) got an relative path...");
-                return OpenLF::lightfield::io::load_from_filesequence(abs_path,channels,properties);
+                return load_from_filesequence(abs_path,channels,properties);
             }
             // if not there is nothing more to do
             else {
@@ -195,4 +199,7 @@ bool OpenLF::lightfield::io::FileHandler::__readFromDisc__(std::map<std::string,
     }
 }
 
+} // namespace io
+} // namespace lightfield
+} // namespace OpenLF
 

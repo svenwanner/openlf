@@ -20,15 +20,18 @@
 #include "OpenLF/lightfield/DataHandler.hpp"
 
 
+namespace OpenLF {
+namespace lightfield {
+namespace io {
 
-OpenLF::lightfield::io::DataHandler::DataHandler() 
+DataHandler::DataHandler()
 {
     print(1,"lightfield::io::DataHandler::DataHandler() called...");
     
     type = "";
 }
 
-OpenLF::lightfield::io::DataHandler::DataHandler(std::string config_filename, Properties *properties) 
+DataHandler::DataHandler(std::string config_filename, Properties *properties)
 {
     print(1,"lightfield::io::DataHandler::DataHandler(config_filename,*properties) called...");
     
@@ -38,7 +41,7 @@ OpenLF::lightfield::io::DataHandler::DataHandler(std::string config_filename, Pr
     setConfigfile(config_filename);
 }
 
-OpenLF::lightfield::io::DataHandler::DataHandler(const char* config_filename, Properties *properties) 
+DataHandler::DataHandler(const char* config_filename, Properties *properties)
 {
     print(1,"lightfield::io::DataHandler::DataHandler(config_filename,*properties) called...");
     
@@ -48,7 +51,7 @@ OpenLF::lightfield::io::DataHandler::DataHandler(const char* config_filename, Pr
     setConfigfile(config_filename);
 }
 
-OpenLF::lightfield::io::DataHandler::~DataHandler() 
+DataHandler::~DataHandler()
 {
     print(1,"lightfield::io::DataHandler::~DataHandler() called...");
     
@@ -69,13 +72,13 @@ OpenLF::lightfield::io::DataHandler::~DataHandler()
 * interpreted as a filename of a single image file containing the light field, a hdf5 file
 * or a path storing the images as single image files. 
 */
-void OpenLF::lightfield::io::DataHandler::setConfigfile(std::string config_filename)
+void DataHandler::setConfigfile(std::string config_filename)
 {
     print(1,"lightfield::io:::DataHandler::set_configfile(config_filename,&properties) called...");
     
     this->config_filename = config_filename;
     
-    std::string ftype = OpenLF::helpers::find_ftype(config_filename);
+    std::string ftype = helpers::find_ftype(config_filename);
     
     
     if(ftype=="cfg") {
@@ -104,10 +107,14 @@ void OpenLF::lightfield::io::DataHandler::setConfigfile(std::string config_filen
     }
 }
  
-void OpenLF::lightfield::io::DataHandler::setConfigfile(const char* config_filename)
+void DataHandler::setConfigfile(const char* config_filename)
 {
     print(1,"lightfield::io:::DataHandler::set_configfile(config_filename) called...");
     
     std::string tmp(config_filename);
     setConfigfile(tmp);
 }
+
+} // namespace io
+} // namespace lightfield
+} // namespace OpenLF

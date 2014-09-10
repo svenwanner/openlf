@@ -19,10 +19,12 @@
 
 #include "OpenLF/image/io.hpp"
 
+namespace OpenLF {
+namespace image {
+namespace io {
 
 
-
-void OpenLF::image::io::reduce_channels(std::map<std::string,OpenLF::image::ImageChannel> &channels,std::vector<std::string> keys_to_keep)
+void reduce_channels(std::map<std::string,ImageChannel> &channels,std::vector<std::string> keys_to_keep)
 {
     print(1,"image::io::reduce_channels(channels,keys_to_keep) called...");
     
@@ -30,7 +32,7 @@ void OpenLF::image::io::reduce_channels(std::map<std::string,OpenLF::image::Imag
     if(keys_to_keep.size() == 0) return;
 
     // loop through map and erase channels not in keys_to_keep
-    for(std::map<std::string, OpenLF::image::ImageChannel>::iterator i = channels.begin(); i != channels.end(); ++i)
+    for(std::map<std::string, ImageChannel>::iterator i = channels.begin(); i != channels.end(); ++i)
     {
         // get key
         std::string key = i->first;
@@ -52,7 +54,7 @@ void OpenLF::image::io::reduce_channels(std::map<std::string,OpenLF::image::Imag
 
 
 
-void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2, vigra::UInt8>& img) 
+void linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2, vigra::UInt8>& img)
 {
     print(1,"image::io::linear_range_mapping(fimg,img) called...");
     
@@ -88,7 +90,7 @@ void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, v
 }
 
 
-void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2,float>& img) 
+void linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2,float>& img)
 {
     print(1,"image::io::linear_range_mapping(fimg,img) called...");
     
@@ -124,7 +126,7 @@ void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, v
 }
 
 
-void OpenLF::image::io::linear_range_mapping(vigra::MultiArrayView<2,float>& fimg, vigra::MultiArray<2,float>& img) 
+void linear_range_mapping(vigra::MultiArrayView<2,float>& fimg, vigra::MultiArray<2,float>& img)
 {
     print(1,"image::io::linear_range_mapping(fimg,img) called...");
     
@@ -160,7 +162,7 @@ void OpenLF::image::io::linear_range_mapping(vigra::MultiArrayView<2,float>& fim
 }
 
 
-void OpenLF::image::io::linear_range_mapping(OpenLF::image::ImageChannel& img_channel, vigra::MultiArray<2, vigra::UInt8>& img) 
+void linear_range_mapping(ImageChannel& img_channel, vigra::MultiArray<2, vigra::UInt8>& img)
 {
     print(1,"image::io::linear_range_mapping(img_channel,img) called...");
     
@@ -200,7 +202,7 @@ void OpenLF::image::io::linear_range_mapping(OpenLF::image::ImageChannel& img_ch
 
 
 
-bool OpenLF::image::io::imread(std::string filename, std::map<std::string,OpenLF::image::ImageChannel> &img_channel)
+bool imread(std::string filename, std::map<std::string,ImageChannel> &img_channel)
 {
     print(2,"image::io::imread(filename,channels) called...");
     
@@ -229,7 +231,7 @@ bool OpenLF::image::io::imread(std::string filename, std::map<std::string,OpenLF
             }  
             
             // create channel and copy data into object and map to range [1,0]
-            img_channel["bw"] = OpenLF::image::ImageChannel();
+            img_channel["bw"] = ImageChannel();
             img_channel["bw"].init(info.width(),info.height(),in.data());
         }
         // load color images
@@ -237,9 +239,9 @@ bool OpenLF::image::io::imread(std::string filename, std::map<std::string,OpenLF
             print(3,"image::io::imread(string,map) found color image...");
 
             // create channels
-            img_channel["r"] = OpenLF::image::ImageChannel(info.width(),info.height()); 
-            img_channel["g"] = OpenLF::image::ImageChannel(info.width(),info.height()); 
-            img_channel["b"] = OpenLF::image::ImageChannel(info.width(),info.height()); 
+            img_channel["r"] = ImageChannel(info.width(),info.height());
+            img_channel["g"] = ImageChannel(info.width(),info.height());
+            img_channel["b"] = ImageChannel(info.width(),info.height());
 
             // uint rgb image to import data from file
             vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in(info.shape());
@@ -286,7 +288,7 @@ bool OpenLF::image::io::imread(std::string filename, std::map<std::string,OpenLF
 
 
 
-bool OpenLF::image::io::imread(std::string filename, OpenLF::image::ROI roi, std::map<std::string,OpenLF::image::ImageChannel> &img_channel)
+bool imread(std::string filename, ROI roi, std::map<std::string,ImageChannel> &img_channel)
 {
     print(2,"image::io::imread(filename,channels) called...");
     
@@ -315,7 +317,7 @@ bool OpenLF::image::io::imread(std::string filename, OpenLF::image::ROI roi, std
             }  
             
             // create channel and copy data into object and map to range [1,0]
-            img_channel["bw"] = OpenLF::image::ImageChannel();
+            img_channel["bw"] = ImageChannel();
             img_channel["bw"].init(roi.width,roi.height);
             
             for(int y=0; y<roi.height; y++)
@@ -327,11 +329,11 @@ bool OpenLF::image::io::imread(std::string filename, OpenLF::image::ROI roi, std
             print(3,"image::io::imread(string,map) found color image...");
 
             // create channels
-            img_channel["r"] = OpenLF::image::ImageChannel();
+            img_channel["r"] = ImageChannel();
             img_channel["r"].init(roi.width,roi.height);
-            img_channel["g"] = OpenLF::image::ImageChannel(); 
+            img_channel["g"] = ImageChannel();
             img_channel["g"].init(roi.width,roi.height);
-            img_channel["b"] = OpenLF::image::ImageChannel(); 
+            img_channel["b"] = ImageChannel();
             img_channel["b"].init(roi.width,roi.height);
 
             // uint rgb image to import data from file
@@ -365,12 +367,12 @@ bool OpenLF::image::io::imread(std::string filename, OpenLF::image::ROI roi, std
 
 
 
-bool OpenLF::image::io::imsave(std::string filename, vigra::MultiArray<2,float> img)
+bool imsave(std::string filename, vigra::MultiArray<2,float> img)
 {
     print(2,"image::io::imread(filename,img) called...");
     
     // get file type
-    std::string ftype = OpenLF::helpers::find_ftype(filename);
+    std::string ftype = helpers::find_ftype(filename);
     
     try {
         // allocate memory to store range mapping results
@@ -391,12 +393,12 @@ bool OpenLF::image::io::imsave(std::string filename, vigra::MultiArray<2,float> 
 }
 
 
-bool OpenLF::image::io::imsave(std::string filename, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> img)
+bool imsave(std::string filename, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> img)
 {
     print(2,"image::io::imread(filename,img) called...");
     
     // get file type
-    std::string ftype = OpenLF::helpers::find_ftype(filename);
+    std::string ftype = helpers::find_ftype(filename);
     
     try {
         if(ftype=="jpg")
@@ -413,7 +415,7 @@ bool OpenLF::image::io::imsave(std::string filename, vigra::MultiArray<2,vigra::
 }
 
 
-bool OpenLF::image::io::imsave(std::string filename, vigra::MultiArrayView<2,float> img)
+bool imsave(std::string filename, vigra::MultiArrayView<2,float> img)
 {
     print(2,"image::io::imread(filename,img_view) called...");
     
@@ -426,12 +428,12 @@ bool OpenLF::image::io::imsave(std::string filename, vigra::MultiArrayView<2,flo
 
 
 
-bool OpenLF::image::io::imsave(std::string filename, OpenLF::image::ImageChannel img_channel)
+bool imsave(std::string filename, ImageChannel img_channel)
 {
     print(2,"image::io::imread(filename,channel_img) called...");
     
     // get file type
-    std::string ftype = OpenLF::helpers::find_ftype(filename);
+    std::string ftype = helpers::find_ftype(filename);
     
     try {
         // allocate memory to store range mapping results
@@ -454,7 +456,7 @@ bool OpenLF::image::io::imsave(std::string filename, OpenLF::image::ImageChannel
 
 
 
-bool OpenLF::image::io::imsave(std::string filename, std::map<std::string,OpenLF::image::ImageChannel> channels, std::string key)
+bool imsave(std::string filename, std::map<std::string,ImageChannel> channels, std::string key)
 /*TEST: test_image::test_io() */
 {
     print(2,"image::io::save(filename,channels,key) called...");
@@ -468,11 +470,11 @@ bool OpenLF::image::io::imsave(std::string filename, std::map<std::string,OpenLF
 
 
 
-bool OpenLF::image::io::imsave(std::string filename, std::map<std::string,OpenLF::image::ImageChannel> channels)
+bool imsave(std::string filename, std::map<std::string,ImageChannel> channels)
 {
     print(2,"image::io::imsave(filename, channels) called...");
   
-    std::string ftype = OpenLF::helpers::find_ftype(filename);
+    std::string ftype = helpers::find_ftype(filename);
        
     try {
         
@@ -537,7 +539,7 @@ bool OpenLF::image::io::imsave(std::string filename, std::map<std::string,OpenLF
         }
 
         // check for other channels and save them
-        std::map<std::string, OpenLF::image::ImageChannel>::iterator it = channels.begin();
+        std::map<std::string, ImageChannel>::iterator it = channels.begin();
         for( unsigned int i=0; i<channels.size() && it != channels.end(); ++i)
         {
             // get key
@@ -566,7 +568,7 @@ bool OpenLF::image::io::imsave(std::string filename, std::map<std::string,OpenLF
 
 
 
-bool OpenLF::image::io::imsave(std::string filename, std::map<std::string,OpenLF::image::ImageChannel> channels, std::vector<std::string> keys_to_save)
+bool imsave(std::string filename, std::map<std::string,ImageChannel> channels, std::vector<std::string> keys_to_save)
 {
     print(2,"image::io::imsave(filename, channels, keys_to_save) called...");
     
@@ -580,3 +582,7 @@ bool OpenLF::image::io::imsave(std::string filename, std::map<std::string,OpenLF
         return false;
     }
 }
+
+} // namespace io
+} // namespace image
+} // namespace OpenLF

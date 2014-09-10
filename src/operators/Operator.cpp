@@ -19,22 +19,25 @@
 
 #include "OpenLF/operators/Operator.hpp"
 
-OpenLF::operators::Operator::Operator(std::vector<std::string> inslots, std::vector<std::string> outslots) 
+namespace OpenLF {
+namespace operators {
+
+Operator::Operator(std::vector<std::string> inslots, std::vector<std::string> outslots)
 {
     this->inslots = inslots;
     this->outslots = outslots;
     clear();
 }
 
-//OpenLF::operators::Operator::Operator(const Operator& orig) 
+//Operator::Operator(const Operator& orig)
 //{
 //}
 
-OpenLF::operators::Operator::~Operator() 
+Operator::~Operator()
 {
 }
 
-void OpenLF::operators::Operator::clear() 
+void Operator::clear()
 {
     lf = NULL;
     properties = NULL;
@@ -52,7 +55,7 @@ void OpenLF::operators::Operator::clear()
  * with the values of the additional properties instance. This enables to update 
  * computation parameter during runtime.   
  */
-void OpenLF::operators::Operator::set(OpenLF::lightfield::Lightfield *lf) 
+void Operator::set(lightfield::Lightfield *lf)
 {
     // set internal lf pointer 
     this->lf = lf;
@@ -71,7 +74,7 @@ void OpenLF::operators::Operator::set(OpenLF::lightfield::Lightfield *lf)
  * with the values of the additional properties instance. This enables to update 
  * computation parameter during runtime.   
  */
-void OpenLF::operators::Operator::set(OpenLF::lightfield::Properties *properties) 
+void Operator::set(lightfield::Properties *properties)
 {
     // set internal properties pointer 
     this->properties=properties;
@@ -79,3 +82,6 @@ void OpenLF::operators::Operator::set(OpenLF::lightfield::Properties *properties
         this->lf->appendProperties(*this->properties);
     }
 }
+
+} // namespace operators
+} // namespace OpenLF

@@ -63,7 +63,7 @@ public:
     */ 
     void setConfigfile(const char* config_filename);
     
-    virtual bool readData(std::map<std::string,OpenLF::image::ImageChannel>& channels) = 0;
+    virtual bool readData(std::map<std::string,image::ImageChannel>& channels) = 0;
     
 protected:
     std::string type;            //!< type of input config_filename, disc or buffer

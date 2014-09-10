@@ -26,7 +26,7 @@
 #include "OpenLF/image/Channel.hpp"
 
 typedef std::map<std::string,OpenLF::image::ImageChannel> channel_map;
-typedef std::map<std::string,OpenLF::image::ImageChannel>::iterator channel_map_iter;
+typedef channel_map::iterator channel_map_iter;
 
 namespace OpenLF { 
     namespace image { 

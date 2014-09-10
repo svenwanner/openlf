@@ -19,7 +19,10 @@
 
 #include "OpenLF/utils/helpers.hpp"
 
-void OpenLF::helpers::insert_leading_zeros(std::string s1, int index, std::string s2, std::string &result)
+namespace OpenLF {
+namespace helpers {
+
+void insert_leading_zeros(std::string s1, int index, std::string s2, std::string &result)
 {
     result = "";
     result += s1;
@@ -31,14 +34,14 @@ void OpenLF::helpers::insert_leading_zeros(std::string s1, int index, std::strin
 }
 
 
-std::string OpenLF::helpers::find_ftype(std::string filepath) 
+std::string find_ftype(std::string filepath)
 {
     std::vector<std::string> splited;
     boost::split(splited, filepath, boost::is_any_of("."));
     return splited[splited.size()-1];
 }
 
-bool OpenLF::helpers::filenames_from_directory(std::string dir, std::vector<std::string> &list)
+bool filenames_from_directory(std::string dir, std::vector<std::string> &list)
 {
     
     // read filenames from directory
@@ -53,7 +56,7 @@ bool OpenLF::helpers::filenames_from_directory(std::string dir, std::vector<std:
     return false;
 }
 
-void OpenLF::helpers::remove_leading_spaces_from_string(std::string input,std::string &result) 
+void remove_leading_spaces_from_string(std::string input,std::string &result)
 {   result="";
     std::vector<std::string> strVec; 
     boost::algorithm::split(strVec,input,boost::is_any_of("\t "),boost::token_compress_on);
@@ -78,7 +81,7 @@ void OpenLF::helpers::remove_leading_spaces_from_string(std::string input,std::s
 }
 
 
-std::string OpenLF::helpers::make_absolute_path(std::string filename, std::string relative_part) 
+std::string make_absolute_path(std::string filename, std::string relative_part)
 {
     std::string abs_path;
     // make a path object of the filename
@@ -91,7 +94,7 @@ std::string OpenLF::helpers::make_absolute_path(std::string filename, std::strin
 } 
 
 
-bool OpenLF::helpers::remove_by_value(std::vector<std::string> &list, std::string value) 
+bool remove_by_value(std::vector<std::string> &list, std::string value)
 {
     for( auto iter = list.begin(); iter != list.end(); ++iter )
     {
@@ -104,7 +107,7 @@ bool OpenLF::helpers::remove_by_value(std::vector<std::string> &list, std::strin
 }
 
 
-void OpenLF::helpers::get_attribute_list(std::string filename, std::string GroupID, std::vector<std::string> &attrs, std::vector<bool> &isString) {
+void get_attribute_list(std::string filename, std::string GroupID, std::vector<std::string> &attrs, std::vector<bool> &isString) {
     H5::H5File file = H5::H5File( filename.c_str(), vigra::HDF5File::Open );
     H5::Group group = file.openGroup(GroupID.c_str());
     H5::Attribute attr;
@@ -119,4 +122,6 @@ void OpenLF::helpers::get_attribute_list(std::string filename, std::string Group
     } 
     file.close();
 }
-  
+
+} // namespace helpers
+} // namespace OpenLF

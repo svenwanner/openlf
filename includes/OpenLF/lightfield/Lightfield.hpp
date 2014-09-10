@@ -74,7 +74,7 @@ public:
      \param filename  
     */
     void save(std::string filename) {
-        OpenLF::lightfield::io::save_to_hdf5(filename,channels,&properties);
+        io::save_to_hdf5(filename,channels,&properties);
     }
     
         
@@ -215,21 +215,21 @@ public:
     /*!
      Returns a pointer to the channels map containing the data.
     */
-    std::map<std::string,OpenLF::image::ImageChannel> * data();
+    std::map<std::string,image::ImageChannel> * data();
     
     
     //! set pointer passed to address data channels
     /*!
      \param channels pointer to a channels map to get the address of the internal map
     */
-    void data(std::map< std::string,OpenLF::image::ImageChannel> **channels);
+    void data(std::map< std::string,image::ImageChannel> **channels);
     
     
     //! get pointer to specific channel
     /*!
      \param channel_name the name of the channel
     */
-    OpenLF::image::ImageChannel *data(std::string channel_name);
+    image::ImageChannel *data(std::string channel_name);
     
     
     //! set pointer passed to the address of the channel specified
@@ -237,7 +237,7 @@ public:
      \param channel_name the name of the channel
      \param channel_data pointer to a MultiArray to get the address of the internal channel specified
     */
-    void data(std::string channel_name, OpenLF::image::ImageChannel ** channel_data);
+    void data(std::string channel_name, image::ImageChannel ** channel_data);
     
     
     //! Allocate a new channel
@@ -334,9 +334,9 @@ public:
     EpiIterator* createEpiIterator(DIRECTION direction);
     
 protected:
-    std::map< std::string,OpenLF::image::ImageChannel> channels;  //!< map to store the light field channels
-    OpenLF::lightfield::io::DataHandler *dataHandler;   //!< instance of a dataHandler to read data
-    OpenLF::lightfield::Properties properties;          //!< properties instance to hold all parameters
+    std::map< std::string,image::ImageChannel> channels;  //!< map to store the light field channels
+    io::DataHandler *dataHandler;   //!< instance of a dataHandler to read data
+    Properties properties;          //!< properties instance to hold all parameters
 
     
 protected:

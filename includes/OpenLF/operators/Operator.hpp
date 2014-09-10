@@ -43,14 +43,14 @@ public:
      \param lf pointer to a light field instance
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void set(OpenLF::lightfield::Lightfield *lf);
+    void set(lightfield::Lightfield *lf);
     
     //! set interface to set additional properties
     /*!
      \param properties pointer to a Properties instance
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void set(OpenLF::lightfield::Properties *properties);
+    void set(lightfield::Properties *properties);
     
     virtual void process() = 0;
         
@@ -62,9 +62,9 @@ protected:
     virtual void postcompute() = 0;
     virtual void cleanup() = 0;
     
-    OpenLF::lightfield::Lightfield *lf;
-    OpenLF::lightfield::Properties *properties;
-    std::map<std::string,OpenLF::image::ImageChannel> tmp_memory;
+    lightfield::Lightfield *lf;
+    lightfield::Properties *properties;
+    std::map<std::string,image::ImageChannel> tmp_memory;
     std::vector<std::string> inslots;
     std::vector<std::string> outslots;
 };
