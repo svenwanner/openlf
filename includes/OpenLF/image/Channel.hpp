@@ -24,7 +24,8 @@
 #include "OpenLF/debug.hpp"
 
 
-typedef vigra::MultiArray<2,float> array_2d;
+typedef vigra::MultiArrayView<2,float> array_2d;
+
 
 
 
@@ -93,28 +94,39 @@ public:
     */
     ImageChannel(vigra::Shape2 shape, vigra::UInt8* data_ptr);
     
-    //! Initialize with vigra MultiArray constructor
+    //! Initialize with vigra MultiArrayView constructor 
+    /*!
+     \param vmarr vigra MultiArrayView<2,float> 
+    */
+    ImageChannel(array_2d &vmarr);
+
+    //! Initialize with vigra MultiArray constructor 
     /*!
      \param vmarr vigra MultiArray<2,float> 
     */
-    ImageChannel(array_2d &vmarr);
+    ImageChannel(vigra::MultiArray<2,float> &vmarr);
     
-    //! Initialize with vigra MultiArray constructor
+    //! Initialize with vigra MultiArrayView constructor 
+    /*!
+     \param vmarr vigra MultiArrayView<2,Uint8> 
+    */
+    ImageChannel(vigra::MultiArrayView<2,vigra::UInt8> &vmarr); 
+
+    //! Initialize with vigra MultiArray constructor 
     /*!
      \param vmarr vigra MultiArray<2,Uint8> 
     */
-    ImageChannel(vigra::MultiArray<2,vigra::UInt8> &vmarr);
+    ImageChannel(vigra::MultiArray<2,vigra::UInt8> &vmarr); 
     
     //! copy constructor
     /*!
      \param orig ImageChannel reference to copy from 
     */
     ImageChannel(const ImageChannel& orig);
-    
-    //! default destructor
-    /*!
-    */
+
     virtual ~ImageChannel();
+    
+
     
     
     
@@ -144,7 +156,7 @@ public:
      \param shape image shape
      \param data_ptr float pointer to data 
     */
-    void init(vigra::Shape2 shape, float* data_ptr);
+    void init(const vigra::Shape2 shape, float* data_ptr);
     
     
     //!  allocate memory from image size and float data pointer
@@ -174,16 +186,12 @@ public:
     
     
     
-    
-    
-    
 ////////////////////////////////////////////////////////////////////////////////
 //////                S E T / G E T   M E T H O D S  
 ////////////////////////////////////////////////////////////////////////////////
-    
     bool hasData() const { return pixel.hasData(); };
-    
-    
+     
+
     //! get width
     /*!
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
@@ -231,17 +239,18 @@ public:
     double sum() { return pixel.sum<double>(); };
     
     
-    //! get a pointer to the data as MultiArray<2,float>
+    
+    //! get a pointer to the data as MultiArrayView<2,float> 
     float* data() const;
     
     
-    //! get a pointer to the data as MultiArray<2,float>
+    //! get a pointer to the data as MultiArrayView<2,float> 
     vigra::MultiArray<2,float>* image();
     
     
-    //! set the passed MultiArray<2,float> pointer to internal data address
+    //! set the passed MultiArrayView<2,float> pointer to internal data address 
     /*!
-     \param pixel a pointer to a pointer to a MultiArray
+     \param pixel a pointer to a pointer to a MultiArrayView
     */
     void image(vigra::MultiArray<2,float> **pixel);
    
@@ -318,7 +327,9 @@ public:
     
     
 private:
-    array_2d pixel;
+    array_2d pixel; 
+    vigra::MultiArray<2,float> *tmp=NULL; 
+  
 };
 
 

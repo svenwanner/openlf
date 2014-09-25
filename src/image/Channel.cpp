@@ -125,7 +125,23 @@ OpenLF::image::ImageChannel::ImageChannel(array_2d &vmarr)
  * 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
  */
+OpenLF::image::ImageChannel::ImageChannel(vigra::MultiArray<2,float> &vmarr) 
+{
+    init(vmarr.width(),vmarr.height(),vmarr.data());
+}
+
+/*! 
+ * Initialize ImageChannel instance with by copying data from a passed vigra
+ * MultiArray reference.
+ * 
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
+ */
 OpenLF::image::ImageChannel::ImageChannel(vigra::MultiArray<2,vigra::UInt8> &vmarr) 
+{
+    init(vmarr.width(),vmarr.height(),vmarr.data()); 
+}
+
+OpenLF::image::ImageChannel::ImageChannel(vigra::MultiArrayView<2,vigra::UInt8> &vmarr) 
 {
     init(vmarr.width(),vmarr.height(),vmarr.data());
 }
@@ -137,24 +153,20 @@ OpenLF::image::ImageChannel::ImageChannel(vigra::MultiArray<2,vigra::UInt8> &vma
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
  */
 OpenLF::image::ImageChannel::ImageChannel(const ImageChannel& orig) 
-{
+{  
     int w = orig.width();
     int h = orig.height();
-    this->pixel = array_2d(vigra::Shape2(w,h));
-    
-    float* d_ptr = orig.data();
-    for(int n=0; n<h*w; n++) {
-        this->pixel.data()[n] = d_ptr[n];
-    }
+    this->pixel = array_2d(vigra::Shape2(w,h), orig.data());
+
 }
 
-/*! 
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
- */
 OpenLF::image::ImageChannel::~ImageChannel() 
 {
+    if(!tmp==NULL) { 
+    delete tmp;
+    tmp = nullptr;
+    }
 }
-
 
 
 
@@ -166,17 +178,20 @@ OpenLF::image::ImageChannel::~ImageChannel()
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
  */
 void OpenLF::image::ImageChannel::init(int width, int height) 
-{
-    pixel = array_2d(vigra::Shape2(width,height));
-    pixel = 0.0f;
+{   
+    tmp = new vigra::MultiArray<2,float>(vigra::Shape2(width, height));
+    *tmp = 0.0f;
+    pixel = array_2d(tmp->shape(), tmp->data()); 
 }
 
 /*! 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
- */
-void OpenLF::image::ImageChannel::init(vigra::Shape2 shape)
+ */ 
+void OpenLF::image::ImageChannel::init(vigra::Shape2 shape) 
 {
-    pixel = array_2d(shape);
+    tmp = new vigra::MultiArray<2,float>(shape); //data
+    tmp->init(0.0f); 
+    pixel = array_2d(tmp->shape(), tmp->data()); //data_view
 }
 
 /*! 
@@ -184,54 +199,49 @@ void OpenLF::image::ImageChannel::init(vigra::Shape2 shape)
  */
 void OpenLF::image::ImageChannel::init(int width, int height, float* data_ptr) 
 {
-    pixel = array_2d(vigra::Shape2(width,height));
-    
-    float *local_ptr = pixel.data();
-    for(int n=0; n < width * height; n++) {
-        local_ptr[n] = data_ptr[n];
-    }
+    pixel = array_2d(vigra::Shape2(width,height), data_ptr); 
+
 }
 
 /*! 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
  */
 void OpenLF::image::ImageChannel::init(vigra::Shape2 shape, float* data_ptr)
-{
-    pixel = array_2d(shape);
-    
-    float *local_ptr = pixel.data();
-    for(int n=0; n < shape[0] * shape[1]; n++) {
-        local_ptr[n] = data_ptr[n];
-    }
-}
+{   
+    pixel = array_2d(shape, data_ptr); 
+}   
 
 /*! 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
  */
-void OpenLF::image::ImageChannel::init(int width, int height, vigra::UInt8 * data_ptr) 
+
+void OpenLF::image::ImageChannel::init(int width, int height, vigra::UInt8* data_ptr) 
 {
-    pixel = array_2d(vigra::Shape2(width,height));
-    
-    float *local_ptr = pixel.data();
+    float *local_ptr = NULL;
+    float local_array[width*height];
+    local_ptr = local_array;
     for(int n=0; n < width * height; n++) {
         local_ptr[n] = (float)data_ptr[n]/255.0;
     }
-}
+    tmp = new vigra::MultiArray<2,float>(vigra::Shape2(width, height), local_ptr);
+    pixel = array_2d(tmp->shape(), tmp->data()); 
+}   
 
 /*! 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
  */
-void OpenLF::image::ImageChannel::init(vigra::Shape2 shape, vigra::UInt8* data_ptr)
+
+void OpenLF::image::ImageChannel::init(vigra::Shape2 shape, vigra::UInt8* data_ptr) 
 {
-    pixel = array_2d(shape);
-    
-    float *local_ptr = pixel.data();
+    float *local_ptr = NULL;
+    float local_array[shape[0] * shape[1]];
+    local_ptr = local_array;
     for(int n=0; n < shape[0] * shape[1]; n++) {
         local_ptr[n] = (float)data_ptr[n]/255.0;
     }
-}
-
-
+    tmp = new vigra::MultiArray<2,float>(shape, local_ptr);
+    pixel = array_2d(tmp->shape(), tmp->data()); 
+}   
 
 
 
@@ -244,13 +254,12 @@ void OpenLF::image::ImageChannel::init(vigra::Shape2 shape, vigra::UInt8* data_p
  */
 void OpenLF::image::ImageChannel::set(float value)
 { 
-    for(int n=0; n<this->pixel.width()*this->pixel.height(); n++)
-        this->pixel.data()[n] = value; 
+    pixel = value; 
 }
 
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
+*/ 
 float OpenLF::image::ImageChannel::get(int x, int y) 
 {
     if(x>=0 && x<pixel.width() && y>=0 && y<pixel.height())
@@ -281,11 +290,16 @@ float* OpenLF::image::ImageChannel::data() const
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
  */
-vigra::MultiArray<2,float>* OpenLF::image::ImageChannel::image()
+vigra::MultiArray<2,float>* OpenLF::image::ImageChannel::image() 
 {
     print(1,"image::Channel::image() called...");
-    
-    return &pixel;
+    if(!tmp==NULL){
+       return tmp;
+    }
+    else {
+       tmp = new vigra::MultiArray<2,float>(pixel.shape(), pixel.data()); 
+       return tmp;
+    } 
 }
 
 /*!
@@ -294,8 +308,13 @@ vigra::MultiArray<2,float>* OpenLF::image::ImageChannel::image()
 void OpenLF::image::ImageChannel::image(vigra::MultiArray<2,float> **pixel) 
 {
     print(1,"image::Channel::image(**pixel) called...");
-    
-    *pixel = &this->pixel;
+    if(!tmp==NULL){
+       *pixel = tmp;
+    }
+    else {
+       tmp = new vigra::MultiArray<2,float>(this->pixel.shape(), this->pixel.data()); 
+       *pixel = tmp;
+    } 
 }
 
 
@@ -356,6 +375,7 @@ vigra::MultiArrayView<1,float> OpenLF::image::ImageChannel::viewToColumn(int fix
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
  */
+
 OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator=(float value)
 { 
     for(int n=0; n<this->pixel.width()*this->pixel.height(); n++)
@@ -366,6 +386,7 @@ OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator=(float value
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
  */
+
 OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator+(float value)
 { 
     for(int n=0; n<this->pixel.width()*this->pixel.height(); n++) {
@@ -388,6 +409,7 @@ OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator-(float value
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
  */
+
 OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator+=(float value)
 { 
     for(int n=0; n<this->pixel.width()*this->pixel.height(); n++) {
@@ -512,3 +534,4 @@ bool operator!=(OpenLF::image::ImageChannel const& lhs, OpenLF::image::ImageChan
 { 
     return (lhs.shape() != rhs.shape());
 }
+

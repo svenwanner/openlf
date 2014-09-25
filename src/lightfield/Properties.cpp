@@ -88,6 +88,7 @@ void OpenLF::lightfield::Properties::log()
     //for (auto& k : this->std::string_fields) {
         text += "# "+iter->first+" = "+iter->second+"\n";
     }
+    cout << text << "\n";
 }
 
 

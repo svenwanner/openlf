@@ -22,7 +22,8 @@
 
 #include "OpenLF/global.hpp"
 #include "OpenLF/utils/helpers.hpp"
-
+#include <iostream> //N
+using namespace std; //N
 
 typedef std::map<std::string,double> number_fields_map;
 typedef std::map<std::string,std::string> string_fields_map;

@@ -235,15 +235,18 @@ bool OpenLF::image::io::imread(std::string filename, std::map<std::string,OpenLF
         // load color images
         else if(info.isColor()) {
             print(3,"image::io::imread(string,map) found color image...");
-
+            
             // create channels
-            img_channel["r"] = OpenLF::image::ImageChannel(info.width(),info.height()); 
-            img_channel["g"] = OpenLF::image::ImageChannel(info.width(),info.height()); 
-            img_channel["b"] = OpenLF::image::ImageChannel(info.width(),info.height()); 
+            img_channel["r"] = OpenLF::image::ImageChannel();
+            img_channel["r"].init(info.width(),info.height());
+            img_channel["g"] = OpenLF::image::ImageChannel();
+            img_channel["g"].init(info.width(),info.height());
+            img_channel["b"] = OpenLF::image::ImageChannel();
+            img_channel["b"].init(info.width(),info.height()); 
 
             // uint rgb image to import data from file
             vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > in(info.shape());
-
+            
             // import data
             if(info.numExtraBands()!=0) {
                 vigra::MultiArray<2, vigra::UInt8 > alpha(vigra::Shape2(info.width(),info.height()));
@@ -257,14 +260,14 @@ bool OpenLF::image::io::imread(std::string filename, std::map<std::string,OpenLF
             
             float* r_ptr = NULL;
             r_ptr = img_channel["r"].data();
-            if(r_ptr==NULL) throw OpenLF_Exception("imread read channel error!");
+            if(r_ptr==NULL) throw OpenLF_Exception("imread read channel error!"); //failed
             float* g_ptr = NULL;
             g_ptr = img_channel["g"].data();
             if(g_ptr==NULL) throw OpenLF_Exception("imread read channel error!");
             float* b_ptr = NULL;
             b_ptr = img_channel["b"].data();
             if(b_ptr==NULL) throw OpenLF_Exception("imread read channel error!");
-
+            
             // copy data into lf container
             int n=0;
             for(int y=0; y<height; y++) {
@@ -274,7 +277,7 @@ bool OpenLF::image::io::imread(std::string filename, std::map<std::string,OpenLF
                     b_ptr[n] = ((float)in(x,y)[2])/255.0f;
                     n++;
                 }
-            }
+            } 
         }
     }
     catch(std::exception &e) {
