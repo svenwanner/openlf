@@ -27,6 +27,10 @@ My4DOperator::~My4DOperator() {
 
 void My4DOperator::allocate() 
 {
+}
+
+void My4DOperator::precompute(lightfield::Lightfield &lf)
+{
     //==========================================
     // Here you need to allocate channels in the 
     // passed light field to store your results.
@@ -34,11 +38,8 @@ void My4DOperator::allocate()
     
     
     // allocate a new channel to store your results
-    lf->allocateChannel("myNewChannel");
-}
+    lf.allocateChannel("myNewChannel");
 
-void My4DOperator::precompute() 
-{
     //============================================
     // For pre-computation steps on the input data 
     // implement this method. Each operator has a
@@ -53,21 +54,21 @@ void My4DOperator::precompute()
     
     // allocate some memory to store stuff you may need in compute and post-compute but
     // only during computation. This map is deleted after the operator has finished.
-    tmp_memory["aTmpStorage"] = OpenLF::image::ImageChannel(lf->width(),lf->height());
+    tmp_memory["aTmpStorage"] = image::ImageChannel(lf.width(),lf.height());
     
     // compute something of importance to use in compute and in postcompute
-    if(lf->hasChannel("r") && lf->hasChannel("g") && lf->hasChannel("b")) {
+    if(lf.hasChannel("r") && lf.hasChannel("g") && lf.hasChannel("b")) {
         
-        float* r_ptr = lf->channel_ptr("r");
-        float* g_ptr = lf->channel_ptr("g");
-        float* b_ptr = lf->channel_ptr("b");
+        float* r_ptr = lf.channel_ptr("r");
+        float* g_ptr = lf.channel_ptr("g");
+        float* b_ptr = lf.channel_ptr("b");
         
-        for(int n=0; n<lf->width()*lf->height(); n++) {
+        for(int n=0; n<lf.width()*lf.height(); n++) {
             tmp_memory["aTmpStorage"].data()[n] = 0.3*r_ptr[n]+0.59*g_ptr[n]+0.11*b_ptr[n];    
         }
     }
     else {
-        for(int n=0; n<lf->width()*lf->height(); n++) {
+        for(int n=0; n<lf.width()*lf.height(); n++) {
             tmp_memory["aTmpStorage"].data()[n] = 1.0f;
         }
     }
@@ -76,7 +77,7 @@ void My4DOperator::precompute()
     //**********************************************************************************
 }
 
-void My4DOperator::compute() 
+void My4DOperator::compute(lightfield::Lightfield &lf)
 {
     //============================================
     // This method is the main computation step to
@@ -93,14 +94,14 @@ void My4DOperator::compute()
     
     // compute the most useful property ever if the input is a rgb light field
     // and store it in your new channel myNewChannel
-    if(lf->hasChannel("r") && lf->hasChannel("g") && lf->hasChannel("b")) {
+    if(lf.hasChannel("r") && lf.hasChannel("g") && lf.hasChannel("b")) {
         
-        float* r_ptr = lf->channel_ptr("r");
-        float* g_ptr = lf->channel_ptr("g");
-        float* b_ptr = lf->channel_ptr("b");
-        float* nChannel = lf->channel_ptr("myNewChannel");
+        float* r_ptr = lf.channel_ptr("r");
+        float* g_ptr = lf.channel_ptr("g");
+        float* b_ptr = lf.channel_ptr("b");
+        float* nChannel = lf.channel_ptr("myNewChannel");
         
-        for(int n=0; n<lf->width()*lf->height(); n++) {
+        for(int n=0; n<lf.width()*lf.height(); n++) {
             nChannel[n] = abs(tmp_memory["aTmpStorage"].data()[n]-r_ptr[n]);
             nChannel[n] += abs(tmp_memory["aTmpStorage"].data()[n]-g_ptr[n]);
             nChannel[n] += abs(tmp_memory["aTmpStorage"].data()[n]-b_ptr[n]);
@@ -116,7 +117,7 @@ void My4DOperator::compute()
     //**********************************************************************************
 }
 
-void My4DOperator::postcompute() 
+void My4DOperator::postcompute(lightfield::Lightfield &lf)
 {
     //====================================================
     // This method can be used to do some pre-computations
@@ -128,8 +129,8 @@ void My4DOperator::postcompute()
     //**************** this is the demo code which can be replaced *********************
     
     // do a postprocessing using your data from precompute and from compute as well
-    float* nChannel = lf->channel_ptr("myNewChannel");
-    for(int n=0; n<lf->width()*lf->height(); n++) {
+    float* nChannel = lf.channel_ptr("myNewChannel");
+    for(int n=0; n<lf.width()*lf.height(); n++) {
         if(nChannel[n] > tmp_memory["aTmpStorage"].data()[n])
             nChannel[n] = 1.0f;
         else

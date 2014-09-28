@@ -38,14 +38,14 @@ public:
     //Operator_4D(const Operator_4D& orig);
     virtual ~Operator_4D();
     
-    void process();
+    void process(lightfield::Lightfield &lf);
     
 protected:
     
     virtual void allocate() = 0;
-    virtual void precompute() = 0;
-    virtual void compute() = 0;
-    virtual void postcompute() = 0;
+    virtual void precompute(lightfield::Lightfield &lf) = 0;
+    virtual void compute(lightfield::Lightfield &lf) = 0;
+    virtual void postcompute(lightfield::Lightfield &lf) = 0;
     
 private:
     void cleanup();

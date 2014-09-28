@@ -33,14 +33,9 @@ Operator::Operator(std::vector<std::string> inslots, std::vector<std::string> ou
 //{
 //}
 
-Operator::~Operator()
-{
-}
-
 void Operator::clear()
 {
-    lf = NULL;
-    properties = NULL;
+    tmp_memory.clear();
 }
 
 
@@ -55,6 +50,7 @@ void Operator::clear()
  * with the values of the additional properties instance. This enables to update 
  * computation parameter during runtime.   
  */
+/*
 void Operator::set(lightfield::Lightfield *lf)
 {
     // set internal lf pointer 
@@ -64,6 +60,7 @@ void Operator::set(lightfield::Lightfield *lf)
         this->lf->appendProperties(*properties);
     }
 }
+*/
 
 
 /*!
@@ -74,6 +71,7 @@ void Operator::set(lightfield::Lightfield *lf)
  * with the values of the additional properties instance. This enables to update 
  * computation parameter during runtime.   
  */
+/*
 void Operator::set(lightfield::Properties *properties)
 {
     // set internal properties pointer 
@@ -82,6 +80,7 @@ void Operator::set(lightfield::Properties *properties)
         this->lf->appendProperties(*this->properties);
     }
 }
+*/
 
 } // namespace operators
 } // namespace OpenLF

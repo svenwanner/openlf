@@ -35,35 +35,24 @@ class Operator {
 public:
     Operator(std::vector<std::string> inslots, std::vector<std::string> outslots);
     //Operator(const Operator& orig);
-    virtual ~Operator();
+    //virtual ~Operator();
     void clear();
     
-    //! set interface to set a lightfield 
-    /*!
-     \param lf pointer to a light field instance
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-    */
-    void set(lightfield::Lightfield *lf);
-    
-    //! set interface to set additional properties
-    /*!
-     \param properties pointer to a Properties instance
-     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-    */
-    void set(lightfield::Properties *properties);
-    
-    virtual void process() = 0;
+    virtual void process(lightfield::Lightfield & lf) = 0;
         
 protected:
     
+    // allocate memory for temporary storage
     virtual void allocate() = 0;
-    virtual void precompute() = 0;
-    virtual void compute() = 0;
-    virtual void postcompute() = 0;
+    // handle tasks before compute(), allocate output channel, etc.
+    virtual void precompute(lightfield::Lightfield &lf) = 0;
+    // core computational function that will be applied at EPI level
+    virtual void compute(lightfield::Lightfield &lf) = 0;
+    // handle tasks post EPI level compute function
+    virtual void postcompute(lightfield::Lightfield &lf) = 0;
+    // general clean up, i.e., temporary memory allocation
     virtual void cleanup() = 0;
     
-    lightfield::Lightfield *lf;
-    lightfield::Properties *properties;
     std::map<std::string,image::ImageChannel> tmp_memory;
     std::vector<std::string> inslots;
     std::vector<std::string> outslots;

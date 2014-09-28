@@ -28,22 +28,18 @@ namespace operators {
 Operator_4D::~Operator_4D() {
 }
 
-void Operator_4D::process()
+void Operator_4D::process(lightfield::Lightfield &lf)
 {
-    if(lf!=NULL) {
-        if(lf->type()==LF_4D) {
-            
-            allocate();
-            precompute();
-            
-            compute();
-            postcompute();
-            
-            cleanup();
-        }
-        else throw OpenLF_Exception("Wrong lightfield input type exception!");
-    }   
-    else throw OpenLF_Exception("missing lightfield exception!");
+    if(lf.type()!=LF_4D)
+        throw OpenLF_Exception("Wrong lightfield input type exception!");
+
+    allocate();
+    precompute(lf);
+
+    compute(lf);
+    postcompute(lf);
+
+    cleanup();
 }
 
 void Operator_4D::cleanup()

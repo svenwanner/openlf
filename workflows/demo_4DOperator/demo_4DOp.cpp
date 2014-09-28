@@ -82,10 +82,8 @@ int main(int argc, char** argv) {
         std::vector<std::string> inslots;
         std::vector<std::string> outslots;
         My4DOperator myOp(inslots,outslots);
-        // link the light field to it
-        myOp.set(&myLf);
         // apply the operator
-        myOp.process();
+        myOp.process(myLf);
         cout << "ok" << endl;
         
         if(argc==3) {
