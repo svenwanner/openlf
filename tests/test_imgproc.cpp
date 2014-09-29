@@ -48,8 +48,8 @@ void test_imgproc::test_diff_abs_mse()
     OpenLF::image::ImageChannel ic_g = channels["g"];
     OpenLF::image::ImageChannel ic_b = channels["b"];
     
-    OpenLF::image::ImageChannel ic_res_1 = channels["b"];
-    OpenLF::image::ImageChannel ic_res_2 = channels["b"];
+    OpenLF::image::ImageChannel ic_res_1 = OpenLF::image::ImageChannel(channels["b"].shape());
+    OpenLF::image::ImageChannel ic_res_2 = OpenLF::image::ImageChannel(channels["b"].shape());
     
     // test difference 
     ic_res_1 = 1.0f;

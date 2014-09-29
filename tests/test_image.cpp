@@ -52,8 +52,10 @@ void test_image::test_io() {
     CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_save_single.jpg",channels,"g"));
     
     // add some channels with other labels and set some values
-    channels["x"] = OpenLF::image::ImageChannel(vigra::Shape2(512,576));
-    channels["y"] = OpenLF::image::ImageChannel(vigra::Shape2(512,576));
+    channels["x"] = OpenLF::image::ImageChannel();
+    channels["x"].init(vigra::Shape2(512,576));
+    channels["y"] = OpenLF::image::ImageChannel();
+    channels["y"].init(vigra::Shape2(512,576));
     
     for(int y=0; y<576; y++) {
         for(int x=0; x<512; x++) {
