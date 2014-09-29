@@ -189,6 +189,15 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 //////                S E T / G E T   M E T H O D S  
 ////////////////////////////////////////////////////////////////////////////////
+
+    //!* indicates the use of this class as a pointer to external data.
+    /*! If external_flag is true, one should be aware that any manipulation with ImageChannel 
+     * will result in overwriting this data. Instead if the value of the flag is false, 
+     * ImageChannel is decoupled from any external data.  
+     */
+    bool externalData() const { return external_flag; };
+    
+    //!indicates that Channel has image data. This can be external or internally allocated data.
     bool hasData() const { return pixel.hasData(); };
      
 
@@ -328,7 +337,8 @@ public:
     
 private:
     array_2d pixel; 
-    vigra::MultiArray<2,float> *tmp=NULL; 
+    vigra::MultiArray<2,float> *internal_data_ptr=NULL; 
+    bool external_flag;
   
 };
 

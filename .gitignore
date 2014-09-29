@@ -15,3 +15,7 @@ latex/
 *.user
 /Viewer/build-ViewLF-Desktop-Debug/
 /Viewer/build-LF_Viewer-Desktop-Debug/
+/tests/CMakeLists.txt
+/tests/test_example.cpp
+/tests/test_example.hpp
+/tests/test_example_run.cpp
