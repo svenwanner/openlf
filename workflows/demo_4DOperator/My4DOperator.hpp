@@ -21,24 +21,25 @@
 #define	MY4DOPERATOR_HPP
 
 #include <iostream>
-#include "OpenLF/operators/Operator_4D.hpp"
+#include "OpenLF/operators/Operator.hpp"
 
 using namespace std;
 using namespace OpenLF;
 
-class My4DOperator : public operators::Operator_4D {
+class My4DOperator : public operators::Operator {
 public:
     My4DOperator(vector<string> inslots, vector<string> outslots) :
-        Operator_4D(inslots,outslots) {};
+        Operator(inslots,outslots) {};
     //My4DOperator(const My4DOperator& orig);
     virtual ~My4DOperator();
 
     
 protected:
     void allocate();
-    void precompute(lightfield::Lightfield &lf);
-    void compute(lightfield::Lightfield &lf);
-    void postcompute(lightfield::Lightfield &lf);
+    void cleanup();
+    void precompute(lightfield::Lightfield_base &lf);
+    void compute(lightfield::Lightfield_base &lf);
+    void postcompute(lightfield::Lightfield_base &lf);
     
 private:
     

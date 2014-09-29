@@ -17,7 +17,7 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "OpenLF/operators/Operator_4D.hpp"
+//#include "OpenLF/operators/Operator_4D.hpp"
 
 namespace OpenLF {
 namespace operators {
@@ -25,27 +25,16 @@ namespace operators {
 //Operator_4D::Operator_4D(const Operator_4D& orig) {
 //}
 
+/*
 Operator_4D::~Operator_4D() {
 }
 
-void Operator_4D::process(lightfield::Lightfield &lf)
-{
-    if(lf.type()!=LF_4D)
-        throw OpenLF_Exception("Wrong lightfield input type exception!");
-
-    allocate();
-    precompute(lf);
-
-    compute(lf);
-    postcompute(lf);
-
-    cleanup();
-}
 
 void Operator_4D::cleanup()
 {
     tmp_memory.clear();
 }
+*/
 
 } // namespace operators
 } // namespace OpenLF

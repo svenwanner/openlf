@@ -5,23 +5,21 @@ using namespace std;
 #include "My4DOperator.hpp"
 #include "OpenLF/lightfield/Lightfield.hpp"
 
+using namespace OpenLF::lightfield;
+
 int main(int argc, char** argv) {
     
-    if(argc>=2) {
+    if (argc < 2) {
+        cout<<"usage: "<<argv[0]<<" <input_file> [<output_file>]"<<endl;
+        return -1;
+    }
+    try {
         
-        OpenLF::lightfield::Lightfield myLf;
-        
-        try {
             // the argument is the filename of a lightfield
             // either of a hdf5 or a config file
             cout << "load lightfield... ";
-            myLf.open(argv[1]);
+            Lightfield<LF_4D> myLf(argv[1]);
             cout << "ok" << endl;
-        }
-        catch(exception &e) {
-            e.what();
-            return -1;
-        }
         
 //        cout << "0,0,0,0 r:" << myLf.getLoxel(0,0,0,0,"r") << endl;
 //        cout << "0,0,0,0 g:" << myLf.getLoxel(0,0,0,0,"g") << endl;
@@ -96,7 +94,8 @@ int main(int argc, char** argv) {
 
         return 0;
     }
-    else {
+    catch(exception &e) {
+        cout<<e.what()<<endl;
         return -1;
     }
 }

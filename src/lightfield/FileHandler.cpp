@@ -109,7 +109,7 @@ bool FileHandler::__readFromDisc__(std::map<std::string,image::ImageChannel>& ch
         if (boost::filesystem::exists( disc_source )) {
             print(2,"lightfield::io::FileHandler::read_from_disc(channels) got an absolute hdf5 path...");
                 
-            return load_from_hdf5(disc_source,channels,properties);
+            return load_from_hdf5(disc_source,channels,*properties);
         }
         // if not, check if path of configfile plus the value of source is a valid filename
         else {
@@ -120,7 +120,7 @@ bool FileHandler::__readFromDisc__(std::map<std::string,image::ImageChannel>& ch
             if(boost::filesystem::exists(abs_path)) {
                 print(2,"lightfield::io::FileHandler::read_from_disc(channels) got an relative image path...");
             
-                return load_from_hdf5(abs_path,channels,properties);
+                return load_from_hdf5(abs_path,channels,*properties);
             }
             // if not there is nothing more to do
             else {

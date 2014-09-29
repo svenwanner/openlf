@@ -22,6 +22,7 @@
 namespace OpenLF {
 namespace operators {
 
+/*
 Operator::Operator(std::vector<std::string> inslots, std::vector<std::string> outslots)
 {
     this->inslots = inslots;
@@ -32,6 +33,7 @@ Operator::Operator(std::vector<std::string> inslots, std::vector<std::string> ou
 //Operator::Operator(const Operator& orig)
 //{
 //}
+*/
 
 void Operator::clear()
 {
@@ -39,6 +41,17 @@ void Operator::clear()
 }
 
 
+template<>
+void Operator::process<LF_4D>(lightfield::Lightfield<LF_4D> &lf)
+{
+    allocate();
+    precompute(lf);
+
+    compute(lf);
+    postcompute(lf);
+
+    cleanup();
+}
 
 
 

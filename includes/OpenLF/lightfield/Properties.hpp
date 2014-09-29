@@ -56,8 +56,12 @@ namespace OpenLF {
 class Properties {
 public:
     Properties();
-    Properties(std::string filename);
-    Properties(const char* filename);
+    // The constructor is declared explicit to prevent Lightfield from being
+    // initialized with a single std::string argument. If the explicit keyword
+    // is not used, typing Lightfield(<config_file>) instead of
+    // LightfieldFactory(<config_file>) initializes a Lightfield object without
+    // loading the channel data.
+    explicit Properties(std::string const &filename);
     //Properties(const Properties& orig);
     virtual ~Properties();
     

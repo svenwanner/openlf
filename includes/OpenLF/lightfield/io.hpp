@@ -131,9 +131,9 @@ bool load_from_filesequence( std::string dir,
  \param properties struct storing the important parameter
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool load_from_hdf5( std::string file_name, 
+bool load_from_hdf5( std::string const & file_name,
                      std::map< std::string,image::ImageChannel> &channels,
-                     Properties *properties);
+                     Properties &properties);
 
 
 

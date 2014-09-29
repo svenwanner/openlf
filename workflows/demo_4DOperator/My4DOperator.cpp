@@ -29,7 +29,11 @@ void My4DOperator::allocate()
 {
 }
 
-void My4DOperator::precompute(lightfield::Lightfield &lf)
+void My4DOperator::cleanup() 
+{
+}
+
+void My4DOperator::precompute(lightfield::Lightfield_base &lf)
 {
     //==========================================
     // Here you need to allocate channels in the 
@@ -77,7 +81,7 @@ void My4DOperator::precompute(lightfield::Lightfield &lf)
     //**********************************************************************************
 }
 
-void My4DOperator::compute(lightfield::Lightfield &lf)
+void My4DOperator::compute(lightfield::Lightfield_base &lf)
 {
     //============================================
     // This method is the main computation step to
@@ -117,7 +121,7 @@ void My4DOperator::compute(lightfield::Lightfield &lf)
     //**********************************************************************************
 }
 
-void My4DOperator::postcompute(lightfield::Lightfield &lf)
+void My4DOperator::postcompute(lightfield::Lightfield_base &lf)
 {
     //====================================================
     // This method can be used to do some pre-computations

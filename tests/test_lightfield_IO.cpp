@@ -327,7 +327,7 @@ void test_lightfield_IO::test_IO_Pipeline_4D()
     sensor_size_v=0.0;
     sensor_size_h=0.0;
     
-    OpenLF::lightfield::io::load_from_hdf5(p,channels,&properties);
+    OpenLF::lightfield::io::load_from_hdf5(p,channels,properties);
     
     
     CPPUNIT_ASSERT(properties.get_lftype(type));

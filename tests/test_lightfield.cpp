@@ -118,6 +118,7 @@ void test_lightfield::tearDown() {
 
 
 
+/*
 
 void test_lightfield::test_epi_iterator()
 {
@@ -126,9 +127,8 @@ void test_lightfield::test_epi_iterator()
     // test 4D 
     //==========================================================================
 
-    OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield();
-    CPPUNIT_ASSERT(lf->open(cfgnames["4D_wide_rgb"]));
-    
+    OpenLF::lightfield::Lightfield lf = OpenLF::lightfield::LightfieldFactory<LF_4D>(
+            cfgnames["4D_wide_rgb"]);
     
     string line;
     ifstream gt_h;
@@ -137,7 +137,7 @@ void test_lightfield::test_epi_iterator()
     gt_v.open (fnames["Vertical_EpiIterTest_4D"], ios::in);
     
     if (gt_h.is_open()) { 
-        OpenLF::lightfield::EpiIterator *iter_h = lf->createEpiIterator(HORIZONTAL);
+        OpenLF::lightfield::EpiIterator *iter_h = lf.createEpiIterator(HORIZONTAL);
 
         for(iter_h->first(); !iter_h->end(); iter_h->next())
         {
@@ -152,7 +152,7 @@ void test_lightfield::test_epi_iterator()
     gt_h.close();
     
     if (gt_v.is_open()) {
-        OpenLF::lightfield::EpiIterator *iter_v = lf->createEpiIterator(VERTICAL);
+        OpenLF::lightfield::EpiIterator *iter_v = lf.createEpiIterator(VERTICAL);
 
         for(iter_v->first(); !iter_v->end(); iter_v->next())
         {
@@ -174,13 +174,12 @@ void test_lightfield::test_epi_iterator()
     // test 3DH
     //==========================================================================
     
-    lf = new OpenLF::lightfield::Lightfield();
-    CPPUNIT_ASSERT(lf->open(cfgnames["3DH_wide_rgb"]));
+    lf = OpenLF::lightfield::LightfieldFactory<LF_3DH>(cfgnames["3DH_wide_rgb"]);
     
     gt_h.open (fnames["Horizontal_EpiIterTest_3DH"], ios::in);
     
     if (gt_h.is_open()) { 
-        OpenLF::lightfield::EpiIterator *iter_h = lf->createEpiIterator(HORIZONTAL);
+        OpenLF::lightfield::EpiIterator *iter_h = lf.createEpiIterator(HORIZONTAL);
 
         for(iter_h->first(); !iter_h->end(); iter_h->next())
         {
@@ -201,13 +200,12 @@ void test_lightfield::test_epi_iterator()
     // test 3DV
     //==========================================================================
     
-    lf = new OpenLF::lightfield::Lightfield();
-    CPPUNIT_ASSERT(lf->open(cfgnames["3DV_wide_rgb"]));
+    lf = OpenLF::lightfield::LightfieldFactory<LF_3DV>(cfgnames["3DV_wide_rgb"]);
     
     gt_v.open (fnames["Vertical_EpiIterTest_3DV"], ios::in);
     
     if (gt_h.is_open()) { 
-        OpenLF::lightfield::EpiIterator *iter_h = lf->createEpiIterator(VERTICAL);
+        OpenLF::lightfield::EpiIterator *iter_h = lf.createEpiIterator(VERTICAL);
         
         for(iter_h->first(); !iter_h->end(); iter_h->next())
         {
@@ -230,14 +228,13 @@ void test_lightfield::test_epi_iterator()
     //==========================================================================
     
     
-    lf = new OpenLF::lightfield::Lightfield();
-    CPPUNIT_ASSERT(lf->open(cfgnames["CROSS_wide_rgb"]));
+    lf = OpenLF::lightfield::LightfieldFactory<LF_CROSS>(cfgnames["CROSS_wide_rgb"]);
 
     gt_h.open (fnames["Horizontal_EpiIterTest_CROSS"], ios::in);
     gt_v.open (fnames["Vertical_EpiIterTest_CROSS"], ios::in);
     
     if (gt_h.is_open()) { 
-        OpenLF::lightfield::EpiIterator *iter_h = lf->createEpiIterator(HORIZONTAL);
+        OpenLF::lightfield::EpiIterator *iter_h = lf.createEpiIterator(HORIZONTAL);
 
         for(iter_h->first(); !iter_h->end(); iter_h->next())
         {
@@ -254,7 +251,7 @@ void test_lightfield::test_epi_iterator()
 
      
     if (gt_v.is_open()) {
-        OpenLF::lightfield::EpiIterator *iter_v = lf->createEpiIterator(VERTICAL);
+        OpenLF::lightfield::EpiIterator *iter_v = lf.createEpiIterator(VERTICAL);
 
         for(iter_v->first(); !iter_v->end(); iter_v->next())
         {
@@ -270,7 +267,7 @@ void test_lightfield::test_epi_iterator()
     gt_v.close();
 }
 
-
+*/
 
 
 
@@ -295,18 +292,18 @@ void test_lightfield::test_epi_access()
     map<string,OpenLF::image::ImageChannel> bw_epi_v1;
     OpenLF::image::io::imread(imgnames["4D_wide_bw_epi_v1"],bw_epi_v1);
     
-    
     //==========================================================================
     // test 4D epi access
     //==========================================================================
-    OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield();
-    CPPUNIT_ASSERT(lf->open(cfgnames["4D_wide_rgb"]));
+    {
+
+    OpenLF::lightfield::Lightfield<LF_4D> lf(cfgnames["4D_wide_rgb"]);
     
      //get epi channel
-    vigra::MultiArrayView<2,float> epi_h0 = lf->getHorizontalEpiChannel("r",24,2,0);
-    vigra::MultiArrayView<2,float> epi_h1 = lf->getHorizontalEpiChannel("r",24,2,1);
-    vigra::MultiArrayView<2,float> epi_v0 = lf->getVerticalEpiChannel("r",32,3,0);
-    vigra::MultiArrayView<2,float> epi_v1 = lf->getVerticalEpiChannel("r",32,3,1);
+    vigra::MultiArrayView<2,float> epi_h0 = lf.getHorizontalEpiChannel("r",24,2,0);
+    vigra::MultiArrayView<2,float> epi_h1 = lf.getHorizontalEpiChannel("r",24,2,1);
+    vigra::MultiArrayView<2,float> epi_v0 = lf.getVerticalEpiChannel("r",32,3,0);
+    vigra::MultiArrayView<2,float> epi_v1 = lf.getVerticalEpiChannel("r",32,3,1);
     
     float sum_h0,sum_h1,sum_v0,sum_v1;
     sum_h0=0; sum_h1=0; sum_v0=0; sum_v1=0;
@@ -331,10 +328,10 @@ void test_lightfield::test_epi_access()
     
     
     vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> > epi_h;
-    lf->getHorizontalEpi(24, 2, 1, epi_h);
+    lf.getHorizontalEpi(24, 2, 1, epi_h);
     
     vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> > epi_v;
-    lf->getHorizontalEpi(32, 3, 1, epi_v);
+    lf.getHorizontalEpi(32, 3, 1, epi_v);
     
     for( int i=0; i<5; i++)
     {
@@ -348,13 +345,19 @@ void test_lightfield::test_epi_access()
     CPPUNIT_ASSERT(sum_h1<0.00000001);
     CPPUNIT_ASSERT(sum_v1<0.00000001);
     
+    }    
+    
+    {
+    float sum_h1,sum_v1;
     sum_h1=0; sum_v1=0;
+    vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> > epi_h;
+    vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> > epi_v;
+
+    OpenLF::lightfield::Lightfield<LF_4D> lf(cfgnames["4D_wide_bw"]);
+
+    lf.getHorizontalEpi(24, 2, 1, epi_h);
     
-    lf = new OpenLF::lightfield::Lightfield();
-    CPPUNIT_ASSERT(lf->open(cfgnames["4D_wide_bw"]));
-    lf->getHorizontalEpi(24, 2, 1, epi_h);
-    
-    lf->getHorizontalEpi(32, 3, 1, epi_v);
+    lf.getHorizontalEpi(32, 3, 1, epi_v);
     
     for( int i=0; i<5; i++)
     {
@@ -368,19 +371,21 @@ void test_lightfield::test_epi_access()
     CPPUNIT_ASSERT(sum_h1<0.00000001);
     CPPUNIT_ASSERT(sum_v1<0.00000001);
     
-    sum_h1=0; sum_v1=0;
-    
+    }    
     
     
     
     //==========================================================================
     // test 3DH epi access
     //==========================================================================
-    lf = new OpenLF::lightfield::Lightfield();
-    CPPUNIT_ASSERT(lf->open(cfgnames["3DH_wide_rgb"]));
+    {
+    float sum_h0,sum_h1;
+    sum_h0=0; sum_h1=0;
+
+    OpenLF::lightfield::Lightfield<LF_3DH> lf(cfgnames["3DH_wide_rgb"]);
     
-    vigra::MultiArrayView<2,float> epi_3DH_h0 = lf->getHorizontalEpiChannel("r",24,0,0);
-    vigra::MultiArrayView<2,float> epi_3DH_h1 = lf->getHorizontalEpiChannel("r",24,0,1);
+    vigra::MultiArrayView<2,float> epi_3DH_h0 = lf.getHorizontalEpiChannel("r",24,0,0);
+    vigra::MultiArrayView<2,float> epi_3DH_h1 = lf.getHorizontalEpiChannel("r",24,0,1);
     
     for( int i=0; i<5; i++)
     {
@@ -394,17 +399,19 @@ void test_lightfield::test_epi_access()
     CPPUNIT_ASSERT(sum_h0<0.00000001);
     CPPUNIT_ASSERT(sum_h1<0.00000001);
     
-    sum_h0=0; sum_h1=0;
-    
+    }
     
     //==========================================================================
     // test 3DV epi access
     //==========================================================================
-    lf = new OpenLF::lightfield::Lightfield();
-    CPPUNIT_ASSERT(lf->open(cfgnames["3DV_wide_rgb"]));
+    {
+    float sum_v0,sum_v1;
+    sum_v0=0; sum_v1=0;
+
+    OpenLF::lightfield::Lightfield<LF_3DV> lf(cfgnames["3DV_wide_rgb"]);
     
-    vigra::MultiArrayView<2,float> epi_3DV_v0 = lf->getVerticalEpiChannel("r",32,0,0);
-    vigra::MultiArrayView<2,float> epi_3DV_v1 = lf->getVerticalEpiChannel("r",32,0,1);
+    vigra::MultiArrayView<2,float> epi_3DV_v0 = lf.getVerticalEpiChannel("r",32,0,0);
+    vigra::MultiArrayView<2,float> epi_3DV_v1 = lf.getVerticalEpiChannel("r",32,0,1);
     
     for( int i=0; i<15; i++)
     {
@@ -418,19 +425,20 @@ void test_lightfield::test_epi_access()
     CPPUNIT_ASSERT(sum_v0<0.00000001);
     CPPUNIT_ASSERT(sum_v1<0.00000001);
     
-    sum_v0=0; sum_v1=0;
-    
+    }
     //==========================================================================
     // test CROSS epi access
     //==========================================================================
-    lf = new OpenLF::lightfield::Lightfield();
-    CPPUNIT_ASSERT(lf->open(cfgnames["CROSS_wide_rgb"]));
+    {
+    float sum_h0,sum_h1,sum_v0,sum_v1;
+    sum_h0=0; sum_h1=0; sum_v0=0; sum_v1=0;
+    OpenLF::lightfield::Lightfield<LF_CROSS> lf(cfgnames["CROSS_wide_rgb"]);
        
      //get epi channel
-    vigra::MultiArrayView<2,float> epi_Cross_h0 = lf->getHorizontalEpiChannel("r",24,2,0);
-    vigra::MultiArrayView<2,float> epi_Cross_h1 = lf->getHorizontalEpiChannel("r",24,2,1);
-    vigra::MultiArrayView<2,float> epi_Cross_v0 = lf->getVerticalEpiChannel("r",32,3,0);
-    vigra::MultiArrayView<2,float> epi_Cross_v1 = lf->getVerticalEpiChannel("r",32,3,1);
+    vigra::MultiArrayView<2,float> epi_Cross_h0 = lf.getHorizontalEpiChannel("r",24,2,0);
+    vigra::MultiArrayView<2,float> epi_Cross_h1 = lf.getHorizontalEpiChannel("r",24,2,1);
+    vigra::MultiArrayView<2,float> epi_Cross_v0 = lf.getVerticalEpiChannel("r",32,3,0);
+    vigra::MultiArrayView<2,float> epi_Cross_v1 = lf.getVerticalEpiChannel("r",32,3,1);
      
     for( int i=0; i<5; i++)
     {
@@ -447,6 +455,7 @@ void test_lightfield::test_epi_access()
     CPPUNIT_ASSERT(sum_h1<0.00000001);
     CPPUNIT_ASSERT(sum_v0<0.00000001);
     CPPUNIT_ASSERT(sum_v1<0.00000001);
+    }
 }
 
 
@@ -455,22 +464,21 @@ void test_lightfield::test_epi_access()
 
 void test_lightfield::test_loxel_access()
 {
-    OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield();
-    CPPUNIT_ASSERT(lf->open(cfgnames["4D_wide_rgb"]));
+    OpenLF::lightfield::Lightfield<LF_4D> lf(cfgnames["4D_wide_rgb"]);
     
     float r,g,b;
     
-    r = lf->getLoxel(3,2,9,7,"r");
-    g = lf->getLoxel(3,2,9,7,"g");
-    b = lf->getLoxel(3,2,9,7,"b");
+    r = lf.getLoxel(3,2,9,7,"r");
+    g = lf.getLoxel(3,2,9,7,"g");
+    b = lf.getLoxel(3,2,9,7,"b");
     
     CPPUNIT_ASSERT(r*255==62);
     CPPUNIT_ASSERT(g*255==74);
     CPPUNIT_ASSERT(b*255==26);
     
-    r = lf->getLoxel(3,2,31,36,"r");
-    g = lf->getLoxel(3,2,31,36,"g");
-    b = lf->getLoxel(3,2,31,36,"b");
+    r = lf.getLoxel(3,2,31,36,"r");
+    g = lf.getLoxel(3,2,31,36,"g");
+    b = lf.getLoxel(3,2,31,36,"b");
     
     CPPUNIT_ASSERT(r*255==49);
     CPPUNIT_ASSERT(g*255==30);
@@ -479,11 +487,11 @@ void test_lightfield::test_loxel_access()
     vector<float> rgb;
     vector<string> chls {"r","b"};
     
-    lf->getLoxel(3,2,9,7,chls,rgb);
+    lf.getLoxel(3,2,9,7,chls,rgb);
     CPPUNIT_ASSERT(rgb[0]*255==62);
     CPPUNIT_ASSERT(rgb[1]*255==26);
     
-    lf->getLoxel(3,2,31,36,chls,rgb);
+    lf.getLoxel(3,2,31,36,chls,rgb);
     CPPUNIT_ASSERT(rgb[0]*255==49);
     CPPUNIT_ASSERT(rgb[1]*255==11);
 }
@@ -494,21 +502,20 @@ void test_lightfield::test_loxel_access()
 
 void test_lightfield::test_instantiate_Lightfield()
 {
-    // test instancing via the default constructor and open
-    OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield();
+    { // begin test block
     // test open from hdf5
-    CPPUNIT_ASSERT(lf->open(imgnames["4D_high_rgb_h5"]));
+    OpenLF::lightfield::Lightfield<LF_4D> lf(imgnames["4D_high_rgb_h5"]);
     
     // test has property method
-    CPPUNIT_ASSERT(lf->hasProperty("width"));
-    CPPUNIT_ASSERT(!lf->hasProperty("notThere"));
-    CPPUNIT_ASSERT(lf->type()==LF_4D);
+    CPPUNIT_ASSERT(lf.hasProperty("width"));
+    CPPUNIT_ASSERT(!lf.hasProperty("notThere"));
+    //CPPUNIT_ASSERT(lf.type()==LF_4D);
     
     // test getting properties
     float tmp; int tmp2;
-    CPPUNIT_ASSERT(lf->getProperty("aperture",tmp));
+    CPPUNIT_ASSERT(lf.getProperty("aperture",tmp));
     CPPUNIT_ASSERT(tmp==2.8f);
-    CPPUNIT_ASSERT(lf->getProperty("height",tmp2));
+    CPPUNIT_ASSERT(lf.getProperty("height",tmp2));
     CPPUNIT_ASSERT(tmp2==64);
     
     // create pointer to a map and a MultiArray to keep the addresses of the lf data
@@ -516,8 +523,8 @@ void test_lightfield::test_instantiate_Lightfield()
     OpenLF::image::ImageChannel *test_image = NULL;
     
     // get the pointers to the lf data
-    lf->data(&test_channels);
-    lf->data("g",&test_image);
+    lf.data(&test_channels);
+    lf.data("g",&test_image);
     
     CPPUNIT_ASSERT(test_channels!=NULL);
     CPPUNIT_ASSERT(test_image!=NULL);
@@ -526,22 +533,29 @@ void test_lightfield::test_instantiate_Lightfield()
     OpenLF::image::io::imsave(p,*test_channels);
     p = test_result_dir+"4D_high_rgb_h5_g.png";
     OpenLF::image::io::imsave(p,*test_image);
+    } // end test block
     
-    test_channels->clear();
-    test_image = NULL;
-    
+    { // start test block
+    // create pointer to a map and a MultiArray to keep the addresses of the lf data
+    map< string,OpenLF::image::ImageChannel> *test_channels = NULL;
+    OpenLF::image::ImageChannel *test_image = NULL;
+
     // test open new data set from config file
-    CPPUNIT_ASSERT(lf->open(cfgnames["4D_wide_rgb"]));
+    OpenLF::lightfield::Lightfield<LF_4D> lf(cfgnames["4D_wide_rgb"]);
     
     // get the pointers to the lf data
-    lf->data(&test_channels);
-    lf->data("g",&test_image);
+    lf.data(&test_channels);
+    lf.data("g",&test_image);
     
     CPPUNIT_ASSERT(test_channels!=NULL);
     CPPUNIT_ASSERT(test_image!=NULL);
     
-    p = test_result_dir+"4D_wide_rgb.png";
+    string p = test_result_dir+"4D_wide_rgb.png";
+    // note that these lines rely on the lf object still being available
+    // since test_channels and test_image points to the memory allocated by lf
     OpenLF::image::io::imsave(p,*test_channels);
     p = test_result_dir+"4D_wide_rgb_g.png";
     OpenLF::image::io::imsave(p,*test_image);
+    } // end test block
+
 }

@@ -27,7 +27,7 @@ Properties::Properties()
     print(1,"lightfield::Properties() called...");
 }
 
-Properties::Properties(std::string filename)
+Properties::Properties(std::string const &filename)
 {
     print(1,"lightfield::Properties(filename) called...");
     
@@ -39,25 +39,6 @@ Properties::Properties(std::string filename)
             
         } catch(std::exception &e) {
             std::string msg = "failed to parse: \n" +  std::string(filename);
-            warning(msg);
-            warning(e.what());
-        }
-    }
-    else throw Parse_Exception("Properties: error while parsing configfile!");
-}
-
-Properties::Properties(const char* filename)
-{
-    print(1,"lightfield::Properties(filename) called...");
-    
-    std::ifstream cfgfile(filename);
-    if (cfgfile.good()) {
-        try {
-            
-            __parse__(cfgfile);
-            
-        } catch(std::exception &e) {
-            std::string msg = "failed to parse: \n" + std::string(filename);
             warning(msg);
             warning(e.what());
         }

@@ -33,23 +33,29 @@ namespace OpenLF {
 
 class Operator {
 public:
-    Operator(std::vector<std::string> inslots, std::vector<std::string> outslots);
+    Operator(std::vector<std::string> &inslots,
+            std::vector<std::string> &outslots) :
+        inslots(inslots), outslots(outslots)
+    {
+        clear();
+    };
     //Operator(const Operator& orig);
     //virtual ~Operator();
     void clear();
     
-    virtual void process(lightfield::Lightfield & lf) = 0;
+    template<LF_TYPE TypeTag>
+    void process(lightfield::Lightfield<TypeTag> & lf);
         
 protected:
     
     // allocate memory for temporary storage
     virtual void allocate() = 0;
     // handle tasks before compute(), allocate output channel, etc.
-    virtual void precompute(lightfield::Lightfield &lf) = 0;
+    virtual void precompute(lightfield::Lightfield_base &lf) = 0;
     // core computational function that will be applied at EPI level
-    virtual void compute(lightfield::Lightfield &lf) = 0;
+    virtual void compute(lightfield::Lightfield_base &lf) = 0;
     // handle tasks post EPI level compute function
-    virtual void postcompute(lightfield::Lightfield &lf) = 0;
+    virtual void postcompute(lightfield::Lightfield_base &lf) = 0;
     // general clean up, i.e., temporary memory allocation
     virtual void cleanup() = 0;
     
@@ -57,6 +63,7 @@ protected:
     std::vector<std::string> inslots;
     std::vector<std::string> outslots;
 };
+
 
 }}
 #endif	/* OPERATOR_HPP */

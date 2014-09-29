@@ -25,89 +25,6 @@ namespace OpenLF {
 namespace lightfield {
 
 
-/*!
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-Lightfield::Lightfield()
-{
-    print(1,"lightfield::Lightfield::Lightfield() called...");
-}
-
-/*!
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-Lightfield::Lightfield(std::string filename)
-{
-    print(1,"lightfield::Lightfield::Lightfield(filename) called...");
-    
-    open(filename);
-}
-
-/*!
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-//Lightfield::Lightfield(const Lightfield& orig) {
-//}
-
-/*!
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-Lightfield::~Lightfield() {
-}
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-//////                        I/O  M E T H O D S
-////////////////////////////////////////////////////////////////////////////////
-
-
-/*!
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-bool Lightfield::open(std::string filename)
-{
-    print(1,"lightfield::Lightfield::open(filename) called");
-    
-    properties.clear();
-    channels.clear();
-    
-    std::string ftype;
-    ftype = helpers::find_ftype(filename);
-    
-    if(ftype=="h5" || ftype=="lf" || ftype=="hdf5") {
-        return io::load_from_hdf5( filename, channels, &properties );
-    }
-    else if(ftype=="cfg") {
-        dataHandler = new io::FileHandler(filename,&properties);
-        return dataHandler->readData(channels);
-    }
-    else {
-        return false;
-        throw OpenLF_Exception("Lightfield IO Error: Filetype not specified!");
-    }
-}
-
-
-/*!
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-bool Lightfield::open(const char* filename)
-{
-    return open(std::string(filename));
-}
-
-
-
-
-
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //////                        G E T    I N F O S 
@@ -116,7 +33,7 @@ bool Lightfield::open(const char* filename)
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool Lightfield::hasRGB()
+bool Lightfield_base::hasRGB()
 {
     if (channels.find("r") == channels.end()) return false;
     if (channels.find("g") == channels.end()) return false;
@@ -128,7 +45,7 @@ bool Lightfield::hasRGB()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool Lightfield::hasBW()
+bool Lightfield_base::hasBW()
 {
     if (channels.find("bw") == channels.end()) return false;
     return true;
@@ -138,7 +55,7 @@ bool Lightfield::hasBW()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool Lightfield::hasChannel(std::string name)
+bool Lightfield_base::hasChannel(std::string name)
 {
     if (channels.find(name) == channels.end()) return false;
     else return true;
@@ -148,7 +65,7 @@ bool Lightfield::hasChannel(std::string name)
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-std::vector<std::string> Lightfield::getListOfChannelNames()
+std::vector<std::string> Lightfield_base::getListOfChannelNames()
 {
   
     std::vector<std::string> v;
@@ -161,7 +78,7 @@ std::vector<std::string> Lightfield::getListOfChannelNames()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool Lightfield::hasProperty(std::string name) {
+bool Lightfield_base::hasProperty(std::string name) {
     return properties.has_field(name);
 }
 
@@ -169,7 +86,7 @@ bool Lightfield::hasProperty(std::string name) {
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool Lightfield::getProperty(std::string name, int &value)
+bool Lightfield_base::getProperty(std::string name, int &value)
 {
     return properties.get_field(name,value);
 }
@@ -178,7 +95,7 @@ bool Lightfield::getProperty(std::string name, int &value)
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool Lightfield::getProperty(std::string name, float &value)
+bool Lightfield_base::getProperty(std::string name, float &value)
 {
     return properties.get_field(name,value);
 }
@@ -187,7 +104,7 @@ bool Lightfield::getProperty(std::string name, float &value)
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool Lightfield::getProperty(std::string name, double &value)
+bool Lightfield_base::getProperty(std::string name, double &value)
 {
     return properties.get_field(name,value);
 }
@@ -196,7 +113,7 @@ bool Lightfield::getProperty(std::string name, double &value)
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool Lightfield::getProperty(std::string name, std::string &value)
+bool Lightfield_base::getProperty(std::string name, std::string &value)
 {
     return properties.get_field(name,value);
 }
@@ -205,18 +122,20 @@ bool Lightfield::getProperty(std::string name, std::string &value)
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-LF_TYPE Lightfield::type()
+/*
+LF_TYPE Lightfield_base::type()
 {
     LF_TYPE lftype;
     properties.get_lftype(lftype);
     return lftype;
 }
+*/
 
 
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-int Lightfield::imgWidth()
+int Lightfield_base::imgWidth()
 {
     int sx;
     properties.get_field("width",sx);
@@ -227,7 +146,7 @@ int Lightfield::imgWidth()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-int Lightfield::imgHeight()
+int Lightfield_base::imgHeight()
 {
     int sy;
     properties.get_field("height",sy);
@@ -238,7 +157,7 @@ int Lightfield::imgHeight()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-int Lightfield::width()
+int Lightfield_base::width()
 {
     int sx;
     properties.get_field("width",sx);
@@ -249,7 +168,7 @@ int Lightfield::width()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-int Lightfield::height()
+int Lightfield_base::height()
 {
     int sy;
     properties.get_field("height",sy);
@@ -260,7 +179,7 @@ int Lightfield::height()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-int Lightfield::cams_h()
+int Lightfield_base::cams_h()
 {
     int sh;
     properties.get_field("cams_h",sh);
@@ -271,7 +190,7 @@ int Lightfield::cams_h()
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-int Lightfield::cams_v()
+int Lightfield_base::cams_v()
 {
     int sv;
     properties.get_field("cams_v",sv);
@@ -291,78 +210,13 @@ int Lightfield::cams_v()
    
 
 /*!
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-float Lightfield::getLoxel(int h, int v, int x, int y, std::string channel_name)
-{
-    float val = 0;
-    
-    if(type()==LF_4D) {
-        
-        try {
-            val = channels[channel_name](h*imgWidth()+x,v*imgHeight()+y);
-        }
-        catch(std::exception &e)
-        {
-            e = OpenLF_Exception("Lightfield::loxel -> channel access exception!");
-            std::cout << e.what() << std::endl;
-        }
-        return val;
-    }
-    else if(type()==LF_3DV) {
-        return val;
-    }
-    
-    else if(type()==LF_3DH) {
-        
-        try {
-            val = channels[channel_name](h*imgWidth()+x,y);
-        }
-        catch(std::exception &e)
-        {
-            e = OpenLF_Exception("Lightfield::loxel -> channel access exception!");
-            std::cout << e.what() << std::endl;
-        }
-        return val;
-    }
-    
-    else if(type()==LF_CROSS) {
-        return val;
-    }
-    
-    else throw OpenLF_Exception("Lightfield::loxel -> unknown LF_TYPE!");
-}
-
-/*!
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-void Lightfield::getLoxel(int h, int v, int x, int y, std::vector<std::string> channel_names, std::vector<float> &values)
-{
-    if(!values.empty())
-        values.clear();
-    
-    for(unsigned int n=0; n<channel_names.size(); n++)
-    {
-        try {
-            values.push_back(channels[channel_names[n]](h*imgWidth()+x,v*imgHeight()+y));
-        }
-        catch(std::exception &e)
-        {
-            e = OpenLF_Exception("Lightfield::getLoxel -> channel access exception!");
-            std::cout << e.what() << std::endl;
-        }
-    }
-}
-
-
-/*!
  Returns the data pointer to the channel specified by the channel_name.
  If the channel key doesn't exist a NULL pointer is returned.
  * 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-float* Lightfield::channel_ptr(std::string channel_name) {
-    print(1,"lightfield::Lightfield::channel_ptr(channel_name,channel_data) called...");
+float* Lightfield_base::channel_ptr(std::string channel_name) {
+    print(1,"lightfield::Lightfield_base::channel_ptr(channel_name,channel_data) called...");
     
     // check if channel exists
     if (channels.find(channel_name) == channels.end()) return NULL;
@@ -373,8 +227,8 @@ float* Lightfield::channel_ptr(std::string channel_name) {
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void Lightfield::data(std::map<std::string,image::ImageChannel> **channels) {
-    print(1,"lightfield::Lightfield::data(channels) called...");
+void Lightfield_base::data(std::map<std::string,image::ImageChannel> **channels) {
+    print(1,"lightfield::Lightfield_base::data(channels) called...");
     
     *channels = &this->channels;
 }
@@ -383,8 +237,8 @@ void Lightfield::data(std::map<std::string,image::ImageChannel> **channels) {
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-std::map<std::string,image::ImageChannel> * Lightfield::data() {
-    print(1,"lightfield::Lightfield::data(channels) called...");
+std::map<std::string,image::ImageChannel> * Lightfield_base::data() {
+    print(1,"lightfield::Lightfield_base::data(channels) called...");
     
     return &this->channels;
 }
@@ -395,8 +249,8 @@ std::map<std::string,image::ImageChannel> * Lightfield::data() {
  If the channel key doesn't exist a NULL pointer is returned.
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-image::ImageChannel *Lightfield::data(std::string channel_name) {
-    print(1,"lightfield::Lightfield::data(channel_name,channel_data) called...");
+image::ImageChannel *Lightfield_base::data(std::string channel_name) {
+    print(1,"lightfield::Lightfield_base::data(channel_name,channel_data) called...");
     
     // check if channel exists
     if (channels.find(channel_name) == channels.end()) return NULL;
@@ -409,8 +263,8 @@ image::ImageChannel *Lightfield::data(std::string channel_name) {
  If the channel key doesn't exist a NULL pointer is returned.
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void Lightfield::data(std::string channel_name, image::ImageChannel **channel_data) {
-    print(1,"lightfield::Lightfield::data(channel_name,channel_data) called...");
+void Lightfield_base::data(std::string channel_name, image::ImageChannel **channel_data) {
+    print(1,"lightfield::Lightfield_base::data(channel_name,channel_data) called...");
     
     // check if channel exists
     if (channels.find(channel_name) == channels.end()) *channel_data = NULL;
@@ -423,9 +277,9 @@ void Lightfield::data(std::string channel_name, image::ImageChannel **channel_da
  the size of the light field.
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void Lightfield::allocateChannel(std::string channel_name)
+void Lightfield_base::allocateChannel(std::string channel_name)
 {
-    print(1,"lightfield::Lightfield::allocateChannel(channel_name) called...");
+    print(1,"lightfield::Lightfield_base::allocateChannel(channel_name) called...");
     
     // check if channel doesn't exists otherwise throw Exception
     if (channels.find(channel_name) == channels.end()) {
@@ -442,444 +296,231 @@ void Lightfield::allocateChannel(std::string channel_name)
  in the internal properties instance the internal value is overwritten.
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void Lightfield::appendProperties(Properties &properties) {
+void Lightfield_base::appendProperties(Properties &properties) {
     this->properties += properties;
 }
 
 
-/*!
- This method returns a MultiArrayView to an image of the light field at position 
- (h,v). The exception cases of cross and 3D vertical light fields where images 
- are stored in a transposed manner are handled correctly, so the function will 
- return a view to the transposed version of the image channel.
- *
- If one would get images from a cross light field, the row is accessed by setting
- the parameter v=0, the column vice versa by setting h=0. So always one of the 
- camera dimension needs to be zero, otherwise an Exception is fired!
- *  
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-void Lightfield::getImage(int h, int v, std::string channel_name, vigra::MultiArrayView<2,float> &img)
+template<>
+float Lightfield<LF_4D>::getLoxel(int h, int v, int x, int y,
+        std::string const & channel_name)
 {
-    // check if channel exists
-    if (channels.find(channel_name) == channels.end())
-        throw OpenLF_Exception("Lightfield::getImage -> channels doesn't exist!");
-    
+    try {
+        return channels[channel_name](h*imgWidth()+x,v*imgHeight()+y);
+    }
+    catch(std::exception &e)
+    {
+        throw OpenLF_Exception("Lightfield::loxel -> channel access exception!");
+    }
+}
+
+template<>
+float Lightfield<LF_3DV>::getLoxel(int h, int v, int x, int y,
+        std::string const & channel_name)
+{
+    // FIXME
+    return 0.;
+}
+
+template<>
+float Lightfield<LF_3DH>::getLoxel(int h, int v, int x, int y,
+        std::string const & channel_name)
+{
+    try {
+        return channels[channel_name](h*imgWidth()+x,y);
+    }
+    catch(std::exception &e)
+    {
+        throw OpenLF_Exception("Lightfield::loxel -> channel access exception!");
+    }
+}
+
+template<>
+float Lightfield<LF_CROSS>::getLoxel(int h, int v, int x, int y,
+        std::string const & channel_name)
+{
+    //FIXME
+    return 0.;
+}
+
+template<>
+void Lightfield<LF_CROSS>::getImage(int h, int v,
+        std::string const & channel_name,
+        vigra::MultiArrayView<2,float> &img)
+{
     // check if requested image is in range
     if(h<0 || h>=cams_h() || v<0 || v>=cams_v())
         throw OpenLF_Exception("Lightfield::getImage -> out of light field bounds!");
-    
+
+    // check if channel exists
+    auto cur_channel = channels.find(channel_name);
+    if (cur_channel == channels.end())
+        throw OpenLF_Exception("Lightfield::getImage -> channels doesn't exist!");
+
     // handle all light field cases
-    if(type()==LF_CROSS) {
-        if(v==0) img = channels[channel_name].viewToROI(h*imgWidth(),0,imgWidth(),imgHeight());
-        else if(h==0) img = channels[channel_name].viewToROI(v*imgHeight(),imgHeight(),imgHeight(),imgWidth());
-    }
-    else if(type()==LF_3DV) img = channels[channel_name].viewToROI(v*imgHeight(),0,imgHeight(),imgWidth());
-    
-    else if(type()==LF_3DH) img = channels[channel_name].viewToROI(h*imgWidth(),0,imgWidth(),imgHeight());
-    
-    else if(type()==LF_4D) img = channels[channel_name].viewToROI(h*imgWidth(),v*imgHeight(),imgWidth(),imgHeight());
-    
-    else throw OpenLF_Exception("Lightfield::getImage -> unknown LF_TYPE!");
+    if(v==0)
+        img = cur_channel->second.viewToROI(h*imgWidth(), 0,
+                imgWidth(), imgHeight());
+    else if(h==0)
+        img = cur_channel->second.viewToROI(v*imgHeight(), imgHeight(),
+                imgHeight(), imgWidth());
+}
+
+template<>
+void Lightfield<LF_3DV>::getImage(int h, int v,
+        std::string const & channel_name,
+        vigra::MultiArrayView<2,float> &img)
+{
+    // check if requested image is in range
+    if(h<0 || h>=cams_h() || v<0 || v>=cams_v())
+        throw OpenLF_Exception("Lightfield::getImage -> out of light field bounds!");
+
+    // check if channel exists
+    auto cur_channel = channels.find(channel_name);
+    if (cur_channel == channels.end())
+        throw OpenLF_Exception("Lightfield::getImage -> channels doesn't exist!");
+
+    img = cur_channel->second.viewToROI(v*imgHeight(), 0,
+            imgHeight(), imgWidth());
+}
+
+template<>
+void Lightfield<LF_3DH>::getImage(int h, int v,
+        std::string const & channel_name,
+        vigra::MultiArrayView<2,float> &img)
+{
+    // check if requested image is in range
+    if(h<0 || h>=cams_h() || v<0 || v>=cams_v())
+        throw OpenLF_Exception("Lightfield::getImage -> out of light field bounds!");
+
+    // check if channel exists
+    auto cur_channel = channels.find(channel_name);
+    if (cur_channel == channels.end())
+        throw OpenLF_Exception("Lightfield::getImage -> channels doesn't exist!");
+
+    img = cur_channel->second.viewToROI(h*imgWidth(), 0,
+            imgWidth(), imgHeight());
+}
+
+template<>
+void Lightfield<LF_4D>::getImage(int h, int v,
+        std::string const & channel_name,
+        vigra::MultiArrayView<2,float> &img)
+{
+    // check if requested image is in range
+    if(h<0 || h>=cams_h() || v<0 || v>=cams_v())
+        throw OpenLF_Exception("Lightfield::getImage -> out of light field bounds!");
+
+    // check if channel exists
+    auto cur_channel = channels.find(channel_name);
+    if (cur_channel == channels.end())
+        throw OpenLF_Exception("Lightfield::getImage -> channels doesn't exist!");
+
+    img = cur_channel->second.viewToROI(h*imgWidth(), v*imgHeight(),
+            imgWidth(), imgHeight());
 }
 
 
 /*!
- This method returns a MultiArray of an image of the light field at position 
- (h,v). If a bw channel is present it returns this, if rgb data are present they
- are converted to an bw image.
- * 
- The exception cases of cross and 3D vertical light fields where images 
- are stored in a transposed manner are handled correctly, so the function will 
- return a view to the transposed version of the image channel.
- *
- If one would get images from a cross light field, the row is accessed by setting
- the parameter v=0, the column vice versa by setting h=0. So always one of the 
- camera dimension needs to be zero, otherwise an Exception is fired!
- *  
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void Lightfield::getImage(int h, int v, vigra::MultiArray<2,float> &img)
+template<>
+vigra::MultiArrayView<2, float> Lightfield<LF_4D>::getHorizontalEpiChannel(
+        std::string const & channel_name, int y, int v, int focus)
 {
-    if(hasRGB()) {
-        vigra::MultiArrayView<2,float> img_r;
-        getImage(h,v,"r",img_r);
-        vigra::MultiArrayView<2,float> img_g;
-        getImage(h,v,"g",img_g);
-        vigra::MultiArrayView<2,float> img_b;
-        getImage(h,v,"b",img_b);
-        
-        image::utils::mergeChannels(img_r,img_b,img_b,img);
-    }
-    else if(hasBW()) {
-        vigra::MultiArrayView<2,float> img_bw;
-        getImage(h,v,"bw",img_bw);
-        img = vigra::MultiArray<2,float>(img_bw);       
-    }
-    else throw OpenLF_Exception("Lightfield::getImage -> no image data available!");
-}
-
-
-/*!
- This method returns a rgb MultiArray of an image of the light field at position 
- (h,v).
- * 
- The exception cases of cross and 3D vertical light fields where images 
- are stored in a transposed manner are handled correctly, so the function will 
- return a view to the transposed version of the image channel.
- *
- If one would get images from a cross light field, the row is accessed by setting
- the parameter v=0, the column vice versa by setting h=0. So always one of the 
- camera dimension needs to be zero, otherwise an Exception is fired!
- *  
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-void Lightfield::getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<float>> &img)
-{
-    if(!img.hasData())
-    {
-        img = vigra::MultiArray<2,vigra::RGBValue<float>>(shape(imgWidth(),imgHeight()));
-    }
+    if(v>=0 && v<=cams_v() && y>=0 && y<imgHeight())
+        return _getHorizontalEpiChannel_4D(v,y,channel_name,focus);
     else
-    {
-        if(img.width() != imgWidth() || img.height() != imgHeight())
-            throw OpenLF_Exception("Lightfield::getImage -> shape mismatch!");
-    }
-    
-    if(hasRGB()) {
-        vigra::MultiArrayView<2,float> img_r;
-        getImage(h,v,"r",img_r);
-        vigra::MultiArrayView<2,float> img_g;
-        getImage(h,v,"g",img_g);
-        vigra::MultiArrayView<2,float> img_b;
-        getImage(h,v,"b",img_b);
-        
-        image::utils::mergeChannels(img_r,img_g,img_b,img);
-    }
-    else if(hasBW())
-    {
-        vigra::MultiArrayView<2,float> img_bw;
-        getImage(h,v,"bw",img_bw);
-        
-        for(int c=0; c<3; c++)
-        {
-            for(int y=0; y<imgHeight(); y++)
-            {
-                for(int x=0; x<imgWidth(); x++)
-                {
-                    img(x,y)[c] = img_bw(x,y);
-                }
-            }
-        }
-    }
-    else throw OpenLF_Exception("Lightfield::getImage -> no rgb or bw image data available!");
+        throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> out of bounce!");
 }
 
-
-/*!
- This method returns a rgb MultiArray of an image of the light field at position 
- (h,v).
- * 
- The exception cases of cross and 3D vertical light fields where images 
- are stored in a transposed manner are handled correctly, so the function will 
- return a view to the transposed version of the image channel.
- *
- If one would get images from a cross light field, the row is accessed by setting
- the parameter v=0, the column vice versa by setting h=0. So always one of the 
- camera dimension needs to be zero, otherwise an Exception is fired!
- *  
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-void Lightfield::getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> &img)
+template<>
+vigra::MultiArrayView<2, float> Lightfield<LF_3DH>::getHorizontalEpiChannel(
+        std::string const & channel_name, int y, int v, int focus)
 {
-    if(!img.hasData())
-    {
-        img = vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>>(shape(imgWidth(),imgHeight()));
-    }
+    if(y>=0 && y<imgHeight())
+        return _getHorizontalEpiChannel_4D(0,y,channel_name,focus);
     else
-    {
-        if(img.width() != imgWidth() || img.height() != imgHeight())
-            throw OpenLF_Exception("Lightfield::getImage -> shape mismatch!");
-    }
-    
-    if(hasRGB()) {
-        vigra::MultiArrayView<2,float> img_r;
-        getImage(h,v,"r",img_r);
-        vigra::MultiArrayView<2,float> img_g;
-        getImage(h,v,"g",img_g);
-        vigra::MultiArrayView<2,float> img_b;
-        getImage(h,v,"b",img_b);
-        
-        vigra::MultiArray<2,float> fimg_r = vigra::MultiArrayView<2,float>(img_r);
-        vigra::MultiArray<2,float> fimg_g = vigra::MultiArrayView<2,float>(img_g);
-        vigra::MultiArray<2,float> fimg_b = vigra::MultiArrayView<2,float>(img_b);
-        
-        image::io::linear_range_mapping(img_r,fimg_r);
-        image::io::linear_range_mapping(img_g,fimg_g);
-        image::io::linear_range_mapping(img_b,fimg_b);
-        
-        image::utils::mergeChannels(fimg_r,fimg_g,fimg_b,img);
-    }
-    else if(hasBW())
-    {
-        vigra::MultiArrayView<2,float> img_bw;
-        getImage(h,v,"bw",img_bw);
-        
-        vigra::MultiArray<2,float> fimg_bw = vigra::MultiArrayView<2,float>(img_bw);
-        image::io::linear_range_mapping(img_bw,fimg_bw);
-        
-        for(int c=0; c<3; c++)
-        {
-            for(int y=0; y<imgHeight(); y++)
-            {
-                for(int x=0; x<imgWidth(); x++)
-                {
-                    img(x,y)[c] = (vigra::UInt8)(fimg_bw(x,y));
-                }
-            }
-        }
-    }
-    else throw OpenLF_Exception("Lightfield::getImage -> no rgb image data available!");
+        throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> out of bounce!");
 }
 
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-//////             E P I   H A N D L I N G     M E T H O D S
-////////////////////////////////////////////////////////////////////////////////
-
-/*!
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-void Lightfield::getHorizontalEpi(int y, int v, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img)
+template<>
+vigra::MultiArrayView<2, float> Lightfield<LF_3DV>::getHorizontalEpiChannel(
+        std::string const & channel_name, int y, int v, int focus)
 {
-    if(hasRGB()) {
-        vigra::MultiArrayView<2,float> r = getHorizontalEpiChannel("r", y, v, focus);
-        vigra::MultiArrayView<2,float> g = getHorizontalEpiChannel("g", y, v, focus);
-        vigra::MultiArrayView<2,float> b = getHorizontalEpiChannel("b", y, v, focus);
-        
-        if(img.hasData()) {
-            if(img.shape() != r.shape())
-                throw OpenLF_Exception("Lightfield::getHorizontalEpi -> shape mismatch!");
-        }
-        else
-            img = vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >(r.shape());
-        
-        for(int y=0; y<r.shape()[1]; y++) {
-            for(int x=0; x<r.shape()[0]; x++) {
-                img(x,y)[0] = (vigra::UInt8)(r(x,y)*255);
-                img(x,y)[1] = (vigra::UInt8)(g(x,y)*255);
-                img(x,y)[2] = (vigra::UInt8)(b(x,y)*255);
-            }
-        }
-    }
-    else if(hasBW()) {
-        vigra::MultiArrayView<2,float> bw = getHorizontalEpiChannel("bw", y, v, focus);
-        
-        if(img.hasData()) 
-        {
-            if(img.shape() != bw.shape())
-                throw OpenLF_Exception("Lightfield::getHorizontalEpi -> shape mismatch!");
-        }
-        else
-            img = vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >(bw.shape());
-        
-        for(int y=0; y<bw.shape()[1]; y++) {
-            for(int x=0; x<bw.shape()[0]; x++) {
-                for(int c=0; c<3; c++)
-                    img(x,y)[c] = (vigra::UInt8)(bw(x,y)*255);
-            }
-        }
-    }
-    else throw OpenLF_Exception("Lightfield::getHorizontalEpi -> no suitable channel available!");
+    throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> no epis available for this LF_TYPE!");
 }
 
-
-
-/*!
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-void Lightfield::getVerticalEpi(int x, int h, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img)
+template<>
+vigra::MultiArrayView<2, float> Lightfield<LF_CROSS>::getHorizontalEpiChannel(
+        std::string const & channel_name, int y, int v, int focus)
 {
-    if(hasRGB()) {
-        vigra::MultiArrayView<2,float> r = getVerticalEpiChannel("r", x, h, focus);
-        vigra::MultiArrayView<2,float> g = getVerticalEpiChannel("g", x, h, focus);
-        vigra::MultiArrayView<2,float> b = getVerticalEpiChannel("b", x, h, focus);
-        
-        if(img.hasData()) {
-            if(img.shape() != r.shape())
-                throw OpenLF_Exception("Lightfield::getHorizontalEpi -> shape mismatch!");
-        }
-        else
-            img = vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >(r.shape());
-        
-        for(int y=0; y<r.shape()[1]; y++) {
-            for(int x=0; x<r.shape()[0]; x++) {
-                img(x,y)[0] = (vigra::UInt8)(r(x,y)*255);
-                img(x,y)[1] = (vigra::UInt8)(g(x,y)*255);
-                img(x,y)[2] = (vigra::UInt8)(b(x,y)*255);
-            }
-        }
-    }
-    else if(hasBW()) {
-        vigra::MultiArrayView<2,float> bw = getHorizontalEpiChannel("bw", x, h, focus);
-        
-        if(img.hasData()) 
-        {
-            if(img.shape() != bw.shape())
-                throw OpenLF_Exception("Lightfield::getHorizontalEpi -> shape mismatch!");
-        }
-        else
-            img = vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >(bw.shape());
-        
-        for(int y=0; y<bw.shape()[1]; y++) {
-            for(int x=0; x<bw.shape()[0]; x++) {
-                for(int c=0; c<3; c++)
-                    img(x,y)[c] = (vigra::UInt8)(bw(x,y)*255);
-            }
-        }
-    }
-    else throw OpenLF_Exception("Lightfield::getHorizontalEpi -> no suitable channel available!");
-}
-
-
-
-/*!
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-vigra::MultiArrayView<2,float> Lightfield::getHorizontalEpiChannel(std::string channel_name, int y, int v, int focus)
-{
-    vigra::MultiArrayView<2,float> tmp;
-      
-    if(type()==LF_4D) {
-        if(v>=0 && v<=cams_v() && y>=0 && y<imgHeight())
-            tmp = _getHorizontalEpiChannel_4D(v,y,channel_name,focus);
-        else
-            throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> out of bounce!");
-    }
-    else if(type()==LF_3DH) {
-        if(y>=0 && y<imgHeight())
-            tmp = _getHorizontalEpiChannel_4D(0,y,channel_name,focus);
-        else
-            throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> out of bounce!");
-    }
-    else if(type()==LF_3DV) {
-        throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> no epis available for this LF_TYPE!");
-    }
-    else if(type()==LF_CROSS) {
-        if(y>=0 && y<imgHeight())
-            tmp = _getHorizontalEpiChannel_4D(0,y,channel_name,focus);
-        else
-            throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> out of bounce!");
-    }
+    if(y>=0 && y<imgHeight())
+        return  _getHorizontalEpiChannel_4D(0,y,channel_name,focus);
     else
-        throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> unknown light field type!");
-    
-    return tmp;
+        throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> out of bounce!");
 }
 
 
-/*!
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
- vigra::MultiArrayView<2,float> Lightfield::getVerticalEpiChannel(std::string channel_name, int x, int h, int focus)
-{
-    vigra::MultiArrayView<2,float> tmp;
-    
-    if(type()==LF_4D) {
-        if(h>=0 && h<=cams_h() && x>=0 && x<imgWidth())
-            tmp = _getVerticalEpiChannel_4D(h,x,channel_name,focus);
-        else
-            throw OpenLF_Exception("Lightfield::getVerticalEpiChannel -> out of bounce!");
-    }
-    else if(type()==LF_3DH) {
-        throw OpenLF_Exception("Lightfield::getVerticalEpiChannel -> no epis available for this LF_TYPE!");
-    }
-    else if(type()==LF_3DV) {
-        if(x>=0 && x<imgWidth())
-            tmp = _getVerticalEpiChannel_3DV(x,channel_name,focus);
-        else
-            throw OpenLF_Exception("Lightfield::getVerticalEpiChannel -> out of bounce!");
-    }
-    else if(type()==LF_CROSS) {
-        if(x>=0 && x<imgWidth())
-            tmp = _getVerticalEpiChannel_Cross(x,channel_name,focus);
-        else
-            throw OpenLF_Exception("Lightfield::getVerticalEpiChannel -> out of bounce!");
-    }
-    else
-        throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> unknown light field type!");
-    
-    return tmp;
-}
- 
- 
-/*!
-This is the efficient variant of accessing epipolar plane images due to the concatenated memory access.
-Accessing the vertical epipolar plane images using _getVerticalEpiChannel_4D is inefficient compared to this
-due to the column accessing. To achieve the same efficiency for vertical access transpose the data and use
-the horizontal access. 
 
-\author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-view_2D Lightfield::_getHorizontalEpiChannel_4D(int v, int y, std::string channel_name, int focus)
+template<>
+vigra::MultiArrayView<2,float> Lightfield<LF_4D>::getVerticalEpiChannel(
+        std::string const & channel_name, int x, int h, int focus)
 {
+    if (h < 0 || h >= cams_h() || x < 0 || x >= imgWidth())
+        throw OpenLF_Exception("Lightfield::getVerticalEpiChannel -> out of bounce!");
+
     // if channel exist
-    if (hasChannel(channel_name)) {
-        
-        int offset = (cams_h()-1)*focus;
-        vigra::MultiArrayView<1, float> row = channels[channel_name].viewToRow(v * imgHeight() + y);
-        shape epi_shape = shape(imgWidth()-(cams_h()-1)*focus,cams_h());
-        strideTag stride = strideTag(1, imgWidth() - focus);
-        return view_2D(epi_shape, stride, row.data() + offset);
-        
-    } else
+    auto cur_channel = channels.find(channel_name);
+    if (cur_channel == channels.end())
         throw OpenLF_Exception("Lightfield::_getHorizontalEpi_4D -> channel not available!");
-}
-
-
-/*!
-This is the efficient variant of accessing epipolar plane images due to the concatenated memory access.
-Accessing the vertical epipolar plane images using _getVerticalEpiChannel_4D is inefficient compared to this
-due to the column accessing. To achieve the same efficiency for vertical access transpose the data and use
-the horizontal access. 
-
-\author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-view_2D Lightfield::_getVerticalEpiChannel_3DV(int x, std::string channel_name, int focus)
-{
-    // if channel exist
-    if (hasChannel(channel_name)) {
         
-        int offset = (cams_v()-1)*focus;
-        vigra::MultiArrayView<1, float> row = channels[channel_name].viewToRow(x);
-        shape epi_shape = shape(imgHeight()-(cams_v()-1)*focus,cams_v());
-        strideTag stride = strideTag(1, imgHeight() - focus);
-        return view_2D(epi_shape, stride, row.data() + offset);        
-    } else
+    int offset = (cams_v()-1)*focus*width();
+    vigra::MultiArrayView<1, float> col = cur_channel->second.viewToColumn(
+            h * imgWidth() + x);
+    shape epi_shape = shape(cams_v(),imgHeight()-(cams_v()-1)*focus);
+    strideTag stride = strideTag((imgHeight()-focus)*width(),col.stride()[0]);
+    return view_2D(epi_shape, stride, col.data() + offset).transpose();
+}
+
+template<>
+vigra::MultiArrayView<2,float> Lightfield<LF_3DH>::getVerticalEpiChannel(
+        std::string const & channel_name, int x, int h, int focus)
+{
+    throw OpenLF_Exception("Lightfield::getVerticalEpiChannel -> no epis available for this LF_TYPE!");
+}
+
+template<>
+vigra::MultiArrayView<2,float> Lightfield<LF_3DV>::getVerticalEpiChannel(
+        std::string const & channel_name, int x, int h, int focus)
+{
+    if (x < 0 || x >= imgWidth())
+        throw OpenLF_Exception("Lightfield::getVerticalEpiChannel -> out of bounce!");
+
+    // if channel exist
+    auto cur_channel = channels.find(channel_name);
+    if (cur_channel == channels.end())
         throw OpenLF_Exception("Lightfield::_getHorizontalEpi_3DV -> channel not available!");
+        
+    int offset = (cams_v()-1)*focus;
+    vigra::MultiArrayView<1, float> row = cur_channel->second.viewToRow(x);
+    shape epi_shape = shape(imgHeight()-(cams_v()-1)*focus,cams_v());
+    strideTag stride = strideTag(1, imgHeight() - focus);
+    return view_2D(epi_shape, stride, row.data() + offset);        
 }
 
 
-/*!
-This is the efficient variant of accessing epipolar plane images due to the concatenated memory access.
-Accessing the vertical epipolar plane images using _getVerticalEpiChannel_4D is inefficient compared to this
-due to the column accessing. To achieve the same efficiency for vertical access transpose the data and use
-the horizontal access. 
-
-\author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-view_2D Lightfield::_getVerticalEpiChannel_Cross(int x, std::string channel_name, int focus)
+template<>
+vigra::MultiArrayView<2,float> Lightfield<LF_CROSS>::getVerticalEpiChannel(
+        std::string const & channel_name, int x, int h, int focus)
 {
+    if (x < 0 || x >= imgWidth())
+        throw OpenLF_Exception("Lightfield::getVerticalEpiChannel -> out of bounce!");
+
     // if channel exist
-    if (hasChannel(channel_name)) {
+    auto cur_channel = channels.find(channel_name);
+    if (cur_channel == channels.end())
+        throw OpenLF_Exception("Lightfield::_getHorizontalEpi_3DV -> channel not available!");
         
 //        int offset = (cams_v()-1)*focus;
 //        //vigra::MultiArrayView<2, float> row = channels[channel_name].viewToROI(0, imgHeight()+x, cams_v()*imgHeight());
@@ -888,38 +529,15 @@ view_2D Lightfield::_getVerticalEpiChannel_Cross(int x, std::string channel_name
 //        strideTag stride = strideTag(1, imgHeight() - focus);
 //        return view_2D(epi_shape, stride, row.data() + offset);
         
-        int offset = (cams_v()-1)*focus;
-        vigra::MultiArrayView<1, float> row = channels[channel_name].viewToRow(imgHeight() + x);
-        shape epi_shape = shape(imgHeight()-(cams_v()-1)*focus,cams_v());
-        strideTag stride = strideTag(1, imgHeight() - focus);
-        return view_2D(epi_shape, stride, row.data() + offset);
-        
-    } else
-        throw OpenLF_Exception("Lightfield::_getHorizontalEpi_3DV -> channel not available!");
+    int offset = (cams_v()-1)*focus;
+    vigra::MultiArrayView<1, float> row = cur_channel->second.viewToRow(
+            imgHeight() + x);
+    shape epi_shape = shape(imgHeight()-(cams_v()-1)*focus,cams_v());
+    strideTag stride = strideTag(1, imgHeight() - focus);
+    return view_2D(epi_shape, stride, row.data() + offset);
 }
-
-
-/*!
-This is the inefficient variant of accessing epipolar plane images due to the unstrided memory access.
-For optimal performance during computation transpose the whole lightfield and use horizontal access. 
-
-\author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/
-view_2D Lightfield::_getVerticalEpiChannel_4D(int h, int x, std::string channel_name, int focus)
-{
-    // if channel exist
-    if (hasChannel(channel_name)) {
-        
-        int offset = (cams_v()-1)*focus*width();
-        vigra::MultiArrayView<1, float> col = channels[channel_name].viewToColumn(h * imgWidth() + x);
-        shape epi_shape = shape(cams_v(),imgHeight()-(cams_v()-1)*focus);
-        strideTag stride = strideTag((imgHeight()-focus)*width(),col.stride()[0]);
-        return view_2D(epi_shape, stride, col.data() + offset).transpose();
-        
-    } else
-        throw OpenLF_Exception("Lightfield::_getHorizontalEpi_4D -> channel not available!");
-}
-
+ 
+ 
 
 
 
@@ -937,45 +555,54 @@ view_2D Lightfield::_getVerticalEpiChannel_4D(int h, int x, std::string channel_
 /*!
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
+/*
 EpiIterator::EpiIterator(Lightfield *lf, DIRECTION direction)
 {
     this->lf = lf;
     this->direction = direction;
     finished = false;
 }
+*/
 
 
 /*!
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
+/*
 EpiIterator::~EpiIterator()
 {
     
 }
+*/
 
 
 /*!
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
+/*
 EpiIterator* Lightfield::createEpiIterator(DIRECTION direction)
 {
     return new EpiIterator(this,direction);
 }
+*/
 
 
 /*!
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
+/*
 void EpiIterator::first()
 {
     camera_index = 0;
     epi_index = 0;
 }
+*/
 
 
 /*!
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
+/*
 void EpiIterator::next()
 {
     epi_index++;
@@ -1050,20 +677,24 @@ void EpiIterator::next()
         }
     }
 }
+*/
 
 
 /*!
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
+/*
 bool EpiIterator::end()
 {
     return finished;
 }
+*/
     
 
 /*!
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
+/*
 view_2D EpiIterator::get(std::string channel_name, int focus)
 {
     if(!this->lf->hasChannel(channel_name))
@@ -1076,6 +707,7 @@ view_2D EpiIterator::get(std::string channel_name, int focus)
     else
         throw OpenLF_Exception("EpiIterator::get -> unknown direction!");
 }
+*/
 
 
 

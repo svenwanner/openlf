@@ -911,9 +911,9 @@ bool load_from_filesequence(std::string dir,
 
 
 
-bool load_from_hdf5( std::string filename,
+bool load_from_hdf5( std::string const & filename,
                      std::map< std::string,image::ImageChannel> &channels,
-                     Properties *properties ) 
+                     Properties &properties )
 {    
     print(2,"lightfield::io::load_from_hdf5(filename,channels,properties) called...");
     
@@ -952,25 +952,21 @@ bool load_from_hdf5( std::string filename,
                 
                 if(str) {
                     file.readAttribute("",name,str_val);
-                    properties->set_field(name,str_val);
-                    properties->get_field(name,str_val); 
+                    properties.set_field(name,str_val);
                 }
                 else {
                     if(name=="LF_TYPE") {
                         // set the LF_TYPE
                         file.readAttribute("","LF_TYPE",num_ival);
-                        properties->set_field("type",num_ival);
+                        properties.set_field("type",num_ival);
                     }
                     if(name=="width" || name=="height" || name=="cams_v" || name=="cams_h") {
                         file.readAttribute("",name,num_ival);
-                        properties->set_field(name,num_ival);
-                        
-                        properties->get_field(name,num_ival);
+                        properties.set_field(name,num_ival);
                     }
                     else {
                         file.readAttribute("",name,num_fval);
-                        properties->set_field(name,num_fval);
-                        properties->get_field(name,num_fval);
+                        properties.set_field(name,num_fval);
                     }
                 }
                 
