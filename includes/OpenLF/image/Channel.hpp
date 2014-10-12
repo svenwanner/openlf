@@ -189,7 +189,11 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 //////                S E T / G E T   M E T H O D S  
 ////////////////////////////////////////////////////////////////////////////////
-
+    //!* deep copy of an image channel, no external linking 
+    /*! Works only with default counstructor. Data is allocates as 
+    an internal multiarray*/
+    void deepcopy(OpenLF::image::ImageChannel& channel);
+    
     //!* indicates the use of this class as a pointer to external data.
     /*! If external_flag is true, one should be aware that any manipulation with ImageChannel 
      * will result in overwriting this data. Instead if the value of the flag is false, 

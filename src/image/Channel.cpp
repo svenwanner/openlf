@@ -214,7 +214,7 @@ void OpenLF::image::ImageChannel::init(vigra::Shape2 shape)
  */
 void OpenLF::image::ImageChannel::init(int width, int height, float* data_ptr) 
 {
-    pixel = array_2d(vigra::Shape2(width,height), data_ptr); 
+    pixel = array_2d(vigra::Shape2(width,height), data_ptr);
     external_flag = true;
 }
 
@@ -266,7 +266,17 @@ void OpenLF::image::ImageChannel::init(vigra::Shape2 shape, vigra::UInt8* data_p
 ////////////////////////////////////////////////////////////////////////////////
 //////                S E T / G E T   M E T H O D S  
 ////////////////////////////////////////////////////////////////////////////////
-
+void OpenLF::image::ImageChannel::deepcopy(OpenLF::image::ImageChannel& channel)
+{
+    if(hasData())
+        throw OpenLF_Exception("already has data");
+    else
+    {
+        internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(channel.width(), channel.height()), channel.data());
+        pixel = *internal_data_ptr;
+        external_flag = false;
+    }
+}
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
  */
@@ -429,6 +439,7 @@ OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator=(float value
         return *this;
     }
 }
+
 
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)

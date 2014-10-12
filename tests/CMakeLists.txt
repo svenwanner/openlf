@@ -66,6 +66,18 @@ if(BUILD_TEST_CHANNEL)
 	add_test(OpenLF_test_channel ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_channel)
 endif()
 
+if(BUILD_TEST_CHANNEL_VIEW)
+	#TEST: test_Channel_view 
+	    add_executable(OpenLF_test_Channel_view
+		./test_Channel_view.cpp
+		./test_Channel_view.cpp 
+		${SRCS} ${HDRS})
+	    target_link_libraries(OpenLF_test_Channel_view libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY} )
+
+	add_dependencies(OpenLF_test_Channel_view Configure)
+	add_test(OpenLF_test_Channel_view ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_Channel_view)
+endif()
+
 
 
 	
