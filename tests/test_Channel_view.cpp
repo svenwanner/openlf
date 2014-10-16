@@ -30,8 +30,9 @@ void test_Channel_view::tearDown() {
 
 void test_Channel_view::testMethod() { 
     vigra::MultiArray<2,float> ma_1 = vigra::MultiArray<2,float>(vigra::Shape2(50,50),5.0f);
+    vigra::MultiArray<2,float> ma_2 = vigra::MultiArray<2,float>(vigra::Shape2(50,50),1.0f);
     vigra::MultiArray<2,float> int_ma_1 = vigra::MultiArray<2,vigra::UInt8>(vigra::Shape2(50,50),5);
-    vigra::MultiArray<2,float> *ptr = &ma_1;
+    vigra::MultiArray<2,float> *ptr = &ma_2;
     vigra::MultiArray<2,float> **pixel = &ptr;
     float value = 1.0f;
     OpenLF::image::ImageChannel ic_def1;
@@ -102,8 +103,15 @@ void test_Channel_view::testMethod() {
     /**********************************************
      * the copy constructor 
      **********************************************/
-    
-    
+    OpenLF::image::ImageChannel ic_copy(ic_def4);
+    CPPUNIT_ASSERT(ic_copy.data()[0]==5.0);
+    CPPUNIT_ASSERT(ic_copy.shape()==vigra::Shape2(50,50));
+    CPPUNIT_ASSERT(ic_copy.hasData()==true);
+    CPPUNIT_ASSERT(ic_copy.externalData()==false);
+    CPPUNIT_ASSERT(ic_copy.image()->data()[0]==5.0f);
+    ic_copy.set(1.0f);
+    CPPUNIT_ASSERT(ic_copy.data()[0]==1.0f);
+    CPPUNIT_ASSERT(ic_def4.data()[0]==5.0f);
     /**********************************************
      * test methods
      **********************************************/
@@ -115,160 +123,80 @@ void test_Channel_view::testMethod() {
     CPPUNIT_ASSERT(value==5.0f);
     CPPUNIT_ASSERT(ic_def3.height()==50);
     CPPUNIT_ASSERT(ic_def3.data()[0]==5.0f);
-    /*ic_def3.image(pixel);
-    CPPUNIT_ASSERT(pixel->);
-    ic_def3.set()
-    ic_def3.shape()
-    ic_def3.sum()
-    ic_def3.width()
-    ic_def3.viewToColumn()
-    ic_def3.viewToROI()
-    ic_def3.viewToRow()*/
+    ic_def3.image(pixel);
+    CPPUNIT_ASSERT((**pixel).data()[0]==5.0f);
+    CPPUNIT_ASSERT(ic_def3.shape()==vigra::Shape2(50,50));
+    float a = 5*50*50;
+    CPPUNIT_ASSERT(ic_def3.sum()==a);
+    CPPUNIT_ASSERT(ic_def3.width()==50);
+    CPPUNIT_ASSERT(ic_def3.viewToColumn(2).shape()==vigra::Shape1(50));
+    CPPUNIT_ASSERT(ic_def3.viewToColumn(2).data()[0]==5.0f);
+    CPPUNIT_ASSERT(ic_def3.viewToRow(2).shape()==vigra::Shape1(50));
+    CPPUNIT_ASSERT(ic_def3.viewToRow(2).data()[0]==5.0f);
+    CPPUNIT_ASSERT(ic_def3.viewToROI(2,2,2,2).data()[0]==5.0f);
+    CPPUNIT_ASSERT(ic_def3.viewToROI(2,2,2,2).shape()==vigra::Shape2(2,2));
+    
     /**********************************************
-     * use cases
+     * operators
      **********************************************/
+    //...
     
-    /* build a channel map */
+    /**********************************************
+     * copy of a channel
+     **********************************************/
+    OpenLF::image::ImageChannel ic_setEqual = ic_def4;
+    CPPUNIT_ASSERT(ic_setEqual == ic_def4);
+    CPPUNIT_ASSERT(ic_setEqual.data()[0] == ic_def4.data()[0]);
+    CPPUNIT_ASSERT(ic_setEqual.sum() == ic_def4.sum());
+    CPPUNIT_ASSERT(ic_setEqual.hasData()==true);
+    CPPUNIT_ASSERT(ic_setEqual.externalData()==false);
+    ic_setEqual.set(3.0f);
+    CPPUNIT_ASSERT(ic_def4.data()[0]==5.0f);
     
-    /* use channel as view */
+    /**********************************************/
     
-    /* create a copy */
-    
-    /* use channel as multiarray */
-    OpenLF::image::ImageChannel ic_marray;
-    ic_marray.deepcopy(ic_def3);
-    CPPUNIT_ASSERT(ic_marray.data()[0]==5.0f);
-    CPPUNIT_ASSERT(ic_marray.width()==50);
-    CPPUNIT_ASSERT(ic_marray.height()==50);
-    ic_marray.set(10.0f);
-    CPPUNIT_ASSERT(ic_marray.data()[0]==10.0f);
+    OpenLF::image::ImageChannel ic_copy2;
+    ic_copy2.deepcopy(ic_def3);
+    CPPUNIT_ASSERT(ic_copy2.data()[0]==5.0f);
+    CPPUNIT_ASSERT(ic_copy2.width()==50);
+    CPPUNIT_ASSERT(ic_copy2.height()==50);
+    ic_copy2.set(10.0f);
+    CPPUNIT_ASSERT(ic_copy2.data()[0]==10.0f);
     CPPUNIT_ASSERT(ic_def3.data()[0]==5.0f);
     
-    /* create a copy */
     
-    /*
-    float t_2_pixel = ic_1.data()[0];
-    float t_1_tmp = ic_1.image()->data()[0];
+    /**********************************************
+     **********************************************
+     ****** USE CASES
+     **********************************************
+     **********************************************/
     
-    float t_end = 15.0f;
+    /* create a channel map */
+    std::map<std::string,OpenLF::image::ImageChannel> img_channels;
     
-    vigra::MultiArray<2,float> ma1= vigra::MultiArray<2,float>(vigra::Shape2(5,5));
-    ma1.init(5.0f);
-    vigra::MultiArrayView<2,float> mav1 = ma1;
-    float f_mav1 = mav1.data()[1];
-    float f_ma1 = ma1.data()[1];
-    mav1 = 3.0f; 
-    f_mav1 = mav1.data()[1];
-    f_ma1 = ma1.data()[1];
-    vigra::MultiArray<2,float> ma2 = vigra::MultiArray<2,float>(vigra::Shape2(5,5));
-    ma2.init(6.0f);
-    mav1 = ma2;
-    f_mav1 = mav1.data()[1];
-    f_ma1 = ma1.data()[1];
-    vigra::MultiArray<2,float> ma3 = vigra::MultiArray<2,float>(vigra::Shape2(5,5));
-    ma3.init(8.0f);
-    vigra::MultiArrayView<2,float> mav3 = ma3;
-
+    img_channels["r"] = OpenLF::image::ImageChannel();
+    img_channels["r"].init(2,2,2.0f);
+    img_channels["g"] = OpenLF::image::ImageChannel();
+    img_channels["g"].init(2,2,3.0f);
+    img_channels["b"] = OpenLF::image::ImageChannel();
+    img_channels["b"].init(2,2,3.0f); 
     
-    f_mav1 = mav1.data()[1];
-    f_ma1 = ma1.data()[1];
-    OpenLF::image::ImageChannel Channel1 = OpenLF::image::ImageChannel();
-    CPPUNIT_ASSERT(Channel1.hasData()==false); //prone to error
+    /* create imagechannel as a view */
     
+    OpenLF::image::ImageChannel ic_1(img_channels["r"].shape(), img_channels["r"].data());
     
-    float f_end = 15.0f;
+    vigra::MultiArray<2,float> MA(vigra::Shape2(10,10),4.0f);
+    vigra::MultiArrayView<2,float> MAV = MA;
+    OpenLF::image::ImageChannel fromMA(MA);
+    OpenLF::image::ImageChannel fromMAV(MAV);
+    CPPUNIT_ASSERT(fromMA.sum() == fromMAV.sum());
     
-    //channel tests
-    vigra::MultiArray<2,float> tarr(vigra::Shape2(3,3));
-
-    //Kiryl: test ImageChannel as view
-    OpenLF::image::ImageChannel ic_view;
-    ic_view.init(3,3);
-    CPPUNIT_ASSERT(ic_view.sum()==0.0f);
+    /* create a deep copy */ 
+    OpenLF::image::ImageChannel ic_copy10(ic_def3); //copy constructor
+    
+    OpenLF::image::ImageChannel ic_copy20; //default constructor first for Map handling
+    ic_copy20.deepcopy(ic_def3);  
+    CPPUNIT_ASSERT(ic_copy10.sum()==ic_copy20.sum());
     
     
-    //test init by width, height
-    OpenLF::image::ImageChannel ic_wh;
-    ic_wh.init(4,5);
-    CPPUNIT_ASSERT(ic_wh.hasData());
-    CPPUNIT_ASSERT(ic_wh.sum()==0.0f);
-    CPPUNIT_ASSERT(ic_wh.width()==4);
-    CPPUNIT_ASSERT(ic_wh.height()==5);
-    CPPUNIT_ASSERT(ic_wh.shape()==vigra::Shape2(4,5));
-    ic_wh.set(2.0f);
-    CPPUNIT_ASSERT(ic_wh.sum()==40.0f);
-    CPPUNIT_ASSERT(ic_wh.get(2,2)==2.0f);
-    
-    float test_float = 3.0f;
-    ic_wh.get(2,2, test_float);
-    CPPUNIT_ASSERT(test_float==2.0f);
-    
-    
-    
-    
-    //test ROI
-    
-    OpenLF::image::ImageChannel ic_10;
-    ic_10.init(10,10);
-
-    ic_10 = 1.0f;
-    CPPUNIT_ASSERT(ic_10.sum() == 100);
-    
-    for(int y=2; y<10; y++) {
-        for(int x=2; x<10; x++) {
-            ic_10(x,y) = 2.0f;   
-        }
-    } 
-    CPPUNIT_ASSERT(ic_10.get(0,0) == 1.0f);
-    CPPUNIT_ASSERT(ic_10.get(2,2) == 2.0f);
-    
-    OpenLF::image::ImageChannel ic_11 = OpenLF::image::ImageChannel(ic_10.viewToROI(0,0,4,4));
-    CPPUNIT_ASSERT(ic_11.sum() == 20.0f);
-    
-    OpenLF::image::ImageChannel ic_12 = OpenLF::image::ImageChannel(ic_10.viewToROI(0,0,2,2));
-    CPPUNIT_ASSERT(ic_12.sum() == 4.0f);
-      
-    OpenLF::image::ImageChannel ic_13 = OpenLF::image::ImageChannel(ic_10.viewToROI(2,2,2,2));
-    CPPUNIT_ASSERT(ic_13.sum() == 8.0f);
-
-    // test ViewToRow
-   
-    vigra::MultiArray<1,float>* tarr4_ptr = NULL;
-    vigra::MultiArray<1,float>* tarr5_ptr = NULL;
-    *tarr4_ptr = ic_10.viewToRow(1);
-    *tarr5_ptr = ic_10.viewToRow(3);
-    
-    float sum4 = 0.0f;
-    for(int n=0;n<10;n++) {
-        sum4 += tarr4_ptr->data()[n];
-    }
-    float sum5 = 0.0f;
-    for(int n=0;n<10;n++) {
-        sum5 += tarr5_ptr->data()[n];
-    }
-    CPPUNIT_ASSERT(sum4 == 18.0f);
-    CPPUNIT_ASSERT(sum5 == 20.0f);
-    
-    // test ViewToColumn
-    vigra::MultiArray<1,float> *tarr6_ptr = NULL;
-    vigra::MultiArray<1,float> *tarr7_ptr = NULL;
-    *tarr6_ptr = ic_10.viewToRow(1);
-    *tarr7_ptr = ic_10.viewToRow(3);
-    tarr6_ptr = tarr4_ptr;
-    tarr7_ptr = tarr5_ptr;
-    float sum6 = 0.0f;
-    for(int n=0;n<10;n++) {
-        sum6 += tarr6_ptr->data()[n];
-    }
-    float sum7 = 0.0f;
-    for(int n=0;n<10;n++) {
-        sum7 += tarr7_ptr->data()[n];
-    }
-    CPPUNIT_ASSERT(sum6 == 18.0f);
-    CPPUNIT_ASSERT(sum7 == 20.0f);   
-    */
-    
-    
-}  
-
-
+}

@@ -58,11 +58,26 @@ public:
     */
     ImageChannel(int width, int height);
     
+    //! Initialize with a float value
+    /*!
+     \param width image width
+     \param height image height
+     \param value initial value
+    */
+    ImageChannel(int width, int height, float value);
+    
     //! Empty image constructor
     /*!
      \param shape of the empty image
     */
-    ImageChannel(vigra::Shape2 shape);
+    ImageChannel(vigra::Shape2 shape); 
+    
+    //! Initialize with a float value
+    /*!
+     \param shape of the empty image
+     \param value initial value
+    */
+    ImageChannel(vigra::Shape2 shape, float value);
     
     //! Initialize with float array constructor
     /*!
@@ -136,12 +151,20 @@ public:
 //////                    I N I T I A L I Z E R S 
 ////////////////////////////////////////////////////////////////////////////////
     
-    //! allocate empty memory from image size 
+    //!  allocate empty memory from image size 
     /*!
      \param width image width
      \param height image height
     */
     void init(int width, int height);
+    
+    //!  initialize with a float value 
+    /*!
+     \param width image width
+     \param height image height
+     \param value initial value
+    */
+    void init(int width, int height, float value);
     
     
     //!  allocate empty memory from shape
@@ -150,11 +173,18 @@ public:
     */
     void init(vigra::Shape2 shape);
     
+    //!  initialize with a float value 
+    /*!
+     \param shape image shape
+    */
+    void init(vigra::Shape2 shape, float value);
+    
     
     //!  allocate memory from shape and float data pointer
     /*!
      \param shape image shape
      \param data_ptr float pointer to data 
+     \param value initial value
     */
     void init(const vigra::Shape2 shape, float* data_ptr);
     

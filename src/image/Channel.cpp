@@ -44,6 +44,19 @@ OpenLF::image::ImageChannel::ImageChannel(int width, int height)
 }
 
 /*! 
+ * Initialize empty ImageChannel instance with shape (width,height).
+ * 
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+ */
+OpenLF::image::ImageChannel::ImageChannel(int width, int height, float value)
+{
+    print(1,"image::ImageChannel::ImageChannel(width,height) called...");
+    
+    init(width,height,value);
+    
+}
+
+/*! 
  * Initialize empty ImageChannel instance with shape passed.  
  * 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
@@ -53,6 +66,19 @@ OpenLF::image::ImageChannel::ImageChannel(vigra::Shape2 shape)
     print(1,"image::ImageChannel::ImageChannel(shape) called...");
     
     init(shape);
+    
+}
+
+/*! 
+ * Initialize empty ImageChannel instance with shape passed.  
+ * 
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+ */
+OpenLF::image::ImageChannel::ImageChannel(vigra::Shape2 shape, float value)
+{
+    print(1,"image::ImageChannel::ImageChannel(shape) called...");
+    
+    init(shape, value);
     
 }
 
@@ -165,11 +191,11 @@ OpenLF::image::ImageChannel::ImageChannel(vigra::MultiArrayView<2,vigra::UInt8> 
  * 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
  */
-OpenLF::image::ImageChannel::ImageChannel(const ImageChannel& orig) //without memory allocation?
+OpenLF::image::ImageChannel::ImageChannel(const ImageChannel& orig)
 {  
-    int w = orig.width();
-    int h = orig.height();
-    this->pixel = array_2d(vigra::Shape2(w,h), orig.data());
+    internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(orig.width(), orig.height()), orig.data());
+    pixel = *internal_data_ptr;
+    external_flag = false;
 
 }
 
@@ -200,11 +226,33 @@ void OpenLF::image::ImageChannel::init(int width, int height)
 
 /*! 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
+ */
+void OpenLF::image::ImageChannel::init(int width, int height, float value) 
+{   
+    internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(width, height));
+    internal_data_ptr->init(value);
+    pixel = *internal_data_ptr;
+    external_flag = false;
+}
+
+/*! 
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
  */ 
 void OpenLF::image::ImageChannel::init(vigra::Shape2 shape) 
 {
-    internal_data_ptr = new vigra::MultiArray<2,float>(shape); //data
+    internal_data_ptr = new vigra::MultiArray<2,float>(shape); 
     internal_data_ptr->init(0.0f); 
+    pixel = *internal_data_ptr;
+    external_flag = false;
+}
+
+/*! 
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
+ */ 
+void OpenLF::image::ImageChannel::init(vigra::Shape2 shape, float value) 
+{
+    internal_data_ptr = new vigra::MultiArray<2,float>(shape); 
+    internal_data_ptr->init(value); 
     pixel = *internal_data_ptr;
     external_flag = false;
 }
@@ -439,6 +487,10 @@ OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator=(float value
         return *this;
     }
 }
+
+/*!
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+ */
 
 
 /*!
