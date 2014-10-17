@@ -75,8 +75,8 @@ void test_channel::test_initialization() {
     CPPUNIT_ASSERT(ic_tarr_ui8.sum()==9.0f);
     
     // test get image and data
-    vigra::MultiArray<2,float> *img_ptr_1 = NULL;
-    vigra::MultiArray<2,float> *img_ptr_2 = NULL;
+    vigra::MultiArrayView<2,float> *img_ptr_1 = NULL;
+    vigra::MultiArrayView<2,float> *img_ptr_2 = NULL;
     float *data_ptr = NULL;
     
     ic_tarr.set(1.234);

@@ -1001,7 +1001,7 @@ bool OpenLF::lightfield::io::load_from_hdf5( std::string filename,
                 // allocate memory and read channels
                 channels[ds_tree[id]] = OpenLF::image::ImageChannel();
                 channels[ds_tree[id]].init(ds_shape[0],ds_shape[1]);
-                vigra::MultiArray<2,float> *tmp;
+                vigra::MultiArrayView<2,float> *tmp;
                 channels[ds_tree[id]].image(&tmp);
                 file.read(ds_tree[id], *tmp);
             }
@@ -1036,7 +1036,7 @@ bool OpenLF::lightfield::io::save_to_hdf5( std::string file_name,
         {
             std::string key = i->first;
             dset_name = "/LF/"+key;
-            vigra::MultiArray<2,float> *tmp;
+            vigra::MultiArrayView<2,float> *tmp;
             channels[key].image(&tmp);
             file.write(dset_name.c_str(), *tmp);
         }        

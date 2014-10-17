@@ -30,10 +30,11 @@ void test_Channel_view::tearDown() {
 
 void test_Channel_view::testMethod() { 
     vigra::MultiArray<2,float> ma_1 = vigra::MultiArray<2,float>(vigra::Shape2(50,50),5.0f);
-    vigra::MultiArray<2,float> ma_2 = vigra::MultiArray<2,float>(vigra::Shape2(50,50),1.0f);
-    vigra::MultiArray<2,float> int_ma_1 = vigra::MultiArray<2,vigra::UInt8>(vigra::Shape2(50,50),5);
-    vigra::MultiArray<2,float> *ptr = &ma_2;
-    vigra::MultiArray<2,float> **pixel = &ptr;
+    vigra::MultiArray<2,float> f_ma_2(vigra::Shape2(50,50),1.0f);
+    vigra::MultiArray<2,float> ma_2(f_ma_2.shape(), f_ma_2.data());
+    vigra::MultiArray<2,vigra::UInt8> int_ma_1 = vigra::MultiArray<2,vigra::UInt8>(vigra::Shape2(50,50),5);
+    vigra::MultiArrayView<2,float> *ptr = &ma_2;
+    vigra::MultiArrayView<2,float> **pixel = &ptr;
     float value = 1.0f;
     OpenLF::image::ImageChannel ic_def1;
 
@@ -84,9 +85,12 @@ void test_Channel_view::testMethod() {
     CPPUNIT_ASSERT(ic_def3.externalData()==true);
     CPPUNIT_ASSERT(ic_def3.hasData()==true);
     
+    CPPUNIT_ASSERT(int_ma_1.data()[0]==5);
     CPPUNIT_ASSERT_NO_THROW(ic_def4.init(50,50,int_ma_1.data()));
-    CPPUNIT_ASSERT(ic_def4.externalData()==true);
+    CPPUNIT_ASSERT(ic_def4.externalData()==false);
     CPPUNIT_ASSERT(ic_def4.hasData()==true);
+    float val = 5.0f/255.0f;
+    CPPUNIT_ASSERT(ic_def4.data()[0]== val);
     
     CPPUNIT_ASSERT_NO_THROW(ic_def5.init(vigra::Shape2(50,50)));
     CPPUNIT_ASSERT(ic_def5.externalData()==false);
@@ -97,21 +101,21 @@ void test_Channel_view::testMethod() {
     CPPUNIT_ASSERT(ic_def6.hasData()==true);
     
     CPPUNIT_ASSERT_NO_THROW(ic_def7.init(vigra::Shape2(50,50),int_ma_1.data()));
-    CPPUNIT_ASSERT(ic_def7.externalData()==true);
+    CPPUNIT_ASSERT(ic_def7.externalData()==false);
     CPPUNIT_ASSERT(ic_def7.hasData()==true);
     
     /**********************************************
      * the copy constructor 
      **********************************************/
     OpenLF::image::ImageChannel ic_copy(ic_def4);
-    CPPUNIT_ASSERT(ic_copy.data()[0]==5.0);
+    CPPUNIT_ASSERT(ic_copy.data()[0]==val);
     CPPUNIT_ASSERT(ic_copy.shape()==vigra::Shape2(50,50));
     CPPUNIT_ASSERT(ic_copy.hasData()==true);
     CPPUNIT_ASSERT(ic_copy.externalData()==false);
-    CPPUNIT_ASSERT(ic_copy.image()->data()[0]==5.0f);
+    CPPUNIT_ASSERT(ic_copy.image()->data()[0]==val);
     ic_copy.set(1.0f);
     CPPUNIT_ASSERT(ic_copy.data()[0]==1.0f);
-    CPPUNIT_ASSERT(ic_def4.data()[0]==5.0f);
+    CPPUNIT_ASSERT(ic_def4.data()[0]==val);
     /**********************************************
      * test methods
      **********************************************/
@@ -151,7 +155,7 @@ void test_Channel_view::testMethod() {
     CPPUNIT_ASSERT(ic_setEqual.hasData()==true);
     CPPUNIT_ASSERT(ic_setEqual.externalData()==false);
     ic_setEqual.set(3.0f);
-    CPPUNIT_ASSERT(ic_def4.data()[0]==5.0f);
+    CPPUNIT_ASSERT(ic_def4.data()[0]==val);
     
     /**********************************************/
     

@@ -288,14 +288,14 @@ public:
     
     
     //! get a pointer to the data as MultiArrayView<2,float> 
-    vigra::MultiArray<2,float>* image();
+    vigra::MultiArrayView<2,float>* image();
     
     
     //! set the passed MultiArrayView<2,float> pointer to internal data address 
     /*!
      \param pixel a pointer to a pointer to a MultiArrayView
     */
-    void image(vigra::MultiArray<2,float> **pixel);
+    void image(vigra::MultiArrayView<2,float> **pixel);
    
     
     //! get a view to a region of interest

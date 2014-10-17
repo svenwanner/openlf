@@ -186,13 +186,13 @@ OpenLF::image::ImageChannel::ImageChannel(vigra::MultiArrayView<2,vigra::UInt8> 
 }
 
 /*! 
- * This copy constructor is used to be a deep copy constructor copying the all
+ * This copy constructor is a a deep copy constructor copying 
  * properties and the data as well.
  * 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
  */
 OpenLF::image::ImageChannel::ImageChannel(const ImageChannel& orig)
-{  
+{   
     internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(orig.width(), orig.height()), orig.data());
     pixel = *internal_data_ptr;
     external_flag = false;
@@ -282,12 +282,14 @@ void OpenLF::image::ImageChannel::init(vigra::Shape2 shape, float* data_ptr)
 void OpenLF::image::ImageChannel::init(int width, int height, vigra::UInt8* data_ptr) 
 {
     float *local_ptr = NULL;
-    float local_array[width*height];
+    int a = width;
+    int b = height;
+    float local_array[a*b];
     local_ptr = local_array;
-    for(int n=0; n < width * height; n++) {
+    for(int n=0; n < a * b; n++) {
         local_ptr[n] = (float)data_ptr[n]/255.0;
     }
-    internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(width, height), local_ptr);
+    internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(a, b), local_ptr);
     pixel = *internal_data_ptr;
     external_flag = false;
 }   
@@ -373,38 +375,27 @@ float* OpenLF::image::ImageChannel::data() const
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
  */
-vigra::MultiArray<2,float>* OpenLF::image::ImageChannel::image() 
+vigra::MultiArrayView<2,float>* OpenLF::image::ImageChannel::image() 
 {
     print(1,"image::Channel::image() called...");
-    if(!internal_data_ptr==NULL){
-       return internal_data_ptr;
-    }
-    else if(!hasData()) 
+
+    if(!hasData()) 
         throw OpenLF_Exception("uninitialized channel");
     else {
-       internal_data_ptr = new vigra::MultiArray<2,float>(pixel.shape(), pixel.data()); 
-       pixel = *internal_data_ptr; 
-       return internal_data_ptr;
+       return &pixel;
     } 
 }
 
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
  */
-void OpenLF::image::ImageChannel::image(vigra::MultiArray<2,float> **pixel) 
+void OpenLF::image::ImageChannel::image(vigra::MultiArrayView<2,float> **pixel) 
 {
     if(!hasData()) 
         throw OpenLF_Exception("uninitialized channel");
     else {
         print(1,"image::Channel::image(**pixel) called...");
-        if(!internal_data_ptr==NULL){
-            *pixel = internal_data_ptr;
-        }
-        else {
-            internal_data_ptr = new vigra::MultiArray<2,float>(this->pixel.shape(), this->pixel.data()); 
-            this->pixel = *internal_data_ptr;
-            *pixel = internal_data_ptr;
-        } 
+        *pixel = &(this->pixel);
     }
 }
 
