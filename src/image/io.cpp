@@ -22,7 +22,7 @@
 
 
 
-void OpenLF::image::io::reduce_channels(std::map<std::string,OpenLF::image::ImageChannel> &channels,std::vector<std::string> keys_to_keep)
+void OpenLF::image::io::reduce_channels(std::map<std::string,OpenLF::image::ImageChannel> &channels,const std::vector<std::string> keys_to_keep)
 {
     print(1,"image::io::reduce_channels(channels,keys_to_keep) called...");
     
@@ -169,7 +169,7 @@ void OpenLF::image::io::linear_range_mapping(OpenLF::image::ImageChannel& img_ch
         vigra::FindMinMax<vigra::FImage::PixelType> minmax;
         
         // find original range
-        vigra::MultiArray<2,float> *tmp;
+        vigra::MultiArrayView<2,float> *tmp;
         tmp = NULL;
         tmp = img_channel.image();
         

@@ -48,7 +48,7 @@ namespace OpenLF {
  \param keys_to_keep string vector of labels to keep in map
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */     
-void reduce_channels(std::map<std::string,ImageChannel> &channels,std::vector<std::string> keys_to_keep);
+void reduce_channels(std::map<std::string,ImageChannel> &channels,const std::vector<std::string> keys_to_keep);
    
 
 //! map the pixel values to a range of [0,255]

@@ -70,14 +70,14 @@ public:
     /*!
      \param shape of the empty image
     */
-    ImageChannel(vigra::Shape2 shape); 
+    ImageChannel(const vigra::Shape2 shape); 
     
     //! Initialize with a float value
     /*!
      \param shape of the empty image
      \param value initial value
     */
-    ImageChannel(vigra::Shape2 shape, float value);
+    ImageChannel(const vigra::Shape2 shape, float value);
     
     //! Initialize with float array constructor
     /*!
@@ -85,14 +85,14 @@ public:
      \param height image height
      \param data_ptr image data 
     */
-    ImageChannel(int width, int height, float* data_ptr);
+    ImageChannel(int width, int height, const float* data_ptr);
     
     //! Initialize with float array constructor
     /*!
      \param shape
      \param data_ptr image data 
     */
-    ImageChannel(vigra::Shape2 shape, float* data_ptr);
+    ImageChannel(const vigra::Shape2 shape, const float* data_ptr);
     
     //! Initialize with uint8 array constructor
     /*!
@@ -100,38 +100,38 @@ public:
      \param height image height
      \param data_ptr image data 
     */
-    ImageChannel(int width, int height, vigra::UInt8* data_ptr);
+    ImageChannel(int width, int height, const vigra::UInt8* data_ptr);
     
     //! Initialize with uint8 array constructor
     /*!
      \param shape
      \param data_ptr image data 
     */
-    ImageChannel(vigra::Shape2 shape, vigra::UInt8* data_ptr);
+    ImageChannel(const vigra::Shape2 shape, const vigra::UInt8* data_ptr);
     
     //! Initialize with vigra MultiArrayView constructor 
     /*!
      \param vmarr vigra MultiArrayView<2,float> 
     */
-    ImageChannel(array_2d &vmarr);
+    ImageChannel(const array_2d &vmarr);
 
     //! Initialize with vigra MultiArray constructor 
     /*!
      \param vmarr vigra MultiArray<2,float> 
     */
-    ImageChannel(vigra::MultiArray<2,float> &vmarr);
+    ImageChannel(const vigra::MultiArray<2,float> &vmarr);
     
     //! Initialize with vigra MultiArrayView constructor 
     /*!
      \param vmarr vigra MultiArrayView<2,Uint8> 
     */
-    ImageChannel(vigra::MultiArrayView<2,vigra::UInt8> &vmarr); 
+    ImageChannel(const vigra::MultiArrayView<2,vigra::UInt8> &vmarr); 
 
     //! Initialize with vigra MultiArray constructor 
     /*!
      \param vmarr vigra MultiArray<2,Uint8> 
     */
-    ImageChannel(vigra::MultiArray<2,vigra::UInt8> &vmarr); 
+    ImageChannel(const vigra::MultiArray<2,vigra::UInt8> &vmarr); 
     
     //! copy constructor
     /*!
@@ -171,13 +171,13 @@ public:
     /*!
      \param shape image shape
     */
-    void init(vigra::Shape2 shape);
+    void init(const vigra::Shape2 shape);
     
     //!  initialize with a float value 
     /*!
      \param shape image shape
     */
-    void init(vigra::Shape2 shape, float value);
+    void init(const vigra::Shape2 shape, float value);
     
     
     //!  allocate memory from shape and float data pointer
@@ -186,7 +186,7 @@ public:
      \param data_ptr float pointer to data 
      \param value initial value
     */
-    void init(const vigra::Shape2 shape, float* data_ptr);
+    void init(const vigra::Shape2 shape, const float* data_ptr);
     
     
     //!  allocate memory from image size and float data pointer
@@ -195,7 +195,7 @@ public:
      \param height image height
      \param data_ptr float pointer to data 
     */
-    void init(int width, int height, float* data_ptr);
+    void init(int width, int height, const float* data_ptr);
     
     
     //!  allocate memory from shape and uint8 data pointer
@@ -203,7 +203,7 @@ public:
      \param shape image shape
      \param data_ptr uint8 pointer to data 
     */
-    void init(vigra::Shape2 shape, vigra::UInt8* data_ptr);
+    void init(const vigra::Shape2 shape, const vigra::UInt8* data_ptr);
     
     
     //!  allocate memory from image size and uint8 data pointer
@@ -212,7 +212,7 @@ public:
      \param height image height
      \param data_ptr uint8 pointer to data 
     */
-    void init(int width, int height, vigra::UInt8* data_ptr);
+    void init(int width, int height, const vigra::UInt8* data_ptr);
     
     
     
@@ -267,7 +267,7 @@ public:
      \param x position
      \param y position
     */
-    float get(int x, int y);
+    float get(int x, int y) const;
     
     //! get pixel 
     /*!
@@ -275,11 +275,11 @@ public:
      \param y position
      \param float value reference
     */
-    void get(int x, int y, float &value);
+    void get(int x, int y, float &value) const;
     
     
     //! get sum over all image pixels
-    double sum() { return pixel.sum<double>(); };
+    double sum() const { return pixel.sum<double>(); };
     
     
     
@@ -305,21 +305,21 @@ public:
      \param width of the ROI
      \param height of the ROI
     */
-    vigra::MultiArrayView<2,float> viewToROI(int x, int y, int width, int height);
+    vigra::MultiArrayView<2,float> viewToROI(int x, int y, int width, int height) const;
     
     
     //! get a view to a row of the channel image
     /*!
      \param fix_y the y coordinate of the row
     */
-    vigra::MultiArrayView<1,float> viewToRow(int fix_y);
+    vigra::MultiArrayView<1,float> viewToRow(int fix_y) const;
     
     
     //! get a view to a column of the channel image
     /*!
      \param fix_y the y coordinate of the column
     */
-    vigra::MultiArrayView<1,float> viewToColumn(int fix_x);
+    vigra::MultiArrayView<1,float> viewToColumn(int fix_x) const;
     
    
    
@@ -346,10 +346,10 @@ public:
     ImageChannel & operator-=(float value);
     
     //! overload of += operator pixelwise
-    ImageChannel & operator+=(ImageChannel &rhs);
+    ImageChannel & operator+=(ImageChannel const&rhs);
     
     //! overload of -= operator pixelwise
-    ImageChannel & operator-=(ImageChannel &rhs);
+    ImageChannel & operator-=(ImageChannel const&rhs);
     
     //! overload of *= operator 
     ImageChannel & operator*=(float value);
@@ -358,10 +358,10 @@ public:
     ImageChannel & operator/=(float value);
     
     //! overload of *= operator pixelwise
-    ImageChannel & operator*=(ImageChannel &rhs);
+    ImageChannel & operator*=(ImageChannel const&rhs);
     
     //! overload of /= operator pixelwise
-    ImageChannel & operator/=(ImageChannel &rhs);
+    ImageChannel & operator/=(ImageChannel const&rhs);
     
     
     
