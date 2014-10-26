@@ -57,7 +57,7 @@ void reduce_channels(std::map<std::string,ImageChannel> &channels,const std::vec
  \param img result MultiArray 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2, vigra::UInt8>& img);
+void linear_range_mapping(const vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2, vigra::UInt8>& img);
 
 
 //! map the pixel values to a range of [0,255]
@@ -66,7 +66,7 @@ void linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2,
  \param img result MultiArray 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2,float>& img);
+void linear_range_mapping(const vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2,float>& img);
 
 
 //! map the pixel values to a range of [0,255]
@@ -75,7 +75,7 @@ void linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2,
  \param img result MultiArray 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void linear_range_mapping(vigra::MultiArrayView<2,float>& fimg, vigra::MultiArray<2,float>& img);
+void linear_range_mapping(const vigra::MultiArrayView<2,float>& fimg, vigra::MultiArray<2,float>& img);
 
 
 //! map the pixel values to a range of [0,255]
@@ -97,7 +97,7 @@ void linear_range_mapping(ImageChannel& img_channel, vigra::MultiArray<2, vigra:
  \param channels map of string labels as keys and Channel instance as data 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-bool imread(std::string filename, std::map<std::string,OpenLF::image::ImageChannel> &img_channel);
+bool imread(const std::string filename, std::map<std::string,OpenLF::image::ImageChannel> &img_channel);
 
 
 //! read an region of interest of an image from file and store channels in map structure
@@ -110,7 +110,7 @@ bool imread(std::string filename, std::map<std::string,OpenLF::image::ImageChann
  \param channels map of string labels as keys and Channel instance as data 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-bool imread(std::string filename, ROI roi, std::map<std::string,OpenLF::image::ImageChannel> &img_channel);
+bool imread(const std::string filename, const ROI roi, std::map<std::string,OpenLF::image::ImageChannel> &img_channel);
 
 
 //! saves an image to file
@@ -120,7 +120,7 @@ bool imread(std::string filename, ROI roi, std::map<std::string,OpenLF::image::I
  \param img MultiArray float image
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-bool imsave(std::string filename, vigra::MultiArray<2,float> img);
+bool imsave(const std::string filename, const vigra::MultiArray<2,float> img);
 
 //! saves an rgb image to file
 /*!
@@ -129,7 +129,7 @@ bool imsave(std::string filename, vigra::MultiArray<2,float> img);
  \param img MultiArray float image
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-bool imsave(std::string filename, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> img);
+bool imsave(const std::string filename, const vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> img);
 
 
 //! saves an image view to file
@@ -139,7 +139,7 @@ bool imsave(std::string filename, vigra::MultiArray<2,vigra::RGBValue<vigra::UIn
  \param img MultiArray float image
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-bool imsave(std::string filename, vigra::MultiArrayView<2,float> img);
+bool imsave(const std::string filename, const vigra::MultiArrayView<2,float> img);
 
 //! saves an image view to file
 /*!
@@ -148,7 +148,7 @@ bool imsave(std::string filename, vigra::MultiArrayView<2,float> img);
  \param img MultiArray uint8 image
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-bool imsave(std::string filename, vigra::MultiArrayView<2,vigra::UInt8> img);
+bool imsave(const std::string filename, const vigra::MultiArrayView<2,vigra::UInt8> img);
 
 //! saves an Channel instance to file
 /*!
@@ -157,7 +157,7 @@ bool imsave(std::string filename, vigra::MultiArrayView<2,vigra::UInt8> img);
  \param channel_img instance of the Channel class 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-bool imsave(std::string filename, ImageChannel img_channel);
+bool imsave(const std::string filename, ImageChannel img_channel);
 
 
 //! saves a single channel of a channel map
@@ -168,7 +168,7 @@ bool imsave(std::string filename, ImageChannel img_channel);
  \param key of the channel
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */     
-bool imsave(std::string filename, std::map< std::string,ImageChannel> channels, std::string key);
+bool imsave(const std::string filename, const std::map< std::string,ImageChannel> channels, const std::string key);
 
 
 //! saves all channels of an ImageChannel map to file
@@ -181,7 +181,7 @@ an appendix.
  \param channels map of string labels as keys and MultiArrays as data 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-bool imsave(std::string filename, std::map<std::string,ImageChannel> channels);
+bool imsave(const std::string filename, const std::map<std::string,ImageChannel> channels);
 
 
 //! saves a ImageChannel instance to file
@@ -195,7 +195,7 @@ itself are automatically added to the filename as an appendix.
  \param keys_to_save vector of labels to be kept for saving
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-bool imsave(std::string filename, std::map<std::string,ImageChannel> channels,std::vector<std::string> keys_to_save);
+bool imsave(const std::string filename, const std::map<std::string,ImageChannel> channels, const std::vector<std::string> keys_to_save);
      
 }}}
 

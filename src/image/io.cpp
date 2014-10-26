@@ -52,7 +52,7 @@ void OpenLF::image::io::reduce_channels(std::map<std::string,OpenLF::image::Imag
 
 
 
-void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2, vigra::UInt8>& img) 
+void OpenLF::image::io::linear_range_mapping(const vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2, vigra::UInt8>& img) 
 {
     print(1,"image::io::linear_range_mapping(fimg,img) called...");
     
@@ -88,7 +88,7 @@ void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, v
 }
 
 
-void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2,float>& img) 
+void OpenLF::image::io::linear_range_mapping(const vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2,float>& img) 
 {
     print(1,"image::io::linear_range_mapping(fimg,img) called...");
     
@@ -124,7 +124,7 @@ void OpenLF::image::io::linear_range_mapping(vigra::MultiArray<2,float>& fimg, v
 }
 
 
-void OpenLF::image::io::linear_range_mapping(vigra::MultiArrayView<2,float>& fimg, vigra::MultiArray<2,float>& img) 
+void OpenLF::image::io::linear_range_mapping(const vigra::MultiArrayView<2,float>& fimg, vigra::MultiArray<2,float>& img) 
 {
     print(1,"image::io::linear_range_mapping(fimg,img) called...");
     
@@ -200,7 +200,7 @@ void OpenLF::image::io::linear_range_mapping(OpenLF::image::ImageChannel& img_ch
 
 
 
-bool OpenLF::image::io::imread(std::string filename, std::map<std::string,OpenLF::image::ImageChannel> &img_channel)
+bool OpenLF::image::io::imread(const std::string filename, std::map<std::string,OpenLF::image::ImageChannel> &img_channel)
 {
     print(2,"image::io::imread(filename,channels) called...");
     
@@ -289,7 +289,7 @@ bool OpenLF::image::io::imread(std::string filename, std::map<std::string,OpenLF
 
 
 
-bool OpenLF::image::io::imread(std::string filename, OpenLF::image::ROI roi, std::map<std::string,OpenLF::image::ImageChannel> &img_channel)
+bool OpenLF::image::io::imread(const std::string filename, const OpenLF::image::ROI roi, std::map<std::string,OpenLF::image::ImageChannel> &img_channel)
 {
     print(2,"image::io::imread(filename,channels) called...");
     
@@ -368,7 +368,7 @@ bool OpenLF::image::io::imread(std::string filename, OpenLF::image::ROI roi, std
 
 
 
-bool OpenLF::image::io::imsave(std::string filename, vigra::MultiArray<2,float> img)
+bool OpenLF::image::io::imsave(const std::string filename, const vigra::MultiArray<2,float> img)
 {
     print(2,"image::io::imread(filename,img) called...");
     
@@ -394,7 +394,7 @@ bool OpenLF::image::io::imsave(std::string filename, vigra::MultiArray<2,float> 
 }
 
 
-bool OpenLF::image::io::imsave(std::string filename, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> img)
+bool OpenLF::image::io::imsave(const std::string filename, const vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> img)
 {
     print(2,"image::io::imread(filename,img) called...");
     
@@ -416,7 +416,7 @@ bool OpenLF::image::io::imsave(std::string filename, vigra::MultiArray<2,vigra::
 }
 
 
-bool OpenLF::image::io::imsave(std::string filename, vigra::MultiArrayView<2,float> img)
+bool OpenLF::image::io::imsave(const std::string filename, const vigra::MultiArrayView<2,float> img)
 {
     print(2,"image::io::imread(filename,img_view) called...");
     
@@ -429,7 +429,7 @@ bool OpenLF::image::io::imsave(std::string filename, vigra::MultiArrayView<2,flo
 
 
 
-bool OpenLF::image::io::imsave(std::string filename, OpenLF::image::ImageChannel img_channel)
+bool OpenLF::image::io::imsave(const std::string filename, OpenLF::image::ImageChannel img_channel)
 {
     print(2,"image::io::imread(filename,channel_img) called...");
     
@@ -457,7 +457,7 @@ bool OpenLF::image::io::imsave(std::string filename, OpenLF::image::ImageChannel
 
 
 
-bool OpenLF::image::io::imsave(std::string filename, std::map<std::string,OpenLF::image::ImageChannel> channels, std::string key)
+bool OpenLF::image::io::imsave(const std::string filename, std::map<std::string,OpenLF::image::ImageChannel> channels, const std::string key)
 /*TEST: test_image::test_io() */
 {
     print(2,"image::io::save(filename,channels,key) called...");
@@ -471,7 +471,7 @@ bool OpenLF::image::io::imsave(std::string filename, std::map<std::string,OpenLF
 
 
 
-bool OpenLF::image::io::imsave(std::string filename, std::map<std::string,OpenLF::image::ImageChannel> channels)
+bool OpenLF::image::io::imsave(const std::string filename, std::map<std::string,OpenLF::image::ImageChannel> channels)
 {
     print(2,"image::io::imsave(filename, channels) called...");
   
@@ -569,7 +569,7 @@ bool OpenLF::image::io::imsave(std::string filename, std::map<std::string,OpenLF
 
 
 
-bool OpenLF::image::io::imsave(std::string filename, std::map<std::string,OpenLF::image::ImageChannel> channels, std::vector<std::string> keys_to_save)
+bool OpenLF::image::io::imsave(const std::string filename, std::map<std::string,OpenLF::image::ImageChannel> channels, const std::vector<std::string> keys_to_save)
 {
     print(2,"image::io::imsave(filename, channels, keys_to_save) called...");
     
