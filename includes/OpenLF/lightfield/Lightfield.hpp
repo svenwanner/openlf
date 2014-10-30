@@ -46,7 +46,7 @@ class Lightfield {
 public:
     friend class EpiIterator;
     Lightfield();
-    Lightfield(std::string filename);
+    Lightfield(const std::string filename);
     //Lightfield(const Lightfield& orig);
     virtual ~Lightfield();
 
@@ -59,7 +59,7 @@ public:
     /*!
      \param filename of the .cfg, .h5,.hdf5 or .lf file 
     */
-    bool open(std::string filename);
+    bool open(const std::string filename);
     
     
     //! open lightfields from  hdf5 or config file
@@ -89,18 +89,18 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
     
     //! check if rgb data are available
-    bool hasRGB();
+    bool hasRGB() const;
     
     
     //! check if bw data are available
-    bool hasBW();
+    bool hasBW() const;
         
     
     //! check if a specific channel exist
     /*!
      \param name of the channel to check for existence
     */
-    bool hasChannel(std::string name);
+    bool hasChannel(const std::string name) const;
     
     
     //! get list of available channels
@@ -111,7 +111,7 @@ public:
     /*!
      \param name of the property to check for existence
     */
-    bool hasProperty(std::string name);
+    bool hasProperty(const std::string name);
     
     
     //! access a property by name
@@ -119,7 +119,7 @@ public:
      \param name of the property
      \param value reference to the value of the property 
     */
-    bool getProperty(std::string name, int &value);
+    bool getProperty(const std::string name, int &value);
     
     
     //! access a property by name
@@ -127,7 +127,7 @@ public:
      \param name of the property
      \param value reference to the value of the property 
     */
-    bool getProperty(std::string name, float &value);
+    bool getProperty(const std::string name, float &value);
     
     
     //! access a property by name
@@ -135,7 +135,7 @@ public:
      \param name of the property
      \param value reference to the value of the property 
     */
-    bool getProperty(std::string name, double &value);
+    bool getProperty(const std::string name, double &value);
     
     
     //! access a property by name
@@ -143,7 +143,7 @@ public:
      \param name of the property
      \param value reference to the value of the property 
     */
-    bool getProperty(std::string name, std::string &value);
+    bool getProperty(const std::string name, std::string &value);
     
     
     //! get the LF_TYPE
@@ -190,7 +190,7 @@ public:
      \param y position index
      \param channel_name name of the channel to access
     */
-    float getLoxel(int h, int v, int x, int y, std::string channel_name);
+    float getLoxel(int h, int v, int x, int y, const std::string channel_name);
     
     //! access a single intensity value of the channels specified
     /*!
@@ -201,14 +201,14 @@ public:
      \param channel_name name of the channel to access
      \param values reference to a float vector storing the results
     */
-    void getLoxel(int h, int v, int x, int y, std::vector<std::string> channel_names, std::vector<float> &values);
+    void getLoxel(int h, int v, int x, int y, const std::vector<std::string> channel_names, std::vector<float> &values);
     
     
     //! get the data pointer of a specific channel 
     /*!
      \param channel_name the name of the channel
     */
-    float* channel_ptr(std::string channel_name);
+    float* channel_ptr(const std::string channel_name);
     
     
     //! get pointer to data channels
@@ -229,7 +229,7 @@ public:
     /*!
      \param channel_name the name of the channel
     */
-    OpenLF::image::ImageChannel *data(std::string channel_name);
+    OpenLF::image::ImageChannel *data(const std::string channel_name);
     
     
     //! set pointer passed to the address of the channel specified
@@ -237,14 +237,14 @@ public:
      \param channel_name the name of the channel
      \param channel_data pointer to a MultiArray to get the address of the internal channel specified
     */
-    void data(std::string channel_name, OpenLF::image::ImageChannel ** channel_data);
+    void data(const std::string channel_name, OpenLF::image::ImageChannel ** channel_data);
     
     
     //! Allocate a new channel
     /*!
      \param channel_name the name of the channel
     */
-    void allocateChannel(std::string channel_name);
+    void allocateChannel(const std::string channel_name);
     
     
     //! merge internal properties with properties passed
@@ -261,7 +261,7 @@ public:
      \param channel_name name of the channel
      \param img reference to MultiArrayView
     */
-    void getImage(int h, int v, std::string channel_name, vigra::MultiArrayView<2,float> &img);
+    void getImage(int h, int v, const std::string channel_name, vigra::MultiArrayView<2,float> &img);
     
     //! access a single image of a light field channel
     /*!
@@ -317,7 +317,7 @@ public:
      \param h fixed horizontal camera index (default=0)
      \param focus global shift parameter in pixel (default=0)
     */
-    vigra::MultiArrayView<2,float> getHorizontalEpiChannel(std::string channel_name, int y, int v=0,  int focus=0);
+    vigra::MultiArrayView<2,float> getHorizontalEpiChannel(const std::string channel_name, int y, int v=0,  int focus=0);
     
     
     //! get a view to a vertical epi of the channel specified
@@ -376,7 +376,7 @@ protected:
      \param channel_name name of the channel to extract the epi from
      \param focus global shift paramter in pixel
     */
-    vigra::MultiArrayView<2,float> _getVerticalEpiChannel_4D(int h, int x, std::string channel_name, int focus);
+    vigra::MultiArrayView<2,float> _getVerticalEpiChannel_4D(int h, int x, const std::string channel_name, int focus);
     
 };
 

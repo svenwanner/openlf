@@ -57,7 +57,7 @@ namespace OpenLF {
 class Properties {
 public:
     Properties();
-    Properties(std::string filename);
+    Properties(const std::string filename);
     Properties(const char* filename);
     //Properties(const Properties& orig);
     virtual ~Properties();
@@ -93,14 +93,14 @@ public:
     /*!
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    int sizeof_num_field();
+    int sizeof_num_field() const;
     
     
     //! get size of string_fields map
     /*!
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    int sizeof_str_field();
+    int sizeof_str_field() const;
 
     
     //! get list of number_fields map keys
@@ -127,7 +127,7 @@ public:
      \param fieldname
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    bool has_field(std::string fieldname);
+    bool has_field(const std::string fieldname);
     
     
     
@@ -151,7 +151,7 @@ public:
      \param value variable to pass the value to
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    bool get_field(std::string name, std::string &value);
+    bool get_field(const std::string name, std::string &value);
     
     
     //! access value by name
@@ -160,7 +160,7 @@ public:
      \param value variable to pass the value to
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    bool get_field(std::string name, int &value);
+    bool get_field(const std::string name, int &value);
     
     
     //! access value by name
@@ -169,7 +169,7 @@ public:
      \param value variable to pass the value to
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    bool get_field(std::string name, float &value);
+    bool get_field(const std::string name, float &value);
     
     
     //! access value by name
@@ -178,7 +178,7 @@ public:
      \param value variable to pass the value to
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    bool get_field(std::string name, double &value);
+    bool get_field(const std::string name, double &value);
     
     
     //! set LF_TYPE parsed
@@ -195,7 +195,7 @@ public:
      \param value variable to pass the value to
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void set_field(std::string name, std::string value);
+    void set_field(const std::string name, std::string value);
     
     
     //! set value by name
@@ -204,7 +204,7 @@ public:
      \param value variable to pass the value to
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void set_field(std::string name, int value);
+    void set_field(const std::string name, int value);
     
     
     //! set value by name
@@ -213,7 +213,7 @@ public:
      \param value variable to pass the value to
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void set_field(std::string name, float value);
+    void set_field(const std::string name, float value);
     
     
     //! set value by name
@@ -222,7 +222,7 @@ public:
      \param value variable to pass the value to
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void set_field(std::string name, double value);
+    void set_field(const std::string name, double value);
     
     
     
@@ -241,7 +241,7 @@ public:
      \param filename cfgfile the ifstream object of the file loaded
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void parse(std::string filename);
+    void parse(const std::string filename);
 
     
 private:

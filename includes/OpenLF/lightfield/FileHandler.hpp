@@ -47,12 +47,12 @@ namespace OpenLF {
 class FileHandler : public DataHandler {
 public:
     FileHandler();
-    FileHandler(std::string config_filename, Properties *properties);
+    FileHandler(const std::string config_filename, Properties *properties);
     FileHandler(const char* config_filename, Properties *properties);
     virtual ~FileHandler();   
     
     
-    //! reads light field data from from the FileHandler
+    //! reads light field data from the FileHandler
     /*!
      This method reads light field data from the FileHandler. The passed channels
      map is filled with data depending on the source value in the configfile.

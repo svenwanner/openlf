@@ -24,7 +24,7 @@ OpenLF::lightfield::Properties::Properties()
     print(1,"lightfield::Properties() called...");
 }
 
-OpenLF::lightfield::Properties::Properties(std::string filename)
+OpenLF::lightfield::Properties::Properties(const std::string filename)
 {
     print(1,"lightfield::Properties(filename) called...");
     
@@ -73,7 +73,7 @@ OpenLF::lightfield::Properties::~Properties()
 }
 
 
-void OpenLF::lightfield::Properties::log() 
+void OpenLF::lightfield::Properties::log()
 {
     std::string text = "\n#### Properties ####\n";
     
@@ -130,14 +130,14 @@ void OpenLF::lightfield::Properties::clear() {
 
 
 
-int OpenLF::lightfield::Properties::sizeof_num_field()
+int OpenLF::lightfield::Properties::sizeof_num_field() const
 {
     print(1,"lightfield::Properties::sizeof_num_fields() called...");
     
     return number_fields.size();
 }
 
-int OpenLF::lightfield::Properties::sizeof_str_field() 
+int OpenLF::lightfield::Properties::sizeof_str_field() const 
 {
     print(1,"lightfield::Properties::sizeof_str_fields() called...");
     
@@ -162,7 +162,7 @@ void OpenLF::lightfield::Properties::get_str_field_keys(std::vector<std::string>
 
 
 
-bool OpenLF::lightfield::Properties::has_field(std::string fieldname)
+bool OpenLF::lightfield::Properties::has_field(const std::string fieldname)
 {
     for(number_fields_iter iter = number_fields.begin(); iter != number_fields.end(); iter++) {
     //for (auto& k : number_fields) {
@@ -202,7 +202,7 @@ bool OpenLF::lightfield::Properties::get_lftype(LF_TYPE &lftype)
     }
 }
 
-bool OpenLF::lightfield::Properties::get_field(std::string name, std::string &value)
+bool OpenLF::lightfield::Properties::get_field(const std::string name, std::string &value)
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     
@@ -214,7 +214,7 @@ bool OpenLF::lightfield::Properties::get_field(std::string name, std::string &va
     }
 }
 
-bool OpenLF::lightfield::Properties::get_field(std::string name, int &value)
+bool OpenLF::lightfield::Properties::get_field(const std::string name, int &value)
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     
@@ -226,7 +226,7 @@ bool OpenLF::lightfield::Properties::get_field(std::string name, int &value)
     }
 }
 
-bool OpenLF::lightfield::Properties::get_field(std::string name, float &value)
+bool OpenLF::lightfield::Properties::get_field(const std::string name, float &value)
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     
@@ -238,7 +238,7 @@ bool OpenLF::lightfield::Properties::get_field(std::string name, float &value)
     }
 }
 
-bool OpenLF::lightfield::Properties::get_field(std::string name, double &value) 
+bool OpenLF::lightfield::Properties::get_field(const std::string name, double &value)
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     
@@ -257,28 +257,28 @@ void OpenLF::lightfield::Properties::set_lftype(LF_TYPE lftype)
     number_fields["type"] = (double)lftype;
 }
 
-void OpenLF::lightfield::Properties::set_field(std::string name, std::string value)
+void OpenLF::lightfield::Properties::set_field(const std::string name, const std::string value)
 {
     print(1,"lightfield::Properties::set_field(name,value) called...");
     
     string_fields[name] = value;
 }
 
-void OpenLF::lightfield::Properties::set_field(std::string name, int value)
+void OpenLF::lightfield::Properties::set_field(const std::string name, int value)
 {
     print(1,"lightfield::Properties::set_field(name,value) called...");
     
     number_fields[name] = (double)value;
 }
 
-void OpenLF::lightfield::Properties::set_field(std::string name, float value)
+void OpenLF::lightfield::Properties::set_field(const std::string name, float value)
 {
     print(1,"lightfield::Properties::set_field(name,value) called...");
     
     number_fields[name] = (double)value;
 }
 
-void OpenLF::lightfield::Properties::set_field(std::string name, double value)
+void OpenLF::lightfield::Properties::set_field(const std::string name, double value)
 {
     print(1,"lightfield::Properties::set_field(name,value) called...");
     
@@ -317,7 +317,7 @@ void OpenLF::lightfield::Properties::parse(const char* filename)
 }
     
 
-void OpenLF::lightfield::Properties::parse(std::string filename)
+void OpenLF::lightfield::Properties::parse(const std::string filename)
 {
     print(1,"lightfield::Properties::parse(filename) called...");
     

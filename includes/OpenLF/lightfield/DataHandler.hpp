@@ -43,7 +43,7 @@ namespace OpenLF {
 class DataHandler {
 public:
     DataHandler();
-    DataHandler(std::string config_filename, Properties *properties);
+    DataHandler(const std::string config_filename, Properties *properties);
     DataHandler(const char* config_filename, Properties *properties);
     virtual ~DataHandler();
     
@@ -53,7 +53,7 @@ public:
      \param properties an instance of a Properties instance to parse and hold the paramter
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */ 
-    void setConfigfile(std::string config_filename);
+    void setConfigfile(const std::string config_filename);
     
     //! set the config file
     /*!

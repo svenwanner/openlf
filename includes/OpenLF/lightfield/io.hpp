@@ -48,7 +48,7 @@ namespace OpenLF {
  \param properties struct storing the important parameter 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool load_4D_structure( std::vector<std::string> fname_list,
+bool load_4D_structure( const std::vector<std::string> fname_list,
                         std::map< std::string,image::ImageChannel> &channels,
                         Properties *properties );
 
@@ -65,7 +65,7 @@ bool load_4D_structure( std::vector<std::string> fname_list,
  \param properties struct storing the important parameter 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool load_3DH_structure( std::vector<std::string> fname_list,
+bool load_3DH_structure( const std::vector<std::string> fname_list,
                          std::map< std::string,image::ImageChannel> &channels,
                          Properties *properties );
 
@@ -81,7 +81,7 @@ bool load_3DH_structure( std::vector<std::string> fname_list,
  \param properties struct storing the important parameter 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool load_3DV_structure( std::vector<std::string> fname_list,
+bool load_3DV_structure( const std::vector<std::string> fname_list,
                          std::map< std::string,image::ImageChannel> &channels,
                          Properties *properties );
 
@@ -97,7 +97,7 @@ bool load_3DV_structure( std::vector<std::string> fname_list,
  \param properties struct storing the important parameter 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool load_cross_structure( std::vector<std::string> fname_list,
+bool load_cross_structure( const std::vector<std::string> fname_list,
                            std::map< std::string,image::ImageChannel> &channels,
                            Properties *properties );
             
@@ -115,7 +115,7 @@ bool load_cross_structure( std::vector<std::string> fname_list,
  \param properties struct storing the important parameter
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool load_from_filesequence( std::string dir, 
+bool load_from_filesequence( const std::string dir, 
                              std::map< std::string,image::ImageChannel> &channels,
                              Properties *properties);
 
@@ -131,7 +131,7 @@ bool load_from_filesequence( std::string dir,
  \param properties struct storing the important parameter
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool load_from_hdf5( std::string file_name, 
+bool load_from_hdf5( const std::string file_name, 
                      std::map< std::string,image::ImageChannel> &channels,
                      Properties *properties);
 
@@ -146,7 +146,7 @@ bool load_from_hdf5( std::string file_name,
  \param properties struct storing the important parameter
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool save_to_hdf5( std::string file_name, 
+bool save_to_hdf5( const std::string file_name, 
                    std::map< std::string,image::ImageChannel> &channels,
                    Properties *properties);
 

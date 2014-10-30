@@ -24,7 +24,7 @@
 
 
     
-bool OpenLF::lightfield::io::load_4D_structure( std::vector<std::string> fname_list, 
+bool OpenLF::lightfield::io::load_4D_structure( const std::vector<std::string> fname_list, 
                                                 std::map< std::string,OpenLF::image::ImageChannel> &channels, 
                                                 Properties *properties )
 {
@@ -209,7 +209,7 @@ bool OpenLF::lightfield::io::load_4D_structure( std::vector<std::string> fname_l
 
 
 
-bool OpenLF::lightfield::io::load_3DH_structure( std::vector<std::string> fname_list, 
+bool OpenLF::lightfield::io::load_3DH_structure( const std::vector<std::string> fname_list, 
                                                  std::map< std::string,OpenLF::image::ImageChannel> &channels, 
                                                  Properties *properties ) 
 {
@@ -385,7 +385,7 @@ bool OpenLF::lightfield::io::load_3DH_structure( std::vector<std::string> fname_
 
 
 
-bool OpenLF::lightfield::io::load_3DV_structure( std::vector<std::string> fname_list, 
+bool OpenLF::lightfield::io::load_3DV_structure( const std::vector<std::string> fname_list, 
                                                  std::map< std::string,OpenLF::image::ImageChannel> &channels, 
                                                  Properties *properties )
 
@@ -565,7 +565,7 @@ bool OpenLF::lightfield::io::load_3DV_structure( std::vector<std::string> fname_
 
 
 
-bool OpenLF::lightfield::io::load_cross_structure( std::vector<std::string> fname_list, 
+bool OpenLF::lightfield::io::load_cross_structure( const std::vector<std::string> fname_list, 
                                                    std::map< std::string,OpenLF::image::ImageChannel> &channels, 
                                                    Properties *properties )
 {
@@ -882,7 +882,7 @@ bool OpenLF::lightfield::io::load_cross_structure( std::vector<std::string> fnam
 
 
 
-bool OpenLF::lightfield::io::load_from_filesequence(std::string dir, 
+bool OpenLF::lightfield::io::load_from_filesequence(const std::string dir, 
                                                     std::map< std::string,OpenLF::image::ImageChannel> &channels, 
                                                     Properties *properties)
 
@@ -925,7 +925,7 @@ bool OpenLF::lightfield::io::load_from_filesequence(std::string dir,
 
 
 
-bool OpenLF::lightfield::io::load_from_hdf5( std::string filename, 
+bool OpenLF::lightfield::io::load_from_hdf5(const std::string filename, 
                      std::map< std::string,OpenLF::image::ImageChannel> &channels,
                      Properties *properties ) 
 {    
@@ -1018,7 +1018,7 @@ bool OpenLF::lightfield::io::load_from_hdf5( std::string filename,
 
 
 
-bool OpenLF::lightfield::io::save_to_hdf5( std::string file_name, 
+bool OpenLF::lightfield::io::save_to_hdf5(const std::string file_name, 
                    std::map< std::string,OpenLF::image::ImageChannel> &channels,
                    Properties *properties ) 
 {

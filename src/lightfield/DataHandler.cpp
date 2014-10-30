@@ -28,7 +28,7 @@ OpenLF::lightfield::io::DataHandler::DataHandler()
     type = "";
 }
 
-OpenLF::lightfield::io::DataHandler::DataHandler(std::string config_filename, Properties *properties) 
+OpenLF::lightfield::io::DataHandler::DataHandler(const std::string config_filename, Properties *properties) 
 {
     print(1,"lightfield::io::DataHandler::DataHandler(config_filename,*properties) called...");
     
@@ -69,7 +69,7 @@ OpenLF::lightfield::io::DataHandler::~DataHandler()
 * interpreted as a filename of a single image file containing the light field, a hdf5 file
 * or a path storing the images as single image files. 
 */
-void OpenLF::lightfield::io::DataHandler::setConfigfile(std::string config_filename)
+void OpenLF::lightfield::io::DataHandler::setConfigfile(const std::string config_filename)
 {
     print(1,"lightfield::io:::DataHandler::set_configfile(config_filename,&properties) called...");
     

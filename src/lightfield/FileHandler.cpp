@@ -27,7 +27,7 @@ OpenLF::lightfield::io::FileHandler::FileHandler() : DataHandler()
     disc_source = "";
 }
 
-OpenLF::lightfield::io::FileHandler::FileHandler(std::string config_filename, Properties *properties) : DataHandler(config_filename,properties)
+OpenLF::lightfield::io::FileHandler::FileHandler(const std::string config_filename, Properties *properties) : DataHandler(config_filename,properties)
 {
     print(1,"lightfield::io::FileHandler::FileHandler(config_filename,*properties) called...");
     
@@ -48,7 +48,7 @@ OpenLF::lightfield::io::FileHandler::~FileHandler()
 
 
 
-bool OpenLF::lightfield::io::FileHandler::readData(std::map<std::string,OpenLF::image::ImageChannel>& channels) 
+bool OpenLF::lightfield::io::FileHandler::readData(std::map<std::string,OpenLF::image::ImageChannel>& channels)
 {
     print(1,"lightfield::io:::FileHandler::readData(channels) called...");
     
@@ -83,7 +83,7 @@ bool OpenLF::lightfield::io::FileHandler::readData(std::map<std::string,OpenLF::
  * If the source is not an absolute path the method tries to check if the path is a valid
  * path relative to the location of the configfile.
  */
-bool OpenLF::lightfield::io::FileHandler::__readFromDisc__(std::map<std::string,OpenLF::image::ImageChannel>& channels) 
+bool OpenLF::lightfield::io::FileHandler::__readFromDisc__(std::map<std::string,OpenLF::image::ImageChannel>& channels)
 {
     print(1,"lightfield::io::FileHandler::read_from_disc(channels) called...");
     

@@ -36,7 +36,7 @@ namespace OpenLF {
  \param s2 string 2
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void insert_leading_zeros(std::string s1, int index, std::string s2, std::string &result);
+void insert_leading_zeros(const std::string s1, int index, const std::string s2, std::string &result);
         
 
 //! find filetype.
@@ -45,7 +45,7 @@ void insert_leading_zeros(std::string s1, int index, std::string s2, std::string
  \param filepath 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-std::string find_ftype(std::string filepath);
+std::string find_ftype(const std::string filepath);
     
 
 
@@ -56,7 +56,7 @@ std::string find_ftype(std::string filepath);
  \param list to store the filenames 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool filenames_from_directory(std::string dir, std::vector<std::string> &list);
+bool filenames_from_directory(const std::string dir, std::vector<std::string> &list);
 
 
 //! removes spaces and tabs from a string
@@ -65,7 +65,7 @@ bool filenames_from_directory(std::string dir, std::vector<std::string> &list);
  \param result string without spaces and tabs
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-void remove_leading_spaces_from_string(std::string input,std::string &result);
+void remove_leading_spaces_from_string(const std::string input,std::string &result);
 
 
 //! concats the dir of the passed filename and the relative part passed
@@ -74,7 +74,7 @@ void remove_leading_spaces_from_string(std::string input,std::string &result);
  \param relative_part to append to the dir of the filename param
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-std::string make_absolute_path(std::string filename, std::string relative_part); 
+std::string make_absolute_path(const std::string filename, const std::string relative_part); 
 
 
 //! removes a element from a string vector by value
@@ -83,10 +83,10 @@ std::string make_absolute_path(std::string filename, std::string relative_part);
  \param value the value to be removed
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
-bool remove_by_value(std::vector<std::string> &list, std::string value);
+bool remove_by_value(std::vector<std::string> &list, const std::string value);
 
 
-void get_attribute_list(std::string filename, std::string GroupID, std::vector<std::string> &attrs, std::vector<bool> &isString);
+void get_attribute_list(const std::string filename, const std::string GroupID, std::vector<std::string> &attrs, std::vector<bool> &isString);
 
 }}
 #endif	/* HELPERS_HPP */
