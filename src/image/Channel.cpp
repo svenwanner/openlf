@@ -157,30 +157,10 @@ OpenLF::image::ImageChannel::ImageChannel(const array_2d &vmarr)
 
 /*! 
  * Initialize ImageChannel instance with by copying data from a passed vigra
- * MultiArray reference.
+ * MultiArrayView reference.
  * 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
  */
-/*
-OpenLF::image::ImageChannel::ImageChannel(const vigra::MultiArray<2,float> &vmarr) 
-{
-    init(vmarr.width(),vmarr.height(),vmarr.data());
-    
-}
-*/
-/*! 
- * Initialize ImageChannel instance with by copying data from a passed vigra
- * MultiArray reference.
- * 
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
- */
-/*
-OpenLF::image::ImageChannel::ImageChannel(const vigra::MultiArray<2,vigra::UInt8> &vmarr) 
-{
-    init(vmarr.width(),vmarr.height(),vmarr.data()); 
-    
-}
-*/
 OpenLF::image::ImageChannel::ImageChannel(const vigra::MultiArrayView<2,vigra::UInt8> &vmarr) 
 {
     init(vmarr.width(),vmarr.height(),vmarr.data());
@@ -292,17 +272,7 @@ void OpenLF::image::ImageChannel::init(const int width, const int height, const 
     m_external_flag = false;
     delete [] local_ptr;
 }   
-/*
-    float *local_ptr = NULL;
-    float local_array[width * height];
-    local_ptr = local_array;
-    for(int n=0; n < width * height; n++) {
-        local_ptr[n] = (float)data_ptr[n]/255.0;
-    }
-    m_internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(width, height), local_ptr);
-    m_pixel = *m_internal_data_ptr;
-    m_external_flag = false;
- */
+
 /*! 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
  */

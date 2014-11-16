@@ -115,26 +115,12 @@ public:
     */
     ImageChannel(const array_2d &vmarr);
 
-    //! Initialize with vigra MultiArray constructor 
-    /*!
-     \param vmarr vigra MultiArray<2,float> 
-    */
-    /*
-    ImageChannel(const vigra::MultiArray<2,float> &vmarr);
-    */
     //! Initialize with vigra MultiArrayView constructor 
     /*!
      \param vmarr vigra MultiArrayView<2,Uint8> 
     */
     ImageChannel(const vigra::MultiArrayView<2,vigra::UInt8> &vmarr); 
 
-    //! Initialize with vigra MultiArray constructor 
-    /*!
-     \param vmarr vigra MultiArray<2,Uint8> 
-    */
-    /*
-    ImageChannel(const vigra::MultiArray<2,vigra::UInt8> &vmarr); 
-    */
     //! copy constructor
     /*!
      \param orig ImageChannel reference to copy from 

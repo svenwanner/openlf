@@ -81,7 +81,7 @@ bool OpenLF::lightfield::Lightfield::open(const std::string filename)
         return OpenLF::lightfield::io::load_from_hdf5( filename, m_channels, &m_properties ); 
     }
     else if(ftype=="cfg") {
-        m_dataHandler = new OpenLF::lightfield::io::FileHandler(filename,&m_properties);
+        m_dataHandler.reset(new OpenLF::lightfield::io::FileHandler(filename,&m_properties));
         return m_dataHandler->readData(m_channels);
     }
     else {

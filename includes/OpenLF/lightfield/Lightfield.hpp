@@ -335,7 +335,7 @@ public:
     
 protected:
     std::map< std::string,OpenLF::image::ImageChannel> m_channels;  //!< map to store the light field channels
-    OpenLF::lightfield::io::DataHandler *m_dataHandler;   //!< instance of a dataHandler to read data
+    std::unique_ptr<OpenLF::lightfield::io::DataHandler> m_dataHandler;   //!< instance of a dataHandler to read data
     OpenLF::lightfield::Properties m_properties;          //!< properties instance to hold all parameters
 
     
