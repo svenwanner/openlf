@@ -253,8 +253,8 @@ private:
     */
     void __parse__(std::ifstream &cfgfile);
     
-    std::map<std::string,double> number_fields; //!< map to store the number fields and values
-    std::map<std::string,std::string> string_fields; //!< map to store the string fields and values 
+    std::map<std::string,double> m_number_fields; //!< map to store the number fields and values
+    std::map<std::string,std::string> m_string_fields; //!< map to store the string fields and values 
     
 };
 }}

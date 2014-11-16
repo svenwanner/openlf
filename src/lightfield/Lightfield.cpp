@@ -71,18 +71,18 @@ bool OpenLF::lightfield::Lightfield::open(const std::string filename)
 {
     print(1,"lightfield::Lightfield::open(filename) called");
     
-    properties.clear();
-    channels.clear();
+    m_properties.clear();
+    m_channels.clear();
     
     std::string ftype;
     ftype = OpenLF::helpers::find_ftype(filename);
     
     if(ftype=="h5" || ftype=="lf" || ftype=="hdf5") {
-        return OpenLF::lightfield::io::load_from_hdf5( filename, channels, &properties ); 
+        return OpenLF::lightfield::io::load_from_hdf5( filename, m_channels, &m_properties ); 
     }
     else if(ftype=="cfg") {
-        dataHandler = new OpenLF::lightfield::io::FileHandler(filename,&properties);
-        return dataHandler->readData(channels);
+        m_dataHandler = new OpenLF::lightfield::io::FileHandler(filename,&m_properties);
+        return m_dataHandler->readData(m_channels);
     }
     else {
         return false;
@@ -116,9 +116,9 @@ bool OpenLF::lightfield::Lightfield::open(const char* filename)
 */
 bool OpenLF::lightfield::Lightfield::hasRGB() const
 {
-    if (channels.find("r") == channels.end()) return false;
-    if (channels.find("g") == channels.end()) return false;
-    if (channels.find("b") == channels.end()) return false;
+    if (m_channels.find("r") == m_channels.end()) return false;
+    if (m_channels.find("g") == m_channels.end()) return false;
+    if (m_channels.find("b") == m_channels.end()) return false;
     return true;
 }
 
@@ -128,7 +128,7 @@ bool OpenLF::lightfield::Lightfield::hasRGB() const
 */
 bool OpenLF::lightfield::Lightfield::hasBW() const
 {
-    if (channels.find("bw") == channels.end()) return false;
+    if (m_channels.find("bw") == m_channels.end()) return false;
     return true;
 }
 
@@ -138,7 +138,7 @@ bool OpenLF::lightfield::Lightfield::hasBW() const
 */
 bool OpenLF::lightfield::Lightfield::hasChannel(const std::string name) const
 {
-    if (channels.find(name) == channels.end()) return false;
+    if (m_channels.find(name) == m_channels.end()) return false;
     else return true;
 }
 
@@ -150,7 +150,7 @@ std::vector<std::string> OpenLF::lightfield::Lightfield::getListOfChannelNames()
 {
   
     std::vector<std::string> v;
-    for(std::map<std::string,OpenLF::image::ImageChannel>::iterator it = channels.begin(); it != channels.end(); ++it) 
+    for(std::map<std::string,OpenLF::image::ImageChannel>::iterator it = m_channels.begin(); it != m_channels.end(); ++it) 
         v.push_back(it->first);
         return v;
 }
@@ -160,7 +160,7 @@ std::vector<std::string> OpenLF::lightfield::Lightfield::getListOfChannelNames()
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 bool OpenLF::lightfield::Lightfield::hasProperty(const std::string name){
-    return properties.has_field(name);
+    return m_properties.has_field(name);
 }
 
 
@@ -169,7 +169,7 @@ bool OpenLF::lightfield::Lightfield::hasProperty(const std::string name){
 */
 bool OpenLF::lightfield::Lightfield::getProperty(const std::string name, int &value)
 {
-    return properties.get_field(name,value);
+    return m_properties.get_field(name,value);
 }
     
 
@@ -178,7 +178,7 @@ bool OpenLF::lightfield::Lightfield::getProperty(const std::string name, int &va
 */
 bool OpenLF::lightfield::Lightfield::getProperty(const std::string name, float &value)
 {
-    return properties.get_field(name,value);
+    return m_properties.get_field(name,value);
 }
 
 
@@ -187,7 +187,7 @@ bool OpenLF::lightfield::Lightfield::getProperty(const std::string name, float &
 */
 bool OpenLF::lightfield::Lightfield::getProperty(const std::string name, double &value)
 {
-    return properties.get_field(name,value);
+    return m_properties.get_field(name,value);
 }
 
 
@@ -196,7 +196,7 @@ bool OpenLF::lightfield::Lightfield::getProperty(const std::string name, double 
 */
 bool OpenLF::lightfield::Lightfield::getProperty(const std::string name, std::string &value)
 {
-    return properties.get_field(name,value);
+    return m_properties.get_field(name,value);
 }
 
 
@@ -206,7 +206,7 @@ bool OpenLF::lightfield::Lightfield::getProperty(const std::string name, std::st
 LF_TYPE OpenLF::lightfield::Lightfield::type()
 {
     LF_TYPE lftype;
-    properties.get_lftype(lftype);
+    m_properties.get_lftype(lftype);
     return lftype;
 }
 
@@ -217,7 +217,7 @@ LF_TYPE OpenLF::lightfield::Lightfield::type()
 int OpenLF::lightfield::Lightfield::imgWidth()
 {
     int sx;
-    properties.get_field("width",sx);
+    m_properties.get_field("width",sx);
     return sx;
 }
 
@@ -228,7 +228,7 @@ int OpenLF::lightfield::Lightfield::imgWidth()
 int OpenLF::lightfield::Lightfield::imgHeight()
 {
     int sy;
-    properties.get_field("height",sy);
+    m_properties.get_field("height",sy);
     return sy;
 }
     
@@ -239,7 +239,7 @@ int OpenLF::lightfield::Lightfield::imgHeight()
 int OpenLF::lightfield::Lightfield::width()
 {
     int sx;
-    properties.get_field("width",sx);
+    m_properties.get_field("width",sx);
     return sx*cams_h();
 }
 
@@ -250,7 +250,7 @@ int OpenLF::lightfield::Lightfield::width()
 int OpenLF::lightfield::Lightfield::height()
 {
     int sy;
-    properties.get_field("height",sy);
+    m_properties.get_field("height",sy);
     return sy*cams_v();
 }
 
@@ -261,7 +261,7 @@ int OpenLF::lightfield::Lightfield::height()
 int OpenLF::lightfield::Lightfield::cams_h()
 {
     int sh;
-    properties.get_field("cams_h",sh);
+    m_properties.get_field("cams_h",sh);
     return sh;
 }
 
@@ -272,7 +272,7 @@ int OpenLF::lightfield::Lightfield::cams_h()
 int OpenLF::lightfield::Lightfield::cams_v()
 {
     int sv;
-    properties.get_field("cams_v",sv);
+    m_properties.get_field("cams_v",sv);
     return sv;
 }
     
@@ -298,7 +298,7 @@ float OpenLF::lightfield::Lightfield::getLoxel(int h, int v, int x, int y, const
     if(type()==LF_4D) {
         
         try {
-            val = channels[channel_name](h*imgWidth()+x,v*imgHeight()+y);
+            val = m_channels[channel_name](h*imgWidth()+x,v*imgHeight()+y);
         }
         catch(std::exception &e)
         {
@@ -314,7 +314,7 @@ float OpenLF::lightfield::Lightfield::getLoxel(int h, int v, int x, int y, const
     else if(type()==LF_3DH) {
         
         try {
-            val = channels[channel_name](h*imgWidth()+x,y);
+            val = m_channels[channel_name](h*imgWidth()+x,y);
         }
         catch(std::exception &e)
         {
@@ -342,7 +342,7 @@ void OpenLF::lightfield::Lightfield::getLoxel(int h, int v, int x, int y, const 
     for(unsigned int n=0; n<channel_names.size(); n++)
     {
         try {
-            values.push_back(channels[channel_names[n]](h*imgWidth()+x,v*imgHeight()+y));
+            values.push_back(m_channels[channel_names[n]](h*imgWidth()+x,v*imgHeight()+y));
         }
         catch(std::exception &e)
         {
@@ -363,8 +363,8 @@ float* OpenLF::lightfield::Lightfield::channel_ptr(const std::string channel_nam
     print(1,"lightfield::Lightfield::channel_ptr(channel_name,channel_data) called...");
     
     // check if channel exists
-    if (channels.find(channel_name) == channels.end()) return NULL;
-    else return channels[channel_name].data();
+    if (m_channels.find(channel_name) == m_channels.end()) return NULL;
+    else return m_channels[channel_name].data();
 }
 
 
@@ -374,7 +374,7 @@ float* OpenLF::lightfield::Lightfield::channel_ptr(const std::string channel_nam
 void OpenLF::lightfield::Lightfield::data(std::map<std::string,OpenLF::image::ImageChannel> **channels) {
     print(1,"lightfield::Lightfield::data(channels) called...");
     
-    *channels = &this->channels;
+    *channels = &this->m_channels;
 }
 
 
@@ -384,7 +384,7 @@ void OpenLF::lightfield::Lightfield::data(std::map<std::string,OpenLF::image::Im
 std::map<std::string,OpenLF::image::ImageChannel> * OpenLF::lightfield::Lightfield::data() {
     print(1,"lightfield::Lightfield::data(channels) called...");
     
-    return &this->channels;
+    return &this->m_channels;
 }
 
 
@@ -397,8 +397,8 @@ OpenLF::image::ImageChannel *OpenLF::lightfield::Lightfield::data(const std::str
     print(1,"lightfield::Lightfield::data(channel_name,channel_data) called...");
     
     // check if channel exists
-    if (channels.find(channel_name) == channels.end()) return NULL;
-    else return &channels[channel_name];
+    if (m_channels.find(channel_name) == m_channels.end()) return NULL;
+    else return &m_channels[channel_name];
 }
 
 
@@ -411,8 +411,8 @@ void OpenLF::lightfield::Lightfield::data(const std::string channel_name, OpenLF
     print(1,"lightfield::Lightfield::data(channel_name,channel_data) called...");
     
     // check if channel exists
-    if (channels.find(channel_name) == channels.end()) *channel_data = NULL;
-    else *channel_data = &channels[channel_name];
+    if (m_channels.find(channel_name) == m_channels.end()) *channel_data = NULL;
+    else *channel_data = &m_channels[channel_name];
 }
 
 
@@ -426,8 +426,8 @@ void OpenLF::lightfield::Lightfield::allocateChannel(const std::string channel_n
     print(1,"lightfield::Lightfield::allocateChannel(channel_name) called...");
     
     // check if channel doesn't exists otherwise throw Exception
-    if (channels.find(channel_name) == channels.end()) {
-        channels[channel_name] = OpenLF::image::ImageChannel(width(),height());
+    if (m_channels.find(channel_name) == m_channels.end()) {
+        m_channels[channel_name] = OpenLF::image::ImageChannel(width(),height());
     }
     else {
        throw OpenLF_Exception("Cannot allocate channel that already exist!");
@@ -441,7 +441,7 @@ void OpenLF::lightfield::Lightfield::allocateChannel(const std::string channel_n
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 void OpenLF::lightfield::Lightfield::appendProperties(OpenLF::lightfield::Properties &properties) {
-    this->properties += properties;
+    this->m_properties += properties;
 }
 
 
@@ -460,7 +460,7 @@ void OpenLF::lightfield::Lightfield::appendProperties(OpenLF::lightfield::Proper
 void OpenLF::lightfield::Lightfield::getImage(int h, int v, const std::string channel_name, vigra::MultiArrayView<2,float> &img)
 {
     // check if channel exists
-    if (channels.find(channel_name) == channels.end())
+    if (m_channels.find(channel_name) == m_channels.end())
         throw OpenLF_Exception("Lightfield::getImage -> channels doesn't exist!");
     
     // check if requested image is in range
@@ -469,14 +469,14 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, const std::string ch
     
     // handle all light field cases
     if(type()==LF_CROSS) {
-        if(v==0) img = channels[channel_name].viewToROI(h*imgWidth(),0,imgWidth(),imgHeight());
-        else if(h==0) img = channels[channel_name].viewToROI(v*imgHeight(),imgHeight(),imgHeight(),imgWidth());
+        if(v==0) img = m_channels[channel_name].viewToROI(h*imgWidth(),0,imgWidth(),imgHeight());
+        else if(h==0) img = m_channels[channel_name].viewToROI(v*imgHeight(),imgHeight(),imgHeight(),imgWidth());
     }
-    else if(type()==LF_3DV) img = channels[channel_name].viewToROI(v*imgHeight(),0,imgHeight(),imgWidth());
+    else if(type()==LF_3DV) img = m_channels[channel_name].viewToROI(v*imgHeight(),0,imgHeight(),imgWidth());
     
-    else if(type()==LF_3DH) img = channels[channel_name].viewToROI(h*imgWidth(),0,imgWidth(),imgHeight());
+    else if(type()==LF_3DH) img = m_channels[channel_name].viewToROI(h*imgWidth(),0,imgWidth(),imgHeight());
     
-    else if(type()==LF_4D) img = channels[channel_name].viewToROI(h*imgWidth(),v*imgHeight(),imgWidth(),imgHeight());
+    else if(type()==LF_4D) img = m_channels[channel_name].viewToROI(h*imgWidth(),v*imgHeight(),imgWidth(),imgHeight());
     
     else throw OpenLF_Exception("Lightfield::getImage -> unknown LF_TYPE!");
 }
@@ -833,7 +833,7 @@ view_2D OpenLF::lightfield::Lightfield::_getHorizontalEpiChannel_4D(int v, int y
     if (hasChannel(channel_name)) {
         
         int offset = (cams_h()-1)*focus;
-        vigra::MultiArrayView<1, float> row = channels[channel_name].viewToRow(v * imgHeight() + y);
+        vigra::MultiArrayView<1, float> row = m_channels[channel_name].viewToRow(v * imgHeight() + y);
         shape epi_shape = shape(imgWidth()-(cams_h()-1)*focus,cams_h());
         strideTag stride = strideTag(1, imgWidth() - focus);
         return view_2D(epi_shape, stride, row.data() + offset);
@@ -857,7 +857,7 @@ view_2D OpenLF::lightfield::Lightfield::_getVerticalEpiChannel_3DV(int x, std::s
     if (hasChannel(channel_name)) {
         
         int offset = (cams_v()-1)*focus;
-        vigra::MultiArrayView<1, float> row = channels[channel_name].viewToRow(x);
+        vigra::MultiArrayView<1, float> row = m_channels[channel_name].viewToRow(x);
         shape epi_shape = shape(imgHeight()-(cams_v()-1)*focus,cams_v());
         strideTag stride = strideTag(1, imgHeight() - focus);
         return view_2D(epi_shape, stride, row.data() + offset);        
@@ -887,7 +887,7 @@ view_2D OpenLF::lightfield::Lightfield::_getVerticalEpiChannel_Cross(int x, std:
 //        return view_2D(epi_shape, stride, row.data() + offset);
         
         int offset = (cams_v()-1)*focus;
-        vigra::MultiArrayView<1, float> row = channels[channel_name].viewToRow(imgHeight() + x);
+        vigra::MultiArrayView<1, float> row = m_channels[channel_name].viewToRow(imgHeight() + x);
         shape epi_shape = shape(imgHeight()-(cams_v()-1)*focus,cams_v());
         strideTag stride = strideTag(1, imgHeight() - focus);
         return view_2D(epi_shape, stride, row.data() + offset);
@@ -909,7 +909,7 @@ view_2D OpenLF::lightfield::Lightfield::_getVerticalEpiChannel_4D(int h, int x, 
     if (hasChannel(channel_name)) {
         
         int offset = (cams_v()-1)*focus*width();
-        vigra::MultiArrayView<1, float> col = channels[channel_name].viewToColumn(h * imgWidth() + x);
+        vigra::MultiArrayView<1, float> col = m_channels[channel_name].viewToColumn(h * imgWidth() + x);
         shape epi_shape = shape(cams_v(),imgHeight()-(cams_v()-1)*focus);
         strideTag stride = strideTag((imgHeight()-focus)*width(),col.stride()[0]);
         return view_2D(epi_shape, stride, col.data() + offset).transpose();
@@ -937,9 +937,9 @@ view_2D OpenLF::lightfield::Lightfield::_getVerticalEpiChannel_4D(int h, int x, 
 */
 OpenLF::lightfield::EpiIterator::EpiIterator(OpenLF::lightfield::Lightfield *lf, DIRECTION direction) 
 {
-    this->lf = lf;
-    this->direction = direction;
-    finished = false;
+    this->m_lf = lf;
+    this->m_direction = direction;
+    m_finished = false;
 }
 
 
@@ -966,8 +966,8 @@ OpenLF::lightfield::EpiIterator* OpenLF::lightfield::Lightfield::createEpiIterat
 */
 void OpenLF::lightfield::EpiIterator::first()
 {
-    camera_index = 0;
-    epi_index = 0;
+    m_camera_index = 0;
+    m_epi_index = 0;
 }
 
 
@@ -976,74 +976,74 @@ void OpenLF::lightfield::EpiIterator::first()
 */
 void OpenLF::lightfield::EpiIterator::next()
 {
-    epi_index++;
+    m_epi_index++;
     
-    if(lf->type() == LF_4D)
+    if(m_lf->type() == LF_4D)
     {
-        if(direction == VERTICAL)
+        if(m_direction == VERTICAL)
         {
-            if(epi_index >= lf->imgWidth())
+            if(m_epi_index >= m_lf->imgWidth())
             {
-                epi_index = 0;
-                camera_index++;
+                m_epi_index = 0;
+                m_camera_index++;
             }
-            if(camera_index >= lf->cams_h())
-                finished = true;
+            if(m_camera_index >= m_lf->cams_h())
+                m_finished = true;
         }
-        else if(direction == HORIZONTAL)
+        else if(m_direction == HORIZONTAL)
         {
-            if(epi_index >= lf->imgHeight())
+            if(m_epi_index >= m_lf->imgHeight())
             {
-                epi_index = 0;
-                camera_index++;
+                m_epi_index = 0;
+                m_camera_index++;
             }
-            if(camera_index >= lf->cams_v())
-                finished = true;
+            if(m_camera_index >= m_lf->cams_v())
+                m_finished = true;
         }
     }
-    if(lf->type() == LF_3DH)
+    if(m_lf->type() == LF_3DH)
     {
-        if(direction == VERTICAL)
+        if(m_direction == VERTICAL)
         {
             throw OpenLF_Exception("EpiIterator::get -> unknown direction!");
         }
-        else if(direction == HORIZONTAL)
+        else if(m_direction == HORIZONTAL)
         {
-            if(epi_index >= lf->imgHeight())
+            if(m_epi_index >= m_lf->imgHeight())
             {
-                finished = true;
+                m_finished = true;
             }
                 
         }
     }
-    if(lf->type() == LF_3DV)
+    if(m_lf->type() == LF_3DV)
     {
-        if(direction == VERTICAL)
+        if(m_direction == VERTICAL)
         {
-            if(epi_index >= lf->imgWidth())
+            if(m_epi_index >= m_lf->imgWidth())
             {
-                finished = true;
+                m_finished = true;
             }
         }
-        else if(direction == HORIZONTAL)
+        else if(m_direction == HORIZONTAL)
         {
             throw OpenLF_Exception("EpiIterator::get -> unknown direction!");
         }
     }
-    if(lf->type() == LF_CROSS)
+    if(m_lf->type() == LF_CROSS)
     {
-        if(direction == VERTICAL)
+        if(m_direction == VERTICAL)
         {
-            if(epi_index >= lf->imgWidth())
+            if(m_epi_index >= m_lf->imgWidth())
             {
-                finished = true;
+                m_finished = true;
             }
         }
-        else if(direction == HORIZONTAL)
+        else if(m_direction == HORIZONTAL)
         {
-            if(epi_index >= lf->imgHeight())
+            if(m_epi_index >= m_lf->imgHeight())
             {
-                finished = true;
+                m_finished = true;
             }
         }
     }
@@ -1055,7 +1055,7 @@ void OpenLF::lightfield::EpiIterator::next()
 */
 bool OpenLF::lightfield::EpiIterator::end()
 {
-    return finished;
+    return m_finished;
 }
     
 
@@ -1064,13 +1064,13 @@ bool OpenLF::lightfield::EpiIterator::end()
 */
 view_2D OpenLF::lightfield::EpiIterator::get(std::string channel_name, int focus)
 {
-    if(!this->lf->hasChannel(channel_name))
+    if(!this->m_lf->hasChannel(channel_name))
         throw OpenLF_Exception("EpiIterator::get -> channel not available!");
     
-    if(direction == VERTICAL)
-        return lf->getVerticalEpiChannel(channel_name, epi_index, camera_index, focus);
-    else if(direction == HORIZONTAL)
-        return lf->getHorizontalEpiChannel(channel_name, epi_index, camera_index, focus);
+    if(m_direction == VERTICAL)
+        return m_lf->getVerticalEpiChannel(channel_name, m_epi_index, m_camera_index, focus);
+    else if(m_direction == HORIZONTAL)
+        return m_lf->getHorizontalEpiChannel(channel_name, m_epi_index, m_camera_index, focus);
     else
         throw OpenLF_Exception("EpiIterator::get -> unknown direction!");
 }

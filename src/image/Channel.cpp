@@ -26,8 +26,8 @@
  */
 OpenLF::image::ImageChannel::ImageChannel() {
     print(1,"image::ImageChannel::ImageChannel() called...");
-    pixel = array_2d();
-    external_flag=false;
+    m_pixel = array_2d();
+    m_external_flag=false;
 }
 
 /*! 
@@ -161,24 +161,26 @@ OpenLF::image::ImageChannel::ImageChannel(const array_2d &vmarr)
  * 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
  */
+/*
 OpenLF::image::ImageChannel::ImageChannel(const vigra::MultiArray<2,float> &vmarr) 
 {
     init(vmarr.width(),vmarr.height(),vmarr.data());
     
 }
-
+*/
 /*! 
  * Initialize ImageChannel instance with by copying data from a passed vigra
  * MultiArray reference.
  * 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
  */
+/*
 OpenLF::image::ImageChannel::ImageChannel(const vigra::MultiArray<2,vigra::UInt8> &vmarr) 
 {
     init(vmarr.width(),vmarr.height(),vmarr.data()); 
     
 }
-
+*/
 OpenLF::image::ImageChannel::ImageChannel(const vigra::MultiArrayView<2,vigra::UInt8> &vmarr) 
 {
     init(vmarr.width(),vmarr.height(),vmarr.data());
@@ -193,17 +195,17 @@ OpenLF::image::ImageChannel::ImageChannel(const vigra::MultiArrayView<2,vigra::U
  */
 OpenLF::image::ImageChannel::ImageChannel(const ImageChannel& orig)
 {   
-    internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(orig.width(), orig.height()), orig.data());
-    pixel = *internal_data_ptr;
-    external_flag = false;
+    m_internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(orig.width(), orig.height()), orig.data());
+    m_pixel = *m_internal_data_ptr;
+    m_external_flag = false;
 
 }
 
 OpenLF::image::ImageChannel::~ImageChannel() 
 {
-    if(!internal_data_ptr==NULL) { 
-    delete internal_data_ptr;
-    internal_data_ptr = nullptr;
+    if(m_internal_data_ptr!=nullptr) { 
+    delete m_internal_data_ptr;
+    m_internal_data_ptr = nullptr;
     }
 }
 
@@ -218,10 +220,10 @@ OpenLF::image::ImageChannel::~ImageChannel()
  */
 void OpenLF::image::ImageChannel::init(int width, int height) 
 {   
-    internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(width, height));
-    internal_data_ptr->init(0.0f);
-    pixel = *internal_data_ptr;
-    external_flag = false;
+    m_internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(width, height));
+    m_internal_data_ptr->init(0.0f);
+    m_pixel = *m_internal_data_ptr;
+    m_external_flag = false;
 }
 
 /*! 
@@ -229,10 +231,10 @@ void OpenLF::image::ImageChannel::init(int width, int height)
  */
 void OpenLF::image::ImageChannel::init(int width, int height, float value) 
 {   
-    internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(width, height));
-    internal_data_ptr->init(value);
-    pixel = *internal_data_ptr;
-    external_flag = false;
+    m_internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(width, height));
+    m_internal_data_ptr->init(value);
+    m_pixel = *m_internal_data_ptr;
+    m_external_flag = false;
 }
 
 /*! 
@@ -240,10 +242,10 @@ void OpenLF::image::ImageChannel::init(int width, int height, float value)
  */ 
 void OpenLF::image::ImageChannel::init(const vigra::Shape2 shape) 
 {
-    internal_data_ptr = new vigra::MultiArray<2,float>(shape); 
-    internal_data_ptr->init(0.0f); 
-    pixel = *internal_data_ptr;
-    external_flag = false;
+    m_internal_data_ptr = new vigra::MultiArray<2,float>(shape); 
+    m_internal_data_ptr->init(0.0f); 
+    m_pixel = *m_internal_data_ptr;
+    m_external_flag = false;
 }
 
 /*! 
@@ -251,10 +253,10 @@ void OpenLF::image::ImageChannel::init(const vigra::Shape2 shape)
  */ 
 void OpenLF::image::ImageChannel::init(const vigra::Shape2 shape, float value) 
 {
-    internal_data_ptr = new vigra::MultiArray<2,float>(shape); 
-    internal_data_ptr->init(value); 
-    pixel = *internal_data_ptr;
-    external_flag = false;
+    m_internal_data_ptr = new vigra::MultiArray<2,float>(shape); 
+    m_internal_data_ptr->init(value); 
+    m_pixel = *m_internal_data_ptr;
+    m_external_flag = false;
 }
 
 /*! 
@@ -262,8 +264,8 @@ void OpenLF::image::ImageChannel::init(const vigra::Shape2 shape, float value)
  */
 void OpenLF::image::ImageChannel::init(int width, int height, const float* data_ptr) 
 {
-    pixel = array_2d(vigra::Shape2(width,height), data_ptr);
-    external_flag = true;
+    m_pixel = array_2d(vigra::Shape2(width,height), data_ptr);
+    m_external_flag = true;
 }
 
 /*! 
@@ -271,44 +273,50 @@ void OpenLF::image::ImageChannel::init(int width, int height, const float* data_
  */
 void OpenLF::image::ImageChannel::init(const vigra::Shape2 shape, const float* data_ptr)
 {   
-    pixel = array_2d(shape, data_ptr); 
-    external_flag = true;
+    m_pixel = array_2d(shape, data_ptr); 
+    m_external_flag = true;
 }   
 
 /*! 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
  */
 
-void OpenLF::image::ImageChannel::init(int width, int height, const vigra::UInt8* data_ptr) 
+void OpenLF::image::ImageChannel::init(const int width, const int height, const vigra::UInt8* data_ptr) 
 {
-    float *local_ptr = NULL;
-    int a = width;
-    int b = height;
-    float local_array[a*b];
-    local_ptr = local_array;
-    for(int n=0; n < a * b; n++) {
+    float *local_ptr =  new float[width * height];
+    for(int n=0; n < width * height; n++) {
         local_ptr[n] = (float)data_ptr[n]/255.0;
     }
-    internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(a, b), local_ptr);
-    pixel = *internal_data_ptr;
-    external_flag = false;
+    m_internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(width, height), local_ptr);
+    m_pixel = *m_internal_data_ptr;
+    m_external_flag = false;
+    delete [] local_ptr;
 }   
-
+/*
+    float *local_ptr = NULL;
+    float local_array[width * height];
+    local_ptr = local_array;
+    for(int n=0; n < width * height; n++) {
+        local_ptr[n] = (float)data_ptr[n]/255.0;
+    }
+    m_internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(width, height), local_ptr);
+    m_pixel = *m_internal_data_ptr;
+    m_external_flag = false;
+ */
 /*! 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de) 
  */
 
 void OpenLF::image::ImageChannel::init(const vigra::Shape2 shape, const vigra::UInt8* data_ptr) 
 {
-    float *local_ptr = NULL;
-    float local_array[shape[0] * shape[1]];
-    local_ptr = local_array;
+    float *local_ptr = new float[shape[0] * shape[1]];
     for(int n=0; n < shape[0] * shape[1]; n++) {
         local_ptr[n] = (float)data_ptr[n]/255.0;
     }
-    internal_data_ptr = new vigra::MultiArray<2,float>(shape, local_ptr);
-    pixel = *internal_data_ptr; 
-    external_flag = false;
+    m_internal_data_ptr = new vigra::MultiArray<2,float>(shape, local_ptr);
+    m_pixel = *m_internal_data_ptr; 
+    m_external_flag = false;
+    delete [] local_ptr;
 }   
 
 
@@ -322,9 +330,9 @@ void OpenLF::image::ImageChannel::deepcopy(OpenLF::image::ImageChannel& channel)
         throw OpenLF_Exception("already has data");
     else
     {
-        internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(channel.width(), channel.height()), channel.data());
-        pixel = *internal_data_ptr;
-        external_flag = false;
+        m_internal_data_ptr = new vigra::MultiArray<2,float>(vigra::Shape2(channel.width(), channel.height()), channel.data());
+        m_pixel = *m_internal_data_ptr;
+        m_external_flag = false;
     }
 }
 /*!
@@ -334,7 +342,7 @@ void OpenLF::image::ImageChannel::set(float value)
 { 
     if(!hasData())
         throw OpenLF_Exception("uninitialized channel");
-    else pixel = value;
+    else m_pixel = value;
 }
 
 /*!
@@ -343,8 +351,8 @@ void OpenLF::image::ImageChannel::set(float value)
 float OpenLF::image::ImageChannel::get(int x, int y) const
 {   if(!hasData()) 
         throw OpenLF_Exception("uninitialized channel");
-    if(x>=0 && x<pixel.width() && y>=0 && y<pixel.height())
-        return pixel(x,y);
+    if(x>=0 && x<m_pixel.width() && y>=0 && y<m_pixel.height())
+        return m_pixel(x,y);
     else throw OpenLF_Exception("Out of bounce");
 }
  
@@ -355,8 +363,8 @@ void OpenLF::image::ImageChannel::get(int x, int y, float &value) const
 {
     if(!hasData()) 
         throw OpenLF_Exception("uninitialized channel");
-    if(x>=0 && x<pixel.width() && y>=0 && y<pixel.height())
-        value = pixel(x,y);
+    if(x>=0 && x<m_pixel.width() && y>=0 && y<m_pixel.height())
+        value = m_pixel(x,y);
     else throw OpenLF_Exception("Out of bounce");
 }
 
@@ -368,7 +376,7 @@ float* OpenLF::image::ImageChannel::data() const
         throw OpenLF_Exception("uninitialized channel");
     else {
         print(1,"image::Channel::data() called...");
-        return pixel.data();
+        return m_pixel.data();
     }
 }
 
@@ -382,7 +390,7 @@ vigra::MultiArrayView<2,float>* OpenLF::image::ImageChannel::image()
     if(!hasData()) 
         throw OpenLF_Exception("uninitialized channel");
     else {
-       return &pixel;
+       return &m_pixel;
     } 
 }
 
@@ -395,7 +403,7 @@ void OpenLF::image::ImageChannel::image(vigra::MultiArrayView<2,float> **pixel)
         throw OpenLF_Exception("uninitialized channel");
     else {
         print(1,"image::Channel::image(**pixel) called...");
-        *pixel = &(this->pixel);
+        *pixel = &(this->m_pixel);
     }
 }
 
@@ -407,10 +415,10 @@ vigra::MultiArrayView<2,float> OpenLF::image::ImageChannel::viewToROI(int x, int
     if(!hasData()) 
         throw OpenLF_Exception("uninitialized channel");
     else {
-        if(x<0 || y<0 || x+width-1>=pixel.width() || y+height-1>=pixel.height())
+        if(x<0 || y<0 || x+width-1>=m_pixel.width() || y+height-1>=m_pixel.height())
             throw OpenLF_Exception("ImageChannel::viewToROI -> out of bounce!");
         else {
-            vigra::MultiArrayView<2, float> roi_view = pixel.subarray(vigra::Shape2(x,y), vigra::Shape2(x+width,y+height));
+            vigra::MultiArrayView<2, float> roi_view = m_pixel.subarray(vigra::Shape2(x,y), vigra::Shape2(x+width,y+height));
             return roi_view;
         }
     }
@@ -425,8 +433,8 @@ vigra::MultiArrayView<1,float> OpenLF::image::ImageChannel::viewToRow(int fix_y)
     if(!hasData()) 
         throw OpenLF_Exception("uninitialized channel");
     else {
-        if(fix_y>=0 && fix_y<pixel.height()) {
-            return pixel.bind<1>(fix_y);
+        if(fix_y>=0 && fix_y<m_pixel.height()) {
+            return m_pixel.bind<1>(fix_y);
         }
         else {
             throw OpenLF_Exception("viewToRow access out of bounce!");
@@ -443,9 +451,9 @@ vigra::MultiArrayView<1,float> OpenLF::image::ImageChannel::viewToColumn(int fix
     if(!hasData()) 
         throw OpenLF_Exception("uninitialized channel");
     else {
-        if(fix_x>=0 && fix_x<pixel.width())
+        if(fix_x>=0 && fix_x<m_pixel.width())
         {
-            return pixel.bind<0>(fix_x);
+            return m_pixel.bind<0>(fix_x);
         }
         else
             throw OpenLF_Exception("viewToRow access out of bounce!");
@@ -474,7 +482,7 @@ OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator=(float value
     if(!hasData()) 
         throw OpenLF_Exception("uninitialized channel");
     else {
-        pixel = value;
+        m_pixel = value;
         return *this;
     }
 }
@@ -493,8 +501,8 @@ OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator+(float value
     if(!hasData()) 
         throw OpenLF_Exception("uninitialized channel");
     else {
-        for(int n=0; n<this->pixel.width()*this->pixel.height(); n++) {
-            this->pixel.data()[n] += value;
+        for(int n=0; n<this->m_pixel.width()*this->m_pixel.height(); n++) {
+            this->m_pixel.data()[n] += value;
         }
         return *this;
     }
@@ -508,8 +516,8 @@ OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator-(float value
     if(!hasData()) 
         throw OpenLF_Exception("uninitialized channel");
     else {
-        for(int n=0; n<this->pixel.width()*this->pixel.height(); n++) {
-            this->pixel.data()[n] -= value;
+        for(int n=0; n<this->m_pixel.width()*this->m_pixel.height(); n++) {
+            this->m_pixel.data()[n] -= value;
         }
         return *this;
     }
@@ -524,8 +532,8 @@ OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator+=(float valu
     if(!hasData()) 
         throw OpenLF_Exception("uninitialized channel");
     else {
-        for(int n=0; n<this->pixel.width()*this->pixel.height(); n++) {
-            this->pixel.data()[n] += value;
+        for(int n=0; n<this->m_pixel.width()*this->m_pixel.height(); n++) {
+            this->m_pixel.data()[n] += value;
         }
         return *this;
     }
@@ -539,8 +547,8 @@ OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator-=(float valu
     if(!hasData()) 
         throw OpenLF_Exception("uninitialized channel");
     else {
-        for(int n=0; n<this->pixel.width()*this->pixel.height(); n++) {
-            this->pixel.data()[n] -= value;
+        for(int n=0; n<this->m_pixel.width()*this->m_pixel.height(); n++) {
+            this->m_pixel.data()[n] -= value;
         }
         return *this;
     }
@@ -553,8 +561,8 @@ OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator+=(OpenLF::im
 { 
     if(this->shape() == rhs.shape()) {
         float *in_data = rhs.data();
-        for(int n=0; n<this->pixel.width()*this->pixel.height(); n++) {
-            this->pixel.data()[n] += in_data[n];
+        for(int n=0; n<this->m_pixel.width()*this->m_pixel.height(); n++) {
+            this->m_pixel.data()[n] += in_data[n];
         }
         return *this;
     }
@@ -568,8 +576,8 @@ OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator-=(OpenLF::im
 { 
     if(this->shape() == rhs.shape()) {
         float *in_data = rhs.data();
-        for(int n=0; n<this->pixel.width()*this->pixel.height(); n++) {
-            this->pixel.data()[n] -= in_data[n];
+        for(int n=0; n<this->m_pixel.width()*this->m_pixel.height(); n++) {
+            this->m_pixel.data()[n] -= in_data[n];
         }
         return *this;
     }
@@ -584,8 +592,8 @@ OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator*=(float valu
     if(!hasData()) 
         throw OpenLF_Exception("uninitialized channel");
     else {
-        for(int n=0; n<this->pixel.width()*this->pixel.height(); n++) {
-            this->pixel.data()[n] *= value;
+        for(int n=0; n<this->m_pixel.width()*this->m_pixel.height(); n++) {
+            this->m_pixel.data()[n] *= value;
         }
         return *this;
     }
@@ -599,8 +607,8 @@ OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator/=(float valu
         throw OpenLF_Exception("uninitialized channel");
     else {
         if(value!=0.0f) {
-            for(int n=0; n<this->pixel.width()*this->pixel.height(); n++) {
-                this->pixel.data()[n] /= value;
+            for(int n=0; n<this->m_pixel.width()*this->m_pixel.height(); n++) {
+                this->m_pixel.data()[n] /= value;
             }
             return *this;
         } else throw std::overflow_error("Divide by zero exception");
@@ -614,8 +622,8 @@ OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator*=(OpenLF::im
 { 
     if(this->shape() == rhs.shape()) {
         float *in_data = rhs.data();
-        for(int n=0; n<this->pixel.width()*this->pixel.height(); n++) {
-            this->pixel.data()[n] *= in_data[n];
+        for(int n=0; n<this->m_pixel.width()*this->m_pixel.height(); n++) {
+            this->m_pixel.data()[n] *= in_data[n];
         }
         return *this;
     }
@@ -629,13 +637,13 @@ OpenLF::image::ImageChannel & OpenLF::image::ImageChannel::operator/=(OpenLF::im
 { 
     if(this->shape() == rhs.shape()) {
         float *in_data = rhs.data();
-        for(int n=0; n<this->pixel.width()*this->pixel.height(); n++) {
+        for(int n=0; n<this->m_pixel.width()*this->m_pixel.height(); n++) {
             try {
-                this->pixel.data()[n] /= in_data[n];
+                this->m_pixel.data()[n] /= in_data[n];
             }
             catch(std::exception &e) {
                 std::cout << e.what() << std::endl;
-                this->pixel.data()[n] = std::numeric_limits<float>::max();
+                this->m_pixel.data()[n] = std::numeric_limits<float>::max();
             }
         }
         return *this;

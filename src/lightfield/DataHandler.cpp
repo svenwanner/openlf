@@ -25,16 +25,16 @@ OpenLF::lightfield::io::DataHandler::DataHandler()
 {
     print(1,"lightfield::io::DataHandler::DataHandler() called...");
     
-    type = "";
+    m_type = "";
 }
 
 OpenLF::lightfield::io::DataHandler::DataHandler(const std::string config_filename, Properties *properties) 
 {
     print(1,"lightfield::io::DataHandler::DataHandler(config_filename,*properties) called...");
     
-    type = "";
+    m_type = "";
     
-    this->properties = properties;
+    this->m_properties = properties;
     setConfigfile(config_filename);
 }
 
@@ -42,9 +42,9 @@ OpenLF::lightfield::io::DataHandler::DataHandler(const char* config_filename, Pr
 {
     print(1,"lightfield::io::DataHandler::DataHandler(config_filename,*properties) called...");
     
-    type = "";
+    m_type = "";
    
-    this->properties = properties;
+    this->m_properties = properties;
     setConfigfile(config_filename);
 }
 
@@ -73,7 +73,7 @@ void OpenLF::lightfield::io::DataHandler::setConfigfile(const std::string config
 {
     print(1,"lightfield::io:::DataHandler::set_configfile(config_filename,&properties) called...");
     
-    this->config_filename = config_filename;
+    this->m_config_filename = config_filename;
     
     std::string ftype = OpenLF::helpers::find_ftype(config_filename);
     
@@ -82,20 +82,20 @@ void OpenLF::lightfield::io::DataHandler::setConfigfile(const std::string config
         
         // parse configfile
         try {
-            properties->parse(config_filename);
+            m_properties->parse(config_filename);
         } catch(std::exception &e) {
             warning(e.what());
         }
         
         std::string source_type;
-        properties->get_field("source",source_type);
+        m_properties->get_field("source",source_type);
         
         // check if source is a camera then handle data from buffer else handle from disc
         if(source_type == "cam") {
-            type = "buffer"; // set data reading type buffer
+            m_type = "buffer"; // set data reading type buffer
         }
         else { 
-            type = "disc"; // set data reading type to disc
+            m_type = "disc"; // set data reading type to disc
         }
     }
     else {

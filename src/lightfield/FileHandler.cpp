@@ -24,21 +24,21 @@ OpenLF::lightfield::io::FileHandler::FileHandler() : DataHandler()
 {
     print(1,"lightfield::io::FileHandler::FileHandler() called...");
     
-    disc_source = "";
+    m_disc_source = "";
 }
 
 OpenLF::lightfield::io::FileHandler::FileHandler(const std::string config_filename, Properties *properties) : DataHandler(config_filename,properties)
 {
     print(1,"lightfield::io::FileHandler::FileHandler(config_filename,*properties) called...");
     
-    disc_source = "";
+    m_disc_source = "";
 }
 
 OpenLF::lightfield::io::FileHandler::FileHandler(const char* config_filename, Properties *properties) : DataHandler(config_filename,properties)
 {
     print(1,"lightfield::io::FileHandler::FileHandler(config_filename,*properties) called...");
     
-    disc_source = "";
+    m_disc_source = "";
 }
 
 OpenLF::lightfield::io::FileHandler::~FileHandler() 
@@ -52,11 +52,11 @@ bool OpenLF::lightfield::io::FileHandler::readData(std::map<std::string,OpenLF::
 {
     print(1,"lightfield::io:::FileHandler::readData(channels) called...");
     
-    if(type=="") {
+    if(m_type=="") {
         throw OpenLF_Exception("lightfield::io::FileHandler, no source specified!");
         return false;
     }
-    else if(type=="disc") {
+    else if(m_type=="disc") {
         return __readFromDisc__(channels);
     }
     else return false;
@@ -88,11 +88,11 @@ bool OpenLF::lightfield::io::FileHandler::__readFromDisc__(std::map<std::string,
     print(1,"lightfield::io::FileHandler::read_from_disc(channels) called...");
     
     // set disc source type as specified in config file
-    properties->get_field("source",disc_source);
+    m_properties->get_field("source",m_disc_source);
     
     // check if source is path or filename by checking the filetype
     std::string source_check;
-    source_check = OpenLF::helpers::find_ftype(disc_source);
+    source_check = OpenLF::helpers::find_ftype(m_disc_source);
     
     
     //##########################################################################
@@ -102,21 +102,21 @@ bool OpenLF::lightfield::io::FileHandler::__readFromDisc__(std::map<std::string,
         print(2,"lightfield::io::FileHandler::read_from_disc(channels) got an hdf5 file...");
         
         // if the file exist read it
-        if (boost::filesystem::exists( disc_source )) {
+        if (boost::filesystem::exists( m_disc_source )) {
             print(2,"lightfield::io::FileHandler::read_from_disc(channels) got an absolute hdf5 path...");
                 
-            return OpenLF::lightfield::io::load_from_hdf5(disc_source,channels,properties);
+            return OpenLF::lightfield::io::load_from_hdf5(m_disc_source,channels,m_properties);
         }
         // if not, check if path of configfile plus the value of source is a valid filename
         else {
             // make an absolute path from configfile name and the string relative path from configfile source variable
-            std::string abs_path = OpenLF::helpers::make_absolute_path(config_filename,disc_source);
+            std::string abs_path = OpenLF::helpers::make_absolute_path(m_config_filename,m_disc_source);
             
             // check if this is now a valid path
             if(boost::filesystem::exists(abs_path)) {
                 print(2,"lightfield::io::FileHandler::read_from_disc(channels) got an relative image path...");
             
-                return OpenLF::lightfield::io::load_from_hdf5(abs_path,channels,properties);
+                return OpenLF::lightfield::io::load_from_hdf5(abs_path,channels,m_properties);
             }
             // if not there is nothing more to do
             else {
@@ -137,15 +137,15 @@ bool OpenLF::lightfield::io::FileHandler::__readFromDisc__(std::map<std::string,
         print(2,"lightfield::io::FileHandler::read_from_disc(channels) got an image file...");
         
         // if the file exist read it
-        if (boost::filesystem::exists( disc_source )) {
+        if (boost::filesystem::exists( m_disc_source )) {
             print(2,"lightfield::io::FileHandler::read_from_disc(channels) got an absolute image path...");
                 
-            return OpenLF::image::io::imread(disc_source,channels);
+            return OpenLF::image::io::imread(m_disc_source,channels);
         }
         // if not, check if path of configfile plus the value of source is a valid filename
         else {
             // make an absolute path from configfile name and the string relative path from configfile source variable
-            std::string abs_path = OpenLF::helpers::make_absolute_path(config_filename,disc_source);
+            std::string abs_path = OpenLF::helpers::make_absolute_path(m_config_filename,m_disc_source);
             
             // check if this is now a valid path
             if(boost::filesystem::exists(abs_path)) {
@@ -173,21 +173,21 @@ bool OpenLF::lightfield::io::FileHandler::__readFromDisc__(std::map<std::string,
         // if the source property in the configfile is a absolute path read from file sequence
         if(boost::filesystem::is_directory(source_check)) {
             print(2,"lightfield::io::FileHandler::read_from_disc(channels) got an absolute path...");
-            return OpenLF::lightfield::io::load_from_filesequence(source_check,channels,properties);
+            return OpenLF::lightfield::io::load_from_filesequence(source_check,channels,m_properties);
         }
         // if not, check if path of configfile plus the value of source is a valid path
         else {
             // make an absolute path from configfile name and the string relative path from configfile source variable
-            std::string abs_path = OpenLF::helpers::make_absolute_path(config_filename,source_check);
+            std::string abs_path = OpenLF::helpers::make_absolute_path(m_config_filename,source_check);
             
             // check if this is now a valid path
             if(boost::filesystem::is_directory(abs_path)) {
                 print(2,"lightfield::io::FileHandler::read_from_disc(channels) got an relative path...");
-                return OpenLF::lightfield::io::load_from_filesequence(abs_path,channels,properties);
+                return OpenLF::lightfield::io::load_from_filesequence(abs_path,channels,m_properties);
             }
             // if not there is nothing more to do
             else {
-                std::string msg = "Failed to identify input data source: \n" + disc_source + "\n File broken or path doesn't exist";
+                std::string msg = "Failed to identify input data source: \n" + m_disc_source + "\n File broken or path doesn't exist";
                 warning(msg);
                 return false;   
             }

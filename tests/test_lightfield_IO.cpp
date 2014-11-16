@@ -989,7 +989,7 @@ void test_lightfield_IO::test_IO_Pipeline_CROSS()
 
 
 void test_lightfield_IO::test_Properties_methods()
-{
+{   
     int tmp_ival = 0;
     float tmp_fval = 0.0f;
     string tmp_sval = "";

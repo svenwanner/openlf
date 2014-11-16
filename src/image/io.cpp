@@ -368,54 +368,6 @@ bool OpenLF::image::io::imread(const std::string filename, const OpenLF::image::
 
 
 
-bool OpenLF::image::io::imsave(const std::string filename, const vigra::MultiArray<2,float> img)
-{
-    print(2,"image::io::imread(filename,img) called...");
-    
-    // get file type
-    std::string ftype = OpenLF::helpers::find_ftype(filename);
-    
-    try {
-        // allocate memory to store range mapping results
-        vigra::MultiArray<2,vigra::UInt8> tmp(vigra::Shape2(img.width(),img.height()));
-        linear_range_mapping(img,tmp);
-
-        if(ftype=="jpg")
-            vigra::exportImage(tmp, vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=75"));
-        else
-            vigra::exportImage(tmp, filename.c_str());
-        
-    } catch(std::exception & e) {
-        warning(e.what());
-        return false;
-    }
-    
-    return true;
-}
-
-
-bool OpenLF::image::io::imsave(const std::string filename, const vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> img)
-{
-    print(2,"image::io::imread(filename,img) called...");
-    
-    // get file type
-    std::string ftype = OpenLF::helpers::find_ftype(filename);
-    
-    try {
-        if(ftype=="jpg")
-            vigra::exportImage(img, vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=75"));
-        else
-            vigra::exportImage(img, filename.c_str());
-        
-    } catch(std::exception & e) {
-        warning(e.what());
-        return false;
-    }
-    
-    return true;
-}
-
-
 bool OpenLF::image::io::imsave(const std::string filename, const vigra::MultiArrayView<2,float> img)
 {
     print(2,"image::io::imread(filename,img_view) called...");

@@ -40,7 +40,7 @@ namespace OpenLF {
  * the data reading from the harddrive. The passed configfile is parsed within
  * the DataHandler baseclass and if the source value in the configfile is not set
  * to "cam", the type is set to "disc". The FileHandler then checks the source 
- * variable if its a hdf5 file, an image file or a path to a filesequence and loads
+ * variable if it is a hdf5 file, an image file or a path to a filesequence and loads
  * the data respectively. The passed Properties instance is filled with all parameters 
  * from the configfile and the data are set when the readData method is called.
  */
@@ -65,7 +65,7 @@ public:
     
     
 protected:
-    std::string disc_source;         //!< is "cam" or the path to the data on the harddrive
+    std::string m_disc_source;         //!< is "cam" or the path to the data on the harddrive
     
 
 

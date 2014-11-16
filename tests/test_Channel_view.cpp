@@ -83,6 +83,7 @@ void test_Channel_view::testMethod() {
     
     CPPUNIT_ASSERT_NO_THROW(ic_def3.init(50,50, ma_1.data()));
     CPPUNIT_ASSERT(ic_def3.externalData()==true);
+    //CPPUNIT_ASSERT(ic_def3.get(1,1) == 5.0);
     CPPUNIT_ASSERT(ic_def3.hasData()==true);
     
     CPPUNIT_ASSERT(int_ma_1.data()[0]==5);

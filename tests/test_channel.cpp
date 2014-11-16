@@ -48,7 +48,7 @@ void test_channel::test_initialization() {
     CPPUNIT_ASSERT(!ic_def.hasData());
     ic_def.init(3,3);
     CPPUNIT_ASSERT(ic_def.hasData());
-    CPPUNIT_ASSERT(ic_def.sum()==0.0f);
+    CPPUNIT_ASSERT(ic_def.sum()==0.0);
     CPPUNIT_ASSERT(ic_def.width()==3);
     CPPUNIT_ASSERT(ic_def.height()==3);
     CPPUNIT_ASSERT(ic_def.shape()==vigra::Shape2(3,3));

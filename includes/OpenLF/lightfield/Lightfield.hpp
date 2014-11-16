@@ -74,7 +74,7 @@ public:
      \param filename  
     */
     void save(std::string filename) {
-        OpenLF::lightfield::io::save_to_hdf5(filename,channels,&properties);
+        OpenLF::lightfield::io::save_to_hdf5(filename,m_channels,&m_properties);
     }
     
         
@@ -334,9 +334,9 @@ public:
     EpiIterator* createEpiIterator(DIRECTION direction);
     
 protected:
-    std::map< std::string,OpenLF::image::ImageChannel> channels;  //!< map to store the light field channels
-    OpenLF::lightfield::io::DataHandler *dataHandler;   //!< instance of a dataHandler to read data
-    OpenLF::lightfield::Properties properties;          //!< properties instance to hold all parameters
+    std::map< std::string,OpenLF::image::ImageChannel> m_channels;  //!< map to store the light field channels
+    OpenLF::lightfield::io::DataHandler *m_dataHandler;   //!< instance of a dataHandler to read data
+    OpenLF::lightfield::Properties m_properties;          //!< properties instance to hold all parameters
 
     
 protected:
@@ -393,11 +393,11 @@ protected:
 
 class EpiIterator {
     
-    Lightfield *lf;
-    DIRECTION direction;
-    int camera_index;
-    int epi_index;
-    bool finished;
+    Lightfield *m_lf;
+    DIRECTION m_direction;
+    int m_camera_index;
+    int m_epi_index;
+    bool m_finished;
     
 public:
     EpiIterator(Lightfield *lf, DIRECTION direction);

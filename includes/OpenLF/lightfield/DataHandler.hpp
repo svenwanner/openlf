@@ -37,7 +37,7 @@ namespace OpenLF {
  * and does the parsing. It defines a virtual function readData(&channels) which
  * needs to be overwritten by a derived class aiming to take care of the data
  * handling and storing within the channels object. To handle any data reading 
- * derive from this class, which is a member of each LichtField instance, and take
+ * derive from this class, which is a member of each LightField instance, and take
  * care of a correct sorting of your data and storing in the channel reference. 
  */
 class DataHandler {
@@ -50,7 +50,7 @@ public:
     //! set the config file
     /*!
      \param config_filename is the filename of the configfile 
-     \param properties an instance of a Properties instance to parse and hold the paramter
+     \param properties an instance of a Properties instance to parse and hold the parameter
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */ 
     void setConfigfile(const std::string config_filename);
@@ -58,7 +58,7 @@ public:
     //! set the config file
     /*!
      \param config_filename is the filename of the configfile 
-     \param properties an instance of a Properties instance to parse and hold the paramter
+     \param properties an instance of a Properties instance to parse and hold the parameter
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */ 
     void setConfigfile(const char* config_filename);
@@ -66,9 +66,9 @@ public:
     virtual bool readData(std::map<std::string,OpenLF::image::ImageChannel>& channels) = 0;
     
 protected:
-    std::string type;            //!< type of input config_filename, disc or buffer
-    std::string config_filename; //!< the passed config_filename string
-    Properties *properties; //!< pointer to store the address of a properties instance
+    std::string m_type;            //!< type of input config_filename, disc or buffer
+    std::string m_config_filename; //!< the passed config_filename string
+    Properties *m_properties; //!< pointer to store the address of a properties instance
 
 };
 

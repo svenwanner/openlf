@@ -68,8 +68,8 @@ OpenLF::lightfield::Properties::Properties(const char* filename)
 OpenLF::lightfield::Properties::~Properties() 
 {
     print(1,"lightfield::~Properties() called...");
-    number_fields.clear();
-    string_fields.clear();
+    m_number_fields.clear();
+    m_string_fields.clear();
 }
 
 
@@ -78,13 +78,13 @@ void OpenLF::lightfield::Properties::log()
     std::string text = "\n#### Properties ####\n";
     
     text += "#\n# number fields:\n";
-    for(number_fields_iter iter = number_fields.begin(); iter != number_fields.end(); iter++) {
+    for(number_fields_iter iter = m_number_fields.begin(); iter != m_number_fields.end(); iter++) {
     //for (auto& k : this->number_fields) {
         text += "# "+iter->first+" = "+boost::lexical_cast<std::string>(iter->second)+"\n";
     }
     
     text += "#\n# std::string fields:\n";
-    for(string_fields_iter iter = string_fields.begin(); iter != string_fields.end(); iter++) {
+    for(string_fields_iter iter = m_string_fields.begin(); iter != m_string_fields.end(); iter++) {
     //for (auto& k : this->std::string_fields) {
         text += "# "+iter->first+" = "+iter->second+"\n";
     }
@@ -100,7 +100,7 @@ OpenLF::lightfield::Properties & OpenLF::lightfield::Properties::operator+=(Open
     double nvalue;
     std::string svalue;
     
-    for(number_fields_iter iter = rhs.number_fields.begin(); iter != rhs.number_fields.end(); iter++) {
+    for(number_fields_iter iter = rhs.m_number_fields.begin(); iter != rhs.m_number_fields.end(); iter++) {
     //for (auto& iter : rhs.number_fields) {
         key = iter->first;
         rhs.get_field(key,nvalue);
@@ -108,7 +108,7 @@ OpenLF::lightfield::Properties & OpenLF::lightfield::Properties::operator+=(Open
       
     }
     
-    for(string_fields_iter iter = rhs.string_fields.begin(); iter != rhs.string_fields.end(); iter++) {
+    for(string_fields_iter iter = rhs.m_string_fields.begin(); iter != rhs.m_string_fields.end(); iter++) {
     //for (auto& iter : rhs.string_fields) {
         key = iter->first;
         rhs.get_field(key,svalue);
@@ -119,8 +119,8 @@ OpenLF::lightfield::Properties & OpenLF::lightfield::Properties::operator+=(Open
 
 
 void OpenLF::lightfield::Properties::clear() {
-    number_fields.clear();
-    string_fields.clear();
+    m_number_fields.clear();
+    m_string_fields.clear();
 }
 
 
@@ -134,19 +134,19 @@ int OpenLF::lightfield::Properties::sizeof_num_field() const
 {
     print(1,"lightfield::Properties::sizeof_num_fields() called...");
     
-    return number_fields.size();
+    return m_number_fields.size();
 }
 
 int OpenLF::lightfield::Properties::sizeof_str_field() const 
 {
     print(1,"lightfield::Properties::sizeof_str_fields() called...");
     
-    return string_fields.size();
+    return m_string_fields.size();
 }
 
 void OpenLF::lightfield::Properties::get_num_field_keys(std::vector<std::string> &keys)
 {
-    for(number_fields_iter iter = number_fields.begin(); iter != number_fields.end(); iter++) {
+    for(number_fields_iter iter = m_number_fields.begin(); iter != m_number_fields.end(); iter++) {
     //for (auto& k : number_fields) {
         keys.push_back(iter->first);
     }
@@ -154,7 +154,7 @@ void OpenLF::lightfield::Properties::get_num_field_keys(std::vector<std::string>
 
 void OpenLF::lightfield::Properties::get_str_field_keys(std::vector<std::string> &keys)
 {
-    for(string_fields_iter iter = string_fields.begin(); iter != string_fields.end(); iter++) {
+    for(string_fields_iter iter = m_string_fields.begin(); iter != m_string_fields.end(); iter++) {
     //for (auto& k : string_fields) {
         keys.push_back(iter->first);
     }
@@ -164,12 +164,12 @@ void OpenLF::lightfield::Properties::get_str_field_keys(std::vector<std::string>
 
 bool OpenLF::lightfield::Properties::has_field(const std::string fieldname)
 {
-    for(number_fields_iter iter = number_fields.begin(); iter != number_fields.end(); iter++) {
+    for(number_fields_iter iter = m_number_fields.begin(); iter != m_number_fields.end(); iter++) {
     //for (auto& k : number_fields) {
         if(iter->first==fieldname)
             return true;
     }
-    for(string_fields_iter iter = string_fields.begin(); iter != string_fields.end(); iter++) {
+    for(string_fields_iter iter = m_string_fields.begin(); iter != m_string_fields.end(); iter++) {
     //for (auto& k : string_fields) {
         if(iter->first==fieldname)
             return true;
@@ -206,10 +206,10 @@ bool OpenLF::lightfield::Properties::get_field(const std::string name, std::stri
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     
-    if ( string_fields.find(name) == string_fields.end() ) {
+    if ( m_string_fields.find(name) == m_string_fields.end() ) {
         return false;
     } else {
-        value = string_fields[name];
+        value = m_string_fields[name];
         return true;
     }
 }
@@ -218,10 +218,10 @@ bool OpenLF::lightfield::Properties::get_field(const std::string name, int &valu
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     
-    if ( number_fields.find(name) == number_fields.end() ) {
+    if ( m_number_fields.find(name) == m_number_fields.end() ) {
         return false;
     } else {
-        value = (int)number_fields[name];
+        value = (int)m_number_fields[name];
         return true;
     }
 }
@@ -230,10 +230,10 @@ bool OpenLF::lightfield::Properties::get_field(const std::string name, float &va
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     
-    if ( number_fields.find(name) == number_fields.end() ) {
+    if ( m_number_fields.find(name) == m_number_fields.end() ) {
         return false;
     } else {
-        value = (float)number_fields[name];
+        value = (float)m_number_fields[name];
         return true;
     }
 }
@@ -242,10 +242,10 @@ bool OpenLF::lightfield::Properties::get_field(const std::string name, double &v
 {
     print(1,"lightfield::Properties::get_field(name,value) called...");
     
-    if ( number_fields.find(name) == number_fields.end() ) {
+    if ( m_number_fields.find(name) == m_number_fields.end() ) {
         return false;
     } else {
-        value = number_fields[name];
+        value = m_number_fields[name];
         return true;
     }
 }
@@ -254,35 +254,35 @@ void OpenLF::lightfield::Properties::set_lftype(LF_TYPE lftype)
 {
     print(1,"lightfield::Properties::set_lftype(lftype) called...");
     
-    number_fields["type"] = (double)lftype;
+    m_number_fields["type"] = (double)lftype;
 }
 
 void OpenLF::lightfield::Properties::set_field(const std::string name, const std::string value)
 {
     print(1,"lightfield::Properties::set_field(name,value) called...");
     
-    string_fields[name] = value;
+    m_string_fields[name] = value;
 }
 
 void OpenLF::lightfield::Properties::set_field(const std::string name, int value)
 {
     print(1,"lightfield::Properties::set_field(name,value) called...");
     
-    number_fields[name] = (double)value;
+    m_number_fields[name] = (double)value;
 }
 
 void OpenLF::lightfield::Properties::set_field(const std::string name, float value)
 {
     print(1,"lightfield::Properties::set_field(name,value) called...");
     
-    number_fields[name] = (double)value;
+    m_number_fields[name] = (double)value;
 }
 
 void OpenLF::lightfield::Properties::set_field(const std::string name, double value)
 {
     print(1,"lightfield::Properties::set_field(name,value) called...");
     
-    number_fields[name] = value;
+    m_number_fields[name] = value;
 }
 
 
@@ -298,8 +298,8 @@ void OpenLF::lightfield::Properties::parse(const char* filename)
 {
     print(1,"lightfield::Properties::parse(filename) called...");
     
-    number_fields.clear();
-    string_fields.clear();
+    m_number_fields.clear();
+    m_string_fields.clear();
     
     std::ifstream cfgfile(filename);
     if (cfgfile.good()) {
@@ -359,11 +359,11 @@ void OpenLF::lightfield::Properties::__parse__(std::ifstream &cfgfile)
                         if(pos!=std::string::npos) 
                         {
                             fields[1].erase(std::remove(fields[1].begin(), fields[1].end(), '"'), fields[1].end());
-                            string_fields[fields[0]] = fields[1];
+                            m_string_fields[fields[0]] = fields[1];
                         }
                         else 
                         {
-                            number_fields[fields[0]] = boost::lexical_cast<double>(fields[1]);
+                            m_number_fields[fields[0]] = boost::lexical_cast<double>(fields[1]);
                         }
                     }
                 }

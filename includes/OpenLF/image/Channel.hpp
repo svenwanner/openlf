@@ -119,8 +119,9 @@ public:
     /*!
      \param vmarr vigra MultiArray<2,float> 
     */
+    /*
     ImageChannel(const vigra::MultiArray<2,float> &vmarr);
-    
+    */
     //! Initialize with vigra MultiArrayView constructor 
     /*!
      \param vmarr vigra MultiArrayView<2,Uint8> 
@@ -131,8 +132,9 @@ public:
     /*!
      \param vmarr vigra MultiArray<2,Uint8> 
     */
+    /*
     ImageChannel(const vigra::MultiArray<2,vigra::UInt8> &vmarr); 
-    
+    */
     //! copy constructor
     /*!
      \param orig ImageChannel reference to copy from 
@@ -229,31 +231,31 @@ public:
      * will result in overwriting this data. Instead if the value of the flag is false, 
      * ImageChannel is decoupled from any external data.  
      */
-    bool externalData() const { return external_flag; };
+    bool externalData() const { return m_external_flag; };
     
     //!indicates that Channel has image data. This can be external or internally allocated data.
-    bool hasData() const { return pixel.hasData(); };
+    bool hasData() const { return m_pixel.hasData(); };
      
 
     //! get width
     /*!
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    int width() const { return pixel.width(); };
+    int width() const { return m_pixel.width(); };
     
     
     //! get height
     /*!
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    int height() const { return pixel.height(); };
+    int height() const { return m_pixel.height(); };
     
     
     //! get shape
     /*!
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    vigra::Shape2 shape() const { return pixel.shape(); };
+    vigra::Shape2 shape() const { return m_pixel.shape(); };
     
     
     //! set all pixels to value passed 
@@ -279,7 +281,7 @@ public:
     
     
     //! get sum over all image pixels
-    double sum() const { return pixel.sum<double>(); };
+    double sum() const { return m_pixel.sum<double>(); };
     
     
     
@@ -328,7 +330,7 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
     
     //! overload of () operator 
-    float & operator() (int x, int y) { return pixel(x,y); }
+    float & operator() (int x, int y) { return m_pixel(x,y); }
     
     //! overload of = operator 
     ImageChannel & operator=(float value);
@@ -370,9 +372,9 @@ public:
     
     
 private:
-    array_2d pixel; 
-    vigra::MultiArray<2,float> *internal_data_ptr=NULL; 
-    bool external_flag;
+    array_2d m_pixel; 
+    vigra::MultiArray<2,float> *m_internal_data_ptr=NULL; 
+    bool m_external_flag;
   
 };
 

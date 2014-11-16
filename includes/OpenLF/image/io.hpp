@@ -112,26 +112,6 @@ bool imread(const std::string filename, std::map<std::string,OpenLF::image::Imag
 */ 
 bool imread(const std::string filename, const ROI roi, std::map<std::string,OpenLF::image::ImageChannel> &img_channel);
 
-
-//! saves an image to file
-/*!
- Saves a 2D MultiArray float image to file.
- \param filename path to save the file
- \param img MultiArray float image
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/ 
-bool imsave(const std::string filename, const vigra::MultiArray<2,float> img);
-
-//! saves an rgb image to file
-/*!
- Saves a 2D rgb MultiArray uint8 image to file.
- \param filename path to save the file
- \param img MultiArray float image
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/ 
-bool imsave(const std::string filename, const vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> img);
-
-
 //! saves an image view to file
 /*!
  Saves a 2D MultiArray float image to file.
