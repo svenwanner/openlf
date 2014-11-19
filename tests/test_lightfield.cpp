@@ -117,6 +117,70 @@ void test_lightfield::tearDown() {
 
 
 
+void test_lightfield::test_epi_offset()
+{
+    using namespace OpenLF::lightfield;
+
+    { // begin test 4D
+    const int cams_h = 5;
+    const int cams_v = 7;
+    const int width = 48;
+    const int height = 64;
+
+    Properties prop;
+    prop.set_field("type", LF_4D);
+    prop.set_field("cams_h", cams_h);
+    prop.set_field("cams_v", cams_v);
+    prop.set_field("width", width);
+    prop.set_field("height", height);
+
+    Lightfield<LF_4D> lf(prop);
+
+
+    std::vector<int> epi_indices = {0, 1, height};
+
+    std::vector<int> focii = {0, 1};
+    if (10 < height/2 )
+        focii.push_back(10);
+
+    std::vector<vigra::Shape2> test_coords = {{0, 0}, {0, 1}, {1, 0}, {1, 1},
+                                {cams_h - 1, 0}, {cams_h - 1, 1}};
+
+
+    // FIXME: loop over direction
+    DIRECTION dir = HORIZONTAL;
+    int cams_this_dir = dir == HORIZONTAL ? cams_h : cams_v;
+    int cams_ortho = dir == HORIZONTAL ? cams_v : cams_h;
+    for (auto index_itr = epi_indices.begin(); index_itr != epi_indices.end();
+            ++index_itr)
+    {
+        EpiOffset o = lf.getEpiOffset(dir, *index_itr);
+        for (auto focus_itr = focii.begin(); focus_itr != focii.end();
+                ++focus_itr)
+        {
+            for (auto coord_itr = test_coords.begin();
+                    coord_itr != test_coords.end();
+                    ++coord_itr)
+            {
+                size_t x = (*coord_itr)[0];
+                size_t y = (*coord_itr)[1];
+                EpiOffset::difference_type expected(*index_itr,
+                        (cams_this_dir/2 - x)*(*focus_itr) + y + width*x);
+                //std::cout<<"checking epi offset, index: "<<*index_itr<<
+                //    " focus: "<<*focus_itr<<" epi_coord: "<<*coord_itr<<
+                //    " expected coord: "<<expected<<" got: "<<
+                //    o(*focus_itr) + vigra::Shape2(x, y)<<std::endl;
+                CPPUNIT_ASSERT(o(*focus_itr) + vigra::Shape2(x, y) == expected);
+
+            }
+        }
+
+    }
+
+
+    } // end test
+
+}
 
 /*
 

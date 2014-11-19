@@ -36,8 +36,8 @@ namespace OpenLF {
     namespace lightfield { 
         
  
+class EpiOffset;
         
-class EpiIterator;
         
         
 class Lightfield_base {
@@ -320,6 +320,8 @@ public:
             vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img);
     
     
+    const EpiOffset getEpiOffset(DIRECTION dir, size_t index, size_t focus=0);
+
     //! get a view to a horizontal epi of the channel specified
     /*!
      \param channel_name name of the channel to extract the epi from
@@ -802,52 +804,63 @@ vigra::MultiArrayView<2,float> Lightfield<LF_CROSS>::getVerticalEpiChannel(
         std::string const & channel_name, int x, int h, int focus);
 
 
-
-
-
-
-
-
+// FIXME: inherit from Shape2D to allow using the offset as an index directly?
+// FIXME: (as in channel[*itr] to mean channel[*itr + Diff2D(0,0)]
+//template <LF_TYPE TypeTag>
+// FIXME: this is horizontal only
+class EpiOffset
 {
+public:
+    typedef vigra::Shape2 difference_type;
+    typedef vigra::MultiArrayIndex difference_type_1;
+    //typedef vigra::MultiArrayShape<2>::type size_t;
 
-
-
+    EpiOffset(size_t index, size_t stride,
+            size_t focus=0, size_t ncams=0) :
+        m_offset(index, 0), m_stride(stride), m_focus(focus), m_ncams(ncams)
+    {
+        vigra_precondition( m_stride != 0,
+                "stride cannot be 0 for EpiOffset construction" );
+        vigra_precondition( focus ==0  || ncams > 0,
+                "ncams must be > 0 if focus > 0");
     }
 
+    EpiOffset(EpiOffset const & other) :
+        m_offset(other.m_offset), m_stride(other.m_stride),
+        m_focus(other.m_focus), m_ncams(other.m_ncams)
+    {}
 
+    EpiOffset(EpiOffset const & other, size_t focus) :
+        m_offset(other.m_offset), m_stride(other.m_stride),
+        m_focus(other.m_focus + focus), m_ncams(other.m_ncams)
+    {}
 
+    /*
+    EpiOffset & operator=(EpiOffset const & other)
+    {
+    }
+    */
 
+    // refocus
+    const EpiOffset operator()(size_t focus)
+    {
+        return EpiOffset(*this, focus);
+    }
 
+    const difference_type operator+(difference_type const & coord) const
+    {
+        // FIXME: only horizontal
+        return m_offset + difference_type(0,
+                (m_ncams/2 - coord[0])*m_focus + coord[0]*m_stride + coord[1]);
+    }
 
-/*
-class EpiIterator {
-    
-    Lightfield *lf;
-    DIRECTION direction;
-    int camera_index;
-    int epi_index;
-    bool finished;
-    
-public:
-    EpiIterator(Lightfield *lf, DIRECTION direction);
-    //EpiIterator(const EpiIterator& orig);
-    
-    void first();
-    void next();
-    bool end();
-    
-    view_2D get(std::string channel_name, int focus);
-    
-    
-    
-    virtual ~EpiIterator();
-    
+private:
+    const difference_type m_offset;
+    const size_t m_stride;
+    const size_t m_focus;
+    const size_t m_ncams;
 };
-*/
 
-
-
-
-}}
+}} // namespace OpenLF::lightfield
 #endif	/* LIGHTFIELD_HPP */
 
