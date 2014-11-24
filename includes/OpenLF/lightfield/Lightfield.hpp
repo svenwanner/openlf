@@ -38,6 +38,13 @@ namespace OpenLF {
  
 class EpiOffset;
         
+template<LF_TYPE TypeTag>
+class EpiOffsetIterator;
+
+/*
+template<LF_TYPE TypeTag>
+class EpiCoordConstIterator;
+*/
         
         
 class Lightfield_base {
@@ -152,6 +159,8 @@ public:
     
     //! get vertical number of cameras
     int cams_v();
+
+    int cams(DIRECTION);
     
     
     
@@ -320,7 +329,13 @@ public:
             vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img);
     
     
+    EpiOffsetIterator<TypeTag> begin_epi_offset(DIRECTION dir);
+    //EpiCoordConstIterator<TypeTag> begin_epi_coord(DIRECTION dir, int focus) const;
+    EpiOffsetIterator<TypeTag> end_epi_offset(DIRECTION dir);
+    //EpiCoordConstIterator<TypeTag> end_epi_coord(DIRECTION dir) const;
+
     const EpiOffset getEpiOffset(DIRECTION dir, size_t index, size_t focus=0);
+    //MultiCoordinateIterator<2> getEpiCoordIter(ssize_t index, int focus) const;
 
     //! get a view to a horizontal epi of the channel specified
     /*!
@@ -861,6 +876,62 @@ private:
     const size_t m_ncams;
 };
 
+namespace impl
+{
+
+template <class Value, LF_TYPE TypeTag>
+class EpiIterator_base
+  : public boost::iterator_facade< EpiIterator_base<Value, TypeTag>,
+        Value,
+        boost::forward_traversal_tag // FIXME: random_access_traversal_tag
+    >
+{
+ public:
+    EpiIterator_base(Lightfield<TypeTag> &lf)
+      : m_index(0), m_lf(lf) {}
+
+    template <class OtherValue>
+    EpiIterator_base(EpiIterator_base<OtherValue, TypeTag> const& other)
+      : m_index(other.m_index), m_lf(other.m_lf) {}
+
+ private:
+    friend class boost::iterator_core_access;
+    template <class> friend class EpiIterator_base;
+
+    template <class OtherValue>
+    bool equal(EpiIterator_base<OtherValue, TypeTag> const& other) const
+    {
+        return this->m_index == other.m_index && this->lf == other.m_lf;
+    }
+
+    void increment()
+    { m_index++; }
+
+    Value& dereference() const
+        //FIXME: direction
+    { return m_lf.getEpiOffset(HORIZONTAL, m_index); }
+
+    Lightfield<TypeTag> &m_lf;
+    size_t m_index;
+};
+
+}
+
+template <LF_TYPE TypeTag>
+class EpiOffsetIterator :
+    public impl::EpiIterator_base<vigra::MultiCoordinateIterator<2>,
+        TypeTag
+    >
+{
+};
+template <LF_TYPE TypeTag>
+class EpiOffsetConstIterator :
+    public impl::EpiIterator_base<vigra::MultiCoordinateIterator<2> const,
+        TypeTag>
+{
+};
+
 }} // namespace OpenLF::lightfield
+
 #endif	/* LIGHTFIELD_HPP */
 

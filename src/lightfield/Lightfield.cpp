@@ -197,6 +197,14 @@ int Lightfield_base::cams_v()
     return sv;
 }
     
+int Lightfield_base::cams(DIRECTION d)
+{
+    if (d == HORIZONTAL)
+        return cams_h();
+    else if (d == VERTICAL)
+        return cams_v();
+    throw OpenLF_Exception("invalid direction");
+}
 
 
 
@@ -419,7 +427,6 @@ void Lightfield<LF_4D>::getImage(int h, int v,
     img = cur_channel->second.viewToROI(h*imgWidth(), v*imgHeight(),
             imgWidth(), imgHeight());
 }
-
 
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
