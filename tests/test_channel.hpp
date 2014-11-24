@@ -22,6 +22,7 @@ class test_channel : public CPPUNIT_NS::TestFixture {
 
     CPPUNIT_TEST(test_initialization);
     CPPUNIT_TEST(test_operator_overload);
+    CPPUNIT_TEST(test_epi_view);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -34,6 +35,7 @@ public:
 private:
     void test_initialization();
     void test_operator_overload();
+    void test_epi_view();
 };
 
 #endif	/* TEST_CHANNEL_HPP */

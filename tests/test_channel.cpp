@@ -185,3 +185,37 @@ void test_channel::test_operator_overload()
             CPPUNIT_ASSERT(ic_res_1(x,y)==1.0f);
 }
 
+
+void test_channel::test_epi_view()
+{
+    const int cams_h = 5;
+    const int cams_v = 1;
+    const int width = 48;
+    const int height = 64;
+    vigra::MultiArray<2,float> data(vigra::Shape2(height*cams_v, width*cams_h));
+    for (ssize_t i = 0; i < data.size(); ++i)
+        data[i] = i;
+
+    OpenLF::image::ImageChannel channel(data);
+
+    {
+    vigra::MultiArrayView<2, float> epi =
+        channel.viewToEpi(0, 0, cams_h, width);
+
+    std::cout<<"(0,0): "<<epi[vigra::Shape2(0,0)]<<std::endl;
+    std::cout<<"(1,0): "<<epi[vigra::Shape2(1,0)]<<std::endl;
+    std::cout<<"(0,1): "<<epi[vigra::Shape2(0,1)]<<std::endl;
+    for (ssize_t i = 0; i < width*cams_h; ++i)
+        CPPUNIT_ASSERT(epi[i] == i);
+    }
+
+    {
+    vigra::MultiArrayView<2, float> epi =
+        channel.viewToEpi(0, 1, cams_h, width);
+    CPPUNIT_ASSERT(epi[0] = 2);
+    std::cout<<"(0,0): "<<epi[vigra::Shape2(0,0)]<<std::endl;
+    std::cout<<"(1,0): "<<epi[vigra::Shape2(1,0)]<<std::endl;
+    std::cout<<"(0,1): "<<epi[vigra::Shape2(0,1)]<<std::endl;
+    CPPUNIT_ASSERT(epi[vigra::Shape2(1,0)] == 46);
+    }
+}

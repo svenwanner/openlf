@@ -761,7 +761,7 @@ view_2D Lightfield<TypeTag>::_getHorizontalEpiChannel_4D(int v, int y,
     vigra::MultiArrayView<1, float> row = cur_channel->second.viewToRow(
             v * imgHeight() + y);
     shape epi_shape = shape(imgWidth()-(cams_h()-1)*focus,cams_h());
-    strideTag stride = strideTag(1, imgWidth() - focus);
+    vigra::Shape2 stride(1, imgWidth() - focus);
     return view_2D(epi_shape, stride, row.data() + offset);
 }
 

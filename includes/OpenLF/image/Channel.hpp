@@ -245,7 +245,16 @@ public:
     */
     void image(vigra::MultiArray<2,float> **pixel);
    
-    
+    //FIXME: horizontal only
+    vigra::MultiArrayView<2,float> viewToEpi(size_t index, size_t focus,
+            size_t num_cams, size_t imgWidth)
+    {
+        vigra::Shape2 epi_shape(imgWidth - (num_cams - 1)*focus,
+                num_cams);
+        vigra::Shape2 stride(1, imgWidth - focus);
+        return vigra::MultiArrayView<2, float>(epi_shape, stride,
+                data() + pixel.stride(0)*index);
+    }
     //! get a view to a region of interest
     /*!
      \param x ROI x position
