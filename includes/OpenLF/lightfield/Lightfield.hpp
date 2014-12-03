@@ -317,7 +317,7 @@ public:
      \param h fixed horizontal camera index (default=0)
      \param focus global shift parameter in pixel (default=0)
     */
-    vigra::MultiArrayView<2,float> getHorizontalEpiChannel(const std::string channel_name, int y, int v=0,  int focus=0);
+    view_2D getHorizontalEpiChannel(const std::string channel_name, int y, int v=0,  int focus=0);
     
     
     //! get a view to a vertical epi of the channel specified
@@ -327,18 +327,19 @@ public:
      \param h fixed horizontal camera index (default=0)
      \param focus global shift paramter in pixel (default=0)
     */
-    vigra::MultiArrayView<2,float> getVerticalEpiChannel(std::string channel_name, int x, int h=0, int focus=0);
+    view_2D getVerticalEpiChannel(std::string channel_name, int x, int h=0, int focus=0);
     
     
 
     EpiIterator* createEpiIterator(DIRECTION direction);
+    //std::shared_ptr<OpenLF::lightfield::EpiIterator> createEpiIterator(DIRECTION direction);
     
 protected:
     std::map< std::string,OpenLF::image::ImageChannel> m_channels;  //!< map to store the light field channels
     std::unique_ptr<OpenLF::lightfield::io::DataHandler> m_dataHandler;   //!< instance of a dataHandler to read data
     OpenLF::lightfield::Properties m_properties;          //!< properties instance to hold all parameters
 
-    
+ 
 protected:
     
     //! get a view to a horizontal epi of the channel specified for the 4D lightfield case
@@ -346,27 +347,27 @@ protected:
      \param v fixed vertical camera index
      \param y fixed row image domain index
      \param channel_name name of the channel to extract the epi from
-     \param focus global shift paramter in pixel
+     \param focus global shift parameter in pixel
     */
-    vigra::MultiArrayView<2,float> _getHorizontalEpiChannel_4D(int v, int y, std::string channel_name, int focus);
+    view_2D _getHorizontalEpiChannel_4D(int v, int y, std::string channel_name, int focus);
     
     
     //! get a view to a vertical epi of the channel specified for the 3DV lightfield case
     /*!
      \param x fixed column image domain index
      \param channel_name name of the channel to extract the epi from
-     \param focus global shift paramter in pixel
+     \param focus global shift parameter in pixel
     */
-    vigra::MultiArrayView<2,float> _getVerticalEpiChannel_3DV(int x, std::string channel_name, int focus);
+    view_2D _getVerticalEpiChannel_3DV(int x, std::string channel_name, int focus);
     
     
     //! get a view to a vertical epi of the channel specified for the 3DV lightfield case
     /*!
      \param x fixed column image domain index
      \param channel_name name of the channel to extract the epi from
-     \param focus global shift paramter in pixel
+     \param focus global shift parameter in pixel
     */
-    vigra::MultiArrayView<2,float> _getVerticalEpiChannel_Cross(int x, std::string channel_name, int focus);
+    view_2D _getVerticalEpiChannel_Cross(int x, std::string channel_name, int focus);
     
     
     //! get a view to a vertical epi of the channel specified for the 4D lightfield case
@@ -374,10 +375,10 @@ protected:
      \param h fixed horizontal camera index
      \param x fixed column image domain index
      \param channel_name name of the channel to extract the epi from
-     \param focus global shift paramter in pixel
+     \param focus global shift parameter in pixel
     */
-    vigra::MultiArrayView<2,float> _getVerticalEpiChannel_4D(int h, int x, const std::string channel_name, int focus);
-    
+    view_2D _getVerticalEpiChannel_4D(int h, int x, const std::string channel_name, int focus);
+   
 };
 
 

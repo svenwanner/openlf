@@ -956,7 +956,10 @@ OpenLF::lightfield::EpiIterator::~EpiIterator()
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 OpenLF::lightfield::EpiIterator* OpenLF::lightfield::Lightfield::createEpiIterator(DIRECTION direction)
+//std::shared_ptr<OpenLF::lightfield::EpiIterator> OpenLF::lightfield::Lightfield::createEpiIterator(DIRECTION direction)
 {
+    //std::shared_ptr<OpenLF::lightfield::EpiIterator> s_ptr(new OpenLF::lightfield::EpiIterator(this,direction));
+    //return s_ptr;
     return new OpenLF::lightfield::EpiIterator(this,direction);
 }
 
