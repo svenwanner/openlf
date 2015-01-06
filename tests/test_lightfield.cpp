@@ -137,7 +137,7 @@ void test_lightfield::test_epi_iterator()
     gt_v.open (fnames["Vertical_EpiIterTest_4D"], ios::in);
     
     if (gt_h.is_open()) { 
-        OpenLF::lightfield::EpiIterator_4D *iter_h = lf->createEpiIterator<OpenLF::lightfield::EpiIterator_4D>(HORIZONTAL);
+        EpiIterator_4D *iter_h = lf->createEpiIterator<EpiIterator_4D>(HORIZONTAL);
 
         for(iter_h->first(); !iter_h->end(); iter_h->next())
         {
@@ -152,7 +152,7 @@ void test_lightfield::test_epi_iterator()
     gt_h.close();
     
     if (gt_v.is_open()) {
-        OpenLF::lightfield::EpiIterator_4D *iter_v = lf->createEpiIterator<OpenLF::lightfield::EpiIterator_4D>(VERTICAL);
+        EpiIterator_4D *iter_v = lf->createEpiIterator<EpiIterator_4D>(VERTICAL);
 
         for(iter_v->first(); !iter_v->end(); iter_v->next())
         {
@@ -180,7 +180,7 @@ void test_lightfield::test_epi_iterator()
     gt_h.open (fnames["Horizontal_EpiIterTest_3DH"], ios::in);
     
     if (gt_h.is_open()) { 
-        OpenLF::lightfield::EpiIterator_3D *iter_h = lf->createEpiIterator<OpenLF::lightfield::EpiIterator_3D>(HORIZONTAL);
+        EpiIterator_3D *iter_h = lf->createEpiIterator<EpiIterator_3D>(HORIZONTAL);
 
         for(iter_h->first(); !iter_h->end(); iter_h->next())
         {
@@ -207,7 +207,7 @@ void test_lightfield::test_epi_iterator()
     gt_v.open (fnames["Vertical_EpiIterTest_3DV"], ios::in);
     
     if (gt_h.is_open()) { 
-        OpenLF::lightfield::EpiIterator_3D *iter_h = lf->createEpiIterator<OpenLF::lightfield::EpiIterator_3D>(VERTICAL);
+        EpiIterator_3D *iter_h = lf->createEpiIterator<EpiIterator_3D>(VERTICAL);
         
         for(iter_h->first(); !iter_h->end(); iter_h->next())
         {
@@ -237,7 +237,7 @@ void test_lightfield::test_epi_iterator()
     gt_v.open (fnames["Vertical_EpiIterTest_CROSS"], ios::in);
     
     if (gt_h.is_open()) { 
-        OpenLF::lightfield::EpiIterator_CROSS *iter_h = lf->createEpiIterator<OpenLF::lightfield::EpiIterator_CROSS>(HORIZONTAL);
+        EpiIterator_CROSS *iter_h = lf->createEpiIterator<EpiIterator_CROSS>(HORIZONTAL);
 
         for(iter_h->first(); !iter_h->end(); iter_h->next())
         {
@@ -254,7 +254,7 @@ void test_lightfield::test_epi_iterator()
 
      
     if (gt_v.is_open()) {
-        OpenLF::lightfield::EpiIterator_CROSS *iter_v = lf->createEpiIterator<OpenLF::lightfield::EpiIterator_CROSS>(VERTICAL);
+        EpiIterator_CROSS *iter_v = lf->createEpiIterator<EpiIterator_CROSS>(VERTICAL);
 
         for(iter_v->first(); !iter_v->end(); iter_v->next())
         {

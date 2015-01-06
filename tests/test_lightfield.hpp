@@ -40,7 +40,7 @@
 #include "OpenLF/lightfield/FileHandler.hpp"
 
 using namespace std;
-
+using namespace OpenLF::lightfield;
 //for testing lightfield class
 class test_lightfield : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_lightfield);
