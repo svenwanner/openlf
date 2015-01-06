@@ -1,12 +1,12 @@
 /* 
- * File:   Lightfield_3D.hpp
+ * File:   Lightfield4D.hpp
  * Author: kiryl
  *
  * Created on December 2, 2014, 11:53 AM
  */
 
-#ifndef LIGHTFIELD3D_HPP
-#define	LIGHTFIELD3D_HPP
+#ifndef LIGHTFIELD4D_HPP
+#define	LIGHTFIELD4D_HPP
 
 #include "OpenLF/global.hpp"
 #include "OpenLF/image/utils.hpp"
@@ -19,15 +19,15 @@
 namespace OpenLF { 
     namespace lightfield { 
  
-class EpiIterator_3D;
+class EpiIterator_4D;
 
-class Lightfield_3D : public Lightfield{
+class Lightfield_4D : public Lightfield{
 public:
-    friend class EpiIterator_3D;
-    Lightfield_3D();
-    Lightfield_3D(const std::string filename);
-    //Lightfield_3D(const Lightfield& orig);
-    ~Lightfield_3D();
+    friend class EpiIterator_4D;
+    Lightfield_4D();
+    Lightfield_4D(const std::string filename);
+    //Lightfield_4D(const Lightfield_4D& orig);
+    ~Lightfield_4D();
     
     //! access a single intensity value of the channel specified
     /*!
@@ -38,7 +38,7 @@ public:
      \param channel_name name of the channel to access
     */
     float getLoxel(int h, int v, int x, int y, const std::string channel_name);
-    
+ 
     
     //! access a single image of a light field channel
     /*!
@@ -50,7 +50,7 @@ public:
     void getImage(int h, int v, const std::string channel_name, vigra::MultiArrayView<2,float> &img);
     
     
-public: //change!
+public:
     
     //! get a view to a horizontal epi of the channel specified
     /*!
@@ -59,9 +59,9 @@ public: //change!
      \param v vertical camera index (default=0)
      \param focus global shift parameter in pixel (default=0)
     */
-    vigra::MultiArrayView<2,float> getHorizontalEpiChannel(std::string channel_name, int y, int v, int focus);
+    view_2D getHorizontalEpiChannel(std::string channel_name, int y, int v, int focus);
     
-    
+  
     //! get a view to a vertical epi of the channel specified
     /*!
      \param channel_name name of the channel to extract the epi from
@@ -71,13 +71,9 @@ public: //change!
     */
     vigra::MultiArrayView<2,float> getVerticalEpiChannel(std::string channel_name, int x, int h, int focus);
     
-    vigra::MultiArrayView<2,float> _getVerticalEpiChannel_3D(std::string channel_name, int x, int focus);
-    
-    
-    
 };
 
-class EpiIterator_3D {
+class EpiIterator_4D {
     Lightfield *m_lf;
     DIRECTION m_direction;
     int m_camera_index;
@@ -85,19 +81,19 @@ class EpiIterator_3D {
     bool m_finished;
     
 public: 
-    EpiIterator_3D(Lightfield *lf, DIRECTION direction);
-    //EpiIterator_3D(const EpiIterator_3D& orig);
+    EpiIterator_4D(Lightfield *lf, DIRECTION direction);
+    //EpiIterator_4D(const EpiIterator_4D& orig);
     
     void first();
     void next();
     bool end();
     view_2D get(std::string channel_name, int focus);
-    ~EpiIterator_3D();
+    ~EpiIterator_4D();
 };
     }
 }
 
 
 
-#endif	/* LIGHTFIELD3D_HPP */
+#endif	/* LIGHTFIELD4D_HPP */
 

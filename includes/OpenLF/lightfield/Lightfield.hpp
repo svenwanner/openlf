@@ -37,14 +37,13 @@ namespace OpenLF {
         
  
         
-class EpiIterator;
+//class EpiIterator;
         
         
 
 class Lightfield {
     
 public:
-    friend class EpiIterator;
     Lightfield();
     Lightfield(const std::string filename);
     //Lightfield(const Lightfield& orig);
@@ -190,7 +189,7 @@ public:
      \param y position index
      \param channel_name name of the channel to access
     */
-    float getLoxel(int h, int v, int x, int y, const std::string channel_name);
+    virtual float getLoxel(int h, int v, int x, int y, const std::string channel_name) = 0;
     
     //! access a single intensity value of the channels specified
     /*!
@@ -261,7 +260,7 @@ public:
      \param channel_name name of the channel
      \param img reference to MultiArrayView
     */
-    void getImage(int h, int v, const std::string channel_name, vigra::MultiArrayView<2,float> &img);
+    virtual void getImage(int h, int v, const std::string channel_name, vigra::MultiArrayView<2,float> &img) = 0;
     
     //! access a single image of a light field channel
     /*!
@@ -289,6 +288,15 @@ public:
     */
     void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> > &img);
     
+    /*!
+    \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+    */
+    template <typename T>
+    T* createEpiIterator(DIRECTION direction){
+        //std::shared_ptr<OpenLF::lightfield::EpiIterator> s_ptr(new OpenLF::lightfield::EpiIterator(this,direction));
+        //return s_ptr;
+        return new T(this,direction);
+    }
     
     //! get a horizontal epi of either gray value or rgb if available
     /*!
@@ -297,8 +305,25 @@ public:
      \param focus global shift parameter in pixel
      \param img vigra rgb image reference
     */
-    void getHorizontalEpi(int y, int v, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img);
+    virtual void getHorizontalEpi(int y, int v, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img);
+        
+    //! get a view to a horizontal epi of the channel specified
+    /*!
+     \param channel_name name of the channel to extract the epi from
+     \param x fixed column image domain index
+     \param h fixed horizontal camera index (default=0)
+     \param focus global shift parameter in pixel (default=0)
+    */
+    view_2D getHorizontalEpiChannel_parent(std::string channel_name, int y, int v, int focus);
     
+    //! get a view to a horizontal epi of the channel specified
+    /*!
+     \param channel_name name of the channel to extract the epi from
+     \param y fixed row image domain index
+     \param v vertical camera index (default=0)
+     \param focus global shift parameter in pixel (default=0)
+    */
+    virtual view_2D getHorizontalEpiChannel(std::string channel_name, int y, int v, int focus)=0;
     
     //! get a horizontal epi of either gray value or rgb if available
     /*!
@@ -307,17 +332,7 @@ public:
      \param focus global shift parameter in pixel
      \param img vigra rgb image reference
     */
-    void getVerticalEpi(int x, int h, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img);
-    
-    
-    //! get a view to a horizontal epi of the channel specified
-    /*!
-     \param channel_name name of the channel to extract the epi from
-     \param x fixed column image domain index
-     \param h fixed horizontal camera index (default=0)
-     \param focus global shift parameter in pixel (default=0)
-    */
-    view_2D getHorizontalEpiChannel(const std::string channel_name, int y, int v=0,  int focus=0);
+    virtual void getVerticalEpi(int x, int h, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>>& img);
     
     
     //! get a view to a vertical epi of the channel specified
@@ -327,58 +342,13 @@ public:
      \param h fixed horizontal camera index (default=0)
      \param focus global shift paramter in pixel (default=0)
     */
-    view_2D getVerticalEpiChannel(std::string channel_name, int x, int h=0, int focus=0);
-    
-    
-
-    EpiIterator* createEpiIterator(DIRECTION direction);
-    //std::shared_ptr<OpenLF::lightfield::EpiIterator> createEpiIterator(DIRECTION direction);
+    virtual vigra::MultiArrayView<2,float> getVerticalEpiChannel(std::string channel_name, int x, int h, int focus)=0;
     
 protected:
-    std::map< std::string,OpenLF::image::ImageChannel> m_channels;  //!< map to store the light field channels
+    std::map<std::string,OpenLF::image::ImageChannel> m_channels;  //!< map to store the light field channels
     std::unique_ptr<OpenLF::lightfield::io::DataHandler> m_dataHandler;   //!< instance of a dataHandler to read data
     OpenLF::lightfield::Properties m_properties;          //!< properties instance to hold all parameters
 
- 
-protected:
-    
-    //! get a view to a horizontal epi of the channel specified for the 4D lightfield case
-    /*!
-     \param v fixed vertical camera index
-     \param y fixed row image domain index
-     \param channel_name name of the channel to extract the epi from
-     \param focus global shift parameter in pixel
-    */
-    view_2D _getHorizontalEpiChannel_4D(int v, int y, std::string channel_name, int focus);
-    
-    
-    //! get a view to a vertical epi of the channel specified for the 3DV lightfield case
-    /*!
-     \param x fixed column image domain index
-     \param channel_name name of the channel to extract the epi from
-     \param focus global shift parameter in pixel
-    */
-    view_2D _getVerticalEpiChannel_3DV(int x, std::string channel_name, int focus);
-    
-    
-    //! get a view to a vertical epi of the channel specified for the 3DV lightfield case
-    /*!
-     \param x fixed column image domain index
-     \param channel_name name of the channel to extract the epi from
-     \param focus global shift parameter in pixel
-    */
-    view_2D _getVerticalEpiChannel_Cross(int x, std::string channel_name, int focus);
-    
-    
-    //! get a view to a vertical epi of the channel specified for the 4D lightfield case
-    /*!
-     \param h fixed horizontal camera index
-     \param x fixed column image domain index
-     \param channel_name name of the channel to extract the epi from
-     \param focus global shift parameter in pixel
-    */
-    view_2D _getVerticalEpiChannel_4D(int h, int x, const std::string channel_name, int focus);
-   
 };
 
 
@@ -391,7 +361,7 @@ protected:
 
 
 
-
+/*
 class EpiIterator {
     
     Lightfield *m_lf;
@@ -400,22 +370,23 @@ class EpiIterator {
     int m_epi_index;
     bool m_finished;
     
-public:
+    public:
     EpiIterator(Lightfield *lf, DIRECTION direction);
     //EpiIterator(const EpiIterator& orig);
     
     void first();
-    void next();
+    //virtual void next();
+    virtual void next() = 0;
     bool end();
     
-    view_2D get(std::string channel_name, int focus);
-    
+    virtual view_2D get() = 0;
+    //view_2D get(std::string channel_name, int focus=0);
     
     
     virtual ~EpiIterator();
     
 };
-
+*/
 
 
 

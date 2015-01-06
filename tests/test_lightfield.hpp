@@ -33,6 +33,9 @@
 #include "OpenLF/lightfield/io.hpp"
 #include "OpenLF/image/Channel.hpp"
 #include "OpenLF/lightfield/Lightfield.hpp"
+#include "OpenLF/lightfield/Lightfield_3D.hpp"
+#include "OpenLF/lightfield/Lightfield_4D.hpp"
+#include "OpenLF/lightfield/Lightfield_CROSS.hpp"
 #include "OpenLF/lightfield/Properties.hpp"
 #include "OpenLF/lightfield/FileHandler.hpp"
 
