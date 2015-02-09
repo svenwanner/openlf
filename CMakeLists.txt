@@ -18,8 +18,11 @@ project (OpenLF)
 set (OpenLF_VERSION_MAJOR 1)
 set (OpenLF_VERSION_MINOR 0)
 
-
-
+# Mac specific Stuff
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+	set(CMAKE_CXX_COMPILER "clang++")
+	set(CMAKE_C_COMPILER "clang")
+endif()
 #--------------------------------------------------------------
 # options
 #--------------------------------------------------------------
