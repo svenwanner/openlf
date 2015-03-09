@@ -546,3 +546,51 @@ void test_lightfield::test_instantiate_Lightfield()
     p = test_result_dir+"4D_wide_rgb_g.png";
     OpenLF::image::io::imsave(p,*test_image);
 }
+
+void test_lightfield::test_image_access(){
+    //File paths
+    const string dir = test_data_dir+"OpenLF_testLF/Buddha/";
+    const string configname_roi = dir+"rgb_roi.cfg";
+    const string configname_normal = dir + "rgb.cfg";
+    
+    //As one can see in this example, there is different ways of loading
+    //and saving Lightfield data
+    
+    //Loading ROI of lightfield to an ImageChannel map
+    map< string,OpenLF::image::ImageChannel> channels;
+    OpenLF::lightfield::Properties properties;
+    // pointer storing the FileHandler instance
+    OpenLF::lightfield::io::DataHandler *dataHandler;
+    // init FileHandler and test if read data works
+    dataHandler = new OpenLF::lightfield::io::FileHandler(configname_roi,&properties);
+    CPPUNIT_ASSERT(dataHandler->readData(channels));
+    string p = test_result_dir+"4D_lukas_roi.png";
+    OpenLF::image::io::imsave(p,channels);
+    //Saving red channel
+    vector<string> keys_to_save = {"r"};
+    p = test_result_dir+"4D_lukas_red.png";
+    OpenLF::image::io::imsave(p,channels,keys_to_save);
+    
+    //Loading Lightfield data to a Lightfield object        
+    OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield_4D();
+    // test open from config-file
+    CPPUNIT_ASSERT( lf ->open(configname_normal));
+    //Saving blue channel
+    OpenLF::image::ImageChannel *blue = NULL;
+    lf->data("b",&blue);
+    p = test_result_dir+"4D_lukas_blue.png";
+    CPPUNIT_ASSERT(OpenLF::image::io::imsave(p,*blue));
+    
+    
+    
+    //Getting single images from the Lightfield object
+    vigra::MultiArrayView<2,float>* fish_mav = new vigra::MultiArrayView<2,float>();
+    lf->getImage(0,2,"r",*fish_mav);
+    OpenLF::image::ImageChannel fish = OpenLF::image::ImageChannel(*fish_mav);
+    vigra::MultiArrayView<2,float>* camel_mav = new vigra::MultiArrayView<2,float>();
+    lf->getImage(3,0,"r",*camel_mav);
+    OpenLF::image::ImageChannel camel = OpenLF::image::ImageChannel(*camel_mav);
+    OpenLF::image::io::imsave(test_result_dir+"fish_r.png",fish);
+    OpenLF::image::io::imsave(test_result_dir+"camel_r.png",camel);
+    
+}

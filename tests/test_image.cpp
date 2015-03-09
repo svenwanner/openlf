@@ -77,7 +77,7 @@ void test_image::test_io() {
     
     // test saving only some channels
     vector<string> keys {"x","y","bw"};
-    CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_save_channel_selection.jpg",channels));
+    CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_save_channel_selection.jpg",channels, keys));
     
     // test if still all channels are present
     CPPUNIT_ASSERT(channels.size()==6);
