@@ -32,6 +32,7 @@ OpenLF::operators::Operator::Operator(std::vector<std::string> inslots, std::vec
 
 OpenLF::operators::Operator::~Operator() 
 {
+    print(1,"Operator::~Operator() called...");
 }
 
 void OpenLF::operators::Operator::clear() 

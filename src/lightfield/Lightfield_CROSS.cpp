@@ -62,7 +62,13 @@ void OpenLF::lightfield::Lightfield_CROSS::getImage(int h, int v, const std::str
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
 float OpenLF::lightfield::Lightfield_CROSS::getLoxel(int h, int v, int x, int y, const std::string channel_name)
-{
+{   
+    if (h!=0 || v!=0 || x!=0 || y!=0) {
+        throw OpenLF_Exception("Lightfield::loxel -> for the lightfield type CROSS h,v,x,y must all be 0!");
+    }
+    if (channel_name =="") {
+        throw OpenLF_Exception("Lightfield::loxel -> ivalid (empty) channel name!");
+    }
     float val = 0;
     
     if(type()==LF_CROSS) {
@@ -79,6 +85,10 @@ view_2D OpenLF::lightfield::Lightfield_CROSS::getVerticalEpiChannel(std::string 
 {
     vigra::MultiArrayView<2,float> tmp;
     
+    if (h!=0) {
+        throw OpenLF_Exception("Lightfield::loxel -> for the lightfield type CROSS h must be 0!");
+    }
+
     if(type()==LF_CROSS) {
         if(x>=0 && x<imgWidth())
             tmp = _getVerticalEpiChannel_CROSS(channel_name, x, focus);
@@ -118,6 +128,10 @@ vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield_CROSS::_getVertica
 */
 vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield_CROSS::getHorizontalEpiChannel(std::string channel_name, int y, int v, int focus)
 {
+    if (v!=0) {
+        throw OpenLF_Exception("Lightfield::loxel -> for the lightfield type CROSS v must be 0!");
+    }
+
     return getHorizontalEpiChannel_parent(channel_name, y, 0, focus);
 }
 

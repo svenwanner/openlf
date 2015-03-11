@@ -5,7 +5,13 @@ add_executable(OpenLF_demo_4DOp
 	${SRCS} ${HDRS})
 target_link_libraries(OpenLF_demo_4DOp libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY})
 
-add_dependencies(OpenLF_demo_4DOp Configure)
+#add_executable(OpenLF_Operator_Gaussian
+	#./demo_4DOperator/Operator_Gaussian.cpp
+	#./demo_4DOperator/Operator_Gaussian.cpp
+	#${SRCS} ${HDRS})
+#target_link_libraries(OpenLF_Operator_Gaussian libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY})
+
+#add_dependencies(OpenLF_Operator_Gaussian Configure)
 
 
 if(WITH_OPENGM)

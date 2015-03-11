@@ -27,7 +27,7 @@
 OpenLF::image::ImageChannel::ImageChannel() {
     print(1,"image::ImageChannel::ImageChannel() called...");
     m_pixel = array_2d();
-    m_external_flag=false;
+   m_external_flag=false;
 }
 
 /*! 
