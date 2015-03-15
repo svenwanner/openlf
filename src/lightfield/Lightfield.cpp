@@ -691,8 +691,8 @@ view_2D OpenLF::lightfield::Lightfield::getHorizontalEpiChannel_parent(std::stri
         
         int offset = (cams_h()-1)*focus;
         vigra::MultiArrayView<1, float> row = m_channels[channel_name].viewToRow(v * imgHeight() + y);
-        shape epi_shape = shape(imgWidth()-(cams_h()-1)*focus,cams_h());
-        strideTag stride = strideTag(1, imgWidth() - focus);
+        shape epi_shape = shape(imgWidth()-(cams_h()-1)*focus,cams_h());//imgWidth()-2*(cams_h()-1)*focus?
+        strideTag stride = strideTag(1, imgWidth() - focus);//-2 x focus?
         return view_2D(epi_shape, stride, row.data() + offset);
         
     } else

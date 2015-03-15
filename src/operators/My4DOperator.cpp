@@ -17,15 +17,17 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "My4DOperator.hpp"
+#include "OpenLF/operators/My4DOperator.hpp"
 
 //My4DOperator::My4DOperator(const My4DOperator& orig) {
 //}
 
-My4DOperator::~My4DOperator() {
+OpenLF::operators::My4DOperator::~My4DOperator() 
+{
+    print(1,"My4DOperator::~My4DOperator() called...");
 }
 
-void My4DOperator::allocate() 
+void OpenLF::operators::My4DOperator::allocate() 
 {
     //==========================================
     // Here you need to allocate channels in the 
@@ -37,7 +39,7 @@ void My4DOperator::allocate()
     lf->allocateChannel("myNewChannel");
 }
 
-void My4DOperator::precompute() 
+void OpenLF::operators::My4DOperator::precompute() 
 {
     //============================================
     // For pre-computation steps on the input data 
@@ -76,7 +78,7 @@ void My4DOperator::precompute()
     //**********************************************************************************
 }
 
-void My4DOperator::compute() 
+void OpenLF::operators::My4DOperator::compute() 
 {
     //============================================
     // This method is the main computation step to
@@ -116,7 +118,7 @@ void My4DOperator::compute()
     //**********************************************************************************
 }
 
-void My4DOperator::postcompute() 
+void OpenLF::operators::My4DOperator::postcompute() 
 {
     //====================================================
     // This method can be used to do some pre-computations

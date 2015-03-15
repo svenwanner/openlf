@@ -19,11 +19,45 @@
 
 #include "OpenLF/lightfield/io.hpp"
 
+/*
+bool load_transposed(std::map< std::string,OpenLF::image::ImageChannel> &channels, std::map< std::string,OpenLF::image::ImageChannel> &channels_transposed) {
+    print(2,"lightfield::io::load_transposed(channels,channels_transposed) called...");
+
+    try {
+        if(info.isGrayscale()) {
+
+        channels_transposed["bw"] = OpenLF::image::ImageChannel();
+	channels_transposed["bw"].init(vigra::Shape2(cams_v*height,cams_h*width));
+        channels_transposed["bw"].data() = vigra::linalg::transpose(channels["bw"].data());	
+
+        //channelMultiArrayView<2, T, StridedArrayTag> vigra::linalg::transpose ( MultiArrayView< 2, T, C > const &  	v)		
+        }
+
+        else if(info.isColor()) {
+
+        channels_transposed["r"] = OpenLF::image::ImageChannel();
+        channels_transposed["r"].init(vigra::Shape2(cams_v*height,cams_h*width)); 
+        channels_transposed["r"].data() = vigra::linalg::transpose(channels["r"].data());
+        channels_transposed["g"] = OpenLF::image::ImageChannel();
+        channels_transposed["g"].init(vigra::Shape2(cams_v*height,cams_h*width)); 
+        channels_transposed["g"].data() = vigra::linalg::transpose(channels["g"].data());
+        channels_transposed["b"] = OpenLF::image::ImageChannel();
+        channels_transposed["b"].init(vigra::Shape2(cams_v*height,cams_h*width)); 
+        channels_transposed["b"].data() = vigra::linalg::transpose(channels["b"].data());
+        }
 
 
+    }
 
-
-    
+    catch(int a) {
+	return false;
+	
+	warning("Exception in lightfield::io::load_transposed...");
+    }
+	    
+    return true;
+}
+*/  
 bool OpenLF::lightfield::io::load_4D_structure( const std::vector<std::string> fname_list, 
                                                 std::map< std::string,OpenLF::image::ImageChannel> &channels, 
                                                 Properties *properties )

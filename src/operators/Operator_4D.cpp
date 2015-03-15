@@ -22,7 +22,9 @@
 //OpenLF::operators::Operator_4D::Operator_4D(const Operator_4D& orig) {
 //}
 
-OpenLF::operators::Operator_4D::~Operator_4D() {
+OpenLF::operators::Operator_4D::~Operator_4D() 
+{
+    print(1,"Operator_4D::~Operator_4D() called...");
 }
 
 void OpenLF::operators::Operator_4D::process() 

@@ -9,6 +9,23 @@
 #define	TEST_OPERATOR_HPP
 
 #include <cppunit/extensions/HelperMacros.h>
+#include "settings.hpp"
+#include "OpenLF/debug.hpp"
+#include "OpenLF/global.hpp"
+#include "OpenLF/image/io.hpp"
+#include "OpenLF/image/imgproc.hpp"
+#include "OpenLF/utils/helpers.hpp"
+#include "OpenLF/lightfield/io.hpp"
+#include "OpenLF/image/Channel.hpp"
+#include "OpenLF/lightfield/Lightfield.hpp"
+#include "OpenLF/lightfield/Lightfield_3D.hpp"
+#include "OpenLF/lightfield/Lightfield_4D.hpp"
+#include "OpenLF/lightfield/Lightfield_CROSS.hpp"
+#include "OpenLF/lightfield/Properties.hpp"
+#include "OpenLF/lightfield/FileHandler.hpp"
+#include "OpenLF/operators/My4DOperator.hpp"
+#include "OpenLF/operators/Operator_4D.hpp"
+#include "OpenLF/operators/Operator.hpp"
 
 class test_operator : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_operator);
@@ -27,6 +44,10 @@ public:
 private:
     void testMethod();
     void testFailedMethod();
+
+    map<string,string> cfgnames;
+    map<string,string> imgnames;
+    map<string,string> fnames;
 };
 
 #endif	/* TEST_OPERATOR_HPP */

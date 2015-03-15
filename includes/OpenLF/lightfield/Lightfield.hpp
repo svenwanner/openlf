@@ -260,7 +260,7 @@ public:
      \param channel_name name of the channel
      \param img reference to MultiArrayView
     */
-    virtual void getImage(int h, int v, const std::string channel_name, vigra::MultiArrayView<2,float> &img) = 0;
+    virtual void getImage(int h, int v, const std::string channel_name, vigra::MultiArrayView<2,float> &img)=0;
     
     //! access a single image of a light field channel
     /*!
@@ -325,7 +325,7 @@ public:
     */
     virtual view_2D getHorizontalEpiChannel(std::string channel_name, int y, int v, int focus)=0;
     
-    //! get a horizontal epi of either gray value or rgb if available
+    //! get a vertical epi of either gray value or rgb if available
     /*!
      \param y fixed row image domain index
      \param v vertical camera index
@@ -340,12 +340,13 @@ public:
      \param channel_name name of the channel to extract the epi from
      \param x fixed column image domain index
      \param h fixed horizontal camera index (default=0)
-     \param focus global shift paramter in pixel (default=0)
+     \param focus global shift parameter in pixel (default=0)
     */
     virtual vigra::MultiArrayView<2,float> getVerticalEpiChannel(std::string channel_name, int x, int h, int focus)=0;
     
 protected:
     std::map<std::string,OpenLF::image::ImageChannel> m_channels;  //!< map to store the light field channels
+    //std::map<std::string,OpenLF::image::ImageChannel> m_channels_transposed;  //!< map to store the light field channels transposed
     std::unique_ptr<OpenLF::lightfield::io::DataHandler> m_dataHandler;   //!< instance of a dataHandler to read data
     OpenLF::lightfield::Properties m_properties;          //!< properties instance to hold all parameters
 

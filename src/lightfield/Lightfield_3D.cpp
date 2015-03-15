@@ -63,6 +63,10 @@ float OpenLF::lightfield::Lightfield_3D::getLoxel(int h, int v, int x, int y, co
 {
     float val = 0;
     
+    if (v!=0) {
+        throw OpenLF_Exception("Lightfield::loxel -> for the lightfield type 3D the parameter v has to be 0!");
+    }
+
     if(type()==LF_3DV) {
         return val;
     }
@@ -88,6 +92,10 @@ float OpenLF::lightfield::Lightfield_3D::getLoxel(int h, int v, int x, int y, co
 */
 view_2D OpenLF::lightfield::Lightfield_3D::getVerticalEpiChannel(std::string channel_name, int x, int h, int focus) 
 {
+    if (h!=0) {
+        throw OpenLF_Exception("Lightfield::loxel -> for the lightfield type 3D the parameter h has to be 0!");
+    }
+
     vigra::MultiArrayView<2,float> tmp;
     tmp = _getVerticalEpiChannel_3D(channel_name, x, focus);
     return tmp;
@@ -96,7 +104,11 @@ view_2D OpenLF::lightfield::Lightfield_3D::getVerticalEpiChannel(std::string cha
 view_2D OpenLF::lightfield::Lightfield_3D::getHorizontalEpiChannel(std::string channel_name, int y, int v, int focus) 
 {
     vigra::MultiArrayView<2,float> tmp;
-    
+
+    if (v!=0) {
+        throw OpenLF_Exception("Lightfield::loxel -> for the lightfield type 3D the parameter v has to be 0!");
+    }
+
     if(type()==LF_3DH) {
         if(y>=0 && y<imgHeight())
             tmp = getHorizontalEpiChannel_parent(channel_name,y,0,focus);

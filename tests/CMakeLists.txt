@@ -1,8 +1,10 @@
 OPTION(BUILD_TEST_IMAGE "Build test_image" ON)
 OPTION(BUILD_TEST_IMGPROC "Build test_imgproc" ON)
 OPTION(BUILD_TEST_CHANNEL "Build test_channel" ON)
+OPTION(BUILD_TEST_CHANNEL_VIEW "Build test_Channel_view" ON)
 OPTION(BUILD_TEST_LIGHTFIELD_IO "Build test_lightfield_io" ON)
 OPTION(BUILD_TEST_LIGHTFIELD "Build test_lightfield" ON)
+OPTION(BUILD_TEST_OPERATOR "Build test_operator" ON)
 
 enable_testing()
 
@@ -69,7 +71,7 @@ endif()
 if(BUILD_TEST_CHANNEL_VIEW)
 	#TEST: test_Channel_view 
 	    add_executable(OpenLF_test_Channel_view
-		./test_Channel_view.cpp
+		./test_Channel_view_run.cpp
 		./test_Channel_view.cpp 
 		${SRCS} ${HDRS})
 	    target_link_libraries(OpenLF_test_Channel_view libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY} )
@@ -78,6 +80,16 @@ if(BUILD_TEST_CHANNEL_VIEW)
 	add_test(OpenLF_test_Channel_view ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_Channel_view)
 endif()
 
+if(BUILD_TEST_OPERATOR)
+	#TEST: test_operator 
+	    add_executable(OpenLF_test_operator
+		./test_operator_run.cpp
+		./test_operator.cpp 
+		${SRCS} ${HDRS})
+	    target_link_libraries(OpenLF_test_operator libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY} )
 
+	add_dependencies(OpenLF_test_operator Configure)
+	add_test(OpenLF_test_operator ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_operator)
+endif()
 
 	

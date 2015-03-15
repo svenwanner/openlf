@@ -20,17 +20,28 @@
 #ifndef MY4DOPERATOR_HPP
 #define	MY4DOPERATOR_HPP
 
+#include "OpenLF/debug.hpp"
+#include "OpenLF/global.hpp"
+#include "OpenLF/lightfield/Lightfield.hpp"
 #include <iostream>
-#include "OpenLF/operators/Operator_4D.hpp"
+#include "Operator_4D.hpp"
+#include "Operator.hpp"
 
-using namespace std;
+//------
+#include "OpenLF/lightfield/io.hpp"
+#include "OpenLF/image/io.hpp"
+//------
 
-class My4DOperator : public OpenLF::operators::Operator_4D {
+//using namespace std;
+namespace OpenLF {
+    namespace operators {
+
+//class My4DOperator : public OpenLF::operators::Operator_4D {
+class My4DOperator : public Operator_4D {
 public:
     My4DOperator(std::vector<std::string> inslots, std::vector<std::string> outslots) : Operator_4D(inslots,outslots) {};
     //My4DOperator(const My4DOperator& orig);
     virtual ~My4DOperator();
-
     
 protected:
     void allocate();
@@ -42,5 +53,6 @@ private:
     
 };
 
+}}
 #endif	/* MY4DOPERATOR_HPP */
 

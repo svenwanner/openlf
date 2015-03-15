@@ -22,6 +22,7 @@
 
 #include "OpenLF/debug.hpp"
 #include "OpenLF/global.hpp"
+#include "OpenLF/lightfield/Lightfield.hpp"
 #include "Operator.hpp"
 
 //------
