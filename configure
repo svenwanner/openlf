@@ -20,6 +20,7 @@ fi
 # Absolute path this script is in, thus /home/user/bin
 SCRIPTPATH=$($DIRNAME "$SCRIPT")
 TESTDATAPATH=$($DIRNAME "$SCRIPT")
+TESTDATA2PATH=$($DIRNAME "$SCRIPT")
 TESTOUTPUTPATH=$($DIRNAME "$SCRIPT")
 SETTINGSPATH=$($DIRNAME "$SCRIPT")
 TESTLFPATH=$($DIRNAME "$SCRIPT")
@@ -36,6 +37,7 @@ TESTLF_CROSS_high=$($DIRNAME "$SCRIPT")
 
 SETTINGSPATH+="/tests/settings.hpp"
 TESTDATAPATH+="/tests/data/"
+TESTDATA2PATH+="/tests/data_2/"
 TESTOUTPUTPATH+="/tests/data/output/"
 
 TESTLFPATH+="/tests/data/test_lf/"
@@ -64,6 +66,7 @@ using namespace std;
 #define	TEST_SETTINGS_H
 
 const string test_data_dir = "$TESTDATAPATH";
+const string test_data2_dir = "$TESTDATA2PATH";
 const string test_result_dir = "$TESTOUTPUTPATH";
 
 const string test_lf_dir = "$TESTLFPATH";
