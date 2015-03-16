@@ -66,6 +66,9 @@ void test_lightfield::setUp() {
     
     cfgnames["4D_high_rgb_h5"] = test_lf_4D_high+"4D_high_rgb_h5.cfg";
     
+    cfgnames["4D_diversity"] = test_data_dir+"OpenLF_testLF/4D/h4_v3_h60_w80/rgb.cfg";
+    cfgnames["4D_diversity_roi"] = test_data_dir+"OpenLF_testLF/4D/h4_v3_h60_w80/rgb_roi.cfg";
+    
     cfgnames["3DH_high_bw"] = test_lf_3DH_high+"bw.cfg";
     cfgnames["3DH_wide_bw"] = test_lf_3DH_wide+"bw.cfg";
     cfgnames["3DH_high_rgb"] = test_lf_3DH_high+"rgb.cfg";
@@ -599,15 +602,15 @@ void test_lightfield::test_epi_handling()
     CPPUNIT_ASSERT(lf->open(cfgnames["3DH_wide_rgb"]));
     
     vigra::MultiArrayView<2,float> epi_3DH_h0 = lf->getHorizontalEpiChannel("r",24,0,0);
-    std::string filename3 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/Epi3DH0.jpg";
+    std::string filename3 = test_data2_dir+"Epi3DH0.jpg";
     OpenLF::image::io::imsave(filename3, epi_3DH_h0);
 
     vigra::MultiArrayView<2,float> epi_3DH_h1 = lf->getHorizontalEpiChannel("r",24,0,1);
-    std::string filename4 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/Epi3DH1.jpg";
+    std::string filename4 = test_data2_dir+"Epi3DH1.jpg";
     OpenLF::image::io::imsave(filename4, epi_3DH_h1);
 
     vigra::MultiArrayView<2,float> epi_3DH_h2 = lf->getHorizontalEpiChannel("r",24,0,2);
-    std::string filename5 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/Epi3DH2.jpg";
+    std::string filename5 = test_data2_dir+"Epi3DH2.jpg";
     OpenLF::image::io::imsave(filename5, epi_3DH_h2);
 
 
@@ -638,8 +641,8 @@ void test_lightfield::test_epi_handling()
         }
     }
 
-    std::string filename1 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/image.jpg";
-    std::string filename2 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/Epi4DH.jpg";
+    std::string filename1 = test_data2_dir+"image.jpg";
+    std::string filename2 = test_data2_dir+"Epi4DH.jpg";
 
     OpenLF::image::io::imsave(filename1, image);
     OpenLF::image::io::imsave(filename2, epi_r_h0["bw"]);
@@ -652,7 +655,7 @@ void test_lightfield::test_epi_handling()
     map<string,OpenLF::image::ImageChannel> image4D;
     OpenLF::image::io::imread(imgnames["4D_wide_rgb"], image4D);
 
-    std::string filename6 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/image4D.jpg";
+    std::string filename6 = test_data2_dir+"image4D.jpg";
     CPPUNIT_ASSERT(OpenLF::image::io::imsave(filename6, image4D));
 
     vigra::MultiArrayView<2,float> epi_h0 = lf->getHorizontalEpiChannel("r",24,0,0);
@@ -660,13 +663,13 @@ void test_lightfield::test_epi_handling()
     vigra::MultiArrayView<2,float> epi_h2 = lf->getHorizontalEpiChannel("r",24,0,2);
     vigra::MultiArrayView<2,float> epi_h3 = lf->getHorizontalEpiChannel("r",24,0,3);
 
-    std::string filename7 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/epi4D_24_0.jpg";
+    std::string filename7 = test_data2_dir+"epi4D_24_0.jpg";
     CPPUNIT_ASSERT(OpenLF::image::io::imsave(filename7, epi_h0));
-    std::string filename8 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/epi4D_24_1.jpg";
+    std::string filename8 = test_data2_dir+"epi4D_24_1.jpg";
     CPPUNIT_ASSERT(OpenLF::image::io::imsave(filename8, epi_h1));
-    std::string filename9 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/epi4D_24_2.jpg";
+    std::string filename9 = test_data2_dir+"epi4D_24_2.jpg";
     CPPUNIT_ASSERT(OpenLF::image::io::imsave(filename9, epi_h2));
-    std::string filename10 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/epi4D_24_3.jpg";
+    std::string filename10 = test_data2_dir+"epi4D_24_3.jpg";
     CPPUNIT_ASSERT(OpenLF::image::io::imsave(filename10, epi_h3));
 
     CPPUNIT_ASSERT(epi_h0.width() == lf->imgWidth());
@@ -685,7 +688,7 @@ void test_lightfield::test_epi_handling()
     CPPUNIT_ASSERT(lf1->open(cfgnames["4D_wide_rgb"]));
     vigra::MultiArrayView<2,float> image1;
     lf1->getImage(1,1,"r",image1);
-    std::string filename11 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/LF4Dimage1.jpg";
+    std::string filename11 = test_data2_dir+"LF4Dimage1.jpg";
     vigra::MultiArrayView<2,float> image1view = image1;
     CPPUNIT_ASSERT(OpenLF::image::io::imsave(filename11, image1view));
  
@@ -718,7 +721,63 @@ void test_lightfield::test_epi_handling()
         }
     }
     
-    std::string filename12 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/LF4DLoxels1.jpg";
+    std::string filename12 = test_data2_dir+"LF4DLoxels1.jpg";
     CPPUNIT_ASSERT(OpenLF::image::io::imsave(filename12, Loxels));
     
+}
+
+void test_lightfield::test_image_access(){
+    //As one can see in this example, there is different ways of loading
+    //and saving Lightfield data
+    
+    //Loading ROI of lightfield to an ImageChannel map
+    map< string,OpenLF::image::ImageChannel> channels;
+    OpenLF::lightfield::Properties properties;
+    // pointer storing the FileHandler instance
+    OpenLF::lightfield::io::DataHandler *dataHandler;
+    // init FileHandler and test if read data works
+    dataHandler = new OpenLF::lightfield::io::FileHandler(cfgnames["4D_diversity_roi"],&properties);
+    CPPUNIT_ASSERT(dataHandler->readData(channels));
+    string p = test_result_dir+"4D_lukas_roi.png";
+    OpenLF::image::io::imsave(p,channels);
+    //Saving red channel
+    vector<string> keys_to_save = {"r"};
+    p = test_result_dir+"4D_lukas_red.png";
+    OpenLF::image::io::imsave(p,channels,keys_to_save);
+    
+    //Loading Lightfield data to a Lightfield object        
+    OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield_4D();
+    // test open from config-file
+    CPPUNIT_ASSERT( lf ->open(cfgnames["4D_diversity"]));
+    //Saving blue channel
+    OpenLF::image::ImageChannel *blue = NULL;
+    lf->data("b",&blue);
+    p = test_result_dir+"4D_lukas_blue.png";
+    CPPUNIT_ASSERT(OpenLF::image::io::imsave(p,*blue));
+    
+    
+    
+    //Getting single images from the Lightfield object
+    vigra::MultiArrayView<2,float>* fish_mav = new vigra::MultiArrayView<2,float>();
+    lf->getImage(0,2,"r",*fish_mav);
+    OpenLF::image::ImageChannel fish = OpenLF::image::ImageChannel(*fish_mav);
+    vigra::MultiArrayView<2,float>* camel_mav = new vigra::MultiArrayView<2,float>();
+    lf->getImage(3,0,"r",*camel_mav);
+    OpenLF::image::ImageChannel camel = OpenLF::image::ImageChannel(*camel_mav);
+    OpenLF::image::io::imsave(test_result_dir+"fish_r.png",fish);
+    OpenLF::image::io::imsave(test_result_dir+"camel_r.png",camel);
+    
+    //Test opening .h5-File
+    const string filename = test_data_dir+"OpenLF_testLF/4D/h4_v3_h60_w80/buddha.h5";
+    // test instancing via the default constructor and open
+    OpenLF::lightfield::Lightfield* lf_h5 = new OpenLF::lightfield::Lightfield_4D();
+    // test open from hdf5
+//    CPPUNIT_ASSERT(lf_h5->open(filename));
+//    // create pointer to a map to keep the addresses of the lf data
+//    map< string,OpenLF::image::ImageChannel> *test_channels = NULL;
+//    // get the pointers to the lf data
+//    lf->data(&test_channels);
+//    CPPUNIT_ASSERT(test_channels!=NULL);
+//    p = test_result_dir+"4D_buddha_h5.png";
+//    CPPUNIT_ASSERT(OpenLF::image::io::imsave(p,*test_channels));  
 }
