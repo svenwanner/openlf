@@ -63,19 +63,31 @@ void OpenLF::lightfield::Lightfield_CROSS::getImage(int h, int v, const std::str
 */
 float OpenLF::lightfield::Lightfield_CROSS::getLoxel(int h, int v, int x, int y, const std::string channel_name)
 {   
-    if (h!=0 || v!=0 || x!=0 || y!=0) {
-        throw OpenLF_Exception("Lightfield::loxel -> for the lightfield type CROSS h,v,x,y must all be 0!");
-    }
-    if (channel_name =="") {
-        throw OpenLF_Exception("Lightfield::loxel -> ivalid (empty) channel name!");
-    }
+    //I added some additional checks that are set in comments at the moment
+    // as I am not sure wether they take to much time.
     float val = 0;
     
+    // check if channel exists
+    //if (m_channels.find(channel_name) == m_channels.end())
+    //    throw OpenLF_Exception("Lightfield::getImage -> channels doesn't exist!");
+    
+    
     if(type()==LF_CROSS) {
+        // check if requested image is in range
+        //if(h<0 || h>=cams_h() || v<0 || v>=cams_v())
+        //    throw OpenLF_Exception("Lightfield::getImage -> out of light field bounds!");
+        try {
+            val = m_channels[channel_name](h*imgWidth()+x,v*imgHeight()+y);
+        }
+        catch(std::exception &e)
+        {
+            e = OpenLF_Exception("Lightfield::getLoxel -> channel access exception!");
+            std::cout << e.what() << std::endl;
+        }
         return val;
     }
     
-    else throw OpenLF_Exception("Lightfield::loxel -> unknown LF_TYPE!");
+    else throw OpenLF_Exception("Lightfield::getLoxel -> unknown LF_TYPE!");
 }
 
 /*!

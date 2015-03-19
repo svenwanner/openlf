@@ -10,6 +10,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+
 class test_Channel_view : public CPPUNIT_NS::TestFixture { 
     CPPUNIT_TEST_SUITE(test_Channel_view); 
 

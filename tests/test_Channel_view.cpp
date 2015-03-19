@@ -8,6 +8,9 @@
 #include "test_Channel_view.hpp" 
 #include "iostream"
 #include "OpenLF/image/Channel.hpp"
+#include "OpenLF/image/io.hpp"
+#include "settings.hpp"
+
 using namespace::std;
 
 
@@ -190,10 +193,17 @@ void test_Channel_view::testMethod() {
     
     OpenLF::image::ImageChannel ic_1(img_channels["r"].shape(), img_channels["r"].data());
     
-    vigra::MultiArray<2,float> MA(vigra::Shape2(10,10),4.0f);
+    vigra::MultiArray<2,float> MA(vigra::Shape2(255,255),4.0f);
+    for (int i=0;i<10;i++){
+        for (int j=0;j<10;j++){
+            MA(i,j)= ((float)i)/255;
+        }
+    }
     vigra::MultiArrayView<2,float> MAV = MA;
     OpenLF::image::ImageChannel fromMA(MA);
     OpenLF::image::ImageChannel fromMAV(MAV);
+    OpenLF::image::io::imsave(test_result_dir+"Channel_MAV.jpg",MAV);
+    OpenLF::image::io::imsave(test_result_dir+"Channel_fromMAV.jpg",fromMAV);
     CPPUNIT_ASSERT(fromMA.sum() == fromMAV.sum());
     
     /* create a deep copy */ 

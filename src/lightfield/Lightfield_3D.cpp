@@ -61,32 +61,93 @@ void OpenLF::lightfield::Lightfield_3D::getImage(int h, int v, const std::string
 */
 float OpenLF::lightfield::Lightfield_3D::getLoxel(int h, int v, int x, int y, const std::string channel_name)
 {
+    //I added some additional checks that are set in comments at the moment
+    // as I am not sure, wether they take to much time.
     float val = 0;
     
-    if (v!=0) {
-        throw OpenLF_Exception("Lightfield::loxel -> for the lightfield type 3D the parameter v has to be 0!");
-    }
-
-    if(type()==LF_3DV) {
-        return val;
-    }
+    // check if channel exists
+    //if (m_channels.find(channel_name) == m_channels.end())
+    //    throw OpenLF_Exception("Lightfield_3D::getImage -> channels doesn't exist!");
     
-    else if(type()==LF_3DH) {
-        
+    if(type()==LF_3DV) {
+        if (h!=0) {
+            throw OpenLF_Exception("Lightfield::getLoxel -> for the lightfield type 3DV the parameter h has to be 0!");
+        }
+        ////check if image is in range
+        //if ( v<0 || v>=cams_v())
+        //    throw OpenLF_Exception("Lightfield::getLoxel -> out of light field bounds!");
         try {
-            val = m_channels[channel_name](h*imgWidth()+x,y);
+            val = m_channels[channel_name](x,v*imgHeight()+y);
         }
         catch(std::exception &e)
         {
-            e = OpenLF_Exception("Lightfield::loxel -> channel access exception!");
+            e = OpenLF_Exception("Lightfield::getLoxel -> channel access exception!");
             std::cout << e.what() << std::endl;
         }
         return val;
     }
     
-    else throw OpenLF_Exception("Lightfield::loxel -> unknown LF_TYPE!");
+    else if(type()==LF_3DH) {
+        if (v!=0) {
+            throw OpenLF_Exception("Lightfield::getLoxel -> for the lightfield type 3DH the parameter v has to be 0!");
+        }
+        // check if requested image is in range
+        //if(h<0 || h>=cams_h())
+        //    throw OpenLF_Exception("Lightfield::getLoxel -> out of light field bounds!");
+
+        try {
+            val = m_channels[channel_name](h*imgWidth()+x,y);
+        }
+        catch(std::exception &e)
+        {
+            e = OpenLF_Exception("Lightfield::getLoxel -> channel access exception!");
+            std::cout << e.what() << std::endl;
+        }
+        return val;
+    }
+    
+    else throw OpenLF_Exception("Lightfield::getLoxel -> unknown LF_TYPE!");
 }
 
+float OpenLF::lightfield::Lightfield_3D::getLoxel(int n, int x, int y, const std::string channel_name){
+    //I added some additional checks that are set in comments at the moment
+    // as I am not sure, wether they take to much time.
+    float val = 0;
+    
+    // check if channel exists
+    //if (m_channels.find(channel_name) == m_channels.end())
+    //    throw OpenLF_Exception("Lightfield_3D::getImage -> channels doesn't exist!");
+    if (type()==LF_3DV){
+//        //check if image is in range
+//        if ( n<0 || n>=cams_v())
+//            throw OpenLF_Exception("Lightfield::getLoxel -> out of light field bounds!");
+        try {
+            val = m_channels[channel_name](x,n*imgHeight()+y);
+        }
+        catch(std::exception &e)
+        {
+            e = OpenLF_Exception("Lightfield::getLoxel -> channel access exception!");
+            std::cout << e.what() << std::endl;
+        }
+        return val;   
+    }
+    else if(type()==LF_3DH) {
+        ////check if image is in range
+        //if ( n<0 || n>=cams_h())
+        //    throw OpenLF_Exception("Lightfield::getLoxel -> out of light field bounds!");
+        try {
+            val = m_channels[channel_name](n*imgWidth()+x,y);
+        }
+        catch(std::exception &e)
+        {
+            e = OpenLF_Exception("Lightfield::getLoxel -> channel access exception!");
+            std::cout << e.what() << std::endl;
+        }
+        return val;
+    }
+    
+    else throw OpenLF_Exception("Lightfield::getLoxel -> unknown LF_TYPE!");
+}
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */

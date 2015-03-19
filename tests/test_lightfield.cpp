@@ -555,6 +555,36 @@ void test_lightfield::test_instantiate_Lightfield()
     OpenLF::image::io::imsave(p,*test_image);
 }
 
+void test_lightfield::test_multipleWaysOfInstantiating(){
+    //As one can see in this example, there is different ways of loading
+    //and saving Lightfield data
+    
+    //Loading ROI of lightfield to an ImageChannel map
+    map< string,OpenLF::image::ImageChannel> channels;
+    OpenLF::lightfield::Properties properties;
+    // pointer storing the FileHandler instance
+    OpenLF::lightfield::io::DataHandler *dataHandler;
+    // init FileHandler and test if read data works
+    dataHandler = new OpenLF::lightfield::io::FileHandler(cfgnames["4D_diversity_roi"],&properties);
+    CPPUNIT_ASSERT(dataHandler->readData(channels));
+    string p = test_result_dir+"4D_div_roi.png";
+    OpenLF::image::io::imsave(p,channels);
+    //Saving red channel
+    vector<string> keys_to_save = {"r"};
+    p = test_result_dir+"4D_div_red.png";
+    OpenLF::image::io::imsave(p,channels,keys_to_save);
+    
+    //Loading Lightfield data to a Lightfield object        
+    OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield_4D();
+    // test open from config-file
+    CPPUNIT_ASSERT( lf ->open(cfgnames["4D_diversity"]));
+    //Saving blue channel
+    OpenLF::image::ImageChannel *blue = NULL;
+    lf->data("b",&blue);
+    p = test_result_dir+"4D_div_blue.png";
+    CPPUNIT_ASSERT(OpenLF::image::io::imsave(p,*blue));
+}
+
 void test_lightfield::test_epi_handling()
 {
     //**************************************************
@@ -727,57 +757,24 @@ void test_lightfield::test_epi_handling()
 }
 
 void test_lightfield::test_image_access(){
-    //As one can see in this example, there is different ways of loading
-    //and saving Lightfield data
+    /*
+     * This test is testing the getImage() functions of the Lightfield classes.
+     */
     
-    //Loading ROI of lightfield to an ImageChannel map
-    map< string,OpenLF::image::ImageChannel> channels;
-    OpenLF::lightfield::Properties properties;
-    // pointer storing the FileHandler instance
-    OpenLF::lightfield::io::DataHandler *dataHandler;
-    // init FileHandler and test if read data works
-    dataHandler = new OpenLF::lightfield::io::FileHandler(cfgnames["4D_diversity_roi"],&properties);
-    CPPUNIT_ASSERT(dataHandler->readData(channels));
-    string p = test_result_dir+"4D_lukas_roi.png";
-    OpenLF::image::io::imsave(p,channels);
-    //Saving red channel
-    vector<string> keys_to_save = {"r"};
-    p = test_result_dir+"4D_lukas_red.png";
-    OpenLF::image::io::imsave(p,channels,keys_to_save);
+    //==========================================================================
+    // test 4D 
+    //==========================================================================
     
     //Loading Lightfield data to a Lightfield object        
     OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield_4D();
     // test open from config-file
     CPPUNIT_ASSERT( lf ->open(cfgnames["4D_diversity"]));
-    //Saving blue channel
-    OpenLF::image::ImageChannel *blue = NULL;
-    lf->data("b",&blue);
-    p = test_result_dir+"4D_lukas_blue.png";
-    CPPUNIT_ASSERT(OpenLF::image::io::imsave(p,*blue));
-    
-    
-    
-    //Getting single images from the Lightfield object
     vigra::MultiArrayView<2,float>* fish_mav = new vigra::MultiArrayView<2,float>();
-    lf->getImage(0,2,"r",*fish_mav);
+    lf->getImage(0,2,"b",*fish_mav);
     OpenLF::image::ImageChannel fish = OpenLF::image::ImageChannel(*fish_mav);
     vigra::MultiArrayView<2,float>* camel_mav = new vigra::MultiArrayView<2,float>();
     lf->getImage(3,0,"r",*camel_mav);
     OpenLF::image::ImageChannel camel = OpenLF::image::ImageChannel(*camel_mav);
-    OpenLF::image::io::imsave(test_result_dir+"fish_r.png",fish);
-    OpenLF::image::io::imsave(test_result_dir+"camel_r.png",camel);
-    
-    //Test opening .h5-File
-    const string filename = test_data_dir+"OpenLF_testLF/4D/h4_v3_h60_w80/buddha.h5";
-    // test instancing via the default constructor and open
-    OpenLF::lightfield::Lightfield* lf_h5 = new OpenLF::lightfield::Lightfield_4D();
-    // test open from hdf5
-//    CPPUNIT_ASSERT(lf_h5->open(filename));
-//    // create pointer to a map to keep the addresses of the lf data
-//    map< string,OpenLF::image::ImageChannel> *test_channels = NULL;
-//    // get the pointers to the lf data
-//    lf->data(&test_channels);
-//    CPPUNIT_ASSERT(test_channels!=NULL);
-//    p = test_result_dir+"4D_buddha_h5.png";
-//    CPPUNIT_ASSERT(OpenLF::image::io::imsave(p,*test_channels));  
+    OpenLF::image::io::imsave(test_result_dir+"fish_b.png",*fish_mav);
+    OpenLF::image::io::imsave(test_result_dir+"camel_r.png",*camel_mav);
 }
