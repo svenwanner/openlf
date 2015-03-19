@@ -769,10 +769,21 @@ void test_lightfield::test_image_access(){
     OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield_4D();
     // test open from config-file
     CPPUNIT_ASSERT( lf ->open(cfgnames["4D_diversity"]));
-    vigra::MultiArrayView<2,float>* fish_mav = new vigra::MultiArrayView<2,float>();
-    lf->getImage(0,2,"b",*fish_mav);
-    vigra::MultiArrayView<2,float>* camel_mav = new vigra::MultiArrayView<2,float>();
-    lf->getImage(3,0,"r",*camel_mav);
-    OpenLF::image::io::imsave(test_result_dir+"fish_mav_b.png",*fish_mav);
-    OpenLF::image::io::imsave(test_result_dir+"camel_mav_r.png",*camel_mav);
+    //Testing getImage to MultiArrayView
+    vigra::MultiArrayView<2,float> fish_mav = vigra::MultiArrayView<2,float>();
+    lf->getImage(0,2,"b",fish_mav);
+    OpenLF::image::io::imsave(test_result_dir+"4D_getImageFish_mav_b.jpg",fish_mav);
+    
+    //Testing getImage() to MultiArray
+    vigra::MultiArray<2,float> camel_ma = vigra::MultiArray<2,float>();
+    lf->getImage(3,0,camel_ma);
+    string filename = test_result_dir+"camel_ma.jpg";
+    vigra::exportImage(camel_ma,vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=75"));
+    OpenLF::image::ImageChannel camel_fromMA(camel_ma);
+    OpenLF::image::io::imsave(test_result_dir+"camel_ic_fromMA.jpg",camel_fromMA);
+    
+    // Generating ImageChannel from the MultiArrayView
+    // This produces very weird output. I don't understand this bug so far.
+    OpenLF::image::ImageChannel fish_ic(fish_mav);
+    OpenLF::image::io::imsave(test_result_dir+"fish_ic_b.jpg",fish_ic);
 }

@@ -193,8 +193,12 @@ void test_Channel_view::testMethod() {
     
     OpenLF::image::ImageChannel ic_1(img_channels["r"].shape(), img_channels["r"].data());
     
-    //Creating a black to white gradient
+    map< std::string,OpenLF::image::ImageChannel > tmp2;
+    OpenLF::image::io::imread(test_data_dir+"OpenLF_testLF/4D/h4_v3_h60_w80/rgb/0009.jpg",tmp2);
+    OpenLF::image::ImageChannel fish = tmp2["r"];
     vigra::MultiArray<2,float> MA(vigra::Shape2(255,255),4.0f);
+    
+    //Creating a black to white gradient
     for (int i=0;i<255;i++){
         for (int j=0;j<255;j++){
             MA(i,j)= ((float)i);
@@ -205,14 +209,22 @@ void test_Channel_view::testMethod() {
             MA(i+115,j+115)= 1.0f; 
         }
     }
+
+    
+
     vigra::MultiArrayView<2,float> MAV = MA;
+    vigra::MultiArrayView<2,float> fishMAV = *fish.image();
     //Creating ImageCHannel from MultiArray and MultiArrayView
     OpenLF::image::ImageChannel fromMA(MA);
     OpenLF::image::ImageChannel fromMAV(MAV);
+    OpenLF::image::ImageChannel fromFishMAV(fishMAV);
     OpenLF::image::io::imsave(test_result_dir+"Channel_MAV.jpg",MAV);
     OpenLF::image::io::imsave(test_result_dir+"Channel_fromMAV.jpg",fromMAV);
     OpenLF::image::io::imsave(test_result_dir+"Channel_MA.jpg",MA);
     OpenLF::image::io::imsave(test_result_dir+"Channel_fromMA.jpg",MA);
+    OpenLF::image::io::imsave(test_result_dir+"Channel_fish.jpg",fish);
+    OpenLF::image::io::imsave(test_result_dir+"Channel_fishMAV.jpg",fishMAV);
+    OpenLF::image::io::imsave(test_result_dir+"Channel_fromFishMAV.jpg",fromFishMAV);
     CPPUNIT_ASSERT(fromMA.sum() == fromMAV.sum());
     
     /* create a deep copy */ 
