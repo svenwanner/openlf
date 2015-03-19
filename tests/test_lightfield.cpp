@@ -771,10 +771,8 @@ void test_lightfield::test_image_access(){
     CPPUNIT_ASSERT( lf ->open(cfgnames["4D_diversity"]));
     vigra::MultiArrayView<2,float>* fish_mav = new vigra::MultiArrayView<2,float>();
     lf->getImage(0,2,"b",*fish_mav);
-    OpenLF::image::ImageChannel fish = OpenLF::image::ImageChannel(*fish_mav);
     vigra::MultiArrayView<2,float>* camel_mav = new vigra::MultiArrayView<2,float>();
     lf->getImage(3,0,"r",*camel_mav);
-    OpenLF::image::ImageChannel camel = OpenLF::image::ImageChannel(*camel_mav);
-    OpenLF::image::io::imsave(test_result_dir+"fish_b.png",*fish_mav);
-    OpenLF::image::io::imsave(test_result_dir+"camel_r.png",*camel_mav);
+    OpenLF::image::io::imsave(test_result_dir+"fish_mav_b.png",*fish_mav);
+    OpenLF::image::io::imsave(test_result_dir+"camel_mav_r.png",*camel_mav);
 }

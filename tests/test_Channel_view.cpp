@@ -193,17 +193,26 @@ void test_Channel_view::testMethod() {
     
     OpenLF::image::ImageChannel ic_1(img_channels["r"].shape(), img_channels["r"].data());
     
+    //Creating a black to white gradient
     vigra::MultiArray<2,float> MA(vigra::Shape2(255,255),4.0f);
-    for (int i=0;i<10;i++){
+    for (int i=0;i<255;i++){
+        for (int j=0;j<255;j++){
+            MA(i,j)= ((float)i);
+        }
+    }
+    for (int i =0; i<10;i++){
         for (int j=0;j<10;j++){
-            MA(i,j)= ((float)i)/255;
+            MA(i+115,j+115)= 1.0f; 
         }
     }
     vigra::MultiArrayView<2,float> MAV = MA;
+    //Creating ImageCHannel from MultiArray and MultiArrayView
     OpenLF::image::ImageChannel fromMA(MA);
     OpenLF::image::ImageChannel fromMAV(MAV);
     OpenLF::image::io::imsave(test_result_dir+"Channel_MAV.jpg",MAV);
     OpenLF::image::io::imsave(test_result_dir+"Channel_fromMAV.jpg",fromMAV);
+    OpenLF::image::io::imsave(test_result_dir+"Channel_MA.jpg",MA);
+    OpenLF::image::io::imsave(test_result_dir+"Channel_fromMA.jpg",MA);
     CPPUNIT_ASSERT(fromMA.sum() == fromMAV.sum());
     
     /* create a deep copy */ 
