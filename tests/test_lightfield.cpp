@@ -495,6 +495,55 @@ void test_lightfield::test_loxel_access()
     lf->getLoxel(3,2,31,36,chls,rgb);
     CPPUNIT_ASSERT(rgb[0]*255==49);
     CPPUNIT_ASSERT(rgb[1]*255==11);
+    
+    
+    //Testing 3D_horizontal
+    OpenLF::lightfield::Lightfield_3D* lf3D = new OpenLF::lightfield::Lightfield_3D();
+    CPPUNIT_ASSERT(lf3D->open(cfgnames["3DH_wide_rgb"]));
+    CPPUNIT_ASSERT(lf3D->type()==LF_3DH);
+    
+    //4 arguments
+    r = lf3D->getLoxel(5,0,21,25,"r");
+    g = lf3D->getLoxel(5,0,21,25,"g");
+    b = lf3D->getLoxel(5,0,21,25,"b");
+                        
+    CPPUNIT_ASSERT(r*255==93);
+    CPPUNIT_ASSERT(g*255==56);
+    CPPUNIT_ASSERT(b*255==25);
+    
+    //3 arguments
+    r = lf3D->getLoxel(5,21,25,"r");
+    g = lf3D->getLoxel(5,21,25,"g");
+    b = lf3D->getLoxel(5,21,25,"b");
+                        
+    CPPUNIT_ASSERT(r*255==93);
+    CPPUNIT_ASSERT(g*255==56);
+    CPPUNIT_ASSERT(b*255==25);
+    
+    
+    // Testing 3D_vertical
+    OpenLF::lightfield::Lightfield_3D* lf3DV =new OpenLF::lightfield::Lightfield_3D();
+    CPPUNIT_ASSERT(lf3DV->open(cfgnames["3DV_high_rgb"]));
+    CPPUNIT_ASSERT(lf3DV->type()==LF_3DV);
+    
+    //4 arguments
+    r = lf3DV->getLoxel(0,3,0,0,"r");
+    g = lf3DV->getLoxel(0,3,0,0,"g");
+    b = lf3DV->getLoxel(0,3,0,0,"b");
+    
+    CPPUNIT_ASSERT(r*255==47);
+    CPPUNIT_ASSERT(g*255==56);
+    CPPUNIT_ASSERT(b*255==20);
+    
+    //3 arguments
+    r = lf3DV->getLoxel(3,0,0,"r");
+    g = lf3DV->getLoxel(3,0,0,"g");
+    b = lf3DV->getLoxel(3,0,0,"b");
+    
+    CPPUNIT_ASSERT(r*255==47);
+    CPPUNIT_ASSERT(g*255==56);
+    CPPUNIT_ASSERT(b*255==20);
+    
 }
 
 

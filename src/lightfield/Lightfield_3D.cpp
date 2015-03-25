@@ -69,7 +69,7 @@ float OpenLF::lightfield::Lightfield_3D::getLoxel(int h, int v, int x, int y, co
     //if (m_channels.find(channel_name) == m_channels.end())
     //    throw OpenLF_Exception("Lightfield_3D::getImage -> channels doesn't exist!");
     
-    if(type()==LF_3DV) {
+    if(this->type()==LF_3DV) {
         if (h!=0) {
             throw OpenLF_Exception("Lightfield::getLoxel -> for the lightfield type 3DV the parameter h has to be 0!");
         }
@@ -87,12 +87,12 @@ float OpenLF::lightfield::Lightfield_3D::getLoxel(int h, int v, int x, int y, co
         return val;
     }
     
-    else if(type()==LF_3DH) {
+    else if(this->type()==LF_3DH) {
         if (v!=0) {
             throw OpenLF_Exception("Lightfield::getLoxel -> for the lightfield type 3DH the parameter v has to be 0!");
         }
         // check if requested image is in range
-        //if(h<0 || h>=cams_h())
+        //if(h<0 || h>=cams_h())    
         //    throw OpenLF_Exception("Lightfield::getLoxel -> out of light field bounds!");
 
         try {
@@ -106,7 +106,7 @@ float OpenLF::lightfield::Lightfield_3D::getLoxel(int h, int v, int x, int y, co
         return val;
     }
     
-    else throw OpenLF_Exception("Lightfield::getLoxel -> unknown LF_TYPE!");
+    else throw OpenLF_Exception("Lightfield_3D::getLoxel -> unknown LF_TYPE!");
 }
 
 float OpenLF::lightfield::Lightfield_3D::getLoxel(int n, int x, int y, const std::string channel_name){
