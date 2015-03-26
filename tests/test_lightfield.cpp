@@ -526,37 +526,37 @@ void test_lightfield::test_loxel_access()
     CPPUNIT_ASSERT(lf3DV->open(cfgnames["3DV_high_rgb"]));
     CPPUNIT_ASSERT(lf3DV->type()==LF_3DV);
     
-    //Throwing SegFault over here, don't understand why
-    //4 arguments
-//    r = lf3DV->getLoxel(0,1,0,0,"r");
-//    g = lf3DV->getLoxel(0,1,0,0,"g");
-//    b = lf3DV->getLoxel(0,1,0,0,"b");
-//
-//    CPPUNIT_ASSERT(r*255==47);
-//    CPPUNIT_ASSERT(g*255==56);
-//    CPPUNIT_ASSERT(b*255==20);
-//    
-//    //3 arguments
-//    r = lf3DV->getLoxel(3,0,0,"r");
-//    g = lf3DV->getLoxel(3,0,0,"g");
-//    b = lf3DV->getLoxel(3,0,0,"b");
-//    
-//    CPPUNIT_ASSERT(r*255==47);
-//    CPPUNIT_ASSERT(g*255==56);
-//    CPPUNIT_ASSERT(b*255==20);
-//    
+
+    // 4 arguments
+    r = lf3DV->getLoxel(0,3,0,0,"r");
+    g = lf3DV->getLoxel(0,3,0,0,"g");
+    b = lf3DV->getLoxel(0,3,0,0,"b");
+
+    CPPUNIT_ASSERT(r*255==47);
+    CPPUNIT_ASSERT(g*255==56);
+    CPPUNIT_ASSERT(b*255==20);
+    
+    //3 arguments
+    r = lf3DV->getLoxel(3,0,0,"r");
+    g = lf3DV->getLoxel(3,0,0,"g");
+    b = lf3DV->getLoxel(3,0,0,"b");
+    
+    CPPUNIT_ASSERT(r*255==47);
+    CPPUNIT_ASSERT(g*255==56);
+    CPPUNIT_ASSERT(b*255==20);
+    
     //Testing CROSS
     OpenLF::lightfield::Lightfield* lfc = new OpenLF::lightfield::Lightfield_CROSS();
     CPPUNIT_ASSERT(lfc->open(cfgnames["CROSS_wide_rgb"]));
     CPPUNIT_ASSERT(lfc->type()==LF_CROSS);
     
-//    r = lfc->getLoxel(0,0,0,0,"r");
-//    g = lfc->getLoxel(0,0,0,0,"g");
-//    b = lfc->getLoxel(0,0,0,0,"b");
-//    
-//    CPPUNIT_ASSERT(r*255==0);
-//    CPPUNIT_ASSERT(g*255==0);
-//    CPPUNIT_ASSERT(b*255==0);
+    r = lfc->getLoxel(0,0,0,0,"r");
+    g = lfc->getLoxel(0,0,0,0,"g");
+    b = lfc->getLoxel(0,0,0,0,"b");
+    
+    CPPUNIT_ASSERT(r*255==0);
+    CPPUNIT_ASSERT(g*255==0);
+    CPPUNIT_ASSERT(b*255==0);
     
     r = lfc->getLoxel(3,0,27,10,"r");
     g = lfc->getLoxel(3,0,27,10,"g");
@@ -573,9 +573,6 @@ void test_lightfield::test_loxel_access()
     CPPUNIT_ASSERT(r*255==104);
     CPPUNIT_ASSERT(g*255==75);
     CPPUNIT_ASSERT(b*255==45);
-    
-    
-    
 }
 
 
