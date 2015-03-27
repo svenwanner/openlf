@@ -84,7 +84,7 @@ float OpenLF::lightfield::Lightfield_CROSS::getLoxel(int h, int v, int x, int y,
             }
         } else if(h==0){
             try {
-                val = m_channels[channel_name](v*imgHeight()+y,imgHeight()+x);
+                val = m_channels[channel_name](v*imgHeight()+y,imgHeight()+imgWidth()-x);
             }
             catch(std::exception &e){
                 e = OpenLF_Exception("Lightfield::getLoxel -> channel access exception!");
