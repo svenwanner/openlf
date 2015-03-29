@@ -521,29 +521,29 @@ void test_lightfield::test_loxel_access()
     CPPUNIT_ASSERT(b*255==25);
     
     
-//    // Testing 3D_vertical
-//    OpenLF::lightfield::Lightfield_3D* lf3DV =new OpenLF::lightfield::Lightfield_3D();
-//    CPPUNIT_ASSERT(lf3DV->open(cfgnames["3DV_high_rgb"]));
-//    CPPUNIT_ASSERT(lf3DV->type()==LF_3DV);
-//    
-//
-//    // 4 arguments
-//    r = lf3DV->getLoxel(0,3,0,0,"r");
-//    g = lf3DV->getLoxel(0,3,0,0,"g");
-//    b = lf3DV->getLoxel(0,3,0,0,"b");
-//
-//    CPPUNIT_ASSERT(r*255==47);
-//    CPPUNIT_ASSERT(g*255==56);
-//    CPPUNIT_ASSERT(b*255==20);
-//    
-//    //3 arguments
-//    r = lf3DV->getLoxel(3,0,0,"r");
-//    g = lf3DV->getLoxel(3,0,0,"g");
-//    b = lf3DV->getLoxel(3,0,0,"b");
-//    
-//    CPPUNIT_ASSERT(r*255==47);
-//    CPPUNIT_ASSERT(g*255==56);
-//    CPPUNIT_ASSERT(b*255==20);
+    // Testing 3D_vertical
+    OpenLF::lightfield::Lightfield_3D* lf3DV =new OpenLF::lightfield::Lightfield_3D();
+    CPPUNIT_ASSERT(lf3DV->open(cfgnames["3DV_high_rgb"]));
+    CPPUNIT_ASSERT(lf3DV->type()==LF_3DV);
+    
+
+    // 4 arguments
+    r = lf3DV->getLoxel(0,3,0,0,"r");
+    g = lf3DV->getLoxel(0,3,0,0,"g");
+    b = lf3DV->getLoxel(0,3,0,0,"b");
+
+    CPPUNIT_ASSERT(r*255==47);
+    CPPUNIT_ASSERT(g*255==56);
+    CPPUNIT_ASSERT(b*255==20);
+    
+    //3 arguments
+    r = lf3DV->getLoxel(6,23,27,"r");
+    g = lf3DV->getLoxel(6,23,27,"g");
+    b = lf3DV->getLoxel(6,23,27,"b");
+    
+    CPPUNIT_ASSERT(r*255==114);
+    CPPUNIT_ASSERT(g*255==89);
+    CPPUNIT_ASSERT(b*255==56);
     
     //Testing CROSS
     OpenLF::lightfield::Lightfield* lfc = new OpenLF::lightfield::Lightfield_CROSS();
@@ -565,6 +565,16 @@ void test_lightfield::test_loxel_access()
     CPPUNIT_ASSERT(r*255==104);
     CPPUNIT_ASSERT(g*255==75);
     CPPUNIT_ASSERT(b*255==45);
+    
+    r = lfc->getLoxel(0,1,11,3,"r");
+    g = lfc->getLoxel(0,1,11,3,"g");
+    b = lfc->getLoxel(0,1,11,3,"b");
+    
+    CPPUNIT_ASSERT(r*255==63);
+    CPPUNIT_ASSERT(g*255==70);
+    CPPUNIT_ASSERT(b*255==22);
+    
+    
 }
 
 

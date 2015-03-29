@@ -77,7 +77,7 @@ float OpenLF::lightfield::Lightfield_3D::getLoxel(int h, int v, int x, int y, co
         //if ( v<0 || v>=cams_v())
         //    throw OpenLF_Exception("Lightfield::getLoxel -> out of light field bounds!");
         try {
-            val = m_channels[channel_name](v*imgHeight()+y,imgWidth()-x);
+            val = m_channels[channel_name](v*imgHeight()+y,x);
         }
         catch(std::exception &e)
         {
@@ -122,7 +122,7 @@ float OpenLF::lightfield::Lightfield_3D::getLoxel(int n, int x, int y, const std
 //        if ( n<0 || n>=cams_v())
 //            throw OpenLF_Exception("Lightfield::getLoxel -> out of light field bounds!");
         try {
-            val = m_channels[channel_name](x,n*imgHeight()+y);
+            val = m_channels[channel_name](n*imgHeight()+y,x);
         }
         catch(std::exception &e)
         {
