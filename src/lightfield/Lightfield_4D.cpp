@@ -58,21 +58,30 @@ void OpenLF::lightfield::Lightfield_4D::getImage(int h, int v, const std::string
 */
 float OpenLF::lightfield::Lightfield_4D::getLoxel(int h, int v, int x, int y, const std::string channel_name)
 {
+    //I added some additional checks that are set in comments at the moment
+    // as I am not sure, wether they take to much time.
+    
+    // check if channel exists
+    //if (m_channels.find(channel_name) == m_channels.end())
+    //    throw OpenLF_Exception("Lightfield_4D::getLoxel -> channels doesn't exist!");
     float val = 0;
     
     if(type()==LF_4D) {
+        // check if requested image is in range
+        //if(h<0 || h>=cams_h() || v<0 || v>=cams_v())
+        //    throw OpenLF_Exception("Lightfield_4D::getLoxel -> out of light field bounds!");
         
         try {
             val = m_channels[channel_name](h*imgWidth()+x,v*imgHeight()+y);
         }
         catch(std::exception &e)
         {
-            e = OpenLF_Exception("Lightfield::loxel -> channel access exception!");
+            e = OpenLF_Exception("Lightfield_4D::getLoxel -> channel access exception!");
             std::cout << e.what() << std::endl;
         }
         return val;
     }
-    else throw OpenLF_Exception("Lightfield::loxel -> unknown LF_TYPE!");
+    else throw OpenLF_Exception("Lightfield_4D::getLoxel -> unknown LF_TYPE!");
 }
 
 /*!

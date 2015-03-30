@@ -495,6 +495,86 @@ void test_lightfield::test_loxel_access()
     lf->getLoxel(3,2,31,36,chls,rgb);
     CPPUNIT_ASSERT(rgb[0]*255==49);
     CPPUNIT_ASSERT(rgb[1]*255==11);
+    
+    
+    //Testing 3D_horizontal
+    OpenLF::lightfield::Lightfield_3D* lf3D = new OpenLF::lightfield::Lightfield_3D();
+    CPPUNIT_ASSERT(lf3D->open(cfgnames["3DH_wide_rgb"]));
+    CPPUNIT_ASSERT(lf3D->type()==LF_3DH);
+    
+    //4 arguments
+    r = lf3D->getLoxel(5,0,21,25,"r");
+    g = lf3D->getLoxel(5,0,21,25,"g");
+    b = lf3D->getLoxel(5,0,21,25,"b");
+                        
+    CPPUNIT_ASSERT(r*255==93);
+    CPPUNIT_ASSERT(g*255==56);
+    CPPUNIT_ASSERT(b*255==25);
+    
+    //3 arguments
+    r = lf3D->getLoxel(5,21,25,"r");
+    g = lf3D->getLoxel(5,21,25,"g");
+    b = lf3D->getLoxel(5,21,25,"b");
+                        
+    CPPUNIT_ASSERT(r*255==93);
+    CPPUNIT_ASSERT(g*255==56);
+    CPPUNIT_ASSERT(b*255==25);
+    
+    
+    // Testing 3D_vertical
+    OpenLF::lightfield::Lightfield_3D* lf3DV =new OpenLF::lightfield::Lightfield_3D();
+    CPPUNIT_ASSERT(lf3DV->open(cfgnames["3DV_high_rgb"]));
+    CPPUNIT_ASSERT(lf3DV->type()==LF_3DV);
+    
+
+    // 4 arguments
+    r = lf3DV->getLoxel(0,3,0,0,"r");
+    g = lf3DV->getLoxel(0,3,0,0,"g");
+    b = lf3DV->getLoxel(0,3,0,0,"b");
+
+    CPPUNIT_ASSERT(r*255==47);
+    CPPUNIT_ASSERT(g*255==56);
+    CPPUNIT_ASSERT(b*255==20);
+    
+    //3 arguments
+    r = lf3DV->getLoxel(6,23,27,"r");
+    g = lf3DV->getLoxel(6,23,27,"g");
+    b = lf3DV->getLoxel(6,23,27,"b");
+    
+    CPPUNIT_ASSERT(r*255==114);
+    CPPUNIT_ASSERT(g*255==89);
+    CPPUNIT_ASSERT(b*255==56);
+    
+    //Testing CROSS
+    OpenLF::lightfield::Lightfield* lfc = new OpenLF::lightfield::Lightfield_CROSS();
+    CPPUNIT_ASSERT(lfc->open(cfgnames["CROSS_wide_rgb"]));
+    CPPUNIT_ASSERT(lfc->type()==LF_CROSS);
+    
+    r = lfc->getLoxel(3,0,27,10,"r");
+    g = lfc->getLoxel(3,0,27,10,"g");
+    b = lfc->getLoxel(3,0,27,10,"b");
+    
+    CPPUNIT_ASSERT(r*255==104);
+    CPPUNIT_ASSERT(g*255==75);
+    CPPUNIT_ASSERT(b*255==45);
+    
+    r = lfc->getLoxel(0,2,27,10,"r");
+    g = lfc->getLoxel(0,2,27,10,"g");
+    b = lfc->getLoxel(0,2,27,10,"b");
+    
+    CPPUNIT_ASSERT(r*255==104);
+    CPPUNIT_ASSERT(g*255==75);
+    CPPUNIT_ASSERT(b*255==45);
+    
+    r = lfc->getLoxel(0,1,11,3,"r");
+    g = lfc->getLoxel(0,1,11,3,"g");
+    b = lfc->getLoxel(0,1,11,3,"b");
+    
+    CPPUNIT_ASSERT(r*255==63);
+    CPPUNIT_ASSERT(g*255==70);
+    CPPUNIT_ASSERT(b*255==22);
+    
+    
 }
 
 
@@ -553,6 +633,36 @@ void test_lightfield::test_instantiate_Lightfield()
     OpenLF::image::io::imsave(p,*test_channels);
     p = test_result_dir+"4D_wide_rgb_g.png";
     OpenLF::image::io::imsave(p,*test_image);
+}
+
+void test_lightfield::test_multipleWaysOfInstantiating(){
+    //As one can see in this example, there is different ways of loading
+    //and saving Lightfield data
+    
+    //Loading ROI of lightfield to an ImageChannel map
+    map< string,OpenLF::image::ImageChannel> channels;
+    OpenLF::lightfield::Properties properties;
+    // pointer storing the FileHandler instance
+    OpenLF::lightfield::io::DataHandler *dataHandler;
+    // init FileHandler and test if read data works
+    dataHandler = new OpenLF::lightfield::io::FileHandler(cfgnames["4D_diversity_roi"],&properties);
+    CPPUNIT_ASSERT(dataHandler->readData(channels));
+    string p = test_result_dir+"4D_div_roi.png";
+    OpenLF::image::io::imsave(p,channels);
+    //Saving red channel
+    vector<string> keys_to_save = {"r"};
+    p = test_result_dir+"4D_div_red.png";
+    OpenLF::image::io::imsave(p,channels,keys_to_save);
+    
+    //Loading Lightfield data to a Lightfield object        
+    OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield_4D();
+    // test open from config-file
+    CPPUNIT_ASSERT( lf ->open(cfgnames["4D_diversity"]));
+    //Saving blue channel
+    OpenLF::image::ImageChannel *blue = NULL;
+    lf->data("b",&blue);
+    p = test_result_dir+"4D_div_blue.png";
+    CPPUNIT_ASSERT(OpenLF::image::io::imsave(p,*blue));
 }
 
 void test_lightfield::test_epi_handling()
@@ -727,57 +837,42 @@ void test_lightfield::test_epi_handling()
 }
 
 void test_lightfield::test_image_access(){
-    //As one can see in this example, there is different ways of loading
-    //and saving Lightfield data
+    /*
+     * This test is testing the getImage() functions of the Lightfield classes.
+     */
     
-    //Loading ROI of lightfield to an ImageChannel map
-    map< string,OpenLF::image::ImageChannel> channels;
-    OpenLF::lightfield::Properties properties;
-    // pointer storing the FileHandler instance
-    OpenLF::lightfield::io::DataHandler *dataHandler;
-    // init FileHandler and test if read data works
-    dataHandler = new OpenLF::lightfield::io::FileHandler(cfgnames["4D_diversity_roi"],&properties);
-    CPPUNIT_ASSERT(dataHandler->readData(channels));
-    string p = test_result_dir+"4D_lukas_roi.png";
-    OpenLF::image::io::imsave(p,channels);
-    //Saving red channel
-    vector<string> keys_to_save = {"r"};
-    p = test_result_dir+"4D_lukas_red.png";
-    OpenLF::image::io::imsave(p,channels,keys_to_save);
+    //==========================================================================
+    // test 4D 
+    //==========================================================================
     
     //Loading Lightfield data to a Lightfield object        
     OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield_4D();
     // test open from config-file
     CPPUNIT_ASSERT( lf ->open(cfgnames["4D_diversity"]));
-    //Saving blue channel
-    OpenLF::image::ImageChannel *blue = NULL;
-    lf->data("b",&blue);
-    p = test_result_dir+"4D_lukas_blue.png";
-    CPPUNIT_ASSERT(OpenLF::image::io::imsave(p,*blue));
+    //Testing getImage to MultiArrayView
+    vigra::MultiArrayView<2,float> fish_mav_1 = vigra::MultiArrayView<2,float>();
+    lf->getImage(0,2,"b",fish_mav_1);
+    OpenLF::image::io::imsave(test_result_dir+"4D_getImageFish_MAV_b.jpg",fish_mav_1);
+    
+    //Testing getImage() to MultiArray
+    vigra::MultiArray<2,float> camel_ma = vigra::MultiArray<2,float>();
+    lf->getImage(3,0,camel_ma);
+    string filename = test_result_dir+"4D_getImageCamel_MA.jpg";
+    vigra::exportImage(camel_ma,vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=75"));
+    OpenLF::image::ImageChannel camel_fromMA(camel_ma);
+    OpenLF::image::io::imsave(test_result_dir+"4D_getImageCamel_ICfromMA.jpg",camel_fromMA);
+    
+    // Generating ImageChannel from the MultiArrayView
+    // This produces very weird output. I don't understand this bug so far.
+    OpenLF::image::ImageChannel fish_ic(fish_mav_1);
+    OpenLF::image::io::imsave(test_result_dir+"4D_getImageFish_ICfromMAVfromLF_b.jpg",fish_ic);
+    //For comparison
+    map< std::string,OpenLF::image::ImageChannel > tmpMap;
+    OpenLF::image::io::imread(test_data_dir+"OpenLF_testLF/4D/h4_v3_h60_w80/rgb/0009.jpg",tmpMap);
+    OpenLF::image::ImageChannel tmpIC = tmpMap["r"];
+    vigra::MultiArrayView<2,float> tmpMAV = *tmpIC.image();
+    OpenLF::image::ImageChannel fromFishMAV(tmpMAV);
+    OpenLF::image::io::imsave(test_result_dir+"4D_ImageChannelFromMAV_normal.jpg",fromFishMAV);
     
     
-    
-    //Getting single images from the Lightfield object
-    vigra::MultiArrayView<2,float>* fish_mav = new vigra::MultiArrayView<2,float>();
-    lf->getImage(0,2,"r",*fish_mav);
-    OpenLF::image::ImageChannel fish = OpenLF::image::ImageChannel(*fish_mav);
-    vigra::MultiArrayView<2,float>* camel_mav = new vigra::MultiArrayView<2,float>();
-    lf->getImage(3,0,"r",*camel_mav);
-    OpenLF::image::ImageChannel camel = OpenLF::image::ImageChannel(*camel_mav);
-    OpenLF::image::io::imsave(test_result_dir+"fish_r.png",fish);
-    OpenLF::image::io::imsave(test_result_dir+"camel_r.png",camel);
-    
-    //Test opening .h5-File
-    const string filename = test_data_dir+"OpenLF_testLF/4D/h4_v3_h60_w80/buddha.h5";
-    // test instancing via the default constructor and open
-    OpenLF::lightfield::Lightfield* lf_h5 = new OpenLF::lightfield::Lightfield_4D();
-    // test open from hdf5
-//    CPPUNIT_ASSERT(lf_h5->open(filename));
-//    // create pointer to a map to keep the addresses of the lf data
-//    map< string,OpenLF::image::ImageChannel> *test_channels = NULL;
-//    // get the pointers to the lf data
-//    lf->data(&test_channels);
-//    CPPUNIT_ASSERT(test_channels!=NULL);
-//    p = test_result_dir+"4D_buddha_h5.png";
-//    CPPUNIT_ASSERT(OpenLF::image::io::imsave(p,*test_channels));  
 }

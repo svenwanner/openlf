@@ -39,6 +39,15 @@ public:
     */
     float getLoxel(int h, int v, int x, int y, const std::string channel_name);
     
+    //! access a single intensity value of the channel specified
+    /*!
+     \param n camera index, will be interpreted either as a vertical or a horizontal index, depending on wether the LF is 3DV or 3DH
+     \param x position index
+     \param y position index
+     \param channel_name name of the channel to access
+     */
+    float getLoxel(int n, int x, int y, const std::string channel_name);
+    
     
     //! access a single image of a light field channel
     /*!

@@ -30,7 +30,8 @@ void OpenLF::image::io::reduce_channels(std::map<std::string,OpenLF::image::Imag
     if(keys_to_keep.size() == 0) return;
 
     // loop through map and erase channels not in keys_to_keep
-    for(std::map<std::string, OpenLF::image::ImageChannel>::iterator i = channels.begin(); i != channels.end(); ++i)
+    std::map<std::string, OpenLF::image::ImageChannel>::iterator i = channels.begin();
+    while( i != channels.end())
     {
         // get key
         std::string key = i->first;
@@ -45,7 +46,10 @@ void OpenLF::image::io::reduce_channels(std::map<std::string,OpenLF::image::Imag
 
         // if not found erase channel
         if(key_found==0) {
-            channels.erase(key);
+            i=channels.erase(i);
+        }
+        else{
+            ++i;
         }
     }
 }
@@ -515,8 +519,8 @@ bool OpenLF::image::io::imsave(const std::string filename, std::map<std::string,
         }
 
         // check for other channels and save them
-        std::map<std::string, OpenLF::image::ImageChannel>::iterator it = channels.begin();
-        for( unsigned int i=0; i<channels.size() && it != channels.end(); ++i)
+        
+        for( std::map<std::string, OpenLF::image::ImageChannel>::iterator it = channels.begin(); it != channels.end(); ++it)
         {
             // get key
             std::string key = it->first;
@@ -530,7 +534,7 @@ bool OpenLF::image::io::imsave(const std::string filename, std::map<std::string,
 
             // save and delete channel
             imsave(tmp_filename,channels[key]);
-            it = channels.erase(it);
+            channels.erase(it);
         }
         
     } catch(std::exception & e) {
