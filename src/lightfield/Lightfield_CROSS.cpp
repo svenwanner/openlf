@@ -76,6 +76,7 @@ float OpenLF::lightfield::Lightfield_CROSS::getLoxel(int h, int v, int x, int y,
             throw OpenLF_Exception("Lightfield::getLoxel -> out of light field bounds!");
         if(v==0){
             try {
+                // The horizontal row of the CROSS lightfield is saved in the first row of the ImageChannel.
                 val = m_channels[channel_name](h*imgWidth()+x,y);
             }
             catch(std::exception &e){
@@ -84,6 +85,7 @@ float OpenLF::lightfield::Lightfield_CROSS::getLoxel(int h, int v, int x, int y,
             }
         } else if(h==0){
             try {
+                // The vertival column of the CROSS is  saved transposed (!) in the second row of ImageChannel
                 val = m_channels[channel_name](v*imgHeight()+y,imgHeight()+x);
             }
             catch(std::exception &e){
