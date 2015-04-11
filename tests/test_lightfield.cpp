@@ -138,8 +138,10 @@ void test_lightfield::test_epi_iterator()
     
     if (gt_h.is_open()) { 
         EpiIterator_4D *iter_h = lf->createEpiIterator<EpiIterator_4D>(HORIZONTAL);
-
+        
+        //#pragma omp parallel for
         for(iter_h->first(); !iter_h->end(); iter_h->next())
+        //for(iter_h->first(); !iter_h->end(); iter_h->next())
         {
             getline (gt_h,line);
             vigra::MultiArrayView<2,float> epi = iter_h->get("r",1); 
@@ -154,6 +156,7 @@ void test_lightfield::test_epi_iterator()
     if (gt_v.is_open()) {
         EpiIterator_4D *iter_v = lf->createEpiIterator<EpiIterator_4D>(VERTICAL);
 
+        //#pragma omp parallel for
         for(iter_v->first(); !iter_v->end(); iter_v->next())
         {
             getline (gt_v,line);
@@ -182,8 +185,14 @@ void test_lightfield::test_epi_iterator()
     if (gt_h.is_open()) { 
         EpiIterator_3D *iter_h = lf->createEpiIterator<EpiIterator_3D>(HORIZONTAL);
 
+        //#pragma omp parallel for
+        //for(int n = iter_h->first(); n <= iter_h->end(); n = iter_h->next())
+        //for(int n = 0; n <= iter_h->end(); n = iter_h->next())
+        //for(it = iter_h->first(); it <= iter_h->end(); it++)
         for(iter_h->first(); !iter_h->end(); iter_h->next())
-        {
+        {   
+            
+
             getline (gt_h,line);
             vigra::MultiArrayView<2,float> epi = iter_h->get("r",1);
             
@@ -209,6 +218,7 @@ void test_lightfield::test_epi_iterator()
     if (gt_h.is_open()) { 
         EpiIterator_3D *iter_h = lf->createEpiIterator<EpiIterator_3D>(VERTICAL);
         
+        //#pragma omp parallel for
         for(iter_h->first(); !iter_h->end(); iter_h->next())
         {
             getline (gt_h,line);
@@ -239,6 +249,7 @@ void test_lightfield::test_epi_iterator()
     if (gt_h.is_open()) { 
         EpiIterator_CROSS *iter_h = lf->createEpiIterator<EpiIterator_CROSS>(HORIZONTAL);
 
+        //#pragma omp parallel for
         for(iter_h->first(); !iter_h->end(); iter_h->next())
         {
             getline (gt_h,line);
@@ -256,6 +267,7 @@ void test_lightfield::test_epi_iterator()
     if (gt_v.is_open()) {
         EpiIterator_CROSS *iter_v = lf->createEpiIterator<EpiIterator_CROSS>(VERTICAL);
 
+        //#pragma omp parallel for
         for(iter_v->first(); !iter_v->end(); iter_v->next())
         {
             getline (gt_v,line);

@@ -32,7 +32,7 @@
 void OpenLF::image::utils::mergeChannels(const vigra::MultiArray<2,float> &r, 
                                          const vigra::MultiArray<2,float> &g, 
                                          const vigra::MultiArray<2,float> &b,
-                                         vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8>> &img) 
+                                         vigra::MultiArrayView<2, vigra::RGBValue<vigra::UInt8>> &img) 
 {
     if(!img.hasData()) 
         img = vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8>>(vigra::Shape2(r.width(),r.height()));
@@ -76,30 +76,6 @@ void OpenLF::image::utils::mergeChannels(const vigra::MultiArray<2,float> &r,
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
-void OpenLF::image::utils::mergeChannels(const vigra::MultiArray<2,float> &r, 
-                                         const vigra::MultiArray<2,float> &g, 
-                                         const vigra::MultiArray<2,float> &b,
-                                         vigra::MultiArray<2, vigra::RGBValue<float>> &img) 
-{
-    if(!img.hasData()) {
-        img = vigra::MultiArray<2, vigra::RGBValue<float>>(vigra::Shape2(r.width(),r.height()));
-    }
-    else {
-        if(img.shape()!=r.shape()) throw OpenLF_Exception("utils::mergeChannels -> shape mismatch");
-        for(int y=0; y<r.height(); y++) {
-            for(int x=0; x<r.width(); x++) {
-                img(x,y)[0] = r(x,y);
-                img(x,y)[1] = g(x,y);
-                img(x,y)[2] = b(x,y);
-            }
-        }
-    }
-}
-
-
-/*!
- \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
-*/ 
 void OpenLF::image::utils::mergeChannels(const vigra::MultiArrayView<2,float> &r, 
                                          const vigra::MultiArrayView<2,float> &g, 
                                          const vigra::MultiArrayView<2,float> &b,
@@ -124,10 +100,36 @@ void OpenLF::image::utils::mergeChannels(const vigra::MultiArrayView<2,float> &r
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
+
 void OpenLF::image::utils::mergeChannels(const vigra::MultiArray<2,float> &r, 
                                          const vigra::MultiArray<2,float> &g, 
                                          const vigra::MultiArray<2,float> &b,
-                                         vigra::MultiArray<2,float> &img) 
+                                         vigra::MultiArray<2, vigra::RGBValue<float>> &img) 
+{
+    if(!img.hasData()) {
+        img = vigra::MultiArray<2, vigra::RGBValue<float>>(vigra::Shape2(r.width(),r.height()));
+    }
+    else {
+        if(img.shape()!=r.shape()) throw OpenLF_Exception("utils::mergeChannels -> shape mismatch");
+        for(int y=0; y<r.height(); y++) {
+            for(int x=0; x<r.width(); x++) {
+                img(x,y)[0] = r(x,y);
+                img(x,y)[1] = g(x,y);
+                img(x,y)[2] = b(x,y);
+            }
+        }
+    }
+}
+
+
+/*!
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/ 
+
+void OpenLF::image::utils::mergeChannels(const vigra::MultiArray<2,float> &r, 
+                                         const vigra::MultiArray<2,float> &g, 
+                                         const vigra::MultiArray<2,float> &b,
+                                         vigra::MultiArrayView<2,float> &img) 
 {
     if(!img.hasData()) {
         img = vigra::MultiArray<2,float>(vigra::Shape2(r.width(),r.height()));
@@ -146,10 +148,17 @@ void OpenLF::image::utils::mergeChannels(const vigra::MultiArray<2,float> &r,
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */ 
+
 void OpenLF::image::utils::mergeChannels(const vigra::MultiArrayView<2,float> &r, 
                                          const vigra::MultiArrayView<2,float> &g, 
                                          const vigra::MultiArrayView<2,float> &b,
-                                         vigra::MultiArray<2,float> &img) 
+                                         vigra::MultiArrayView<2,float> &img) 
+/*
+void OpenLF::image::utils::mergeChannels(const vigra::MultiArrayView<2,float> &r, 
+                                         const vigra::MultiArrayView<2,float> &g, 
+                                         const vigra::MultiArrayView<2,float> &b,
+                                         vigra::MultiArrayView<2,float> &img) 
+*/
 {
     if(!img.hasData()) 
         img = vigra::MultiArray<2,float>(vigra::Shape2(r.width(),r.height()));

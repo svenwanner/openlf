@@ -22,7 +22,6 @@
 
 #include "OpenLF/debug.hpp"
 #include "OpenLF/global.hpp"
-#include "OpenLF/lightfield/Lightfield.hpp"
 #include "Operator.hpp"
 
 //------
@@ -40,16 +39,6 @@ public:
     virtual ~Operator_4D();
     
     void process();
-    
-protected:
-    
-    virtual void allocate() = 0;
-    virtual void precompute() = 0;
-    virtual void compute() = 0;
-    virtual void postcompute() = 0;
-    
-private:
-    void cleanup();
 
 };
 

@@ -269,6 +269,7 @@ public:
      \param img reference to bw MultiArray
     */
     void getImage(int h, int v, vigra::MultiArray<2,float> &img);
+    //void getImage(int h, int v, vigra::MultiArrayView<2,float> &img);
     
     
     //! access a single rgb image of a light field
@@ -278,6 +279,7 @@ public:
      \param img reference to a rgb float MultiArray
     */
     void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<float>> &img);
+    //void getImage(int h, int v, vigra::MultiArrayView<2,vigra::RGBValue<float>> &img);
     
     
     //! access a single rgb image of a light field
@@ -287,6 +289,7 @@ public:
      \param img reference to a rgb uint8 MultiArray
     */
     void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> > &img);
+    //void getImage(int h, int v, vigra::MultiArrayView<2,vigra::RGBValue<vigra::UInt8> > &img);
     
     /*!
     \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
@@ -306,6 +309,8 @@ public:
      \param img vigra rgb image reference
     */
     virtual void getHorizontalEpi(int y, int v, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img);
+
+    //virtual void getHorizontalEpi(int y, int v, int focus, vigra::MultiArrayView<2,vigra::RGBValue<vigra::UInt8> >& img);
         
     //! get a view to a horizontal epi of the channel specified
     /*!
@@ -315,7 +320,7 @@ public:
      \param focus global shift parameter in pixel (default=0)
     */
     view_2D getHorizontalEpiChannel_parent(std::string channel_name, int y, int v, int focus);
-    
+
     //! get a view to a horizontal epi of the channel specified
     /*!
      \param channel_name name of the channel to extract the epi from
@@ -324,6 +329,8 @@ public:
      \param focus global shift parameter in pixel (default=0)
     */
     virtual view_2D getHorizontalEpiChannel(std::string channel_name, int y, int v, int focus)=0;
+
+    //virtual std::map<std::string, view_2D> getHorizontalEpiChannel(int y, int v, int focus);
     
     //! get a vertical epi of either gray value or rgb if available
     /*!
@@ -333,7 +340,8 @@ public:
      \param img vigra rgb image reference
     */
     virtual void getVerticalEpi(int x, int h, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>>& img);
-    
+
+    //virtual void getVerticalEpi(int x, int h, int focus, vigra::MultiArrayView<2,vigra::RGBValue<vigra::UInt8>>& img);
     
     //! get a view to a vertical epi of the channel specified
     /*!

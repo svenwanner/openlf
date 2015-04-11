@@ -23,7 +23,7 @@ OpenLF::operators::Operator::Operator(std::vector<std::string> inslots, std::vec
 {
     this->inslots = inslots;
     this->outslots = outslots;
-    clear();
+    cleanup();
 }
 
 //OpenLF::operators::Operator::Operator(const Operator& orig) 
@@ -32,18 +32,23 @@ OpenLF::operators::Operator::Operator(std::vector<std::string> inslots, std::vec
 
 OpenLF::operators::Operator::~Operator() 
 {
-    print(1,"Operator::~Operator() called...");
+    cleanup();
 }
 
-void OpenLF::operators::Operator::clear() 
+void OpenLF::operators::Operator::cleanup() 
 {
     lf = NULL;
     properties = NULL;
+    tmp_memory.clear();
 }
 
-
-
-
+void OpenLF::operators::Operator::process() 
+{
+    allocate();
+    precompute();
+    compute();
+    postcompute();
+}
 
 /*!
  * This function initializes the internal lf variable with the address of the

@@ -20,11 +20,14 @@
 #ifndef OPERATOR_EPI_HPP
 #define	OPERATOR_EPI_HPP
 
-#include "OpenLF/debug.hpp"
-#include "OpenLF/global.hpp"
-#include "Operator.hpp"
+//#include "OpenLF/debug.hpp"
+//#include "OpenLF/global.hpp"
+#include "OpenLF/operators/Operator.hpp"
 
 typedef vigra::MultiArrayView<2, float> view_2D;
+typedef vigra::MultiArrayView<1, float> view_1D;
+typedef vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> RGB_Array;
+typedef std::vector<view_2D> epi_vector;
 
 namespace OpenLF {
     namespace operators {
@@ -33,19 +36,20 @@ class Operator_EPI : public Operator {
 public:
     Operator_EPI(std::vector<std::string> inslots, std::vector<std::string> outslots) : Operator(inslots,outslots) {};
     virtual ~Operator_EPI();
-    
-    void process();
-    
-protected:
-    
-    virtual void allocate() = 0;
-    virtual void precompute() = 0;
-    virtual void compute() = 0;
-    virtual void postcompute() = 0;
-    
-    
+
+    void load_epi_containers(std::string channel);
+    view_2D refocus(int focus, view_2D epi);
+    epi_vector refocus(int focus);
+    void set(OpenLF::lightfield::Lightfield *lf);
+    epi_vector * horizontal_epis_ptr();
+    epi_vector * vertical_epis_ptr();
+    view_2D get_horizontal_epi(int where);
+    view_2D get_vertical_epi(int where);
+
 private:
-    void cleanup();
+    epi_vector m_horizontal_epis; 
+    epi_vector m_vertical_epis;
+    
 
 };
 

@@ -22,9 +22,8 @@
 //OpenLF::operators::Operator_4D::Operator_4D(const Operator_4D& orig) {
 //}
 
-OpenLF::operators::Operator_4D::~Operator_4D() 
-{
-    print(1,"Operator_4D::~Operator_4D() called...");
+OpenLF::operators::Operator_4D::~Operator_4D() {
+    
 }
 
 void OpenLF::operators::Operator_4D::process() 
@@ -34,18 +33,11 @@ void OpenLF::operators::Operator_4D::process()
             
             allocate();
             precompute();
-            
             compute();
             postcompute();
-            
-            cleanup();
+
         }
         else throw OpenLF_Exception("Wrong lightfield input type exception!");
     }   
     else throw OpenLF_Exception("missing lightfield exception!");
-}
-
-void OpenLF::operators::Operator_4D::cleanup() 
-{
-    tmp_memory.clear();
 }

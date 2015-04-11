@@ -59,6 +59,8 @@ void reduce_channels(std::map<std::string,ImageChannel> &channels,const std::vec
 */
 void linear_range_mapping(const vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2, vigra::UInt8>& img);
 
+//void linear_range_mapping(const vigra::MultiArrayView<2,float>& fimg, vigra::MultiArrayView<2, vigra::UInt8>& img);
+
 
 //! map the pixel values to a range of [0,255]
 /*!
@@ -68,6 +70,8 @@ void linear_range_mapping(const vigra::MultiArray<2,float>& fimg, vigra::MultiAr
 */
 void linear_range_mapping(const vigra::MultiArray<2,float>& fimg, vigra::MultiArray<2,float>& img);
 
+//void linear_range_mapping(const vigra::MultiArrayView<2,float>& fimg, vigra::MultiArrayView<2,float>& img);
+
 
 //! map the pixel values to a range of [0,255]
 /*!
@@ -75,6 +79,7 @@ void linear_range_mapping(const vigra::MultiArray<2,float>& fimg, vigra::MultiAr
  \param img result MultiArray 
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
+
 void linear_range_mapping(const vigra::MultiArrayView<2,float>& fimg, vigra::MultiArray<2,float>& img);
 
 
@@ -86,6 +91,7 @@ void linear_range_mapping(const vigra::MultiArrayView<2,float>& fimg, vigra::Mul
 */
 void linear_range_mapping(ImageChannel& img_channel, vigra::MultiArray<2, vigra::UInt8>& img);
 
+//void linear_range_mapping(ImageChannel& img_channel, vigra::MultiArrayView<2, vigra::UInt8>& img);
 
 //! read an image from file and store channels in map structure
 /*!

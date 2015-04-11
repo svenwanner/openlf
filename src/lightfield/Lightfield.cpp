@@ -376,7 +376,7 @@ void OpenLF::lightfield::Lightfield::data(const std::string channel_name, OpenLF
 
 
 /*!
- Allocates a new channel with the name passed. The channels size is defined by
+ Initializes a new channel with the name passed. The channels size is defined by
  the size of the light field.
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
@@ -386,7 +386,8 @@ void OpenLF::lightfield::Lightfield::allocateChannel(const std::string channel_n
     
     // check if channel doesn't exists otherwise throw Exception
     if (m_channels.find(channel_name) == m_channels.end()) {
-        m_channels[channel_name] = OpenLF::image::ImageChannel(width(),height());
+        m_channels[channel_name] = OpenLF::image::ImageChannel();
+        m_channels[channel_name].init(width(),height(),0.0f);
     }
     else {
        throw OpenLF_Exception("Cannot allocate channel that already exist!");
@@ -421,6 +422,7 @@ void OpenLF::lightfield::Lightfield::appendProperties(OpenLF::lightfield::Proper
 */
 
 void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,float> &img)
+//void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArrayView<2,float> &img)
 {
     if(hasRGB()) {
         vigra::MultiArrayView<2,float> img_r;
@@ -457,6 +459,7 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
 */
 
 void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<float>> &img) 
+//void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArrayView<2,vigra::RGBValue<float>> &img) 
 {
     if(!img.hasData())
     {
@@ -514,6 +517,7 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
 */
 
 void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> &img) 
+//void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArrayView<2,vigra::RGBValue<vigra::UInt8>> &img) 
 {
     if(!img.hasData())
     {
@@ -583,6 +587,7 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
 */
 
 void OpenLF::lightfield::Lightfield::getHorizontalEpi(int y, int v, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img)
+//void OpenLF::lightfield::Lightfield::getHorizontalEpi(int y, int v, int focus, vigra::MultiArrayView<2,vigra::RGBValue<vigra::UInt8> >& img)
 {
     if(hasRGB()) {
         vigra::MultiArrayView<2,float> r = getHorizontalEpiChannel("r", y, v, focus);
@@ -632,6 +637,7 @@ void OpenLF::lightfield::Lightfield::getHorizontalEpi(int y, int v, int focus, v
 */
 
 void OpenLF::lightfield::Lightfield::getVerticalEpi(int x, int h, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img)
+//void OpenLF::lightfield::Lightfield::getVerticalEpi(int x, int h, int focus, vigra::MultiArrayView<2,vigra::RGBValue<vigra::UInt8> >& img)
 {
     if(hasRGB()) {
         vigra::MultiArrayView<2,float> r = getVerticalEpiChannel("r", x, h, focus);
@@ -691,8 +697,8 @@ view_2D OpenLF::lightfield::Lightfield::getHorizontalEpiChannel_parent(std::stri
         
         int offset = (cams_h()-1)*focus;
         vigra::MultiArrayView<1, float> row = m_channels[channel_name].viewToRow(v * imgHeight() + y);
-        shape epi_shape = shape(imgWidth()-(cams_h()-1)*focus,cams_h());//imgWidth()-2*(cams_h()-1)*focus?
-        strideTag stride = strideTag(1, imgWidth() - focus);//-2 x focus?
+        shape epi_shape = shape(imgWidth()-(cams_h()-1)*focus,cams_h());
+        strideTag stride = strideTag(1, imgWidth() - focus);
         return view_2D(epi_shape, stride, row.data() + offset);
         
     } else

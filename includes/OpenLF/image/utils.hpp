@@ -38,12 +38,17 @@ namespace OpenLF {
  \param b blue channel
  \param img reference to the result uint8 rgb image
 */  
+
 void mergeChannels(const vigra::MultiArray<2,float> &r, 
                    const vigra::MultiArray<2,float> &g, 
                    const vigra::MultiArray<2,float> &b,
-                   vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8>> &img);
-
-
+                   vigra::MultiArrayView<2, vigra::RGBValue<vigra::UInt8>> &img);
+/*
+void mergeChannels(const vigra::MultiArrayView<2,float> &r, 
+                   const vigra::MultiArrayView<2,float> &g, 
+                   const vigra::MultiArrayView<2,float> &b,
+                   vigra::MultiArrayView<2, vigra::RGBValue<vigra::UInt8>> &img);
+*/
 //! converts single rgb channels to vigra bw image
 /*!
  \param r red channel
@@ -51,12 +56,17 @@ void mergeChannels(const vigra::MultiArray<2,float> &r,
  \param b blue channel
  \param img reference to the result uint8 bw image
 */  
+
 void mergeChannels(const vigra::MultiArray<2,float> &r, 
                    const vigra::MultiArray<2,float> &g, 
                    const vigra::MultiArray<2,float> &b,
                    vigra::MultiArray<2, vigra::UInt8> &img);
-
-
+/*
+void mergeChannels(const vigra::MultiArrayView<2,float> &r, 
+                   const vigra::MultiArrayView<2,float> &g, 
+                   const vigra::MultiArrayView<2,float> &b,
+                   vigra::MultiArrayView<2, vigra::UInt8> &img);
+*/
 //! converts single rgb channels to vigra rgb image
 /*!
  \param r view to an red channel
@@ -64,12 +74,17 @@ void mergeChannels(const vigra::MultiArray<2,float> &r,
  \param b view to an blue channel
  \param img reference to the result loat rgb image
 */  
+
 void mergeChannels(const vigra::MultiArrayView<2,float> &r, 
                    const vigra::MultiArrayView<2,float> &g, 
                    const vigra::MultiArrayView<2,float> &b,
                    vigra::MultiArray<2, vigra::RGBValue<float>> &img);
-   
-
+/*
+void mergeChannels(const vigra::MultiArrayView<2,float> &r, 
+                   const vigra::MultiArrayView<2,float> &g, 
+                   const vigra::MultiArrayView<2,float> &b,
+                   vigra::MultiArrayView<2, vigra::RGBValue<float>> &img);   
+*/
 //! converts single rgb channels to vigra rgb image
 /*!
  \param r red channel
@@ -77,12 +92,18 @@ void mergeChannels(const vigra::MultiArrayView<2,float> &r,
  \param b blue channel
  \param img reference to the result float rgb image
 */  
+
 void mergeChannels(const vigra::MultiArray<2,float> &r, 
                    const vigra::MultiArray<2,float> &g, 
                    const vigra::MultiArray<2,float> &b,
                    vigra::MultiArray<2, vigra::RGBValue<float>> &img);
 
-
+/*
+void mergeChannels(const vigra::MultiArrayView<2,float> &r, 
+                   const vigra::MultiArrayView<2,float> &g, 
+                   const vigra::MultiArrayView<2,float> &b,
+                   vigra::MultiArrayView<2, vigra::RGBValue<float>> &img);
+*/
 //! converts single rgb channels to vigra bw image
 /*!
  \param r view to an red channel
@@ -90,12 +111,17 @@ void mergeChannels(const vigra::MultiArray<2,float> &r,
  \param b view to an blue channel
  \param img reference to the result loat bw image
 */  
+
+void mergeChannels(const vigra::MultiArray<2,float> &r, 
+                   const vigra::MultiArray<2,float> &g, 
+                   const vigra::MultiArray<2,float> &b,
+                   vigra::MultiArrayView<2, float> &img);
+/*  
 void mergeChannels(const vigra::MultiArrayView<2,float> &r, 
                    const vigra::MultiArrayView<2,float> &g, 
                    const vigra::MultiArrayView<2,float> &b,
-                   vigra::MultiArray<2, float> &img);
-   
-
+                   vigra::MultiArrayView<2, float> &img);
+*/
 //! converts single rgb channels to vigra bw image
 /*!
  \param r red channel
@@ -103,11 +129,17 @@ void mergeChannels(const vigra::MultiArrayView<2,float> &r,
  \param b blue channel
  \param img reference to the result float bw image
 */  
+/*
 void mergeChannels(const vigra::MultiArray<2,float> &r, 
                    const vigra::MultiArray<2,float> &g, 
                    const vigra::MultiArray<2,float> &b,
-                   vigra::MultiArray<2, float> &img);
-     
+                   vigra::MultiArrayView<2, float> &img);
+*/
+
+void mergeChannels(const vigra::MultiArrayView<2,float> &r, 
+                   const vigra::MultiArrayView<2,float> &g, 
+                   const vigra::MultiArrayView<2,float> &b,
+                   vigra::MultiArrayView<2, float> &img); 
 
 }}}
 

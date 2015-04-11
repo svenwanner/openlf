@@ -8,6 +8,7 @@
 #ifndef LIGHTFIELD4D_HPP
 #define	LIGHTFIELD4D_HPP
 
+
 #include "OpenLF/global.hpp"
 #include "OpenLF/image/utils.hpp"
 #include "OpenLF/lightfield/io.hpp"

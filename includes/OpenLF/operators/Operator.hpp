@@ -36,14 +36,14 @@ public:
     Operator(std::vector<std::string> inslots, std::vector<std::string> outslots);
     //Operator(const Operator& orig);
     virtual ~Operator();
-    void clear();
+    virtual void cleanup();
     
     //! set interface to set a lightfield 
     /*!
      \param lf pointer to a light field instance
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
-    void set(OpenLF::lightfield::Lightfield *lf);
+    virtual void set(OpenLF::lightfield::Lightfield *lf);
     
     //! set interface to set additional properties
     /*!
@@ -52,7 +52,7 @@ public:
     */
     void set(OpenLF::lightfield::Properties *properties);
     
-    virtual void process() = 0;
+    virtual void process();
         
 protected:
     
@@ -60,7 +60,7 @@ protected:
     virtual void precompute() = 0;
     virtual void compute() = 0;
     virtual void postcompute() = 0;
-    virtual void cleanup() = 0;
+    
     
     OpenLF::lightfield::Lightfield *lf;
     OpenLF::lightfield::Properties *properties;

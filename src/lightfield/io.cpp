@@ -57,7 +57,8 @@ bool load_transposed(std::map< std::string,OpenLF::image::ImageChannel> &channel
 	    
     return true;
 }
-*/  
+*/
+  
 bool OpenLF::lightfield::io::load_4D_structure( const std::vector<std::string> fname_list, 
                                                 std::map< std::string,OpenLF::image::ImageChannel> &channels, 
                                                 Properties *properties )
