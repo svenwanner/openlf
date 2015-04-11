@@ -50,7 +50,9 @@ class test_lightfield : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_epi_access);
     CPPUNIT_TEST(test_loxel_access);
     CPPUNIT_TEST(test_instantiate_Lightfield);
+    CPPUNIT_TEST(test_multipleWaysOfInstantiating);
     CPPUNIT_TEST(test_lightfield::test_epi_handling);
+    CPPUNIT_TEST(test_image_access);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -65,7 +67,9 @@ private:
     void test_epi_access();
     void test_loxel_access();
     void test_instantiate_Lightfield();
+    void test_multipleWaysOfInstantiating();
     void test_epi_handling();
+    void test_image_access();
     
     
     map<string,string> cfgnames;

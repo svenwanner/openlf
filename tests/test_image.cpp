@@ -60,14 +60,14 @@ void test_image::test_io() {
     for(int y=0; y<576; y++) {
         for(int x=0; x<512; x++) {
             channels["x"](x,y) = 1.0/576*y;
-            channels["y"](x,y) = 1.0/576*y;
+            channels["y"](x,y) = 1.0-1.0/576*y;
             if(y%2==0 && x%2!=0) {  
                 channels["x"](x,y) = channels["g"](x,y);
                 channels["y"](x,y) = channels["b"](x,y);
             }
             else if(y%2!=0 && x%2==0) {
                 channels["x"](x,y) = 1.0/576*y;
-                channels["y"](x,y) = 1.0/576*y;
+                channels["y"](x,y) = 1.0-1.0/576*y;
             }
         }
     }
@@ -77,7 +77,7 @@ void test_image::test_io() {
     
     // test saving only some channels
     vector<string> keys {"x","y","bw"};
-    CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_save_channel_selection.jpg",channels));
+    CPPUNIT_ASSERT(OpenLF::image::io::imsave(test_result_dir+"test_save_channel_selection.jpg",channels, keys));
     
     // test if still all channels are present
     CPPUNIT_ASSERT(channels.size()==6);

@@ -1003,7 +1003,7 @@ void test_lightfield_IO::test_Properties_methods()
     CPPUNIT_ASSERT(props.sizeof_str_field() == 2);
     CPPUNIT_ASSERT(props.sizeof_num_field() == 2);
     
-    vector<string> gt_keys {"a_string","prop1_string","prop1_ivalue","prop1_ivalue"};
+    vector<string> gt_keys {"a_string","prop1_string","prop1_ivalue","prop1_fvalue"};
     vector<string> keys;
     props.get_num_field_keys(keys);
     CPPUNIT_ASSERT(keys.size()==2);
