@@ -40,7 +40,7 @@ void test_operator::testMethod() {
 
     lf->getImage(1,1,"r",img_rgb);
 
-    std::string filename14 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/LF4DOperator_r.jpg";
+    std::string filename14 = test_data2_dir+"LF4DOperator_r.jpg";
  
     OpenLF::image::io::imsave(filename14,img_rgb);   
  
@@ -60,8 +60,8 @@ void test_operator::testMethod() {
     // get the pointers to the lf data
     lf->data("myNewChannel",&test_image_result);
     
-    std::string filename15 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/LF4DOperator_processed.jpg";
-    std::string filename16 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/LF4DOperator_image_processed.jpg";
+    std::string filename15 = test_data2_dir+"LF4DOperator_processed.jpg";
+    std::string filename16 = test_data2_dir+"LF4DOperator_image_processed.jpg";
 
     CPPUNIT_ASSERT(OpenLF::image::io::imsave(filename15, *test_image_result));
     CPPUNIT_ASSERT(OpenLF::image::io::imsave(filename16, img_result));
@@ -70,8 +70,8 @@ void test_operator::testMethod() {
     //** test Epi Operator
     //********************************************************
 
-    std::string filename17 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/Epi_Operator_processed.jpg";
-    std::string filename18 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/Epi_Operator_image_original.jpg";
+    std::string filename17 = test_data2_dir+"Epi_Operator_processed.jpg";
+    std::string filename18 = test_data2_dir+"Epi_Operator_image_original.jpg";
 
     OpenLF::operators::Operator_EPI * myOpEpi = new OpenLF::operators::MyEpiOperator(inslots,outslots);
 
@@ -84,8 +84,8 @@ void test_operator::testMethod() {
     //** test MyEpiOperator
     //********************************************************
 
-    std::string filename19 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/MyEpiOperator_refocused.jpg";
-    std::string filename20 = "/home/kiryl/Documents/openlf/openlf/tests/data_2/MyEpiOperator_epi_original.jpg";
+    std::string filename19 = test_data2_dir+"MyEpiOperator_refocused.jpg";
+    std::string filename20 = test_data2_dir+"MyEpiOperator_epi_original.jpg";
 
     myOpEpi = new OpenLF::operators::MyEpiOperator(inslots,outslots);
 
