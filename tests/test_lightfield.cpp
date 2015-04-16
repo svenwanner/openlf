@@ -66,8 +66,8 @@ void test_lightfield::setUp() {
     
     cfgnames["4D_high_rgb_h5"] = test_lf_4D_high+"4D_high_rgb_h5.cfg";
     
-    cfgnames["4D_diversity"] = test_data_dir+"OpenLF_testLF/4D/h4_v3_h60_w80/rgb.cfg";
-    cfgnames["4D_diversity_roi"] = test_data_dir+"OpenLF_testLF/4D/h4_v3_h60_w80/rgb_roi.cfg";
+    cfgnames["4D_diversity"] = test_data_dir+"OpenLF_testLF/diversity/4D_div.cfg";
+    cfgnames["4D_diversity_roi"] = test_data_dir+"OpenLF_testLF/diversity/4D_div_roi.cfg";
     
     cfgnames["3DH_high_bw"] = test_lf_3DH_high+"bw.cfg";
     cfgnames["3DH_wide_bw"] = test_lf_3DH_wide+"bw.cfg";
