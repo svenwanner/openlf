@@ -66,8 +66,8 @@ void test_lightfield::setUp() {
     
     cfgnames["4D_high_rgb_h5"] = test_lf_4D_high+"4D_high_rgb_h5.cfg";
     
-    cfgnames["4D_diversity"] = test_data_dir+"OpenLF_testLF/4D/h4_v3_h60_w80/rgb.cfg";
-    cfgnames["4D_diversity_roi"] = test_data_dir+"OpenLF_testLF/4D/h4_v3_h60_w80/rgb_roi.cfg";
+    cfgnames["4D_diversity"] = test_data_dir+"OpenLF_testLF/diversity/4D_div.cfg";
+    cfgnames["4D_diversity_roi"] = test_data_dir+"OpenLF_testLF/diversity/4D_div_roi.cfg";
     
     cfgnames["3DH_high_bw"] = test_lf_3DH_high+"bw.cfg";
     cfgnames["3DH_wide_bw"] = test_lf_3DH_wide+"bw.cfg";
@@ -852,43 +852,104 @@ void test_lightfield::test_image_access(){
     /*
      * This test is testing the getImage() functions of the Lightfield classes.
      */
-    
-    //==========================================================================
-    // test 4D 
-    //==========================================================================
-    
-    //Loading Lightfield data to a Lightfield object        
-    //OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield_4D();
-    // test open from config-file
-    //CPPUNIT_ASSERT( lf ->open(cfgnames["4D_diversity"]));
-    //Testing getImage to MultiArrayView
-    //vigra::MultiArrayView<2,float> fish_mav_1 = vigra::MultiArrayView<2,float>();
-    //lf->getImage(0,2,"b",fish_mav_1);
-    //OpenLF::image::io::imsave(test_result_dir+"4D_getImageFish_MAV_b.jpg",fish_mav_1);
-    
-    //Testing getImage() to MultiArray
-    //vigra::MultiArray<2,float> camel_ma = vigra::MultiArray<2,float>();
-    //lf->getImage(3,0,camel_ma);
-    //string filename = test_result_dir+"4D_getImageCamel_MA.jpg";
-    //SegFault
-    //vigra::exportImage(camel_ma,vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=75"));
-    //OpenLF::image::ImageChannel camel_fromMA(camel_ma);
-    //SegFault
-    //OpenLF::image::io::imsave(test_result_dir+"4D_getImageCamel_ICfromMA.jpg",camel_fromMA);
-    
-    // Generating ImageChannel from the MultiArrayView
-    // This produces very weird output. I don't understand this bug so far.
-    //OpenLF::image::ImageChannel fish_ic(fish_mav_1);
-     //SegFault
-    //OpenLF::image::io::imsave(test_result_dir+"4D_getImageFish_ICfromMAVfromLF_b.jpg",fish_ic);
-    //For comparison
-    //map< std::string,OpenLF::image::ImageChannel > tmpMap;
-    //SegFault
-    //OpenLF::image::io::imread(test_data_dir+"OpenLF_testLF/4D/h4_v3_h60_w80/rgb/0009.jpg",tmpMap);
-    //OpenLF::image::ImageChannel tmpIC = tmpMap["r"];
-    //vigra::MultiArrayView<2,float> tmpMAV = *tmpIC.image();
-    //OpenLF::image::ImageChannel fromFishMAV(tmpMAV);
-    //OpenLF::image::io::imsave(test_result_dir+"4D_ImageChannelFromMAV_normal.jpg",fromFishMAV);
-    
-    
+//    
+//    //==========================================================================
+//    // test 4D 
+//    //==========================================================================
+//    
+//    //Loading Lightfield data to a Lightfield object        
+//    OpenLF::lightfield::Lightfield* lf = new OpenLF::lightfield::Lightfield_4D();
+//    // test open from config-file
+//    CPPUNIT_ASSERT( lf ->open(cfgnames["4D_diversity"]));
+//    //Testing getImage to MultiArrayView
+//    vigra::MultiArrayView<2,float> fish_mav_1 = vigra::MultiArrayView<2,float>();
+//    lf->getImage(0,2,"b",fish_mav_1);
+//    OpenLF::image::io::imsave(test_result_dir+"4D_getImageFish_MAV_b.jpg",fish_mav_1);
+//
+//    //Testing getImage() to MultiArray (BW and RGB)
+//    vigra::MultiArray<2,float> camel_ma_bw = vigra::MultiArray<2,float>();
+//    lf->getImage(3,0,camel_ma_bw);
+//    string filename = test_result_dir+"4D_getImageCamel_MA_bw.jpg";
+//    //SegFault
+//    OpenLF::image::io::imsave(filename,camel_ma_bw);
+//    OpenLF::image::ImageChannel camel_fromMA_bw(camel_ma_bw);
+//    //SegFault
+//    OpenLF::image::io::imsave(test_result_dir+"4D_getImageCamel_ICfromMA_bw.jpg",camel_fromMA_bw);
+//    vigra::MultiArray<2,vigra::RGBValue<float> > camel_ma_rgb = vigra::MultiArray<2,vigra::RGBValue<float> >();
+//    lf->getImage(3,0,camel_ma_rgb);
+//    filename = test_result_dir+"4D_getImageCamel_MA_RGB.jpg";
+//    OpenLF::image::io::imsave(filename, camel_ma_rgb );
+//    
+//    // Generating ImageChannel from the MultiArrayView
+//    // This produces very weird output. I don't understand this bug so far.
+//    OpenLF::image::ImageChannel fish_ic(fish_mav_1);
+//     //SegFault
+//    OpenLF::image::io::imsave(test_result_dir+"4D_getImageFish_ICfromMAVfromLF_b.jpg",fish_ic);
+//    //For comparison
+//    map< std::string,OpenLF::image::ImageChannel > tmpMap;
+//    //SegFault
+//    OpenLF::image::io::imread(test_data_dir+"OpenLF_testLF/diversity/rgb/0008.jpg",tmpMap);
+//    OpenLF::image::ImageChannel tmpIC = tmpMap["r"];
+//    vigra::MultiArrayView<2,float> tmpMAV = *tmpIC.image();
+//    OpenLF::image::ImageChannel fromFishMAV(tmpMAV);
+//    OpenLF::image::io::imsave(test_result_dir+"4D_ImageChannelFromMAV_normal.jpg",fromFishMAV);
+//    
+//        
+//    //==========================================================================
+//    // test 3DH 
+//    //==========================================================================
+//    
+//    OpenLF::lightfield::Lightfield* lf3D = new OpenLF::lightfield::Lightfield_3D();
+//    // Opening from config-file
+//    CPPUNIT_ASSERT( lf3D ->open(cfgnames["3DH_diversity"]));
+//    //Testing getImage to MultiArrayView
+//    vigra::MultiArrayView<2,float> creek_mav = vigra::MultiArrayView<2,float>();
+//    lf3D->getImage(0,0,"r",creek_mav);
+//    OpenLF::image::io::imsave(test_result_dir+"3DH_getImageCreek_MAV_r.jpg",creek_mav);
+//    
+//    //Testing getImage() to MultiArray (BW and RGB)
+//    vigra::MultiArray<2,float> mount_ma_bw = vigra::MultiArray<2,float>();
+//    lf3D->getImage(1,0,mount_ma_bw);
+//    filename = test_result_dir+"3DH_getImageMountain_MA_bw.jpg";
+//    OpenLF::image::io::imsave(filename,mount_ma_bw);
+//    OpenLF::image::ImageChannel mount_fromMA_bw(mount_ma_bw);
+//    OpenLF::image::io::imsave(test_result_dir+"3DH_getImageMountain_ICfromMA.jpg",mount_fromMA_bw);
+//    vigra::MultiArray<2, vigra::RGBValue<float> > mount_ma_rgb = vigra::MultiArray<2,vigra::RGBValue<float> >();
+//    lf3D->getImage(1,0,mount_ma_rgb);
+//    filename = test_result_dir+"3DH_getImageMountain_MA_rgb.jpg";
+//    OpenLF::image::io::imsave(filename,mount_ma_rgb);
+//    
+//    // Generating ImageChannel from the MultiArrayView
+//    // This produces very weird output. I don't understand this bug so far.
+//    OpenLF::image::ImageChannel creek_ic(creek_mav);
+//    OpenLF::image::io::imsave(test_result_dir+"3DH_getImageCreek_ICfromMAVfromLF_b.jpg",creek_ic);
+//    
+//    //==========================================================================
+//    // test 3DV
+//    //==========================================================================
+//    
+//    // Opening from config-file
+//    CPPUNIT_ASSERT( lf3D ->open(cfgnames["3DV_diversity"]));
+//    //Testing getImage to MultiArrayView
+//    vigra::MultiArrayView<2,float> fire_mav = vigra::MultiArrayView<2,float>();
+//    lf3D->getImage(0,11,"g",fire_mav);
+//    OpenLF::image::io::imsave(test_result_dir+"3DV_getImageFire_MAV_g.jpg",fire_mav);
+//    
+//    //Testing getImage() to MultiArray (BW and RGB)
+//    vigra::MultiArray<2,float> cliff_ma_bw = vigra::MultiArray<2,float>();
+//    lf3D->getImage(0,2,cliff_ma_bw);
+//    filename = test_result_dir+"3DV_getImageCliff_MA_bw.jpg";
+//    OpenLF::image::io::imsave(filename,cliff_ma_bw);
+//    OpenLF::image::ImageChannel cliff_fromMA_bw(cliff_ma_bw);
+//    OpenLF::image::io::imsave(test_result_dir+"3DV_getImageCliff_ICfromMA.jpg",cliff_fromMA_bw);
+//    vigra::MultiArray<2, vigra::RGBValue<float> > cliff_ma_rgb = vigra::MultiArray<2,vigra::RGBValue<float> >();
+//    lf3D->getImage(0,2,cliff_ma_rgb);
+//    filename = test_result_dir+"3DV_getImageCliff_MA_rgb.jpg";
+//    OpenLF::image::io::imsave(filename,cliff_ma_rgb);
+//    
+//    // Generating ImageChannel from the MultiArrayView
+//    // This produces very weird output. I don't understand this bug so far.
+//    OpenLF::image::ImageChannel fire_ic(fire_mav);
+//    OpenLF::image::io::imsave(test_result_dir+"3DV_getImageFire_ICfromMAVfromLF_b.jpg",fire_ic);
+//    
 }

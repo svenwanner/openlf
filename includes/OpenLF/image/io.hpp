@@ -136,6 +136,24 @@ bool imsave(const std::string filename, const vigra::MultiArrayView<2,float> img
 */ 
 bool imsave(const std::string filename, const vigra::MultiArrayView<2,vigra::UInt8> img);
 
+//! saves an image to file
+/*!
+ Saves a 2D MultiArray float image (BW) to file.
+ \param filename path to save the file
+ \param img MultiArray float image
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/ 
+bool imsave(const std::string filename, const vigra::MultiArray<2,float> img);
+
+//! saves an image to file
+/*!
+ Saves a 2D MultiArray RGBValue<float> image (RGB) to file.
+ \param filename path to save the file
+ \param img MultiArray RGBValue<float> image
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+ */ 
+bool imsave(const std::string filename, vigra::MultiArray<2,vigra::RGBValue<float> > img);
+
 //! saves an Channel instance to file
 /*!
  Saves a Channel instance float image to file.
