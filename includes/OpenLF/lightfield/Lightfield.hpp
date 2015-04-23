@@ -58,14 +58,14 @@ public:
     /*!
      \param filename of the .cfg, .h5,.hdf5 or .lf file 
     */
-    bool open(const std::string filename);
+    virtual bool open(const std::string filename);
     
     
     //! open lightfields from  hdf5 or config file
     /*!
      \param filename of the .cfg, .h5,.hdf5 or .lf file 
     */
-    bool open(const char* filename);
+    virtual bool open(const char* filename);
     
     
     //! save lightfields to hdf5 or config file
