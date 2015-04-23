@@ -562,25 +562,17 @@ void test_lightfield::test_loxel_access()
     CPPUNIT_ASSERT(lfc->open(cfgnames["CROSS_wide_rgb"]));
     CPPUNIT_ASSERT(lfc->type()==LF_CROSS);
     
-    r = lfc->getLoxel(3,0,27,10,"r");
-    g = lfc->getLoxel(3,0,27,10,"g");
-    b = lfc->getLoxel(3,0,27,10,"b");
+    r = lfc->getLoxel(3,2,27,10,"r");
+    g = lfc->getLoxel(3,2,27,10,"g");
+    b = lfc->getLoxel(3,2,27,10,"b");
     
     CPPUNIT_ASSERT(r*255==104);
     CPPUNIT_ASSERT(g*255==75);
     CPPUNIT_ASSERT(b*255==45);
     
-    r = lfc->getLoxel(0,2,27,10,"r");
-    g = lfc->getLoxel(0,2,27,10,"g");
-    b = lfc->getLoxel(0,2,27,10,"b");
-    
-    CPPUNIT_ASSERT(r*255==104);
-    CPPUNIT_ASSERT(g*255==75);
-    CPPUNIT_ASSERT(b*255==45);
-    
-    r = lfc->getLoxel(0,1,11,3,"r");
-    g = lfc->getLoxel(0,1,11,3,"g");
-    b = lfc->getLoxel(0,1,11,3,"b");
+    r = lfc->getLoxel(3,1,11,3,"r");
+    g = lfc->getLoxel(3,1,11,3,"g");
+    b = lfc->getLoxel(3,1,11,3,"b");
     
     CPPUNIT_ASSERT(r*255==63);
     CPPUNIT_ASSERT(g*255==70);

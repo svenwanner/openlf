@@ -22,17 +22,48 @@
 OpenLF::lightfield::Lightfield_CROSS::Lightfield_CROSS() : OpenLF::lightfield::Lightfield() 
 {
     print(1,"lightfield::Lightfield_CROSS() called...");
-    
+
 }
 
 OpenLF::lightfield::Lightfield_CROSS::Lightfield_CROSS(const std::string filename) : OpenLF::lightfield::Lightfield(filename)
 {
     print(1,"lightfield::Lightfield_CROSS(filename) called...");
+
 }
 
 OpenLF::lightfield::Lightfield_CROSS::~Lightfield_CROSS() 
 {
     print(1,"lightfield::~Lightfield_CROSS() called...");
+}
+
+bool OpenLF::lightfield::Lightfield_CROSS::open(const std::string filename)
+{
+    int b = this->OpenLF::lightfield::Lightfield::open(filename);
+    // The intersec coordinates are the coordinates describing where the
+    // vertical axis intersects the horizontal axis. So far, this is set to
+    // the middle of both axises and we assume that both axises have an
+    // odd number of pictures!
+    m_properties.set_field("intersec_h",int(cams_h()/2));
+    m_properties.set_field("intersec_v", int(cams_v()/2));
+    return b;
+}
+
+/*!
+ \author LukasDSauer
+*/
+int OpenLF::lightfield::Lightfield_CROSS::intersec_h(){
+    int ih;
+    m_properties.get_field("intersec_h",ih);
+    return ih;
+}
+
+/*!
+ \author LukasDSauer
+*/
+int OpenLF::lightfield::Lightfield_CROSS::intersec_v(){
+    int iv;
+    m_properties.get_field("intersec_v",iv);
+    return iv;
 }
 
 /*!
@@ -50,8 +81,8 @@ void OpenLF::lightfield::Lightfield_CROSS::getImage(int h, int v, const std::str
     
     
     if(type()==LF_CROSS) {
-        if(v==0) img = m_channels[channel_name].viewToROI(h*imgWidth(),0,imgWidth(),imgHeight());
-        else if(h==0) img = m_channels[channel_name].viewToROI(v*imgHeight(),imgHeight(),imgHeight(),imgWidth());
+        if(v==intersec_v()) img = m_channels[channel_name].viewToROI(h*imgWidth(),0,imgWidth(),imgHeight());
+        else if(h==intersec_h()) img = m_channels[channel_name].viewToROI(v*imgHeight(),imgHeight(),imgHeight(),imgWidth());
     }
     
     else throw OpenLF_Exception("Lightfield::getImage -> unknown LF_TYPE!");
@@ -74,7 +105,7 @@ float OpenLF::lightfield::Lightfield_CROSS::getLoxel(int h, int v, int x, int y,
         // check if requested image is in range
         if(h<0 || h>=cams_h() || v<0 || v>=cams_v())
             throw OpenLF_Exception("Lightfield::getLoxel -> out of light field bounds!");
-        if(v==0){
+        if(v==intersec_v()){
             try {
                 // The horizontal row of the CROSS lightfield is saved in the first row of the ImageChannel.
                 val = m_channels[channel_name](h*imgWidth()+x,y);
@@ -83,7 +114,7 @@ float OpenLF::lightfield::Lightfield_CROSS::getLoxel(int h, int v, int x, int y,
                 e = OpenLF_Exception("Lightfield::getLoxel -> channel access exception!");
                 std::cout << e.what() << std::endl;
             }
-        } else if(h==0){
+        } else if(h==intersec_h()){
             try {
                 // The vertival column of the CROSS is  saved transposed (!) in the second row of ImageChannel
                 val = m_channels[channel_name](v*imgHeight()+y,imgHeight()+x);
@@ -93,7 +124,7 @@ float OpenLF::lightfield::Lightfield_CROSS::getLoxel(int h, int v, int x, int y,
                 std::cout << e.what() << std::endl;
             }    
         } else
-            throw OpenLF_Exception("Lightfield_CROSS::getLoxel() -> either h or v must be zero!");
+            throw OpenLF_Exception(string("Lightfield_CROSS::getLoxel() -> either h or v must be the intersection point coordinate (H: ") + string(to_string(intersec_h())) + string(", V: ") + string(to_string(intersec_v())) +string( ")") );
         
         return val;
     }
@@ -157,6 +188,7 @@ vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield_CROSS::getHorizont
 
     return getHorizontalEpiChannel_parent(channel_name, y, 0, focus);
 }
+
 
 /*!
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
