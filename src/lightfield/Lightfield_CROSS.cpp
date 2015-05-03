@@ -88,6 +88,139 @@ void OpenLF::lightfield::Lightfield_CROSS::getImage(int h, int v, const std::str
     else throw OpenLF_Exception("Lightfield::getImage -> unknown LF_TYPE!");
 }
 
+void OpenLF::lightfield::Lightfield_CROSS::getImage(int h, int v, vigra::MultiArray<2,float> &img){
+    if(v==intersec_v()){
+        OpenLF::lightfield::Lightfield::getImage(h, v, img);
+    } else if(h==intersec_h()){
+        if(!img.hasData())
+        {
+            //Height and Width are switched around, because the vertical axis is saved transposed.
+            img = vigra::MultiArray<2,float>(shape(imgHeight(),imgWidth()));
+        }
+        else
+        {
+            //Height and Width are switched around, because the vertical axis is saved transposed.
+            if(img.width() != imgHeight() || img.height() != imgWidth())
+                throw OpenLF_Exception("Lightfield::getImage -> shape mismatch!");
+        }
+
+        if(hasRGB()) {
+            vigra::MultiArrayView<2,float> img_r;
+            getImage(h,v,"r",img_r);
+            vigra::MultiArrayView<2,float> img_g;
+            getImage(h,v,"g",img_g);
+            vigra::MultiArrayView<2,float> img_b;
+            getImage(h,v,"b",img_b);
+
+            OpenLF::image::utils::mergeChannels(img_r,img_b,img_b,img);
+        }
+        else if(hasBW()) {
+            vigra::MultiArrayView<2,float> img_bw;
+            getImage(h,v,"bw",img_bw);
+            img = vigra::MultiArray<2,float>(img_bw);
+        }
+        else throw OpenLF_Exception("Lightfield::getImage -> no image data available!");
+    } else throw OpenLF_Exception("Lightfield_CROSS::getImage -> Either h or v must be an intersection point coordinate!");
+}
+
+void OpenLF::lightfield::Lightfield_CROSS::getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<float>> &img){
+    if(v==intersec_v()){
+        OpenLF::lightfield::Lightfield::getImage(h, v, img);
+    } else if(h==intersec_h()){
+        if(!img.hasData())
+        {
+            //Height and Width are switched around, because the vertical axis is saved transposed.
+            img = vigra::MultiArray<2,vigra::RGBValue<float>>(shape(imgHeight(),imgWidth()));
+        }
+        else
+        {
+            //Height and Width are switched around, because the vertical axis is saved transposed.
+            if(img.width() != imgHeight() || img.height() != imgWidth())
+                throw OpenLF_Exception("Lightfield::getImage -> shape mismatch!");
+        }
+
+        if(hasRGB()) {
+            vigra::MultiArrayView<2,float> img_r;
+            getImage(h,v,"r",img_r);
+            vigra::MultiArrayView<2,float> img_g;
+            getImage(h,v,"g",img_g);
+            vigra::MultiArrayView<2,float> img_b;
+            getImage(h,v,"b",img_b);
+
+            OpenLF::image::utils::mergeChannels(img_r,img_g,img_b,img);
+        }
+        else if(hasBW())
+        {
+            vigra::MultiArrayView<2,float> img_bw;
+            getImage(h,v,"bw",img_bw);
+
+            for(int c=0; c<3; c++)
+            {
+                //Height and Width are switched around, because the vertical axis is saved transposed.
+                for(int y=0; y<imgWidth(); y++)
+                {
+                    //Height and Width are switched around, because the vertical axis is saved transposed.
+                    for(int x=0; x<imgHeight(); x++)
+                    {
+                        img(x,y)[c] = img_bw(x,y);
+                    }
+                }
+            }
+        }
+        else throw OpenLF_Exception("Lightfield::getImage -> no rgb or bw image data available!");
+    } else throw OpenLF_Exception("Lightfield_CROSS::getImage -> Either h or v must be an intersection point coordinate!");
+
+}
+
+void OpenLF::lightfield::Lightfield_CROSS::getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> > &img) {
+    if (v == intersec_v()) {
+        OpenLF::lightfield::Lightfield::getImage(h, v, img);
+    } else if (h == intersec_h()) {
+        if(!img.hasData())
+        {
+            //Height and Width are switched around, because the vertical axis is saved transposed.
+            img = vigra::MultiArray<2,vigra::RGBValue<float>>(shape(imgHeight(),imgWidth()));
+        }
+        else
+        {
+            //Height and Width are switched around, because the vertical axis is saved transposed.
+            if(img.width() != imgHeight() || img.height() != imgWidth())
+                throw OpenLF_Exception("Lightfield::getImage -> shape mismatch!");
+        }
+
+        if(hasRGB()) {
+            vigra::MultiArrayView<2,float> img_r;
+            getImage(h,v,"r",img_r);
+            vigra::MultiArrayView<2,float> img_g;
+            getImage(h,v,"g",img_g);
+            vigra::MultiArrayView<2,float> img_b;
+            getImage(h,v,"b",img_b);
+
+            OpenLF::image::utils::mergeChannels(img_r,img_g,img_b,img);
+        }
+        else if(hasBW())
+        {
+            vigra::MultiArrayView<2,float> img_bw;
+            getImage(h,v,"bw",img_bw);
+
+            for(int c=0; c<3; c++)
+            {
+                //Height and Width are switched around, because the vertical axis is saved transposed.
+                for(int y=0; y<imgWidth(); y++)
+                {
+                    //Height and Width are switched around, because the vertical axis is saved transposed.
+                    for(int x=0; x<imgHeight(); x++)
+                    {
+                        img(x,y)[c] = img_bw(x,y);
+                    }
+                }
+            }
+        }
+        else throw OpenLF_Exception("Lightfield::getImage -> no rgb or bw image data available!");
+    } else throw OpenLF_Exception("Lightfield_CROSS::getImage -> Either h or v must be an intersection point coordinate!");
+
+}
+
 
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
@@ -105,16 +238,18 @@ float OpenLF::lightfield::Lightfield_CROSS::getLoxel(int h, int v, int x, int y,
         // check if requested image is in range
         if(h<0 || h>=cams_h() || v<0 || v>=cams_v())
             throw OpenLF_Exception("Lightfield::getLoxel -> out of light field bounds!");
-        if(v==intersec_v()){
+        // If the vertival coordinate is intersec_v, then the image is on the horizontal axis.
+        if(v==intersec_v()) {
             try {
                 // The horizontal row of the CROSS lightfield is saved in the first row of the ImageChannel.
-                val = m_channels[channel_name](h*imgWidth()+x,y);
+                val = m_channels[channel_name](h * imgWidth() + x, y);
             }
-            catch(std::exception &e){
+            catch (std::exception &e) {
                 e = OpenLF_Exception("Lightfield::getLoxel -> channel access exception!");
                 std::cout << e.what() << std::endl;
             }
-        } else if(h==intersec_h()){
+        }//If the horizontal coordinate is intersec_h, then the image is on the vertical axis.
+        else if(h==intersec_h()){
             try {
                 // The vertival column of the CROSS is  saved transposed (!) in the second row of ImageChannel
                 val = m_channels[channel_name](v*imgHeight()+y,imgHeight()+x);

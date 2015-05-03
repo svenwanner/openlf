@@ -424,6 +424,18 @@ void OpenLF::lightfield::Lightfield::appendProperties(OpenLF::lightfield::Proper
 void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,float> &img)
 //void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArrayView<2,float> &img)
 {
+    // In the case of CROSS or 3DV, width and height must be switched, because the
+    // image is saved transposed. Therefore, I made this function virtual to treat
+    // these extra cases.
+    if(!img.hasData())
+    {
+        img = vigra::MultiArray<2,float>(shape(imgWidth(),imgHeight()));
+    }
+    else
+    {
+        if(img.width() != imgWidth() || img.height() != imgHeight())
+            throw OpenLF_Exception("Lightfield::getImage -> shape mismatch!");
+    }
     if(hasRGB()) {
         vigra::MultiArrayView<2,float> img_r;
         getImage(h,v,"r",img_r);
@@ -461,6 +473,9 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
 void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<float>> &img) 
 //void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArrayView<2,vigra::RGBValue<float>> &img) 
 {
+    // In the case of CROSS (vertical axis) or 3DV, width and height must be switched, because the
+    // image is saved transposed. Therefore, I made this function virtual to treat
+    // these extra cases.
     if(!img.hasData())
     {
         img = vigra::MultiArray<2,vigra::RGBValue<float>>(shape(imgWidth(),imgHeight()));
@@ -519,6 +534,9 @@ void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,
 void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> &img) 
 //void OpenLF::lightfield::Lightfield::getImage(int h, int v, vigra::MultiArrayView<2,vigra::RGBValue<vigra::UInt8>> &img) 
 {
+    // In the case of CROSS or 3DV, width and height must be switched, because the
+    // image is saved transposed. Therefore, I made this function virtual to treat
+    // these extra cases.
     if(!img.hasData())
     {
         img = vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>>(shape(imgWidth(),imgHeight()));

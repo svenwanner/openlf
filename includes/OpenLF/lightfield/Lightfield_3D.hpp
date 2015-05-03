@@ -57,8 +57,32 @@ public:
      \param img reference to MultiArrayView
     */
     void getImage(int h, int v, const std::string channel_name, vigra::MultiArrayView<2,float> &img);
-    
-    
+
+    //! access a single image of a light field channel
+    /*!
+     \param h horizontal index
+     \param v vertical index
+     \param img reference to bw MultiArray
+    */
+    void getImage(int h, int v, vigra::MultiArray<2,float> &img);
+
+    //! access a single rgb image of a light field
+    /*!
+     \param h horizontal index
+     \param v vertical index
+     \param img reference to a rgb float MultiArray
+    */
+    void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<float>> &img);
+
+    //! access a single rgb image of a light field
+    /*!
+     \param h horizontal index
+     \param v vertical index
+     \param img reference to a rgb uint8 MultiArray
+    */
+    void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> > &img);
+
+
 public: //change!
     
     //! get a view to a horizontal epi of the channel specified
