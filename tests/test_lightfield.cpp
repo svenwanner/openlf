@@ -871,10 +871,8 @@ void test_lightfield::test_image_access(){
     vigra::MultiArray<2,float> camel_ma_bw = vigra::MultiArray<2,float>();
     lf->getImage(3,0,camel_ma_bw);
     string filename = test_result_dir+"4D_getImageCamel_MA_bw.jpg";
-    //SegFault
     OpenLF::image::io::imsave(filename,camel_ma_bw);
     OpenLF::image::ImageChannel camel_fromMA_bw(camel_ma_bw);
-    //SegFault
     OpenLF::image::io::imsave(test_result_dir+"4D_getImageCamel_ICfromMA_bw.jpg",camel_fromMA_bw);
     vigra::MultiArray<2,vigra::RGBValue<float> > camel_ma_rgb = vigra::MultiArray<2,vigra::RGBValue<float> >();
     lf->getImage(3,0,camel_ma_rgb);
@@ -884,11 +882,9 @@ void test_lightfield::test_image_access(){
 //    // Generating ImageChannel from the MultiArrayView
 //    // This produces very weird output. I don't understand this bug so far.
 //    OpenLF::image::ImageChannel fish_ic(fish_mav_1);
-//     //SegFault
 //    OpenLF::image::io::imsave(test_result_dir+"4D_getImageFish_ICfromMAVfromLF_b.jpg",fish_ic);
 //    //For comparison
 //    map< std::string,OpenLF::image::ImageChannel > tmpMap;
-//    //SegFault
 //    OpenLF::image::io::imread(test_data_dir+"OpenLF_testLF/diversity/rgb/0008.jpg",tmpMap);
 //    OpenLF::image::ImageChannel tmpIC = tmpMap["r"];
 //    vigra::MultiArrayView<2,float> tmpMAV = *tmpIC.image();
@@ -900,23 +896,23 @@ void test_lightfield::test_image_access(){
     // test 3DH
     //==========================================================================
 
-    OpenLF::lightfield::Lightfield* lf3D = new OpenLF::lightfield::Lightfield_3D();
+    lf = new OpenLF::lightfield::Lightfield_3D();
     // Opening from config-file
-    CPPUNIT_ASSERT( lf3D ->open(cfgnames["3DH_diversity"]));
+    CPPUNIT_ASSERT( lf ->open(cfgnames["3DH_diversity"]));
     //Testing getImage to MultiArrayView
     vigra::MultiArrayView<2,float> creek_mav = vigra::MultiArrayView<2,float>();
-    lf3D->getImage(0,0,"r",creek_mav);
+    lf->getImage(0,0,"r",creek_mav);
     OpenLF::image::io::imsave(test_result_dir+"3DH_getImageCreek_MAV_r.jpg",creek_mav);
 
     //Testing getImage() to MultiArray (BW and RGB)
     vigra::MultiArray<2,float> mount_ma_bw = vigra::MultiArray<2,float>();
-    lf3D->getImage(1,0,mount_ma_bw);
+    lf->getImage(1,0,mount_ma_bw);
     filename = test_result_dir+"3DH_getImageMountain_MA_bw.jpg";
     OpenLF::image::io::imsave(filename,mount_ma_bw);
     OpenLF::image::ImageChannel mount_fromMA_bw(mount_ma_bw);
     OpenLF::image::io::imsave(test_result_dir+"3DH_getImageMountain_ICfromMA.jpg",mount_fromMA_bw);
     vigra::MultiArray<2, vigra::RGBValue<float> > mount_ma_rgb = vigra::MultiArray<2,vigra::RGBValue<float> >();
-    lf3D->getImage(1,0,mount_ma_rgb);
+    lf->getImage(1,0,mount_ma_rgb);
     filename = test_result_dir+"3DH_getImageMountain_MA_rgb.jpg";
     OpenLF::image::io::imsave(filename,mount_ma_rgb);
 //    
@@ -930,27 +926,57 @@ void test_lightfield::test_image_access(){
     //==========================================================================
 
     // Opening from config-file
-    CPPUNIT_ASSERT( lf3D ->open(cfgnames["3DV_diversity"]));
+    CPPUNIT_ASSERT( lf ->open(cfgnames["3DV_diversity"]));
     //Testing getImage to MultiArrayView
     vigra::MultiArrayView<2,float> fire_mav = vigra::MultiArrayView<2,float>();
-    lf3D->getImage(0,11,"g",fire_mav);
+    lf->getImage(0,11,"g",fire_mav);
     OpenLF::image::io::imsave(test_result_dir+"3DV_getImageFire_MAV_g.jpg",fire_mav);
 
     //Testing getImage() to MultiArray (BW and RGB)
     vigra::MultiArray<2,float> cliff_ma_bw = vigra::MultiArray<2,float>();
-    lf3D->getImage(0,2,cliff_ma_bw);
+    lf->getImage(0,2,cliff_ma_bw);
     filename = test_result_dir+"3DV_getImageCliff_MA_bw.jpg";
     OpenLF::image::io::imsave(filename,cliff_ma_bw);
     OpenLF::image::ImageChannel cliff_fromMA_bw(cliff_ma_bw);
     OpenLF::image::io::imsave(test_result_dir+"3DV_getImageCliff_ICfromMA.jpg",cliff_fromMA_bw);
     vigra::MultiArray<2, vigra::RGBValue<float> > cliff_ma_rgb = vigra::MultiArray<2,vigra::RGBValue<float> >();
-    lf3D->getImage(0,2,cliff_ma_rgb);
+    lf->getImage(0,2,cliff_ma_rgb);
     filename = test_result_dir+"3DV_getImageCliff_MA_rgb.jpg";
     OpenLF::image::io::imsave(filename,cliff_ma_rgb);
 //    
 //    // Generating ImageChannel from the MultiArrayView
 //    // This produces very weird output. I don't understand this bug so far.
 //    OpenLF::image::ImageChannel fire_ic(fire_mav);
-//    OpenLF::image::io::imsave(test_result_dir+"3DV_getImageFire_ICfromMAVfromLF_b.jpg",fire_ic);
+//    OpenLF::image::io::imsave(test_result_dir+"3DV_getImageFire_ICfromMAVfromLF_g.jpg",fire_ic);
 //
+
+    //==========================================================================
+    // test CROSS
+    //==========================================================================
+
+    lf = new OpenLF::lightfield::Lightfield_CROSS();
+    // Opening from config-file
+    CPPUNIT_ASSERT( lf ->open(cfgnames["CROSS_diversity"]));
+    //Testing getImage to MultiArrayView
+    vigra::MultiArrayView<2,float> city_mav = vigra::MultiArrayView<2,float>();
+    lf->getImage(6,2,"b",city_mav);
+    OpenLF::image::io::imsave(test_result_dir+"CROSS_getImageCity_MAV_b.jpg",city_mav);
+
+    //Testing getImage() to MultiArray (BW and RGB)
+    vigra::MultiArray<2,float> taj_ma_bw = vigra::MultiArray<2,float>();
+    lf->getImage(3,0,taj_ma_bw);
+    filename = test_result_dir+"CROSS_getImageTajMahal_MA_bw.jpg";
+    OpenLF::image::io::imsave(filename,taj_ma_bw);
+    OpenLF::image::ImageChannel taj_fromMA_bw(taj_ma_bw);
+    OpenLF::image::io::imsave(test_result_dir+"CROSS_getImageTajMahal_ICfromMA.jpg",taj_fromMA_bw);
+    vigra::MultiArray<2, vigra::RGBValue<float> > taj_ma_rgb = vigra::MultiArray<2,vigra::RGBValue<float> >();
+    lf->getImage(3,0,taj_ma_rgb);
+    filename = test_result_dir+"CROSS_getImageTajMahal_MA_rgb.jpg";
+    OpenLF::image::io::imsave(filename,taj_ma_rgb);
+
+//    // Generating ImageChannel from the MultiArrayView
+//    // This produces very weird output. I don't understand this bug so far.
+//    OpenLF::image::ImageChannel city_ic(city_mav);
+//    OpenLF::image::io::imsave(test_result_dir+"CROSS_getImageCity_ICfromMAVfromLF_b.jpg",city_ic);
+
 }
