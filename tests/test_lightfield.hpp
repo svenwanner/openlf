@@ -38,7 +38,6 @@
 #include "OpenLF/lightfield/Lightfield_CROSS.hpp"
 #include "OpenLF/lightfield/Properties.hpp"
 #include "OpenLF/lightfield/FileHandler.hpp"
-#include "OpenLF/operators/HDF5Memory.hpp"
 
 using namespace std;
 using namespace OpenLF::lightfield;

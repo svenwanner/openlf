@@ -17,15 +17,26 @@ OpenLF::operators::HDF5Memory::HDF5Memory(std::string filename, std::string oper
     //Every operator will be getting its own group in the HDF5File
     file.cd_mk(operator_name);
 }
+void OpenLF::operators::HDF5Memory::saveProcessResult(std::string process_name, vigra::MultiArrayView<2,float> &result) {
+    file.write(process_name, result );
+}
 
 void OpenLF::operators::HDF5Memory::saveProcessResult(std::string process_name, OpenLF::image::ImageChannel &result) {
-    file.write(process_name, *(result->data()) );
+    file.write(process_name, *(result.image()) );
 }
 
 void OpenLF::operators::HDF5Memory::openChannel(std::string channel_name, OpenLF::image::ImageChannel &img_channel) {
-    vigra::MultiArrayView<2,float> data;
+    vigra::ArrayVector<long long unsigned int> size = file.getDatasetShape(channel_name);
+
+    // size[0] is the width of the dataset, size[1] is its height
+    vigra::MultiArray<2,float> *data = new vigra::MultiArray<2,float>(vigra::MultiArray<2,float>::difference_type(size[0],size[1]));
+    file.read(channel_name,*data);
+    img_channel.init(size[0],size[1],data->data());
+
+}
+
+void OpenLF::operators::HDF5Memory::openChannel(std::string channel_name, vigra::MultiArray<2,float> &img_channel) {
     // If channel_name's first character is a "/", the path will be interpreted as absolute, otherwise it will be a
     // a relative path from the current group ( the group that is named like the operator).
-    file.read(channel_name, data);
-    img_channel = OpenLF::image::ImageChannel(data);
+    file.readAndResize(channel_name, img_channel);
 }

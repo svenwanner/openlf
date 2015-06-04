@@ -5,6 +5,8 @@ OPTION(BUILD_TEST_CHANNEL_VIEW "Build test_Channel_view" ON)
 OPTION(BUILD_TEST_LIGHTFIELD_IO "Build test_lightfield_io" ON)
 OPTION(BUILD_TEST_LIGHTFIELD "Build test_lightfield" ON)
 OPTION(BUILD_TEST_OPERATOR "Build test_operator" ON)
+OPTION(BUILD_TEST_HDF5MEMORY "Build test_hdf5memory" ON)
+
 
 enable_testing()
 
@@ -91,5 +93,18 @@ if(BUILD_TEST_OPERATOR)
 	add_dependencies(OpenLF_test_operator Configure)
 	add_test(OpenLF_test_operator ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_operator)
 endif()
+
+if(BUILD_TEST_HDF5MEMORY)
+	#TEST: test_hdf5memory
+	    add_executable(OpenLF_test_hdf5memory
+		./test_hdf5memory_run.cpp
+		./test_hdf5memory.cpp
+		${SRCS} ${HDRS})
+	    target_link_libraries(OpenLF_test_hdf5memory libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY} )
+
+	add_dependencies(OpenLF_test_hdf5memory Configure)
+	add_test(OpenLF_test_hdf5memory ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_hdf5memory)
+endif()
+
 
 	
