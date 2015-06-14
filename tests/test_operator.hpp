@@ -32,8 +32,7 @@
 #include "OpenLF/lightfield/FileHandler.hpp"
 #include "OpenLF/operators/My4DOperator.hpp"
 #include "OpenLF/operators/MyEpiOperator.hpp"
-//#include "OpenLF/operators/Operator_4D.hpp"
-//#include "OpenLF/operators/Operator.hpp"
+#include "OpenLF/operators/Structure_Tensor.hpp"
 
 class test_operator : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_operator);
