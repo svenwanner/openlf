@@ -83,6 +83,13 @@
 
 typedef enum {NONE,LF_4D,LF_3DH,LF_3DV,LF_CROSS} LF_TYPE;
 typedef enum {HORIZONTAL,VERTICAL} DIRECTION;
+typedef vigra::MultiArray<2,float> array_2D;
+typedef vigra::MultiArray<2,float> array_1D;
+typedef vigra::MultiArrayView<2, float> view_2D;
+typedef vigra::MultiArrayView<1, float> view_1D;
+typedef vigra::Shape2 shape;
+typedef vigra::Shape2 strideTag;
+
 
 struct OpenLF_Exception : public std::exception
 {

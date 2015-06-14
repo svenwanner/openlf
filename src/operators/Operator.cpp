@@ -39,9 +39,39 @@ void OpenLF::operators::Operator::cleanup()
 {
     lf = NULL;
     properties = NULL;
-    tmp_memory.clear();
+    m_tmp_memory.clear();
 }
 
+vigra::MultiArrayView<2, float> OpenLF::operators::Operator::lf_channel(std::string channel) 
+{
+    if (lf->hasChannel(channel)) {
+        return *(lf->data(channel)->image());
+    }
+    else {
+       throw OpenLF_Exception("Channel doesn't exist!");
+    }
+}
+
+vigra::MultiArrayView<2, float> * OpenLF::operators::Operator::memory_ptr(std::string channel) 
+{
+    if (m_tmp_views.find(channel) != m_tmp_views.end()) {
+        return &(m_tmp_views[channel]);
+    }
+    else {
+       throw OpenLF_Exception("Channel doesn't exist!");
+    }
+}
+/*
+OpenLF::image::ImageChannel * tmp_channels_ptr(std::string channel) 
+{
+    if (tmp_memory.find(channel) != tmp_memory.end()) {
+        return &(m_tmp_memory[channel]);
+    }
+    else {
+       throw OpenLF_Exception("Channel doesn't exist!");
+    }
+}
+*/
 void OpenLF::operators::Operator::process() 
 {
     allocate();

@@ -27,11 +27,6 @@
 #include "OpenLF/lightfield/DataHandler.hpp"
 #include "OpenLF/lightfield/FileHandler.hpp"
 
-
-typedef vigra::Shape2 shape;
-typedef vigra::Shape2 strideTag;
-typedef vigra::MultiArrayView<2, float> view_2D;
-
 namespace OpenLF { 
     namespace lightfield { 
         
@@ -228,7 +223,7 @@ public:
     /*!
      \param channel_name the name of the channel
     */
-    OpenLF::image::ImageChannel *data(const std::string channel_name);
+    OpenLF::image::ImageChannel * data(const std::string channel_name);
     
     
     //! set pointer passed to the address of the channel specified

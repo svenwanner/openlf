@@ -26,6 +26,8 @@
 #include "OpenLF/lightfield/Lightfield.hpp"
 
 
+typedef vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> RGB_Array;
+
 namespace OpenLF {
     namespace operators {
      
@@ -51,9 +53,19 @@ public:
      \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
     */
     void set(OpenLF::lightfield::Properties *properties);
-    
+
+    vigra::MultiArrayView<2, float> lf_channel(std::string channel);
+
+    vigra::MultiArrayView<2, float> * memory_ptr(std::string channel);
+
+    //OpenLF::image::ImageChannel * tmp_channels_ptr(std::string channel);
+
     virtual void process();
         
+    std::map<std::string,OpenLF::image::ImageChannel> m_tmp_memory;
+
+    std::map<std::string,vigra::MultiArrayView<2, float>> m_tmp_views;
+
 protected:
     
     virtual void allocate() = 0;
@@ -64,7 +76,8 @@ protected:
     
     OpenLF::lightfield::Lightfield *lf;
     OpenLF::lightfield::Properties *properties;
-    std::map<std::string,OpenLF::image::ImageChannel> tmp_memory;
+    
+    
     std::vector<std::string> inslots;
     std::vector<std::string> outslots;
 };

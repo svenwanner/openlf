@@ -147,6 +147,16 @@ bool imsave(const std::string filename, const vigra::MultiArray<2,float> img);
 
 //! saves an image to file
 /*!
+ Saves a 2D MultiArray float image (BW) to file.
+ \param filename path to save the file
+ \param img MultiArray float image
+ \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
+*/ 
+bool imsave_HQ_float(const std::string filename, const vigra::MultiArray<2,float> img);
+
+
+//! saves an image to file
+/*!
  Saves a 2D MultiArray RGBValue<float> image (RGB) to file.
  \param filename path to save the file
  \param img MultiArray RGBValue<float> image

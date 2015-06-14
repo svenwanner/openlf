@@ -430,6 +430,27 @@ bool OpenLF::image::io::imsave(const std::string filename, vigra::MultiArray<2,f
     return true;
 }
 
+bool OpenLF::image::io::imsave_HQ_float(const std::string filename, vigra::MultiArray<2,float> img)
+{
+    print(2,"image::io::imread(filename,img) called...");
+    std::string ftype = OpenLF::helpers::find_ftype(filename);
+
+     try {
+        // allocate memory to store range mapping results
+
+        if(ftype=="jpg")
+            vigra::exportImage(img, vigra::ImageExportInfo(filename.c_str()).setCompression("JPEG QUALITY=100"));
+        else
+            vigra::exportImage(img, filename.c_str());
+        
+    } catch(std::exception & e) {
+        warning(e.what());
+        return false;
+    }
+    
+    return true;
+}
+
 bool OpenLF::image::io::imsave(const std::string filename, vigra::MultiArray<2,vigra::RGBValue<float> > img)
 {
     print(2,"image::io::imread(filename,img) called...");

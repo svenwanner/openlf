@@ -24,32 +24,67 @@
 //#include "OpenLF/global.hpp"
 #include "OpenLF/operators/Operator.hpp"
 
-typedef vigra::MultiArrayView<2, float> view_2D;
-typedef vigra::MultiArrayView<1, float> view_1D;
-typedef vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> RGB_Array;
-typedef std::vector<view_2D> epi_vector;
-
 namespace OpenLF {
     namespace operators {
+
+typedef std::vector<array_2D> epi_vector;
+typedef std::vector<view_2D> epi_view_vector;
+//typedef std::vector<epi_view> epi_vector;
+typedef std::map < std::string, std::vector<array_2D> > epi_map;
+typedef std::map < std::string, std::vector<view_2D> > epi_view_map;
+
+struct epi_view {
+    view_2D EPI;
+    int focus;
+    //int height() { return EPI.height(); }
+    //int width() { return EPI.width(); }
+    //vigra::Shape2 shape() { return EPI.shape(); }
+};
+
+struct epi {
+    array_2D EPI;
+    //int focus=-pow(10,6);
+    int focus;
+    //int height() { return EPI.height(); }
+    //int width() { return EPI.width(); }
+    //vigra::Shape2 shape() { return EPI.shape(); }
+};
+
+//to use with different focuses for each epi 
+typedef std::vector<epi_view> refocused_epi_vector;
+typedef std::map < std::string, epi_vector > refocused_epi_map;
 
 class Operator_EPI : public Operator {
 public:
     Operator_EPI(std::vector<std::string> inslots, std::vector<std::string> outslots) : Operator(inslots,outslots) {};
     virtual ~Operator_EPI();
 
+    //void load_epi_containers();
     void load_epi_containers(std::string channel);
     view_2D refocus(int focus, view_2D epi);
-    epi_vector refocus(int focus);
+    // refocuses leaving the pixels uncut
+    epi refocus_uncut(int focus, epi_view epi);
+    epi refocus_uncut(int focus, epi epi);
+    array_2D refocus_uncut(int focus, view_2D epi);
+    epi backfocus(epi epi);
+    //epi backfocus(epi_view epi);
+    //epi_vector refocus(int focus);
     void set(OpenLF::lightfield::Lightfield *lf);
-    epi_vector * horizontal_epis_ptr();
-    epi_vector * vertical_epis_ptr();
-    view_2D get_horizontal_epi(int where);
-    view_2D get_vertical_epi(int where);
+    epi_view_vector * horizontal_epis_ptr(std::string channel);
+    epi_view_vector * vertical_epis_ptr(std::string channel);
+    view_2D get_horizontal_epi(std::string channel, int where);
+    view_2D get_vertical_epi(std::string channel, int where);
+    void refocus(int focus, std::string channel);
+    double get_focus(std::string channel);
 
-private:
-    epi_vector m_horizontal_epis; 
-    epi_vector m_vertical_epis;
-    
+//private:
+    // privides storage for many simulaneously refocused epis of the channels 
+    epi_view_map m_horizontal_epis; 
+    epi_view_map m_vertical_epis;
+    epi_map m_horizontal_refocused; 
+    epi_map m_vertical_refocused;
+    std::map <std::string, int> m_focuses;
+    int nr_epis(std::string channel, DIRECTION direction);
 
 };
 
