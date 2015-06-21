@@ -70,17 +70,17 @@ public:
     //epi backfocus(epi_view epi);
     //epi_vector refocus(int focus);
     void set(OpenLF::lightfield::Lightfield *lf);
-    epi_view_vector * horizontal_epis_ptr(std::string channel);
-    epi_view_vector * vertical_epis_ptr(std::string channel);
-    view_2D get_horizontal_epi(std::string channel, int where);
-    view_2D get_vertical_epi(std::string channel, int where);
+    epi_vector * horizontal_epis_ptr(std::string channel);
+    epi_vector * vertical_epis_ptr(std::string channel);
+    array_2D get_horizontal_epi(std::string channel, int where);
+    array_2D get_vertical_epi(std::string channel, int where);
     void refocus(int focus, std::string channel);
     double get_focus(std::string channel);
 
 //private:
     // privides storage for many simulaneously refocused epis of the channels 
-    epi_view_map m_horizontal_epis; 
-    epi_view_map m_vertical_epis;
+    epi_map m_horizontal_epis; 
+    epi_map m_vertical_epis;
     epi_map m_horizontal_refocused; 
     epi_map m_vertical_refocused;
     std::map <std::string, int> m_focuses;

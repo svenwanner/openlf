@@ -69,7 +69,7 @@ public:
 
     OpenLF::operators::orientation focused_orientation(view_2D & source, focuses f, double smoothing_scale, double inner_scale=0.6, double outer_scale=1.1, double max_slope=1.0, double coh_threshold=0.95, std::string st_type="vigra");
 
-    std::vector<array_2D> reconstruct_depth(std::string channel, int focus=0, DIRECTION direction=HORIZONTAL, double inner_scale=0.6, double outer_scale=1.1, std::string coherence="None", double coh_threshold=0.95, double max_slope=1.0, std::string method="vigra");
+    std::vector<array_2D> reconstruct_depth(std::string channel, std::string method="vigra", std::string coherence="None", int focus=0, DIRECTION direction=HORIZONTAL, double inner_scale=0.6, double outer_scale=1.1, double smoothing_scale=1.1, double coh_threshold=0.95, double max_slope=1.0, focuses f= {-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10});
 
     std::vector<array_2D> images_from_epis(std::string channel, DIRECTION direction = HORIZONTAL);
 
@@ -90,8 +90,10 @@ public:
 
     tensor_map m_ST;
 
-    epi_map orientations;
-    epi_map coherences;
+    epi_map orientations_horizontal;
+    epi_map orientations_vertical;
+    epi_map coherences_horizontal;
+    epi_map coherences_vertical;
 
 };
 

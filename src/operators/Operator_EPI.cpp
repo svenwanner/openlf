@@ -60,7 +60,7 @@ void OpenLF::operators::Operator_EPI::load_epi_containers() {
 /* gets the focus of the members m_horizontal_refocused and m_vertical_refocused */
 
 double OpenLF::operators::Operator_EPI::get_focus(std::string channel) {
-    return m_focuses[channel];
+    return m_focuses[channel]; //horizontal only!
 }
 
 // CHANGE
@@ -68,6 +68,7 @@ void OpenLF::operators::Operator_EPI::load_epi_containers(std::string channel) {
 
     m_horizontal_epis[channel].clear();
     m_vertical_epis[channel].clear();
+    m_focuses[channel] = 0.0; //horizontal only!
 
     //horizontal
     if (lf->type() == LF_4D || LF_3DH || LF_CROSS) {
@@ -75,19 +76,21 @@ void OpenLF::operators::Operator_EPI::load_epi_containers(std::string channel) {
             shape epi_shape = shape(lf->imgWidth(),lf->cams_h());
             for (int i=0; i<lf->height(); i++) {
                 view_1D row = lf->data()->find(channel)->second.viewToRow(i); 
-                m_horizontal_epis[channel].push_back(view_2D(epi_shape,row.data()));
+                m_horizontal_epis[channel].push_back(array_2D(epi_shape,row.data()));
             }
         }
         else throw OpenLF_Exception("Operator_EPI::loadEpiContainers -> no channel with that name available!");
     }
-    m_focuses[channel] = 0.0;
-
+    
     //vertical
     if (lf->type() == LF_4D || LF_3DV || LF_CROSS) {
-        shape epi_shape = shape(lf->imgHeight(),lf->cams_v());
-        for (int i=0; i<lf->width(); i++) {
-            view_1D column = lf->data()->find(channel)->second.viewToColumn(i); 
-            m_vertical_epis[channel].push_back (view_2D(epi_shape,column.data()));
+        if (lf->hasChannel(channel)){
+            shape epi_shape = shape(lf->imgHeight(),lf->cams_v());
+            for (int i=0; i<lf->width(); i++) {
+                vigra::MultiArray<2,float> image = *(lf->data()->find(channel)->second.image());
+                vigra::MultiArray<1,float> column(image.bind<0>(i));
+                m_vertical_epis[channel].push_back(array_2D(epi_shape,column.data())); 
+            }
         }
     }
     
@@ -271,21 +274,21 @@ void OpenLF::operators::Operator_EPI::refocus(int focus, std::string channel) {
     }   
 }
 
-OpenLF::operators::epi_vector * vertical_epis_ptr(std::string channel);
+//OpenLF::operators::epi_vector * vertical_epis_ptr(std::string channel);
 
 
-OpenLF::operators::epi_view_vector * OpenLF::operators::Operator_EPI::vertical_epis_ptr(std::string channel) {
+OpenLF::operators::epi_vector * OpenLF::operators::Operator_EPI::vertical_epis_ptr(std::string channel) {
     return &this->m_vertical_epis[channel];
 }
 
-OpenLF::operators::epi_view_vector * OpenLF::operators::Operator_EPI::horizontal_epis_ptr(std::string channel) {
+OpenLF::operators::epi_vector * OpenLF::operators::Operator_EPI::horizontal_epis_ptr(std::string channel) {
     return &this->m_horizontal_epis[channel];
 }
-view_2D OpenLF::operators::Operator_EPI::get_vertical_epi(std::string channel, int where) {
+array_2D OpenLF::operators::Operator_EPI::get_vertical_epi(std::string channel, int where) {
     return this->m_vertical_epis[channel].at(where);
 }
 
-view_2D OpenLF::operators::Operator_EPI::get_horizontal_epi(std::string channel,int where) {
+array_2D OpenLF::operators::Operator_EPI::get_horizontal_epi(std::string channel,int where) {
     return this->m_horizontal_epis[channel].at(where);
 }
 
