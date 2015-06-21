@@ -56,6 +56,140 @@ void OpenLF::lightfield::Lightfield_3D::getImage(int h, int v, const std::string
     else throw OpenLF_Exception("Lightfield::getImage -> unknown LF_TYPE!");
 }
 
+void OpenLF::lightfield::Lightfield_3D::getImage(int h, int v, vigra::MultiArray<2,float> &img){
+    if(type()==LF_3DH){
+        OpenLF::lightfield::Lightfield::getImage(h, v, img);
+    } else if(type()==LF_3DV){
+        if(!img.hasData())
+        {
+            //Height and Width are switched around, because the LF_3DV is saved transposed.
+            img = vigra::MultiArray<2,float>(shape(imgHeight(),imgWidth()));
+        }
+        else
+        {
+            //Height and Width are switched around, because the LF_3DV is saved transposed.
+            if(img.width() != imgHeight() || img.height() != imgWidth())
+                throw OpenLF_Exception("Lightfield::getImage -> shape mismatch!");
+        }
+
+        if(hasRGB()) {
+            vigra::MultiArrayView<2,float> img_r;
+            getImage(h,v,"r",img_r);
+            vigra::MultiArrayView<2,float> img_g;
+            getImage(h,v,"g",img_g);
+            vigra::MultiArrayView<2,float> img_b;
+            getImage(h,v,"b",img_b);
+
+            OpenLF::image::utils::mergeChannels(img_r,img_b,img_b,img);
+        }
+        else if(hasBW()) {
+            vigra::MultiArrayView<2,float> img_bw;
+            getImage(h,v,"bw",img_bw);
+            img = vigra::MultiArray<2,float>(img_bw);
+        }
+        else throw OpenLF_Exception("Lightfield::getImage -> no image data available!");
+    } else throw OpenLF_Exception("Lightfield_3D::getImage -> unknown LF type!");
+}
+
+void OpenLF::lightfield::Lightfield_3D::getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<float>> &img){
+    if(type()==LF_3DH){
+        OpenLF::lightfield::Lightfield::getImage(h, v, img);
+    } else if(type()==LF_3DV){
+
+        if(!img.hasData())
+        {
+            //Height and Width are switched around, because the LF_3DV is saved transposed.
+            img = vigra::MultiArray<2,vigra::RGBValue<float>>(shape(imgHeight(),imgWidth()));
+        }
+        else
+        {
+            //Height and Width are switched around, because the LF_3DV is saved transposed.
+            if(img.width() != imgHeight() || img.height() != imgWidth())
+                throw OpenLF_Exception("Lightfield::getImage -> shape mismatch!");
+        }
+
+        if(hasRGB()) {
+            vigra::MultiArrayView<2,float> img_r;
+            getImage(h,v,"r",img_r);
+            vigra::MultiArrayView<2,float> img_g;
+            getImage(h,v,"g",img_g);
+            vigra::MultiArrayView<2,float> img_b;
+            getImage(h,v,"b",img_b);
+
+            OpenLF::image::utils::mergeChannels(img_r,img_g,img_b,img);
+        }
+        else if(hasBW())
+        {
+            vigra::MultiArrayView<2,float> img_bw;
+            getImage(h,v,"bw",img_bw);
+
+            for(int c=0; c<3; c++)
+            {
+                //Height and Width are switched around, because the LF_3DV is saved transposed.
+                for(int y=0; y<imgWidth(); y++)
+                {
+                    //Height and Width are switched around, because the LF_3DV is saved transposed.
+                    for(int x=0; x<imgHeight(); x++)
+                    {
+                        img(x,y)[c] = img_bw(x,y);
+                    }
+                }
+            }
+        }
+        else throw OpenLF_Exception("Lightfield::getImage -> no rgb or bw image data available!");
+    } else throw OpenLF_Exception("Lightfield_3D::getImage -> unknown LF type!");
+
+}
+
+void OpenLF::lightfield::Lightfield_3D::getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> > &img) {
+    if(type()==LF_3DH){
+        OpenLF::lightfield::Lightfield::getImage(h, v, img);
+    } else if(type()==LF_3DV){
+        if(!img.hasData())
+        {
+            //Height and Width are switched around, because the LF_3DV is saved transposed.
+            img = vigra::MultiArray<2,vigra::RGBValue<float>>(shape(imgHeight(),imgWidth()));
+        }
+        else
+        {
+            //Height and Width are switched around, because the LF_3DV is saved transposed.
+            if(img.width() != imgHeight() || img.height() != imgWidth())
+                throw OpenLF_Exception("Lightfield::getImage -> shape mismatch!");
+        }
+
+        if(hasRGB()) {
+            vigra::MultiArrayView<2,float> img_r;
+            getImage(h,v,"r",img_r);
+            vigra::MultiArrayView<2,float> img_g;
+            getImage(h,v,"g",img_g);
+            vigra::MultiArrayView<2,float> img_b;
+            getImage(h,v,"b",img_b);
+
+            OpenLF::image::utils::mergeChannels(img_r,img_g,img_b,img);
+        }
+        else if(hasBW())
+        {
+            vigra::MultiArrayView<2,float> img_bw;
+            getImage(h,v,"bw",img_bw);
+
+            for(int c=0; c<3; c++)
+            {
+                //Height and Width are switched around, because the LF_3DV is saved transposed.
+                for(int y=0; y<imgWidth(); y++)
+                {
+                    //Height and Width are switched around, because the LF_3DV is saved transposed.
+                    for(int x=0; x<imgHeight(); x++)
+                    {
+                        img(x,y)[c] = img_bw(x,y);
+                    }
+                }
+            }
+        }
+        else throw OpenLF_Exception("Lightfield::getImage -> no rgb or bw image data available!");
+} else throw OpenLF_Exception("Lightfield_3D::getImage -> unknown LF type!");
+
+}
+
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */

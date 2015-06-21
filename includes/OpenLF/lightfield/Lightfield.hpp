@@ -53,7 +53,7 @@ public:
     /*!
      \param filename of the .cfg, .h5,.hdf5 or .lf file 
     */
-    bool open(const std::string filename);
+    virtual bool open(const std::string filename);
     
     
     //! open lightfields from  hdf5 or config file
@@ -263,7 +263,7 @@ public:
      \param v vertical index
      \param img reference to bw MultiArray
     */
-    void getImage(int h, int v, vigra::MultiArray<2,float> &img);
+    virtual void getImage(int h, int v, vigra::MultiArray<2,float> &img);
     //void getImage(int h, int v, vigra::MultiArrayView<2,float> &img);
     
     
@@ -273,7 +273,7 @@ public:
      \param v vertical index
      \param img reference to a rgb float MultiArray
     */
-    void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<float>> &img);
+    virtual void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<float>> &img);
     //void getImage(int h, int v, vigra::MultiArrayView<2,vigra::RGBValue<float>> &img);
     
     
@@ -283,7 +283,7 @@ public:
      \param v vertical index
      \param img reference to a rgb uint8 MultiArray
     */
-    void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> > &img);
+    virtual void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> > &img);
     //void getImage(int h, int v, vigra::MultiArrayView<2,vigra::RGBValue<vigra::UInt8> > &img);
     
     /*!

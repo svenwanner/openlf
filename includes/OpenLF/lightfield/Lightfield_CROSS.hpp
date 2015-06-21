@@ -28,8 +28,15 @@ public:
     Lightfield_CROSS(const std::string filename);
     //Lightfield_CROSS(const Lightfield_CROSS& orig);
     ~Lightfield_CROSS();
+
+    //! open lightfield from  hdf5 or config file
+    /*!
+     \param filename of the .cfg, .h5,.hdf5 or .lf file
+    */
+    bool open(const std::string filename);
     
     //! access a single intensity value of the channel specified
+    //! please note that the camera indeces are interpreted like 4D coordinates.
     /*!
      \param v vertical camera index
      \param h horizontal camera index
@@ -42,6 +49,7 @@ public:
     
     
     //! access a single image of a light field channel
+    //! please note that the camera indeces are interpreted like 4D coordinates.
     /*!
      \param h horizontal index
      \param v vertical index
@@ -49,7 +57,30 @@ public:
      \param img reference to MultiArrayView
     */
     void getImage(int h, int v, const std::string channel_name, vigra::MultiArrayView<2,float> &img);
-    
+
+    //! access a single image of a light field channel
+    /*!
+     \param h horizontal index
+     \param v vertical index
+     \param img reference to bw MultiArray
+    */
+    void getImage(int h, int v, vigra::MultiArray<2,float> &img);
+
+    //! access a single rgb image of a light field
+    /*!
+     \param h horizontal index
+     \param v vertical index
+     \param img reference to a rgb float MultiArray
+    */
+    void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<float>> &img);
+
+    //! access a single rgb image of a light field
+    /*!
+     \param h horizontal index
+     \param v vertical index
+     \param img reference to a rgb uint8 MultiArray
+    */
+    void getImage(int h, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> > &img);
 
 public: 
     
@@ -80,7 +111,13 @@ public:
     */
     vigra::MultiArrayView<2,float> _getVerticalEpiChannel_CROSS(std::string channel_name, int x, int focus);
 
-    
+    // The intersec coordinates are the coordinates describing where the
+    // vertical axis intersects the horizontal axis. So far, this is set to
+    // the middle of both axises and we assume that both axises have an
+    // odd number of pictures!
+    int intersec_h();
+    int intersec_v();
+
 };
 
 
