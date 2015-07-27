@@ -53,8 +53,8 @@ void OpenLF::operators::My4DOperator::precompute()
     
     // allocate some memory to store stuff you may need in compute and post-compute but
     // only during computation. This map is deleted after the operator has finished.
-    tmp_memory["aTmpStorage"] = OpenLF::image::ImageChannel();
-    tmp_memory["aTmpStorage"].init(lf->width(),lf->height(),0.0f);
+    m_tmp_memory["aTmpStorage"] = OpenLF::image::ImageChannel();
+    m_tmp_memory["aTmpStorage"].init(lf->width(),lf->height(),0.0f);
     
     // compute something of importance to use in compute and in postcompute
     if(lf->hasChannel("r") && lf->hasChannel("g") && lf->hasChannel("b")) {
@@ -65,13 +65,13 @@ void OpenLF::operators::My4DOperator::precompute()
         
         #pragma omp parallel for
         for(int n=0; n<lf->width()*lf->height(); n++) {
-            tmp_memory["aTmpStorage"].data()[n] = 0.3*r_ptr[n]+0.59*g_ptr[n]+0.11*b_ptr[n];    
+            m_tmp_memory["aTmpStorage"].data()[n] = 0.3*r_ptr[n]+0.59*g_ptr[n]+0.11*b_ptr[n];
         }
     }
     else {
         #pragma omp parallel for
         for(int n=0; n<lf->width()*lf->height(); n++) {
-            tmp_memory["aTmpStorage"].data()[n] = 1.0f;
+            m_tmp_memory["aTmpStorage"].data()[n] = 1.0f;
         }
     }
     
@@ -105,9 +105,9 @@ void OpenLF::operators::My4DOperator::compute()
         
         #pragma omp parallel for
         for(int n=0; n<lf->width()*lf->height(); n++) {
-            nChannel[n] = abs(tmp_memory["aTmpStorage"].data()[n]-r_ptr[n]);
-            nChannel[n] += abs(tmp_memory["aTmpStorage"].data()[n]-g_ptr[n]);
-            nChannel[n] += abs(tmp_memory["aTmpStorage"].data()[n]-b_ptr[n]);
+            nChannel[n] = abs(m_tmp_memory["aTmpStorage"].data()[n]-r_ptr[n]);
+            nChannel[n] += abs(m_tmp_memory["aTmpStorage"].data()[n]-g_ptr[n]);
+            nChannel[n] += abs(m_tmp_memory["aTmpStorage"].data()[n]-b_ptr[n]);
             if(nChannel[n]<0.0f || nChannel[n]>1.0f)
                 nChannel[n] = 0.0f;
         }
@@ -135,7 +135,7 @@ void OpenLF::operators::My4DOperator::postcompute()
     float* nChannel = lf->channel_ptr("myNewChannel");
     #pragma omp parallel for
     for(int n=0; n<lf->width()*lf->height(); n++) {
-        if(nChannel[n] > tmp_memory["aTmpStorage"].data()[n])
+        if(nChannel[n] > m_tmp_memory["aTmpStorage"].data()[n])
             nChannel[n] = 1.0f;
         else
             nChannel[n] = 0.0;

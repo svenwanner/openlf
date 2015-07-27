@@ -80,21 +80,21 @@ void test_operator::testMethod() {
     vigra::MultiArrayView<2,float> channel_r = *(lf->data("r")->image());
     OpenLF::image::io::imsave(filename18, channel_r);
 
-    //********************************************************
-    //** test MyEpiOperator
-    //********************************************************
-
-    std::string filename19 = test_data2_dir+"MyEpiOperator_refocused.jpg";
-    std::string filename20 = test_data2_dir+"MyEpiOperator_epi_original.jpg";
-
-    myOpEpi = new OpenLF::operators::MyEpiOperator(inslots,outslots);
-
-    myOpEpi->set(lf);
-    myOpEpi->load_epi_containers("r");
-    myOpEpi->process();
-    OpenLF::image::io::imsave(filename20, myOpEpi->get_horizontal_epi(0));
-    view_2D refocused = myOpEpi->refocus(2, myOpEpi->get_horizontal_epi(0));
-    OpenLF::image::io::imsave(filename19, refocused);
+//    //********************************************************
+//    //** test MyEpiOperator
+//    //********************************************************
+//
+//    std::string filename19 = test_data2_dir+"MyEpiOperator_refocused.jpg";
+//    std::string filename20 = test_data2_dir+"MyEpiOperator_epi_original.jpg";
+//
+//    myOpEpi = new OpenLF::operators::MyEpiOperator(inslots,outslots);
+//
+//    myOpEpi->set(lf);
+//    myOpEpi->load_epi_containers("r");
+//    myOpEpi->process();
+//    OpenLF::image::io::imsave(filename20, myOpEpi->get_horizontal_epi(0));
+//    view_2D refocused = myOpEpi->refocus(2, myOpEpi->get_horizontal_epi(0));
+//    OpenLF::image::io::imsave(filename19, refocused);
 
     //********************************************************
     //** test Gaussian smoothing
