@@ -34,6 +34,8 @@
 #include "OpenLF/operators/MyEpiOperator.hpp"
 #include "OpenLF/operators/Structure_Tensor.hpp"
 
+#include <vigra/basicgeometry.hxx>
+
 class test_operator : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(test_operator);
 

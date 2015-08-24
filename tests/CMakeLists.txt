@@ -6,6 +6,7 @@ OPTION(BUILD_TEST_LIGHTFIELD_IO "Build test_lightfield_io" ON)
 OPTION(BUILD_TEST_LIGHTFIELD "Build test_lightfield" ON)
 OPTION(BUILD_TEST_OPERATOR "Build test_operator" ON)
 OPTION(BUILD_TEST_HDF5MEMORY "Build test_hdf5memory" ON)
+OPTION(BUILD_TEST_PERFORMANCE_VIGRA_ST "Build test_performance_vigra_ST" ON)
 
 
 enable_testing()
@@ -104,6 +105,18 @@ if(BUILD_TEST_HDF5MEMORY)
 
 	add_dependencies(OpenLF_test_hdf5memory Configure)
 	add_test(OpenLF_test_hdf5memory ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_hdf5memory)
+endif()
+
+if(BUILD_TEST_PERFORMANCE_VIGRA_ST)
+	#TEST: test_performance_vigra_ST
+	    add_executable(OpenLF_test_performance_vigra_ST
+		./test_performance_vigra_ST_run.cpp
+		./test_performance_vigra_ST.cpp
+		${SRCS} ${HDRS})
+	    target_link_libraries(OpenLF_test_performance_vigra_ST libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY} ${CPPUNIT_LIBRARY} )
+
+	add_dependencies(OpenLF_test_performance_vigra_ST Configure)
+	add_test(OpenLF_test_performance_vigra_ST ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenLF_test_performance_vigra_ST)
 endif()
 
 

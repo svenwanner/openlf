@@ -25,6 +25,8 @@
 #include "OpenLF/global.hpp"
 #include "OpenLF/lightfield/Lightfield.hpp"
 
+#include <vigra/basicgeometry.hxx>
+
 
 typedef vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>> RGB_Array;
 

@@ -92,9 +92,9 @@ void test_operator::testMethod() {
     myOpEpi->set(lf);
     myOpEpi->load_epi_containers("r");
     myOpEpi->process();
-    OpenLF::image::io::imsave(filename20, myOpEpi->get_horizontal_epi(0));
-    view_2D refocused = myOpEpi->refocus(2, myOpEpi->get_horizontal_epi(0));
-    OpenLF::image::io::imsave(filename19, refocused);
+    //OpenLF::image::io::imsave(filename20, myOpEpi->get_horizontal_epi(0));
+    //view_2D refocused = myOpEpi->refocus(2, myOpEpi->get_horizontal_epi(0));
+    //OpenLF::image::io::imsave(filename19, refocused);
 
     //********************************************************
     //** test Gaussian smoothing
@@ -247,17 +247,17 @@ void test_operator::testMethod() {
     //****************************************************************************************************************
     //****************************************************************************************************************
 
-    std::string method = "focused_scharr5x5"; // or "focused_vigra" / "vigra" / "scharr5x5"
+    std::string method = "focused_scharr5x5"; // "vigra" or "focused_vigra" / "scharr5x5" / "focused_scharr5x5"
     OpenLF::operators::orientation orientation;
     OpenLF::operators::focuses f = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}; // for focused ST
-    DIRECTION direction = HORIZONTAL; // or VERTICAL
+    //DIRECTION direction = HORIZONTAL; // or VERTICAL
     std::string coherence = "Yes"; // or "None"
-    int focus = 0; // different single focuses not for focused ST
+    int focus = 0; // different single focuses not for focused STs
     double inner_scale = 1.0;
     double outer_scale = 0.5;
     double smoothing_scale = outer_scale;
     double max_slope = 1.0;
-    double coh_threshold = 0.5;
+    double coh_threshold = 0.8;
 
 
 
@@ -415,138 +415,118 @@ void test_operator::testMethod() {
     //** test reconstruct vigra depth
     //********************************************************
 
+    /*********************************************************************
+     *                     Test from woods    
+     *********************************************************************/
+
     lf1 = new OpenLF::lightfield::Lightfield_4D();
     lf1->open(cfgnames["4D_high_rgb"]);
     OpenLF::operators::Structure_Tensor * ST3 = new OpenLF::operators::Structure_Tensor(inslots,outslots);
     ST3->set(lf1);
     ST3->load_epi_containers("r");
 
-    //std::vector<array_2D> h = ST3->reconstruct_depth("r", method ,coherence, focus, HORIZONTAL, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
-    std::vector<array_2D> v = ST3->reconstruct_depth("r", method ,coherence, focus, direction, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
+//horizontal
 
+    std::vector<array_2D> h = ST3->reconstruct_depth("r", method ,coherence, focus, HORIZONTAL, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
 
-/* care for shape, first rotate ! 
-    auto it_h = h.begin();
-    auto it_v = v.begin();
-    while (it_h != h.end()) {
-        *it_v += *it_h;
-        it_h++;
-        it_v++;
+    array_2D overlay_h(shape(48,64),0.0);
+
+    CPPUNIT_ASSERT(h.size() == 35);
+    for(int i=0;i<35;i++) {
+        std::string filename_woods_h = test_data2_dir+method+"_orientation_image_h_"+std::to_string(i)+".jpg";
+        OpenLF::image::io::imsave_HQ_float(filename_woods_h, h[i]);
+        overlay_h += h[i];
     }
-*/
-    CPPUNIT_ASSERT(v.size() == 35);
-    std::string filename42 = test_data2_dir+method+"_orientation_image1.jpg";
-    std::string filename43 = test_data2_dir+method+"_orientation_image2.jpg";
-    std::string filename44 = test_data2_dir+method+"_orientation_image3.jpg";
-    std::string filename45 = test_data2_dir+method+"_orientation_image4.jpg";
-    std::string filename46 = test_data2_dir+method+"_orientation_image5.jpg";
-    std::string filename47 = test_data2_dir+method+"_orientation_image6.jpg";
-    std::string filename48 = test_data2_dir+method+"_orientation_image7.jpg";
-    std::string filename49 = test_data2_dir+method+"_orientation_image8.jpg";
-    std::string filename50 = test_data2_dir+method+"_orientation_image9.jpg";
-    std::string filename51 = test_data2_dir+method+"_orientation_image10.jpg";
-    std::string filename52 = test_data2_dir+method+"_orientation_image11.jpg";
-    std::string filename53 = test_data2_dir+method+"_orientation_image12.jpg";
-    std::string filename54 = test_data2_dir+method+"_orientation_image13.jpg";
-    std::string filename55 = test_data2_dir+method+"_orientation_image14.jpg";
-    std::string filename56 = test_data2_dir+method+"_orientation_image15.jpg";
-    std::string filename57 = test_data2_dir+method+"_orientation_image16.jpg";
-    std::string filename58 = test_data2_dir+method+"_orientation_image17.jpg";
-    std::string filename59 = test_data2_dir+method+"_orientation_image18.jpg";
-    std::string filename60 = test_data2_dir+method+"_orientation_image19.jpg";
-    std::string filename61 = test_data2_dir+method+"_orientation_image20.jpg";
-    std::string filename62 = test_data2_dir+method+"_orientation_image21.jpg";
-    std::string filename63 = test_data2_dir+method+"_orientation_image22.jpg";
-    std::string filename64 = test_data2_dir+method+"_orientation_image23.jpg";
-    std::string filename65 = test_data2_dir+method+"_orientation_image24.jpg";
-    std::string filename66 = test_data2_dir+method+"_orientation_image25.jpg";
-    std::string filename67 = test_data2_dir+method+"_orientation_image26.jpg";
-    std::string filename68 = test_data2_dir+method+"_orientation_image27.jpg";
-    std::string filename69 = test_data2_dir+method+"_orientation_image28.jpg";
-    std::string filename70 = test_data2_dir+method+"_orientation_image29.jpg";
-    std::string filename71 = test_data2_dir+method+"_orientation_image30.jpg";
-    std::string filename72 = test_data2_dir+method+"_orientation_image31.jpg";
-    std::string filename73 = test_data2_dir+method+"_orientation_image32.jpg";
-    std::string filename74 = test_data2_dir+method+"_orientation_image33.jpg";
-    std::string filename75 = test_data2_dir+method+"_orientation_image34.jpg";
-    std::string filename76 = test_data2_dir+method+"_orientation_image35.jpg";
+    std::string filename_woods_overlay_h = test_data2_dir+method+"_orientation_image_overlay_h.jpg";
+    OpenLF::image::io::imsave_HQ_float(filename_woods_overlay_h, overlay_h);
 
-    OpenLF::image::io::imsave_HQ_float(filename42, v[0]);
-    OpenLF::image::io::imsave_HQ_float(filename43, v[1]);
-    OpenLF::image::io::imsave_HQ_float(filename44, v[2]);
-    OpenLF::image::io::imsave_HQ_float(filename45, v[3]);
-    OpenLF::image::io::imsave_HQ_float(filename46, v[4]);
-    OpenLF::image::io::imsave_HQ_float(filename47, v[5]);
-    OpenLF::image::io::imsave_HQ_float(filename48, v[6]);
-    OpenLF::image::io::imsave_HQ_float(filename49, v[7]);
-    OpenLF::image::io::imsave_HQ_float(filename50, v[8]);
-    OpenLF::image::io::imsave_HQ_float(filename51, v[9]);
-    OpenLF::image::io::imsave_HQ_float(filename52, v[10]);
-    OpenLF::image::io::imsave_HQ_float(filename53, v[11]);
-    OpenLF::image::io::imsave_HQ_float(filename54, v[12]);
-    OpenLF::image::io::imsave_HQ_float(filename55, v[13]);
-    OpenLF::image::io::imsave_HQ_float(filename56, v[14]);
-    OpenLF::image::io::imsave_HQ_float(filename57, v[15]);
-    OpenLF::image::io::imsave_HQ_float(filename58, v[16]);
-    OpenLF::image::io::imsave_HQ_float(filename59, v[17]);
-    OpenLF::image::io::imsave_HQ_float(filename60, v[18]);
-    OpenLF::image::io::imsave_HQ_float(filename61, v[19]);
-    OpenLF::image::io::imsave_HQ_float(filename62, v[20]);
-    OpenLF::image::io::imsave_HQ_float(filename63, v[21]);
-    OpenLF::image::io::imsave_HQ_float(filename64, v[22]);
-    OpenLF::image::io::imsave_HQ_float(filename65, v[23]);
-    OpenLF::image::io::imsave_HQ_float(filename66, v[24]);
-    OpenLF::image::io::imsave_HQ_float(filename67, v[25]);
-    OpenLF::image::io::imsave_HQ_float(filename68, v[26]);
-    OpenLF::image::io::imsave_HQ_float(filename69, v[27]);
-    OpenLF::image::io::imsave_HQ_float(filename70, v[28]);
-    OpenLF::image::io::imsave_HQ_float(filename71, v[29]);
-    OpenLF::image::io::imsave_HQ_float(filename72, v[30]);
-    OpenLF::image::io::imsave_HQ_float(filename73, v[31]);
-    OpenLF::image::io::imsave_HQ_float(filename74, v[32]);
-    OpenLF::image::io::imsave_HQ_float(filename75, v[33]);
-    OpenLF::image::io::imsave_HQ_float(filename76, v[34]); 
+//vertical
+
+    std::vector<array_2D> v = ST3->reconstruct_depth("r", method ,coherence, focus, VERTICAL, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
+
+    array_2D overlay_v(shape(64,48),0.0);
+
+    CPPUNIT_ASSERT(v.size() == 35);
+
+    for(int i=0;i<35;i++) {
+        std::string filename_woods_v = test_data2_dir+method+"_orientation_image_v"+std::to_string(i)+".jpg";
+        OpenLF::image::io::imsave_HQ_float(filename_woods_v, v[i]);
+        overlay_v += v[i];
+    }
+
+    std::string filename_woods_overlay_v = test_data2_dir+method+"_orientation_image_overlay_v.jpg";
+    OpenLF::image::io::imsave_HQ_float(filename_woods_overlay_v, overlay_v);
+
+    array_2D rotated_overlay_v(48,64);
+    vigra::rotateImage(overlay_v,rotated_overlay_v,-90);
+
+    std::string filename_woods_overlay_v_rotated = test_data2_dir+method+"_orientation_image_overlay_v_rotated.jpg";
+    OpenLF::image::io::imsave_HQ_float(filename_woods_overlay_v_rotated, rotated_overlay_v);
+    
+    rotated_overlay_v += overlay_h;
+    CPPUNIT_ASSERT(rotated_overlay_v.shape() == shape(48,64));
+    std::string filename_woods_overlay = test_data2_dir+method+"_orientation_image_overlay_woods.jpg";
+    OpenLF::image::io::imsave_HQ_float(filename_woods_overlay, rotated_overlay_v);
+
+    
+    array_2D depth = ST3->get_depth_image("r", method ,coherence, focus, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
+    std::string filename_woods_depth = test_data2_dir+method+"_depth_woods.jpg";
+    OpenLF::image::io::imsave_HQ_float(filename_woods_depth, depth);
+
+    /*********************************************************************
+     *                     Test from buddha 4D     
+     *********************************************************************/
+
+    /*********************************************************************
+     *                     1) load from images  
+     *********************************************************************/
+/* 
+    string fname = test_lf_buddha+"buddha_4D.cfg";
+    string p = test_lf_buddha+"buddha_4D.png";
+    
+    map< string,OpenLF::image::ImageChannel> channels;
+    OpenLF::lightfield::Properties *properties = new OpenLF::lightfield::Properties();
+    
+    OpenLF::lightfield::io::DataHandler *dataHandler;
+
+    dataHandler = new OpenLF::lightfield::io::FileHandler(fname,properties);
+    
+    CPPUNIT_ASSERT(dataHandler->readData(channels));
+    OpenLF::image::io::imsave(p,channels);
+    channels.clear();
+*/
+
+    /*********************************************************************
+     *                     2) load lightfield and perform calculations
+     *********************************************************************/
+/*  //UNCOMMENT  
+    std::string buddha_method = "focused_scharr5x5";
+
+    OpenLF::lightfield::Lightfield_4D * lf_buddha = new OpenLF::lightfield::Lightfield_4D();
+    lf_buddha->open(test_lf_buddha+"buddha_4D.cfg");
+    OpenLF::operators::Structure_Tensor * ST_buddha = new OpenLF::operators::Structure_Tensor(inslots,outslots);
+    ST_buddha->set(lf_buddha);
+    ST_buddha->load_epi_containers("r");
+    array_2D depth_buddha = ST_buddha->get_depth_image("r", buddha_method ,coherence, focus, inner_scale, outer_scale, smoothing_scale, 0.95, max_slope, f);
+
+    std::string filename_buddha = test_lf_buddha+"buddha_depth_"+buddha_method+"_focus=0, channel=red.jpg";
+    OpenLF::image::io::imsave_HQ_float(filename_buddha, depth_buddha);
+    
+*/ //UNCOMMENT  
+
+
+
+
 
 /*
-    OpenLF::image::io::imsave_HQ_float(filename42, ST3->orientations["r"][0]);
-    OpenLF::image::io::imsave_HQ_float(filename43, ST3->orientations["r"][1]);
-    OpenLF::image::io::imsave_HQ_float(filename44, ST3->orientations["r"][2]);
-    OpenLF::image::io::imsave_HQ_float(filename45, ST3->orientations["r"][3]);
-    OpenLF::image::io::imsave_HQ_float(filename46, ST3->orientations["r"][4]);
-    OpenLF::image::io::imsave_HQ_float(filename47, ST3->orientations["r"][5]);
-    OpenLF::image::io::imsave_HQ_float(filename48, ST3->orientations["r"][6]);
-    OpenLF::image::io::imsave_HQ_float(filename49, ST3->orientations["r"][7]);
-    OpenLF::image::io::imsave_HQ_float(filename50, ST3->orientations["r"][8]);
-    OpenLF::image::io::imsave_HQ_float(filename51, ST3->orientations["r"][9]);
-    OpenLF::image::io::imsave_HQ_float(filename52, ST3->orientations["r"][10]);
-    OpenLF::image::io::imsave_HQ_float(filename53, ST3->orientations["r"][11]);
-    OpenLF::image::io::imsave_HQ_float(filename54, ST3->orientations["r"][12]);
-    OpenLF::image::io::imsave_HQ_float(filename55, ST3->orientations["r"][13]);
-    OpenLF::image::io::imsave_HQ_float(filename56, ST3->orientations["r"][14]);
-    OpenLF::image::io::imsave_HQ_float(filename57, ST3->orientations["r"][15]);
-    OpenLF::image::io::imsave_HQ_float(filename58, ST3->orientations["r"][16]);
-    OpenLF::image::io::imsave_HQ_float(filename59, ST3->orientations["r"][17]);
-    OpenLF::image::io::imsave_HQ_float(filename60, ST3->orientations["r"][18]);
-    OpenLF::image::io::imsave_HQ_float(filename61, ST3->orientations["r"][19]);
-    OpenLF::image::io::imsave_HQ_float(filename62, ST3->orientations["r"][20]);
-    OpenLF::image::io::imsave_HQ_float(filename63, ST3->orientations["r"][21]);
-    OpenLF::image::io::imsave_HQ_float(filename64, ST3->orientations["r"][22]);
-    OpenLF::image::io::imsave_HQ_float(filename65, ST3->orientations["r"][23]);
-    OpenLF::image::io::imsave_HQ_float(filename66, ST3->orientations["r"][24]);
-    OpenLF::image::io::imsave_HQ_float(filename67, ST3->orientations["r"][25]);
-    OpenLF::image::io::imsave_HQ_float(filename68, ST3->orientations["r"][26]);
-    OpenLF::image::io::imsave_HQ_float(filename69, ST3->orientations["r"][27]);
-    OpenLF::image::io::imsave_HQ_float(filename70, ST3->orientations["r"][28]);
-    OpenLF::image::io::imsave_HQ_float(filename71, ST3->orientations["r"][29]);
-    OpenLF::image::io::imsave_HQ_float(filename72, ST3->orientations["r"][30]);
-    OpenLF::image::io::imsave_HQ_float(filename73, ST3->orientations["r"][31]);
-    OpenLF::image::io::imsave_HQ_float(filename74, ST3->orientations["r"][32]);
-    OpenLF::image::io::imsave_HQ_float(filename75, ST3->orientations["r"][33]);
-    OpenLF::image::io::imsave_HQ_float(filename76, ST3->orientations["r"][34]);
+    std::vector<array_2D> v_buddha = ST_buddha->reconstruct_depth("r", method ,coherence, focus, direction, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
+
+    for(int i=0;i<81;i++) {
+        std::string filename_buddha = test_lf_buddha+method+"_00"+std::to_string(i)+".jpg";
+        OpenLF::image::io::imsave_HQ_float(filename_buddha, v_buddha[i]);
+    }
 */
-
 }
-
 void test_operator::testFailedMethod() {
 
 }

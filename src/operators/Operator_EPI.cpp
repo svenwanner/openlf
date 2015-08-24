@@ -292,6 +292,7 @@ array_2D OpenLF::operators::Operator_EPI::get_horizontal_epi(std::string channel
     return this->m_horizontal_epis[channel].at(where);
 }
 
+
 //TODO
 /*
 int OpenLF::operators::Operator_EPI::nr_epis(std::string channel, DIRECTION direction) {

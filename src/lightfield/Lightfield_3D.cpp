@@ -297,6 +297,10 @@ view_2D OpenLF::lightfield::Lightfield_3D::getVerticalEpiChannel(std::string cha
     return tmp;
 }
 
+view_2D OpenLF::lightfield::Lightfield_3D::getVerticalEpiChannel(std::string channel_name, int x, int h) {
+    return OpenLF::lightfield::Lightfield_3D::getVerticalEpiChannel(channel_name, x, h, 0);
+}
+
 view_2D OpenLF::lightfield::Lightfield_3D::getHorizontalEpiChannel(std::string channel_name, int y, int v, int focus) 
 {
     vigra::MultiArrayView<2,float> tmp;
@@ -315,6 +319,10 @@ view_2D OpenLF::lightfield::Lightfield_3D::getHorizontalEpiChannel(std::string c
         throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> no epis available for this LF_TYPE!");
     }
     return tmp;
+}
+
+view_2D OpenLF::lightfield::Lightfield_3D::getHorizontalEpiChannel(std::string channel_name, int y, int v)  {
+    return OpenLF::lightfield::Lightfield_3D::getHorizontalEpiChannel(channel_name, y, v, 0);
 }
 
 /*!
@@ -343,6 +351,10 @@ view_2D OpenLF::lightfield::Lightfield_3D::_getVerticalEpiChannel_3D(std::string
             throw OpenLF_Exception("Lightfield::getVerticalEpiChannel -> out of bounce!");
     }
     return tmp;  
+}
+
+view_2D OpenLF::lightfield::Lightfield_3D::_getVerticalEpiChannel_3D(std::string channel_name, int x) {
+    return OpenLF::lightfield::Lightfield_3D::_getVerticalEpiChannel_3D(channel_name, x, 0);
 }
 
 /*!

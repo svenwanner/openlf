@@ -287,6 +287,11 @@ view_2D OpenLF::lightfield::Lightfield_CROSS::getVerticalEpiChannel(std::string 
     return tmp;
 }
 
+
+view_2D OpenLF::lightfield::Lightfield_CROSS::getVerticalEpiChannel(std::string channel_name, int x, int h) {
+    return OpenLF::lightfield::Lightfield_CROSS::getVerticalEpiChannel(channel_name, x, h, 0);
+}
+
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
@@ -312,6 +317,10 @@ vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield_CROSS::_getVertica
         throw OpenLF_Exception("Lightfield::_getHorizontalEpi_3DV -> channel not available!");
 }
 
+vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield_CROSS::_getVerticalEpiChannel_CROSS(std::string channel_name, int x) {
+    return OpenLF::lightfield::Lightfield_CROSS::_getVerticalEpiChannel_CROSS(channel_name, x, 0); 
+}
+
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
@@ -324,6 +333,9 @@ vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield_CROSS::getHorizont
     return getHorizontalEpiChannel_parent(channel_name, y, 0, focus);
 }
 
+vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield_CROSS::getHorizontalEpiChannel(std::string channel_name, int y, int v){ 
+    return OpenLF::lightfield::Lightfield_CROSS::getHorizontalEpiChannel(channel_name, y, v, 0);
+}
 
 /*!
 \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)

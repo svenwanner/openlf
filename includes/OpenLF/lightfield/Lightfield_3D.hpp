@@ -93,6 +93,8 @@ public: //change!
      \param focus global shift parameter in pixel (default=0)
     */
     vigra::MultiArrayView<2,float> getHorizontalEpiChannel(std::string channel_name, int y, int v, int focus);
+
+    vigra::MultiArrayView<2,float> getHorizontalEpiChannel(std::string channel_name, int y, int v);
     
     
     //! get a view to a vertical epi of the channel specified
@@ -103,8 +105,12 @@ public: //change!
      \param focus global shift paramter in pixel (default=0)
     */
     vigra::MultiArrayView<2,float> getVerticalEpiChannel(std::string channel_name, int x, int h, int focus);
+
+    vigra::MultiArrayView<2,float> getVerticalEpiChannel(std::string channel_name, int x, int h);
     
     vigra::MultiArrayView<2,float> _getVerticalEpiChannel_3D(std::string channel_name, int x, int focus);
+
+    vigra::MultiArrayView<2,float> _getVerticalEpiChannel_3D(std::string channel_name, int x);
     
     
     

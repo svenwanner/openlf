@@ -33,7 +33,7 @@ TESTLF_3DV_wide=$($DIRNAME "$SCRIPT")
 TESTLF_3DV_high=$($DIRNAME "$SCRIPT")
 TESTLF_CROSS_wide=$($DIRNAME "$SCRIPT")
 TESTLF_CROSS_high=$($DIRNAME "$SCRIPT")
-
+TESTLF_BUDDHA=$($DIRNAME "$SCRIPT")
 
 SETTINGSPATH+="/tests/settings.hpp"
 TESTDATAPATH+="/tests/data/"
@@ -51,6 +51,7 @@ TESTLF_3DV_high+="/tests/data/OpenLF_testLF/3DV/h1_v7_h64_w48/"
 TESTLF_CROSS_wide+="/tests/data/OpenLF_testLF/CROSS/h7_v5_h48_w64/"
 TESTLF_CROSS_high+="/tests/data/OpenLF_testLF/CROSS/h5_v7_h64_w48/"
 
+TESTLF_BUDDHA+="/tests/data/buddha/"
 
 mkdir -p $TESTDATAPATH/output
 
@@ -79,6 +80,8 @@ const string test_lf_3DV_wide = "$TESTLF_3DV_wide";
 const string test_lf_3DV_high = "$TESTLF_3DV_high";
 const string test_lf_CROSS_wide = "$TESTLF_CROSS_wide";
 const string test_lf_CROSS_high = "$TESTLF_CROSS_high";
+
+const string test_lf_buddha = "$TESTLF_BUDDHA";
 
 #endif	/* TEST_SETTINGS_H */
 EOM

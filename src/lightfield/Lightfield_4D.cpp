@@ -101,6 +101,10 @@ view_2D OpenLF::lightfield::Lightfield_4D::getHorizontalEpiChannel(std::string c
     return tmp;
 }
 
+view_2D OpenLF::lightfield::Lightfield_4D::getHorizontalEpiChannel(std::string channel_name, int y, int v) {
+    return OpenLF::lightfield::Lightfield_4D::getHorizontalEpiChannel(channel_name, y, v, 0);
+}
+
 /*!
  \author Sven Wanner (sven.wanner@iwr.uni-heidelberg.de)
 */
@@ -130,6 +134,10 @@ vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield_4D::getVerticalEpi
         throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel -> unknown light field type!");
     
     return tmp; 
+}
+
+vigra::MultiArrayView<2,float> OpenLF::lightfield::Lightfield_4D::getVerticalEpiChannel(std::string channel_name, int x, int h){
+    return OpenLF::lightfield::Lightfield_4D::getVerticalEpiChannel(channel_name, x, h, 0);
 }
 
 /*!
