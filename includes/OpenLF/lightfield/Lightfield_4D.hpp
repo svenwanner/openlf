@@ -62,6 +62,7 @@ public:
     */
     view_2D getHorizontalEpiChannel(std::string channel_name, int y, int v, int focus);
     
+    view_2D getHorizontalEpiChannel(std::string channel_name, int y, int v);
   
     //! get a view to a vertical epi of the channel specified
     /*!
@@ -72,6 +73,7 @@ public:
     */
     vigra::MultiArrayView<2,float> getVerticalEpiChannel(std::string channel_name, int x, int h, int focus);
     
+    vigra::MultiArrayView<2,float> getVerticalEpiChannel(std::string channel_name, int x, int h);
 };
 
 class EpiIterator_4D {

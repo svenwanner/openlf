@@ -305,6 +305,8 @@ public:
     */
     virtual void getHorizontalEpi(int y, int v, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img);
 
+    virtual void getHorizontalEpi(int y, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img);
+
     //virtual void getHorizontalEpi(int y, int v, int focus, vigra::MultiArrayView<2,vigra::RGBValue<vigra::UInt8> >& img);
         
     //! get a view to a horizontal epi of the channel specified
@@ -316,6 +318,8 @@ public:
     */
     view_2D getHorizontalEpiChannel_parent(std::string channel_name, int y, int v, int focus);
 
+    view_2D getHorizontalEpiChannel_parent(std::string channel_name, int y, int v);
+
     //! get a view to a horizontal epi of the channel specified
     /*!
      \param channel_name name of the channel to extract the epi from
@@ -324,6 +328,8 @@ public:
      \param focus global shift parameter in pixel (default=0)
     */
     virtual view_2D getHorizontalEpiChannel(std::string channel_name, int y, int v, int focus)=0;
+
+    virtual view_2D getHorizontalEpiChannel(std::string channel_name, int y, int v)=0;
 
     //virtual std::map<std::string, view_2D> getHorizontalEpiChannel(int y, int v, int focus);
     
@@ -336,6 +342,8 @@ public:
     */
     virtual void getVerticalEpi(int x, int h, int focus, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>>& img);
 
+    virtual void getVerticalEpi(int x, int h, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8>>& img);
+
     //virtual void getVerticalEpi(int x, int h, int focus, vigra::MultiArrayView<2,vigra::RGBValue<vigra::UInt8>>& img);
     
     //! get a view to a vertical epi of the channel specified
@@ -346,6 +354,8 @@ public:
      \param focus global shift parameter in pixel (default=0)
     */
     virtual vigra::MultiArrayView<2,float> getVerticalEpiChannel(std::string channel_name, int x, int h, int focus)=0;
+
+    virtual vigra::MultiArrayView<2,float> getVerticalEpiChannel(std::string channel_name, int x, int h)=0;
     
 protected:
     std::map<std::string,OpenLF::image::ImageChannel> m_channels;  //!< map to store the light field channels

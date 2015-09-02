@@ -65,7 +65,7 @@ void OpenLF::operators::My4DOperator::precompute()
         
         #pragma omp parallel for
         for(int n=0; n<lf->width()*lf->height(); n++) {
-            m_tmp_memory["aTmpStorage"].data()[n] = 0.3*r_ptr[n]+0.59*g_ptr[n]+0.11*b_ptr[n];
+            m_tmp_memory["aTmpStorage"].data()[n] = 0.3*r_ptr[n]+0.59*g_ptr[n]+0.11*b_ptr[n];    
         }
     }
     else {

@@ -30,20 +30,20 @@ void OpenLF::operators::MyEpiOperator::compute()
     //** 
     //*************************************
 
-//    std::vector<view_2D> refocused;
-//    for(auto it = horizontal_epis_ptr()->begin(); it<horizontal_epis_ptr()->end(); it++) {
-//        refocused.push_back(refocus(1, *it));
-//    }
-//
-//    #pragma omp parallel for
-//    for(auto it = horizontal_epis_ptr()->begin(); it<horizontal_epis_ptr()->end(); it++) {
-//        for(int i=0; i<5000; i++) {
-//        *it *=10.0;
-//        *it -=10.0;
-//        *it +=10.0;
-//        *it /=10.0;
-//        }
-//    }
+    std::vector<view_2D> refocused;
+    for(auto it = horizontal_epis_ptr("r")->begin(); it<horizontal_epis_ptr("r")->end(); it++) {
+        refocused.push_back(refocus(1, *it));
+    }    
+
+/*    #pragma omp parallel for
+    for(auto it = horizontal_epis_ptr("r")->begin(); it<horizontal_epis_ptr("r")->end(); it++) {
+        for(int i=0; i<5000; i++) {
+        *it *=10.0;
+        *it -=10.0;
+        *it +=10.0;
+        *it /=10.0;
+        }
+    }   */
 }   
 
 void OpenLF::operators::MyEpiOperator::postcompute()

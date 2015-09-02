@@ -69,11 +69,17 @@ public:
 
     OpenLF::operators::orientation focused_orientation(view_2D & source, focuses f, double smoothing_scale, double inner_scale=0.6, double outer_scale=1.1, double max_slope=1.0, double coh_threshold=0.95, std::string st_type="vigra");
 
-    std::vector<array_2D> reconstruct_depth(std::string channel, std::string method="vigra", std::string coherence="None", int focus=0, DIRECTION direction=HORIZONTAL, double inner_scale=0.6, double outer_scale=1.1, double smoothing_scale=1.1, double coh_threshold=0.95, double max_slope=1.0, focuses f= {-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10});
+    std::vector<array_2D> reconstruct_depth(std::string channel, std::string method="vigra", std::string coherence="None", int focus=0, DIRECTION direction=HORIZONTAL, double inner_scale=0.6, double outer_scale=1.1, double smoothing_scale=1.1, double coh_threshold=0.95, double max_slope=1.0, focuses f= {0});
+
+    std::vector<array_2D> reconstruct_depth_lightweight(std::string channel, std::string method="vigra", std::string coherence="None", DIRECTION direction=HORIZONTAL, double inner_scale=0.6, double outer_scale=1.1, double smoothing_scale=1.1, double coh_threshold=0.95, double max_slope=1.0, focuses f= {0});
 
     std::vector<array_2D> images_from_epis(std::string channel, DIRECTION direction = HORIZONTAL);
 
     std::vector<array_2D> images_from_orientations(std::string channel, DIRECTION direction = HORIZONTAL);
+
+    array_2D get_depth_image(std::string channel, std::string method="vigra", std::string coherence="None", int focus=0, double inner_scale=0.6, double outer_scale=1.1, double smoothing_scale=1.1, double coh_threshold=0.95, double max_slope=1.0, focuses f= {0});
+
+    array_2D get_depth_image_lightweight(std::string channel, std::string method="vigra", std::string coherence="None", double inner_scale=0.6, double outer_scale=1.1, double smoothing_scale=1.1, double coh_threshold=0.95, double max_slope=1.0, focuses f= {0});
 
     void allocate() {};
     void precompute() {};

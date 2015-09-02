@@ -93,7 +93,8 @@ public:
     */
     vigra::MultiArrayView<2,float> getHorizontalEpiChannel(std::string channel_name, int y, int v, int focus);
 
-    
+    vigra::MultiArrayView<2,float> getHorizontalEpiChannel(std::string channel_name, int y, int v);
+
     //! get a view to a vertical epi of the channel specified
     /*!
      \param channel_name name of the channel to extract the epi from
@@ -103,6 +104,8 @@ public:
     */
     vigra::MultiArrayView<2,float> getVerticalEpiChannel(std::string channel_name, int x, int h, int focus);
     
+    vigra::MultiArrayView<2,float> getVerticalEpiChannel(std::string channel_name, int x, int h);
+
     //! get a view to a vertical epi of the channel specified 
     /*!
      \param x fixed column image domain index
@@ -110,6 +113,8 @@ public:
      \param focus global shift parameter in pixel
     */
     vigra::MultiArrayView<2,float> _getVerticalEpiChannel_CROSS(std::string channel_name, int x, int focus);
+
+    vigra::MultiArrayView<2,float> _getVerticalEpiChannel_CROSS(std::string channel_name, int x);
 
     // The intersec coordinates are the coordinates describing where the
     // vertical axis intersects the horizontal axis. So far, this is set to

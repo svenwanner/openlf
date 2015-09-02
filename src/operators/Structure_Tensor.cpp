@@ -497,7 +497,7 @@ std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth(std
                 OpenLF::operators::ST st = OpenLF::operators::Structure_Tensor::vigra_structure_tensor(channel, i, focus, direction, inner_scale, outer_scale);
                 ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
             }
-            if (method == "scharr5x5") {
+            if (method == "scharr5x5") { 
                 OpenLF::operators::ST st = Scharr5x5_structure_tensor(channel, i, focus, direction, smoothing_scale);
                 ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
             }  
@@ -523,7 +523,7 @@ std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth(std
                 OpenLF::operators::ST st = OpenLF::operators::Structure_Tensor::vigra_structure_tensor(channel, i, focus, direction, inner_scale, outer_scale);
                 ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
             }
-            if (method == "scharr_5x5") {
+            if (method == "scharr5x5") { 
                 OpenLF::operators::ST st = Scharr5x5_structure_tensor(channel, i, focus, direction, smoothing_scale);
                 ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
             }  
@@ -531,7 +531,7 @@ std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth(std
                 OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(m_vertical_epis[channel][i], f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "vigra");
                 ori = ori_.ori;
         }
-            if (method == "focused_scharr_5x5") {
+            if (method == "focused_scharr5x5") {
                 OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(m_vertical_epis[channel][i], f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "scharr_5x5");
                 ori = ori_.ori;
             }
@@ -541,6 +541,192 @@ std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth(std
     // restore images
     std::vector<array_2D> images = OpenLF::operators::Structure_Tensor::images_from_orientations(channel, direction);
     return images;
+}
+
+
+std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth_lightweight(std::string channel, std::string method, std::string coherence,  DIRECTION direction, double inner_scale, double outer_scale, double smoothing_scale, double coh_threshold, double max_slope, focuses f) {
+
+    if (direction == HORIZONTAL) {
+     
+        orientations_horizontal[channel].clear();
+        array_2D ori;
+        //shape epi_shape = shape(lf->imgWidth(),lf->cams_h());
+        //#pragma omp parallel for 
+/*
+        for(int j=0; j<lf->cams_v()*lf->imgHeight(); j++) {
+	        view_1D row = lf->data()->find(channel)->second.viewToRow(j);
+                array_2D epi = array_2D(epi_shape,row.data());
+                array_2D orientation(epi.shape());
+                //view_2D epi = getHorizontalEpiChannel(channel, y, v);
+		for(focuses::iterator it = f.begin() ; it != f.end(); ++it) {
+
+                    if (method == "vigra") {
+                        OpenLF::operators::ST st = vigra_structure_tensor_from_source(epi, inner_scale, outer_scale, smoothing_scale);
+                        ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
+                    }
+                    if (method == "scharr5x5") { 
+                        OpenLF::operators::ST st = Scharr5x5_structure_tensor_from_source(epi, smoothing_scale);
+                        ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
+                    }  
+                    if (method == "focused_vigra") {
+                        OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(epi, f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "vigra");
+                        ori = ori_.ori;
+                    }
+                    if (method == "focused_scharr5x5") {
+                        OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(epi, f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "scharr_5x5");
+                        ori = ori_.ori;
+                    }
+                    orientation += ori;
+                }
+                orientations_horizontal[channel].push_back(orientation);
+            }
+            
+	
+    }*/
+
+     for(int i=0; i<lf->cams_v(); i++) {
+         for(int j=0; j<lf->imgHeight(); j++) {
+                array_2D epi = array_2D(lf->getHorizontalEpiChannel(channel, j, i)); 
+                    if (method == "vigra") {
+                        OpenLF::operators::ST st = vigra_structure_tensor_from_source(epi, inner_scale, outer_scale, smoothing_scale);
+                        ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
+                    }
+                    if (method == "scharr5x5") { 
+                        OpenLF::operators::ST st = Scharr5x5_structure_tensor_from_source(epi, smoothing_scale);
+                        ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
+                    }  
+                    if (method == "focused_vigra") {
+                        OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(epi, f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "vigra");
+                        ori = ori_.ori;
+                    }
+                    if (method == "focused_scharr5x5") {
+                        OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(epi, f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "scharr_5x5");
+                        ori = ori_.ori;
+                    }
+                orientations_horizontal[channel].push_back(ori);
+            }
+            
+        }
+    }
+
+    if (direction == VERTICAL) {
+        
+        orientations_vertical[channel].clear();
+        array_2D ori;
+        //shape epi_shape = shape(lf->imgHeight(),lf->cams_v());
+        //#pragma omp parallel for
+        for(int i=0; i<lf->cams_h(); i++) {
+	    for(int j=0; j<lf->imgWidth(); j++) {
+                array_2D epi = array_2D(lf->getVerticalEpiChannel(channel, j, i));
+                    if (method == "vigra") {
+                        OpenLF::operators::ST st = vigra_structure_tensor_from_source(epi, inner_scale, outer_scale, smoothing_scale);
+                        ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);  
+                    }
+                    if (method == "scharr5x5") { 
+                        OpenLF::operators::ST st = Scharr5x5_structure_tensor_from_source(epi, smoothing_scale);
+                        ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
+                    }  
+                    if (method == "focused_vigra") {
+                        OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(epi, f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "vigra");
+                        ori = ori_.ori;
+                    }
+                    if (method == "focused_scharr5x5") {
+                        OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(epi, f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "scharr_5x5");
+                        ori = ori_.ori;
+                    }
+                orientations_vertical[channel].push_back(ori);
+            }
+        }
+    }
+    // restore images
+    std::vector<array_2D> images = OpenLF::operators::Structure_Tensor::images_from_orientations(channel, direction);
+    return images;
+}
+
+
+/*
+array_2D OpenLF::operators::Structure_Tensor::get_depth_image(std::string channel, std::string method, std::string coherence, int focus, double inner_scale, double outer_scale, double smoothing_scale, double coh_threshold, double max_slope, focuses f) 
+{
+
+    std::vector<array_2D> h = OpenLF::operators::Structure_Tensor::reconstruct_depth(channel, method, coherence, focus, HORIZONTAL, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
+
+    array_2D overlay_h(shape(lf->imgWidth(),lf->imgHeight()),0.0);
+
+    for(int i=0;i<lf->cams_h()*lf->cams_v();i++) {
+        overlay_h += h[i];
+    }
+
+    std::vector<array_2D> v = OpenLF::operators::Structure_Tensor::reconstruct_depth(channel, method, coherence, focus, VERTICAL, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
+
+    array_2D overlay_v(shape(lf->imgHeight(),lf->imgWidth()),0.0);
+
+    for(int i=0;i<lf->cams_h()*lf->cams_v();i++) {
+        overlay_v += v[i];
+    }
+
+    array_2D rotated_overlay_v(lf->imgWidth(),lf->imgHeight());
+    vigra::rotateImage(overlay_v,rotated_overlay_v,-90);
+    
+    overlay_h += rotated_overlay_v;
+
+    return overlay_h;
+}
+*/
+
+array_2D OpenLF::operators::Structure_Tensor::get_depth_image(std::string channel, std::string method, std::string coherence, int focus, double inner_scale, double outer_scale, double smoothing_scale, double coh_threshold, double max_slope, focuses f) 
+{
+
+    std::vector<array_2D> h = OpenLF::operators::Structure_Tensor::reconstruct_depth(channel, method, coherence, focus, HORIZONTAL, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
+
+    array_2D overlay_h(shape(lf->imgWidth(),lf->imgHeight()),0.0);
+
+    int size = lf->cams_h()*lf->cams_v();
+    int index = 0;
+    if (size % 2 == 1) {
+        index = (size-1)/2+1;
+    }
+    if (size % 2 == 0) {
+        index = (size)/2;
+    }
+    overlay_h += h[index];
+
+
+    std::vector<array_2D> v = OpenLF::operators::Structure_Tensor::reconstruct_depth(channel, method, coherence, focus, VERTICAL, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
+
+    array_2D overlay_v(shape(lf->imgHeight(),lf->imgWidth()),0.0);
+
+
+    overlay_v += v[index];
+
+    array_2D rotated_overlay_v(lf->imgWidth(),lf->imgHeight());
+    vigra::rotateImage(overlay_v,rotated_overlay_v,95);
+    
+    overlay_h += rotated_overlay_v;
+
+    return overlay_h;
+}
+
+array_2D OpenLF::operators::Structure_Tensor::get_depth_image_lightweight(std::string channel, std::string method, std::string coherence, double inner_scale, double outer_scale, double smoothing_scale, double coh_threshold, double max_slope, focuses f) 
+{
+
+    std::vector<array_2D> h = OpenLF::operators::Structure_Tensor::reconstruct_depth_lightweight(channel, method, coherence, HORIZONTAL, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
+
+    int size = h.size();
+    int index = (size-1)/2+1;
+
+    array_2D overlay_h(h[index-1]);
+
+    std::vector<array_2D> v = OpenLF::operators::Structure_Tensor::reconstruct_depth_lightweight(channel, method, coherence, VERTICAL, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
+
+
+    array_2D overlay_v_rotated(overlay_h.shape());
+    vigra::rotateImage(v[index-1],overlay_v_rotated,90);
+    array_2D overlay_v_reflected(overlay_v_rotated.shape());
+    vigra::reflectImage(overlay_v_rotated,overlay_v_reflected,vigra::horizontal);
+
+    overlay_h += overlay_v_reflected;
+
+    return overlay_h;
 }
 
 

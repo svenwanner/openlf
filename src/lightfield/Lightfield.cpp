@@ -648,6 +648,9 @@ void OpenLF::lightfield::Lightfield::getHorizontalEpi(int y, int v, int focus, v
     else throw OpenLF_Exception("Lightfield::getHorizontalEpi -> no suitable channel available!");
 }
 
+void OpenLF::lightfield::Lightfield::getHorizontalEpi(int y, int v, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img) {
+    return OpenLF::lightfield::Lightfield::getHorizontalEpi(y, v, 0, img);
+}
 
 
 /*!
@@ -698,7 +701,10 @@ void OpenLF::lightfield::Lightfield::getVerticalEpi(int x, int h, int focus, vig
     else throw OpenLF_Exception("Lightfield::getHorizontalEpi -> no suitable channel available!");
 }
 
- 
+void OpenLF::lightfield::Lightfield::getVerticalEpi(int x, int h, vigra::MultiArray<2,vigra::RGBValue<vigra::UInt8> >& img) {
+    return OpenLF::lightfield::Lightfield::getVerticalEpi(x, h, 0, img);
+}
+
 /*!
 This is the efficient variant of accessing epipolar plane images due to the concatenated memory access.
 Accessing the vertical epipolar plane images using _getVerticalEpiChannel_4D is inefficient compared to this
@@ -721,4 +727,8 @@ view_2D OpenLF::lightfield::Lightfield::getHorizontalEpiChannel_parent(std::stri
         
     } else
         throw OpenLF_Exception("Lightfield::getHorizontalEpiChannel_parent -> channel not available!");
+}
+
+view_2D OpenLF::lightfield::Lightfield::getHorizontalEpiChannel_parent(std::string channel_name, int y,  int v) {
+    return OpenLF::lightfield::Lightfield::getHorizontalEpiChannel_parent(channel_name, y,  v, 0);
 }
