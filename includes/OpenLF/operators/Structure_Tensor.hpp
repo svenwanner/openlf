@@ -57,6 +57,11 @@ public:
 
     vigra::MultiArray<2, float> gaussian_smoothing(vigra::MultiArrayView<2, float> image, double scale_x, double scale_y);
     vigra::MultiArray<2, float> gaussian_smoothing(vigra::MultiArrayView<2, float> image, double scale_x);
+
+    ST Scharr3x3_structure_tensor_from_source(vigra::MultiArrayView<2, float> & source, double scale);
+
+    ST Scharr3x3_structure_tensor(std::string channel, int epi, int focus, DIRECTION direction, double scale);
+
     ST Scharr5x5_structure_tensor_from_source(vigra::MultiArrayView<2, float> & source, double scale);
 
     ST Scharr5x5_structure_tensor(std::string channel, int epi, int focus, DIRECTION direction, double scale);

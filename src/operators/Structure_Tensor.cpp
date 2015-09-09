@@ -258,6 +258,9 @@ vigra::MultiArray<2, float> OpenLF::operators::Structure_Tensor::orientation(ST 
     if (coherence != "None" && coh_threshold > 0.0 && max_slope > 0.0) {
         auto it1 = slope.begin();
         auto it2 = tensor.coherence.begin();
+
+        // TODO Can we combine these two while-loops ???
+
         while(it1 < slope.end()) {
             if(*it1 > max_slope || *it1 < -max_slope) {
                 *it1 = -max_slope;
@@ -730,3 +733,47 @@ array_2D OpenLF::operators::Structure_Tensor::get_depth_image_lightweight(std::s
 }
 
 
+OpenLF::operators::ST OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor(std::string channel, int epi,
+                                                                                      int focus, DIRECTION direction,
+                                                                                      double scale) {
+    if (!lf->hasChannel(channel)) {
+        throw OpenLF_Exception("OpenLF::operators::Structure_Tensor::Scharr5x5_structure_tensor : Channel doesn't exist!");
+    }
+
+    if (focus != get_focus(channel) && focus != 0) {
+        refocus(focus, channel);
+    }
+
+    OpenLF::operators::ST st;
+
+
+
+
+
+
+
+
+
+
+    return st;
+}
+
+OpenLF::operators::ST OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor_from_source(
+        vigra::MultiArrayView<2, float> &source, double scale) {
+
+    vigra::Kernel1D<float> scharr1 = vigra::Kernel1D();
+    scharr1.initExplicitly(-1,1) =
+            (-1.0/2.0) , 0.0 , (1.0/2.0) ;
+    scharr1.setBorderTreatment(vigra::BORDER_TREATMENT_REFLECT);
+
+    vigra::Kernel1D<float> scharr2 = vigra::Kernel1D();
+    scharr2.initExplicitly(-1,1) =
+            (3.0/16.0), (10.0/16.0) , (3.0/16.0);
+    scharr1.setBorderTreatment(vigra::BORDER_TREATMENT_REFLECT);
+
+
+
+
+
+
+}
