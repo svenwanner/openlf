@@ -14,7 +14,7 @@ import numpy as np
 #b = imread('/home/kiryl/Documents/openlf/openlf/tests/data_2/stxy.jpg')
 #c = imread('/home/kiryl/Documents/openlf/openlf/tests/data_2/styy.jpg')
 #d = imread('/home/kiryl/Documents/openlf/openlf/tests/data_2/stcoherence.jpg')
-e = imread('/home/kiryl/Documents/openlf/openlf/tests/data_2/focused_vigra_0041_h_f=2-7.jpg')
+e = imread('/home/kiryl/Documents/openlf/openlf/tests/data_2/focused_vigra_full.jpg')
 
 #c = imread('/home/kiryl/Documents/openlf/openlf/tests/data_2/3epi_backfocus_26.jpg')
 
