@@ -34,6 +34,15 @@ struct ST
     
 };
 
+struct ST_view
+{
+    vigra::MultiArrayView<2, float> xx;
+    vigra::MultiArrayView<2, float> xy;
+    vigra::MultiArrayView<2, float> yy;
+    vigra::MultiArrayView<2, float> coherence;
+    
+};
+
 struct ST_hv {
     ST h;
     ST v;
@@ -78,13 +87,19 @@ public:
 
     std::vector<array_2D> reconstruct_depth_lightweight(std::string channel, std::string method="vigra", std::string coherence="None", DIRECTION direction=HORIZONTAL, double inner_scale=0.6, double outer_scale=1.1, double smoothing_scale=1.1, double coh_threshold=0.95, double max_slope=1.0, focuses f= {0});
 
+     array_2D reconstruct_depth_lightweight(std::string channel, int n, int m, std::string method="vigra", std::string coherence="None", DIRECTION direction=HORIZONTAL, double inner_scale=0.6, double outer_scale=1.1, double smoothing_scale=1.1, double coh_threshold=0.95, double max_slope=1.0, focuses f= {0});
+
     std::vector<array_2D> images_from_epis(std::string channel, DIRECTION direction = HORIZONTAL);
 
     std::vector<array_2D> images_from_orientations(std::string channel, DIRECTION direction = HORIZONTAL);
 
+    array_2D image_from_orientations_lightweight(int m, std::string channel, DIRECTION direction = HORIZONTAL);
+
     array_2D get_depth_image(std::string channel, std::string method="vigra", std::string coherence="None", int focus=0, double inner_scale=0.6, double outer_scale=1.1, double smoothing_scale=1.1, double coh_threshold=0.95, double max_slope=1.0, focuses f= {0});
 
     array_2D get_depth_image_lightweight(std::string channel, std::string method="vigra", std::string coherence="None", double inner_scale=0.6, double outer_scale=1.1, double smoothing_scale=1.1, double coh_threshold=0.95, double max_slope=1.0, focuses f= {0});
+
+    array_2D get_depth_image_lightweight(std::string channel, int n, int m, std::string method="vigra", std::string coherence="None", double inner_scale=0.6, double outer_scale=1.1, double smoothing_scale=1.1, double coh_threshold=0.95, double max_slope=1.0, focuses f= {0});
 
     void allocate() {};
     void precompute() {};
@@ -103,6 +118,8 @@ public:
 
     epi_map orientations_horizontal;
     epi_map orientations_vertical;
+    epi_map orientations_horizontal_lightweight;
+    epi_map orientations_vertical_lightweight;
     epi_map coherences_horizontal;
     epi_map coherences_vertical;
 

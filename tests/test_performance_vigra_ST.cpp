@@ -48,7 +48,7 @@ void test_operator::testMethod() {
 
     std::string method = "focused_vigra";// "vigra" or "focused_vigra" or "scharr5x5" or "focused_scharr5x5"
     OpenLF::operators::orientation orientation;
-    OpenLF::operators::focuses f = {0,1,2,3,4,5,6,7,8,9,10}; // for focused ST
+    OpenLF::operators::focuses f = {3}; // for focused ST
     //DIRECTION direction = HORIZONTAL; // or VERTICAL
     std::string coherence = "Yes"; // or "None"
     //int focus = 0; // different single focuses not for focused STs
@@ -62,7 +62,7 @@ void test_operator::testMethod() {
     lf->open(cfgnames["4D_high_rgb"]);
     OpenLF::operators::Structure_Tensor * ST = new OpenLF::operators::Structure_Tensor(inslots,outslots);
     ST->set(lf);
-
+/*
     array_2D epi_v = lf->getVerticalEpiChannel("r", 0, 0);
     std::string filename_epi_v = test_data2_dir+"epi_v.jpg";
     OpenLF::image::io::imsave_HQ_float(filename_epi_v, epi_v);
@@ -70,7 +70,7 @@ void test_operator::testMethod() {
     array_2D epi_h = lf->getHorizontalEpiChannel("r", 0, 0);
     std::string filename_epi_h = test_data2_dir+"epi_h.jpg";
     OpenLF::image::io::imsave_HQ_float(filename_epi_h, epi_h);
-
+*/
     //ST->load_epi_containers("r");
 /*
     array_2D depth = ST->get_depth_image_lightweight("r", method ,coherence, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
@@ -132,13 +132,27 @@ void test_operator::testMethod() {
 */
     
 
-
+/*
  std::vector<array_2D> h_buddha = ST_buddha->reconstruct_depth_lightweight("r", method ,coherence, HORIZONTAL, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
 
     for(int i=0;i<81;i++) {
         std::string filename_buddha = test_lf_buddha+method+"_00"+std::to_string(i)+"_h.jpg";
         OpenLF::image::io::imsave_HQ_float(filename_buddha, h_buddha[i]);
     }
+*/
+
+/*
+array_2D h_buddha_single = ST_buddha->reconstruct_depth_lightweight("r", 4, 4, method ,coherence, HORIZONTAL, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
+
+std::string filename_buddha_single = test_lf_buddha+method+"_single_h.jpg";
+OpenLF::image::io::imsave_HQ_float(filename_buddha_single, h_buddha_single);
+*/
+
+array_2D h_buddha_full = ST_buddha->get_depth_image_lightweight("r", 4, 4, method ,coherence, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
+
+std::string filename_buddha_full = test_lf_buddha+method+"_full.jpg";
+OpenLF::image::io::imsave_HQ_float(filename_buddha_full, h_buddha_full);
+
 /*
     std::vector<array_2D> v_buddha = ST_buddha->reconstruct_depth_lightweight("r", method ,coherence, VERTICAL, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
 
