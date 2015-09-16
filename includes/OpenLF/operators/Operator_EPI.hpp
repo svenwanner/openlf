@@ -27,12 +27,15 @@
 namespace OpenLF {
     namespace operators {
 
+/* this is the vector of epis */
 typedef std::vector<array_2D> epi_vector;
 typedef std::vector<view_2D> epi_view_vector;
-//typedef std::vector<epi_view> epi_vector;
+
+/* this is the map of epis */
 typedef std::map < std::string, std::vector<array_2D> > epi_map;
 typedef std::map < std::string, std::vector<view_2D> > epi_view_map;
 
+/* this is the refocused epi view container */
 struct epi_view {
     view_2D EPI;
     int focus;
@@ -41,6 +44,7 @@ struct epi_view {
     //vigra::Shape2 shape() { return EPI.shape(); }
 };
 
+/* this is the refocused epi container */
 struct epi {
     array_2D EPI;
     //int focus=-pow(10,6);
@@ -50,31 +54,46 @@ struct epi {
     //vigra::Shape2 shape() { return EPI.shape(); }
 };
 
-//to use with different focuses for each epi 
+/* stores refocused epis */
 typedef std::vector<epi_view> refocused_epi_vector;
+/* map of refocused epis */
 typedef std::map < std::string, epi_vector > refocused_epi_map;
 
+/* this class is the parent class for all operations on epis. It implements two kinds of refocusing for epis, individually or as a whole channel. Furthermore the class is providing a storage in form of epi maps. */
 class Operator_EPI : public Operator {
 public:
     Operator_EPI(std::vector<std::string> inslots, std::vector<std::string> outslots) : Operator(inslots,outslots) {};
     virtual ~Operator_EPI();
-
-    //void load_epi_containers();
+     
+    /* loads epis into a map for a given channel */
     void load_epi_containers(std::string channel);
+    
+    /* this function refocuses a given epi, saving only the central straight region */ 
     view_2D refocus(int focus, view_2D epi);
-    // refocuses leaving the pixels uncut
+
+    /* this function refocuses a given epi, without loss of information */
     epi refocus_uncut(int focus, epi_view epi);
     epi refocus_uncut(int focus, epi epi);
+
+    /* only for internal use with original (not previously refocused) epis with focus 0 */
     array_2D refocus_uncut(int focus, view_2D epi);
+   
+    /* this function makes a backfocus to f=0 */
     epi backfocus(epi epi);
-    //epi backfocus(epi_view epi);
-    //epi_vector refocus(int focus);
+
+    /* set a lightfield */
     void set(OpenLF::lightfield::Lightfield *lf);
+
+    
     epi_vector * horizontal_epis_ptr(std::string channel);
     epi_vector * vertical_epis_ptr(std::string channel);
+
     array_2D get_horizontal_epi(std::string channel, int where);
     array_2D get_vertical_epi(std::string channel, int where);
+
+    /* this function refocuses_uncut the member maps m_horizontal_refocused and m_vertical_refocused */
     void refocus(int focus, std::string channel);
+    /* get the focus of a channel */
     double get_focus(std::string channel);
 
 //private:

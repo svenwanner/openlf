@@ -15,7 +15,6 @@ OpenLF::operators::Structure_Tensor::~Structure_Tensor() {
 /* this function applies a gaussian smoothing directly to a channel and saves it in tmp_views[channel] */
 vigra::MultiArray<2, float> OpenLF::operators::Structure_Tensor::gaussian_smoothing(vigra::MultiArrayView<2, float> image, double scale_x, double scale_y) {
 
-    //m_tmp_views[channel] = vigra::MultiArray<2, float>(image_ptr(channel)->shape(),0.0);
     vigra::MultiArray<2, float> result(image.shape(),0.0);
     vigra::gaussianSmoothing(image, result, scale_x, scale_y);
     return result;
@@ -25,61 +24,10 @@ vigra::MultiArray<2, float> OpenLF::operators::Structure_Tensor::gaussian_smooth
 /* this function applies a gaussian smoothing directly to a channel and saves it in tmp_views[channel] */
 vigra::MultiArray<2, float> OpenLF::operators::Structure_Tensor::gaussian_smoothing(vigra::MultiArrayView<2, float> image, double scale_x) {
 
-    //m_tmp_views[channel] = vigra::MultiArray<2, float>(image_ptr(channel)->shape(),0.0);
     vigra::MultiArray<2, float> result(image.shape(),0.0);
     vigra::gaussianSmoothing(image, result, scale_x);
     return result;
 }
-
-
-/* This function constructs a vigra structure tensor only on a r+g+b or bw epi from the map of refocused epis, which is intintialized with the given focus. */
-/*
-OpenLF::operators::Structure_Tensor::ST OpenLF::operators::Structure_Tensor::vigra_structure_tensor(int focus, int epi, double inner_scale, double outer_scale) {
-
-    // create a grayscale image to operate on 
-    if (lf->hasRGB()) {
-    // refocus 
-    if (focus != get_focus("r")) {
-        refocus(focus, "r");
-    }
-    if (focus != get_focus("g")) {
-        refocus(focus, "g");
-    }
-    if (focus != get_focus("b")) {
-        refocus(focus, "b");
-    }
-    vigra::MultiArray<2, float> rgb_h, rgb_v;
-
-    rgb_h = 0.3f * m_horizontal_refocused["r"][epi] + 
-            0.59f * m_horizontal_refocused["g"][epi] + 
-            0.11f * m_horizontal_refocused["b"][epi];
-
-    rgb_v = 0.3f * m_vertical_refocused["r"][epi] +    
-            0.59f * m_vertical_refocused["g"][epi] + 
-            0.11f * m_vertical_refocused["b"][epi];
-
-    OpenLF::operators::Structure_Tensor::ST st;
-    st.h = vigra_structure_tensor_from_source(rgb_h, inner_scale, outer_scale);
-    st.v = vigra_structure_tensor_from_source(rgb_v, inner_scale, outer_scale);
-    }
-
-    else if(lf->hasBW()) {
-        if (focus != get_focus("bw")) {
-            refocus(focus, "bw");
-        }
-
-        OpenLF::operators::Structure_Tensor::ST st;
-        st.h = vigra_structure_tensor_from_source(m_horizontal_refocused["bw"], inner_scale, outer_scale);
-        st.v = vigra_structure_tensor_from_source(m_vertical_refocused["bw"], inner_scale, outer_scale);
-    }
-    return ST;
-
-    else {
-       throw OpenLF_Exception("OpenLF::operators::Structure_Tensor::vigra_structure_tensor() : Channels unsupported!");
-    }  
-}
-*/
-
 
 /* This function constructs a vigra structure tensor on a single epi from the map of refocused epis, which is intintialized with the given focus. */
 
@@ -251,6 +199,7 @@ OpenLF::operators::ST OpenLF::operators::Structure_Tensor::Scharr5x5_structure_t
     return st;  
 }
 
+/* This function calculates the orientation from a given structure tensor ST. */
 vigra::MultiArray<2, float> OpenLF::operators::Structure_Tensor::orientation(ST tensor, std::string coherence, double coh_threshold, double max_slope) {
 
     vigra::MultiArray<2, float> slope(tensor.xx.shape());
@@ -282,15 +231,13 @@ vigra::MultiArray<2, float> OpenLF::operators::Structure_Tensor::orientation(ST 
     return slope;
 
 }
+
+/* This function calculates the focused orientation from a source epi */
 OpenLF::operators::orientation OpenLF::operators::Structure_Tensor::focused_orientation(view_2D & source, focuses f, double smoothing_scale, double inner_scale, double outer_scale, double max_slope, double coh_threshold, std::string st_type) {
     
     OpenLF::operators::ST st;
     std::vector<array_2D> slopes(int(f.size()));
     std::vector<array_2D> coherences(int(f.size()));
-    /*std::vector<array_2D>::iterator it1;
-    std::vector<array_2D>::iterator it2;
-    it1 = slopes.begin();
-    it2 = coherences.begin();*/
     
     for (int i=0; i<int(f.size()); i++) {
         array_2D s;
@@ -312,7 +259,7 @@ OpenLF::operators::orientation OpenLF::operators::Structure_Tensor::focused_orie
         orientation.focus = f[i];
 
         orientation.EPI = OpenLF::operators::Structure_Tensor::orientation(st, "yes", coh_threshold, max_slope);
-        orientation.EPI += f[i]; //?
+        orientation.EPI += f[i]; 
         
         orientation = refocus_uncut(0, orientation);
 
@@ -374,23 +321,13 @@ OpenLF::operators::orientation OpenLF::operators::Structure_Tensor::focused_orie
     OpenLF::operators::orientation ori;
     ori.ori = ori_final_sum;
     ori.coh = coh_final_sum;
-/*
-    OpenLF::operators::orientation ori;
-    ori.ori = ori_sum;
-    ori.coh = coh_sum;
-*/
 
-/*
-    OpenLF::operators::orientation ori;
-    ori.ori = slopes[5];
-    ori.coh = coherences[5];
-*/
     return ori;
 }
 
+/* this function reconstructs lightfield images from epis (for testing) */
 std::vector<array_2D> OpenLF::operators::Structure_Tensor::images_from_epis(std::string channel, DIRECTION direction) {
 
-    //TODO vertical
     std::vector<array_2D> images;    
     int width = lf->imgWidth();
     int height = lf->imgHeight();
@@ -439,6 +376,7 @@ std::vector<array_2D> OpenLF::operators::Structure_Tensor::images_from_epis(std:
     return images;
 }
 
+/* this function reconstructs lightfield images from orientations vector */
 std::vector<array_2D> OpenLF::operators::Structure_Tensor::images_from_orientations(std::string channel, DIRECTION direction) {
 
     std::vector<array_2D> images;
@@ -489,15 +427,13 @@ std::vector<array_2D> OpenLF::operators::Structure_Tensor::images_from_orientati
     return images;
 }
 
+/* this function reconstructs lightfield images from lightweight orientations vector */
 array_2D OpenLF::operators::Structure_Tensor::image_from_orientations_lightweight(int m, std::string channel, DIRECTION direction) {
 
     array_2D image;
     int width = lf->imgWidth();
     int height = lf->imgHeight();
     int size = width*height; 
-    //int cams_v = lf->cams_v(); 
-    //int cams_h = lf->cams_h();
-
 
     if (direction == HORIZONTAL) {
         image = array_2D(shape(width,height));
@@ -526,7 +462,7 @@ array_2D OpenLF::operators::Structure_Tensor::image_from_orientations_lightweigh
     return image;
 }
 
-
+/* This function reconstructs the depth field from the orientations vector. */
 std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth(std::string channel, std::string method, std::string coherence, int focus, DIRECTION direction, double inner_scale, double outer_scale, double smoothing_scale, double coh_threshold, double max_slope, focuses f) {
 
     if (direction == HORIZONTAL) {
@@ -605,7 +541,7 @@ std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth(std
     return images;
 }
 
-
+/* this function reconstructs the depth field from the lightweight orientations vector. It returns a vector of images along the direction. */
 std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth_lightweight(std::string channel, std::string method, std::string coherence,  DIRECTION direction, double inner_scale, double outer_scale, double smoothing_scale, double coh_threshold, double max_slope, focuses f) {
 
     if (direction == HORIZONTAL) {
@@ -613,41 +549,9 @@ std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth_lig
         orientations_horizontal_lightweight[channel].clear();
         orientations_horizontal_lightweight[channel].reserve(memory);
         array_2D ori;
-        //shape epi_shape = shape(lf->imgWidth(),lf->cams_h());
-        //#pragma omp parallel for 
-/*
-        for(int j=0; j<lf->cams_v()*lf->imgHeight(); j++) {
-	        view_1D row = lf->data()->find(channel)->second.viewToRow(j);
-                array_2D epi = array_2D(epi_shape,row.data());
-                array_2D orientation(epi.shape());
-                //view_2D epi = getHorizontalEpiChannel(channel, y, v);
-		for(focuses::iterator it = f.begin() ; it != f.end(); ++it) {
-
-                    if (method == "vigra") {
-                        OpenLF::operators::ST st = vigra_structure_tensor_from_source(epi, inner_scale, outer_scale, smoothing_scale);
-                        ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
-                    }
-                    if (method == "scharr5x5") { 
-                        OpenLF::operators::ST st = Scharr5x5_structure_tensor_from_source(epi, smoothing_scale);
-                        ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
-                    }  
-                    if (method == "focused_vigra") {
-                        OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(epi, f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "vigra");
-                        ori = ori_.ori;
-                    }
-                    if (method == "focused_scharr5x5") {
-                        OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(epi, f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "scharr_5x5");
-                        ori = ori_.ori;
-                    }
-                    orientation += ori;
-                }
-                orientations_horizontal[channel].push_back(orientation);
-            }
-            
-	
-    }*/
-     for(int i=0; i<lf->cams_v(); i++) {
-         for(int j=0; j<lf->imgHeight(); j++) {
+        
+        for(int i=0; i<lf->cams_v(); i++) {
+            for(int j=0; j<lf->imgHeight(); j++) {
                 array_2D epi = array_2D(lf->getHorizontalEpiChannel(channel, j, i)); 
                     if (method == "vigra") {
                         OpenLF::operators::ST st = vigra_structure_tensor_from_source(epi, inner_scale, outer_scale, smoothing_scale);
@@ -684,7 +588,6 @@ std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth_lig
         orientations_vertical_lightweight[channel].clear();
         orientations_vertical_lightweight[channel].reserve(memory);
         array_2D ori;
-        //shape epi_shape = shape(lf->imgHeight(),lf->cams_v());
         //#pragma omp parallel for
         for(int i=0; i<lf->cams_h(); i++) {
 	    for(int j=0; j<lf->imgWidth(); j++) {
@@ -721,6 +624,7 @@ std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth_lig
     std::vector<array_2D> images = OpenLF::operators::Structure_Tensor::images_from_orientations(channel, direction);
     return images;
 }
+
 /*
 array_2D OpenLF::operators::Structure_Tensor::reconstruct_depth_lightweight(std::string channel, int n, std::string method, std::string coherence,  DIRECTION direction, double inner_scale, double outer_scale, double smoothing_scale, double coh_threshold, double max_slope, focuses f) {
 
@@ -833,6 +737,7 @@ array_2D OpenLF::operators::Structure_Tensor::reconstruct_depth_lightweight(std:
 }
 */
 
+     /* This function reconstructs the depth field from the lightweight orientations vector. It returns a single image at position (n,m). */
 array_2D OpenLF::operators::Structure_Tensor::reconstruct_depth_lightweight(std::string channel, int n, int m, std::string method, std::string coherence,  DIRECTION direction, double inner_scale, double outer_scale, double smoothing_scale, double coh_threshold, double max_slope, focuses f) {
 
     array_2D image;
@@ -880,7 +785,6 @@ array_2D OpenLF::operators::Structure_Tensor::reconstruct_depth_lightweight(std:
         orientations_vertical_lightweight[channel].clear();
 	orientations_vertical_lightweight[channel].reserve(memory);
         array_2D ori;
-        //shape epi_shape = shape(lf->imgHeight(),lf->cams_v());
         //#pragma omp parallel for schedule(static)
         for(int j=0; j<lf->imgWidth(); j++) {
             array_2D epi = array_2D(lf->getVerticalEpiChannel(channel, j, m));
@@ -916,35 +820,7 @@ array_2D OpenLF::operators::Structure_Tensor::reconstruct_depth_lightweight(std:
     return image;
 }
 
-/*
-array_2D OpenLF::operators::Structure_Tensor::get_depth_image(std::string channel, std::string method, std::string coherence, int focus, double inner_scale, double outer_scale, double smoothing_scale, double coh_threshold, double max_slope, focuses f) 
-{
-
-    std::vector<array_2D> h = OpenLF::operators::Structure_Tensor::reconstruct_depth(channel, method, coherence, focus, HORIZONTAL, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
-
-    array_2D overlay_h(shape(lf->imgWidth(),lf->imgHeight()),0.0);
-
-    for(int i=0;i<lf->cams_h()*lf->cams_v();i++) {
-        overlay_h += h[i];
-    }
-
-    std::vector<array_2D> v = OpenLF::operators::Structure_Tensor::reconstruct_depth(channel, method, coherence, focus, VERTICAL, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
-
-    array_2D overlay_v(shape(lf->imgHeight(),lf->imgWidth()),0.0);
-
-    for(int i=0;i<lf->cams_h()*lf->cams_v();i++) {
-        overlay_v += v[i];
-    }
-
-    array_2D rotated_overlay_v(lf->imgWidth(),lf->imgHeight());
-    vigra::rotateImage(overlay_v,rotated_overlay_v,-90);
-    
-    overlay_h += rotated_overlay_v;
-
-    return overlay_h;
-}
-*/
-
+/* This function reconstructs the depth field from the orientations vector along both directions. It returns a single image at middle position. */
 array_2D OpenLF::operators::Structure_Tensor::get_depth_image(std::string channel, std::string method, std::string coherence, int focus, double inner_scale, double outer_scale, double smoothing_scale, double coh_threshold, double max_slope, focuses f) 
 {
 
@@ -978,6 +854,7 @@ array_2D OpenLF::operators::Structure_Tensor::get_depth_image(std::string channe
     return overlay_h;
 }
 
+/* This function reconstructs the depth field from the lightweight orientations vector along both directions. It returns a single image at middle position. */
 array_2D OpenLF::operators::Structure_Tensor::get_depth_image_lightweight(std::string channel, std::string method, std::string coherence, double inner_scale, double outer_scale, double smoothing_scale, double coh_threshold, double max_slope, focuses f) 
 {
 
@@ -1001,6 +878,7 @@ array_2D OpenLF::operators::Structure_Tensor::get_depth_image_lightweight(std::s
     return overlay_h;
 }
 
+/* This function reconstructs the depth field from the lightweight orientations vector along both directions. It returns a single image at the position (n,m). */
 array_2D OpenLF::operators::Structure_Tensor::get_depth_image_lightweight(std::string channel, int n, int m, std::string method, std::string coherence, double inner_scale, double outer_scale, double smoothing_scale, double coh_threshold, double max_slope, focuses f) 
 {
     
@@ -1027,78 +905,80 @@ double scale) {
 * So far, this function is a mere copy of Scharr5x5_structure_tensor, except for the respective name adjustments.
 * It might be possible to completely combine the 3x3 and 5x5 functions and simply let the user choose which kernel to use.
 */
-if (!lf->hasChannel(channel)) {
-throw OpenLF_Exception("OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor : Channel doesn't exist!");
+    if (!lf->hasChannel(channel)) {
+        throw OpenLF_Exception("OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor : Channel doesn't exist!");
+    }
+    if (focus != get_focus(channel) && focus != 0) {
+        refocus(focus, channel);
+    }
+    OpenLF::operators::ST st;
+    if (direction == HORIZONTAL) {
+        if (epi > lf->height()) {
+            throw OpenLF_Exception("OpenLF::operators::Structure_Tensor:Scharr3x3_structure_tensor : epi out of range!");
+        }
+        if (focus == 0) {
+            st = OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor_from_source(m_horizontal_epis[channel][epi], scale);
+        }
+        else {
+            st = OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor_from_source(m_horizontal_refocused[channel][epi], scale);
+        }
+    }
+    if (direction == VERTICAL) {
+        if (epi > lf->width()) {
+            throw OpenLF_Exception("OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor : epi out of range!");
+        }
+        if (focus == 0) {
+            st = OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor_from_source(m_vertical_epis[channel][epi], scale);
+        }
+        else {
+            st = OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor_from_source(m_vertical_refocused[channel][epi], scale);
+        }
+    }
+    return st;
 }
-if (focus != get_focus(channel) && focus != 0) {
-refocus(focus, channel);
-}
-OpenLF::operators::ST st;
-if (direction == HORIZONTAL) {
-if (epi > lf->height()) {
-throw OpenLF_Exception("OpenLF::operators::Structure_Tensor:Scharr3x3_structure_tensor : epi out of range!");
-}
-if (focus == 0) {
-st = OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor_from_source(m_horizontal_epis[channel][epi], scale);
-}
-else {
-st = OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor_from_source(m_horizontal_refocused[channel][epi], scale);
-}
-}
-if (direction == VERTICAL) {
-if (epi > lf->width()) {
-throw OpenLF_Exception("OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor : epi out of range!");
-}
-if (focus == 0) {
-st = OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor_from_source(m_vertical_epis[channel][epi], scale);
-}
-else {
-st = OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor_from_source(m_vertical_refocused[channel][epi], scale);
-}
-}
-return st;
-}
-OpenLF::operators::ST OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor_from_source(
-vigra::MultiArrayView<2, float> &source, double scale) {
-// Setting up the Scharr3x3-Kernel
-vigra::Kernel2D<float> scharr_x = vigra::Kernel2D<float>();
-scharr_x.initExplicitly(vigra::Diff2D(-1,-1), vigra::Diff2D(1,1)) =
--3.0/32.0, 0.0, 3.0/32.0,
--10.0/32.0,0.0, 10.0/32.0,
--3.0/32.0, 0.0, 3.0/32.0;
-scharr_x.setBorderTreatment(vigra::BORDER_TREATMENT_REFLECT);
-vigra::Kernel2D<float> scharr_y = vigra::Kernel2D<float>();
-scharr_y.initExplicitly(vigra::Diff2D(-1,-1), vigra::Diff2D(1,1)) =
--3.0/32.0, -10.0/32.0, -3.0/32.0,
-0.0, 0.0, 0.0,
-3.0/32.0, 10.0/32.0, 3.0/32.0;
-scharr_y.setBorderTreatment(vigra::BORDER_TREATMENT_REFLECT);
-vigra::MultiArray<2,float> destination_x = vigra::MultiArray<2,float>(source.shape());
-vigra::MultiArray<2,float> destination_y = vigra::MultiArray<2,float>(source.shape());
-OpenLF::operators::ST st;
-//TODO Do we need to gaussian smooth the source before convolution?
-// Convolution
-vigra::convolveImage(source, destination_x, scharr_x);
-vigra::convolveImage(source, destination_y, scharr_y);
-//Calculating and smoothing the three structure tensor components xx, xy, yy
-st.xx = destination_x*destination_x;
-st.xy = destination_x*destination_y;
-st.yy = destination_y*destination_y;
-vigra::gaussianSmoothing(st.xx, st.xx, scale);
-vigra::gaussianSmoothing(st.xy, st.xy, scale);
-vigra::gaussianSmoothing(st.yy, st.yy, scale);
-// Computing the coherence for each pixel
-vigra::MultiArray<2, float> up(source.shape());
-vigra::MultiArray<2, float> down(source.shape());
-up = sqrt(pow(st.yy-st.xx, 2.0) + 4.0*pow(st.xy,2.0));
-down = st.yy+st.xx;
-//TODO Is this really correct???
-for(auto it = down.begin(); it<down.end(); it++) {
-if(*it < pow(10.0,-9)) {
-*it = 1.0;
-}
-}
-vigra::MultiArray<2, float> coherence(source.shape());
-st.coherence = up/down;
-return st;
+
+OpenLF::operators::ST OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor_from_source(vigra::MultiArrayView<2, float> &source, double scale) {
+    // Setting up the Scharr3x3-Kernel
+    vigra::Kernel2D<float> scharr_x = vigra::Kernel2D<float>();
+    scharr_x.initExplicitly(vigra::Diff2D(-1,-1), vigra::Diff2D(1,1)) =
+    -3.0/32.0, 0.0, 3.0/32.0,
+    -10.0/32.0,0.0, 10.0/32.0,
+    -3.0/32.0, 0.0, 3.0/32.0;
+
+    scharr_x.setBorderTreatment(vigra::BORDER_TREATMENT_REFLECT);
+    vigra::Kernel2D<float> scharr_y = vigra::Kernel2D<float>();
+    scharr_y.initExplicitly(vigra::Diff2D(-1,-1), vigra::Diff2D(1,1)) =
+    -3.0/32.0, -10.0/32.0, -3.0/32.0,
+    0.0, 0.0, 0.0,
+    3.0/32.0, 10.0/32.0, 3.0/32.0;
+
+    scharr_y.setBorderTreatment(vigra::BORDER_TREATMENT_REFLECT);
+    vigra::MultiArray<2,float> destination_x = vigra::MultiArray<2,float>(source.shape());
+    vigra::MultiArray<2,float> destination_y = vigra::MultiArray<2,float>(source.shape());
+    OpenLF::operators::ST st;
+
+    // Convolution
+    vigra::convolveImage(source, destination_x, scharr_x);
+    vigra::convolveImage(source, destination_y, scharr_y);
+    //Calculating and smoothing the three structure tensor components xx, xy, yy
+    st.xx = destination_x*destination_x;
+    st.xy = destination_x*destination_y;
+    st.yy = destination_y*destination_y;
+    vigra::gaussianSmoothing(st.xx, st.xx, scale);
+    vigra::gaussianSmoothing(st.xy, st.xy, scale);
+    vigra::gaussianSmoothing(st.yy, st.yy, scale);
+    // Computing the coherence for each pixel
+    vigra::MultiArray<2, float> up(source.shape());
+    vigra::MultiArray<2, float> down(source.shape());
+    up = sqrt(pow(st.yy-st.xx, 2.0) + 4.0*pow(st.xy,2.0));
+    down = st.yy+st.xx;
+
+    for(auto it = down.begin(); it<down.end(); it++) {
+        if(*it < pow(10.0,-9)) {
+            *it = 1.0;
+        }
+    }
+    vigra::MultiArray<2, float> coherence(source.shape());
+    st.coherence = up/down;
+    return st;
 }

@@ -27,43 +27,12 @@ void OpenLF::operators::Operator_EPI::set(OpenLF::lightfield::Lightfield *lf)
         this->lf->appendProperties(*properties);
     }   
 }
-// TODO
-/*
-void OpenLF::operators::Operator_EPI::load_epi_containers() {
-
-    m_horizontal_epis.clear();
-    m_vertical_epis.clear();
-
-    std::vector <std::string> channels = lf->getListOfChannelNames();
-
-    if (lf->type() == LF_4D || LF_3DH || LF_CROSS) {
-        
-	shape epi_shape = shape(lf->imgWidth(),lf->cams_h());
-        for(auto it = channels.begin(); it != channels.end(); it++)
-	    for (int i=0; i<lf->height(); i++) {
-		view_1D row = lf->data()->find(channel)->second.viewToRow(i); 
-		this->m_horizontal_epis[it->first()].push_back (view_2D(epi_shape,row.data()));
-	    }
-    }
-
-
-    //vertical
-    if (lf->type() == LF_4D || LF_3DV || LF_CROSS) {
-        shape epi_shape = shape(lf->imgHeight(),lf->cams_v());
-        for (int i=0; i<lf->width(); i++) {
-            view_1D column = lf->data()->find(channel)->second.viewToColumn(i); 
-            this->m_vertical_epis.push_back (view_2D(epi_shape,column.data()));
-        }
-    } 
-}
-*/
-/* gets the focus of the members m_horizontal_refocused and m_vertical_refocused */
 
 double OpenLF::operators::Operator_EPI::get_focus(std::string channel) {
     return m_focuses[channel]; //horizontal only!
 }
 
-// CHANGE
+//TODO incomplete => focuses
 void OpenLF::operators::Operator_EPI::load_epi_containers(std::string channel) {
 
     m_horizontal_epis[channel].clear();
@@ -104,27 +73,7 @@ view_2D OpenLF::operators::Operator_EPI::refocus(int focus, view_2D epi) {
     return view_2D(epi_shape, stride, epi.data() + offset);
 }
 
-/* this function refocuses a given epi, leaving shape the same */
-/*
-epi_borders OpenLF::operators::Operator_EPI::refocus_borders(int focus, view_2D epi) {
-    int offset = (epi.height()-1)*focus;
-    shape epi_shape = shape(epi.width()-(epi.height()-1)*focus,epi.height());
-    strideTag stride = strideTag(1, epi.width() - focus);
-    epi_borders_view epi_data(epi_shape, stride, epi.data() + offset);
-    epi_borders epi_final(epi.shape());
-    for (int i=0;i<epi.width();i++) {
-        for (int j=0;j<epi.height;j++) {
-            if (i < offset || i >= epi_data.width+offset) {
-                epi_final(i,j) = 0.0;
-            }
-            else {
-                epi_final(i,j) = epi_data(i-offset,j);
-            }
-        }
-    }
-}
-*/
-
+// this function refocuses a given epi, without loss of information */
 OpenLF::operators::epi OpenLF::operators::Operator_EPI::refocus_uncut(int focus, epi epi) {
     if (epi.focus == -pow(10,6)) {
         throw OpenLF_Exception("OpenLF::operators::Operator_EPI::refocus_uncut -> no focus initialized!");
@@ -138,6 +87,7 @@ OpenLF::operators::epi OpenLF::operators::Operator_EPI::refocus_uncut(int focus,
     return epi_new;
 }
 
+// this function refocuses a given epi, without loss of information */
 OpenLF::operators::epi OpenLF::operators::Operator_EPI::refocus_uncut(int focus, epi_view epi) {
     if (epi.focus == -pow(10,6)) {
         throw OpenLF_Exception("OpenLF::operators::Operator_EPI::refocus_uncut -> no focus initialized!");
@@ -182,7 +132,7 @@ array_2D OpenLF::operators::Operator_EPI::refocus_uncut(int focus, view_2D epi) 
 }
 
 
-// back to focus 0
+// this function makes a backfocus to f=0 */
 OpenLF::operators::epi OpenLF::operators::Operator_EPI::backfocus(epi epi) {
     if (epi.focus == -pow(10,6)) {
         throw OpenLF_Exception("OpenLF::operators::Operator_EPI::refocus_uncut -> no focus initialized!");
@@ -212,70 +162,24 @@ OpenLF::operators::epi OpenLF::operators::Operator_EPI::backfocus(epi epi) {
     return epi_new;
 }
 
-// back to focus 0
-/*
-OpenLF::operators::epi OpenLF::operators::Operator_EPI::backfocus(epi_view epi) {
-    if (epi.focus == -pow(10,6)) {
-        throw OpenLF_Exception("OpenLF::operators::Operator_EPI::refocus_uncut -> no focus initialized!");
-    }
-    OpenLF::operators::epi epi_new;
-    epi_new.EPI = array_2D(vigra::Shape2(epi.EPI.width()-epi.focus*epi.EPI.height(), epi.EPI.height()), 0.0);
-    epi_new.focus = 0;
-
-    if (epi.focus > 0) {
-        for (int j=0;j<epi.EPI.height();j++) {
-            for (int i=0;i<epi.EPI.width();i++) {
-                epi_new.EPI(i,j) = epi.EPI(i+epi.focus*j,j);
-            }
-        }
-    } 
-    if (epi.focus < 0) {
-        for (int j=0;j<epi.EPI.height();j++) {
-            for (int i=0;i<epi.EPI.width();i++) {
-                epi_new.EPI(i,j) = epi.EPI(i+epi.EPI.width()*epi.focus-epi.focus*j,j);
-            }
-        }
-    }
-    if (epi.focus == 0) {
-        epi_new.EPI = epi.EPI;
-    }
-    return epi_new;
-}
-*/
-/*
-epi_vector OpenLF::operators::Operator_EPI::refocus(int focus) {
-
-    epi_vector refocused;
-    for(auto it = horizontal_epis_ptr()->begin(); it<horizontal_epis_ptr()->end(); it++) {
-        refocused.push_back(refocus(focus, *it));
-    }   
-    return refocused; 
-}
-*/
-
-/* this function refocuses the member maps m_horizontal_refocused and m_vertical_refocused */
+/* this function refocuses_uncut the member maps m_horizontal_refocused and m_vertical_refocused */
 void OpenLF::operators::Operator_EPI::refocus(int focus, std::string channel) {
 
     m_focuses[channel] = focus;
-    //int height = lf->cams_v()*lf->imgHeight();
-    //int width = lf->cams_h()*lf->imgWidth();
     m_horizontal_refocused[channel].clear();
     m_vertical_refocused[channel].clear();
     //m_horizontal_refocused[channel] = epi_vector(height,array_2D());
     //m_vertical_refocused[channel] = epi_vector(width,array_2D());
 
     for(auto it = m_horizontal_epis[channel].begin(); it != m_horizontal_epis[channel].end(); it++) {
-        //m_horizontal_refocused[channel].push_back(refocus_uncut(focus, *it));
+         m_horizontal_refocused[channel].push_back(refocus_uncut(focus, *it));
          m_horizontal_refocused[channel].push_back(*it);
     }   
     for(auto it = m_vertical_epis[channel].begin(); it != m_vertical_epis[channel].end(); it++) {
-        //m_vertical_refocused[channel].push_back(refocus_uncut(focus, *it));
+        m_vertical_refocused[channel].push_back(refocus_uncut(focus, *it));
         m_vertical_refocused[channel].push_back(*it);
     }   
 }
-
-//OpenLF::operators::epi_vector * vertical_epis_ptr(std::string channel);
-
 
 OpenLF::operators::epi_vector * OpenLF::operators::Operator_EPI::vertical_epis_ptr(std::string channel) {
     return &this->m_vertical_epis[channel];
@@ -293,14 +197,3 @@ array_2D OpenLF::operators::Operator_EPI::get_horizontal_epi(std::string channel
 }
 
 
-//TODO
-/*
-int OpenLF::operators::Operator_EPI::nr_epis(std::string channel, DIRECTION direction) {
-    if (direction == HORIZONTAL) {
-        return m_horizontal_epis[channel].size();
-    }
-    if (direction == VERTICAL) {
-        return m_vertical_epis[channel].size();
-    }
-}
-*/
