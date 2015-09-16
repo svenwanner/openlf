@@ -46,11 +46,12 @@ void test_operator::testMethod() {
     std::vector<std::string> inslots;
     std::vector<std::string> outslots; 
 
-    std::string method = "focused_vigra";// "vigra" or "focused_vigra" or "scharr5x5" or "focused_scharr5x5"
+    std::string method = "scharr3x3";// "vigra" or "focused_vigra" or "scharr5x5" or "focused_scharr5x5"
     OpenLF::operators::orientation orientation;
-    OpenLF::operators::focuses f = {3}; // for focused ST
+    //OpenLF::operators::focuses f = {0,1,2,3,4,5,6,7,8}; // for focused ST
+    OpenLF::operators::focuses f = {6}; // for focused ST
     //DIRECTION direction = HORIZONTAL; // or VERTICAL
-    std::string coherence = "Yes"; // or "None"
+    std::string coherence = "None"; // or "None"
     //int focus = 0; // different single focuses not for focused STs
     double inner_scale = 1.0;
     double outer_scale = 0.3;

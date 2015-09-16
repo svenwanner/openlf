@@ -74,6 +74,10 @@ public:
     //OpenLF::operators::ST_structs::ST vigra_structure_tensor_from_source(vigra::MultiArrayView<2, float> & source, double inner_scale, double outer_scale);
     ST vigra_structure_tensor_from_source(vigra::MultiArrayView<2, float> & source, double inner_scale, double outer_scale, double scale);
     
+    ST Scharr3x3_structure_tensor_from_source(vigra::MultiArrayView<2, float> & source, double scale);
+
+    ST Scharr3x3_structure_tensor(std::string channel, int epi, int focus, DIRECTION direction, double scale);
+
     array_2D orientation(ST tensor, std::string coherence = "None", double coh_threshold=0.5, double max_slope=1.2);
 
     OpenLF::operators::orientation focused_orientation(view_2D & source, focuses f, double smoothing_scale, double inner_scale=0.6, double outer_scale=1.1, double max_slope=1.0, double coh_threshold=0.95, std::string st_type="vigra");
