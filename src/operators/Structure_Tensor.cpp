@@ -304,7 +304,11 @@ OpenLF::operators::orientation OpenLF::operators::Structure_Tensor::focused_orie
    
         if (st_type == "scharr_5x5") {
             st = Scharr5x5_structure_tensor_from_source(s, smoothing_scale);
-        } 
+        }
+
+        if (st_type == "scharr_3x3") {
+            st = Scharr3x3_structure_tensor_from_source(s, smoothing_scale);
+        }
         
         OpenLF::operators::epi orientation;
         orientation.focus = f[i];
@@ -500,7 +504,10 @@ std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth(std
                 OpenLF::operators::ST st = OpenLF::operators::Structure_Tensor::vigra_structure_tensor(channel, i, focus, direction, inner_scale, outer_scale);
                 ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
             }
-            if (method == "scharr5x5") { 
+            if (method == "                    if (method == \"focused_scharr5x5\") {\n"
+                                  "                        OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(epi, f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, \"scharr_5x5\");\n"
+                                  "                        ori = ori_.ori;\n"
+                                  "                    }5x5") {
                 OpenLF::operators::ST st = Scharr5x5_structure_tensor(channel, i, focus, direction, smoothing_scale);
                 ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
             }  
@@ -594,16 +601,24 @@ std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth_lig
                         OpenLF::operators::ST st = vigra_structure_tensor_from_source(epi, inner_scale, outer_scale, smoothing_scale);
                         ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
                     }
-                    if (method == "scharr5x5") { 
+                    if (method == "scharr5x5") {
                         OpenLF::operators::ST st = Scharr5x5_structure_tensor_from_source(epi, smoothing_scale);
                         ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
-                    }  
+                    }
+                    if (method == "scharr3x3") {
+                        OpenLF::operators::ST st = Scharr3x3_structure_tensor_from_source(epi, smoothing_scale);
+                        ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
+                    }
                     if (method == "focused_vigra") {
                         OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(epi, f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "vigra");
                         ori = ori_.ori;
                     }
                     if (method == "focused_scharr5x5") {
                         OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(epi, f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "scharr_5x5");
+                        ori = ori_.ori;
+                    }
+                    if (method == "focused_scharr3x3") {
+                        OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(epi, f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "scharr_3x3");
                         ori = ori_.ori;
                     }
                 orientations_horizontal[channel].push_back(ori);
@@ -628,13 +643,21 @@ std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth_lig
                     if (method == "scharr5x5") { 
                         OpenLF::operators::ST st = Scharr5x5_structure_tensor_from_source(epi, smoothing_scale);
                         ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
-                    }  
+                    }
+                    if (method == "scharr3x3") {
+                        OpenLF::operators::ST st = Scharr3x3_structure_tensor_from_source(epi, smoothing_scale);
+                        ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
+                    }
                     if (method == "focused_vigra") {
                         OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(epi, f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "vigra");
                         ori = ori_.ori;
                     }
                     if (method == "focused_scharr5x5") {
                         OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(epi, f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "scharr_5x5");
+                        ori = ori_.ori;
+                    }
+                    if (method == "focused_scharr3x3") {
+                        OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(epi, f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "scharr_3x3");
                         ori = ori_.ori;
                     }
                 orientations_vertical[channel].push_back(ori);
@@ -736,8 +759,12 @@ array_2D OpenLF::operators::Structure_Tensor::get_depth_image_lightweight(std::s
 OpenLF::operators::ST OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor(std::string channel, int epi,
                                                                                       int focus, DIRECTION direction,
                                                                                       double scale) {
+    /*
+     * So far, this function is a mere copy of Scharr5x5_structure_tensor, except for the respective name adjustments.
+     * It might be possible to completely combine the 3x3 and 5x5 functions and simply let the user choose which kernel to use.
+     */
     if (!lf->hasChannel(channel)) {
-        throw OpenLF_Exception("OpenLF::operators::Structure_Tensor::Scharr5x5_structure_tensor : Channel doesn't exist!");
+        throw OpenLF_Exception("OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor : Channel doesn't exist!");
     }
 
     if (focus != get_focus(channel) && focus != 0) {
@@ -746,34 +773,86 @@ OpenLF::operators::ST OpenLF::operators::Structure_Tensor::Scharr3x3_structure_t
 
     OpenLF::operators::ST st;
 
-
-
-
-
-
-
-
-
-
+    if (direction == HORIZONTAL) {
+        if (epi > lf->height()) {
+            throw OpenLF_Exception("OpenLF::operators::Structure_Tensor:Scharr3x3_structure_tensor : epi out of range!");
+        }
+        if (focus == 0) {
+            st = OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor_from_source(m_horizontal_epis[channel][epi], scale);
+        }
+        else {
+            st = OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor_from_source(m_horizontal_refocused[channel][epi], scale);
+        }
+    }
+    if (direction == VERTICAL) {
+        if (epi > lf->width()) {
+            throw OpenLF_Exception("OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor : epi out of range!");
+        }
+        if (focus == 0) {
+            st = OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor_from_source(m_vertical_epis[channel][epi], scale);
+        }
+        else {
+            st = OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor_from_source(m_vertical_refocused[channel][epi], scale);
+        }
+    }
     return st;
 }
 
 OpenLF::operators::ST OpenLF::operators::Structure_Tensor::Scharr3x3_structure_tensor_from_source(
         vigra::MultiArrayView<2, float> &source, double scale) {
 
-    vigra::Kernel1D<float> scharr1 = vigra::Kernel1D();
-    scharr1.initExplicitly(-1,1) =
-            (-1.0/2.0) , 0.0 , (1.0/2.0) ;
-    scharr1.setBorderTreatment(vigra::BORDER_TREATMENT_REFLECT);
+    // Setting up the Scharr3x3-Kernel
+    vigra::Kernel2D<float> scharr_x = vigra::Kernel2D<float>();
+    scharr_x.initExplicitly(vigra::Diff2D(-1,-1), vigra::Diff2D(1,1)) =
+            -3.0/32.0, 0.0, 3.0/32.0,
+            -10.0/32.0,0.0, 10.0/32.0,
+            -3.0/32.0, 0.0, 3.0/32.0;
+    scharr_x.setBorderTreatment(vigra::BORDER_TREATMENT_REFLECT);
 
-    vigra::Kernel1D<float> scharr2 = vigra::Kernel1D();
-    scharr2.initExplicitly(-1,1) =
-            (3.0/16.0), (10.0/16.0) , (3.0/16.0);
-    scharr1.setBorderTreatment(vigra::BORDER_TREATMENT_REFLECT);
+    vigra::Kernel2D<float> scharr_y = vigra::Kernel2D<float>();
+    scharr_y.initExplicitly(vigra::Diff2D(-1,-1), vigra::Diff2D(1,1)) =
+            -3.0/32.0, -10.0/32.0, -3.0/32.0,
+            0.0,       0.0,        0.0,
+            3.0/32.0,  10.0/32.0,  3.0/32.0;
+    scharr_y.setBorderTreatment(vigra::BORDER_TREATMENT_REFLECT);
 
+    vigra::MultiArray<2,float> destination_x = vigra::MultiArray<2,float>(source.shape());
+    vigra::MultiArray<2,float> destination_y = vigra::MultiArray<2,float>(source.shape());
+    OpenLF::operators::ST st;
 
+    //TODO Do we need to gaussian smooth the source before convolution?
 
+    // Convolution
+    vigra::convolveImage(source, destination_x, scharr_x);
+    vigra::convolveImage(source, destination_y, scharr_y);
 
+    //Calculating and smoothing the three structure tensor components xx, xy, yy
+    st.xx = destination_x*destination_x;
+    st.xy = destination_x*destination_y;
+    st.yy = destination_y*destination_y;
+
+    vigra::gaussianSmoothing(st.xx, st.xx, scale);
+    vigra::gaussianSmoothing(st.xy, st.xy, scale);
+    vigra::gaussianSmoothing(st.yy, st.yy, scale);
+
+    // Computing the coherence for each pixel
+    vigra::MultiArray<2, float> up(source.shape());
+    vigra::MultiArray<2, float> down(source.shape());
+
+    up = sqrt(pow(st.yy-st.xx, 2.0) + 4.0*pow(st.xy,2.0));
+    down = st.yy+st.xx;
+
+    //TODO Is this really correct???
+    for(auto it = down.begin(); it<down.end(); it++) {
+        if(*it < pow(10.0,-9)) {
+            *it = 1.0;
+        }
+    }
+
+    vigra::MultiArray<2, float> coherence(source.shape());
+    st.coherence = up/down;
+
+    return st;
 
 
 }
