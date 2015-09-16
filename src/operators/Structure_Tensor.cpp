@@ -533,7 +533,7 @@ array_2D OpenLF::operators::Structure_Tensor::image_from_orientations_lightweigh
 std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth(std::string channel, std::string method, std::string coherence, int focus, DIRECTION direction, double inner_scale, double outer_scale, double smoothing_scale, double coh_threshold, double max_slope, focuses f) {
 
     if (direction == HORIZONTAL) {
-    
+
         orientations_horizontal[channel].clear();
         array_2D ori;
         //#pragma omp parallel for
@@ -542,17 +542,14 @@ std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth(std
                 OpenLF::operators::ST st = OpenLF::operators::Structure_Tensor::vigra_structure_tensor(channel, i, focus, direction, inner_scale, outer_scale);
                 ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
             }
-            if (method == "                    if (method == \"focused_scharr5x5\") {\n"
-                                  "                        OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(epi, f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, \"scharr_5x5\");\n"
-                                  "                        ori = ori_.ori;\n"
-                                  "                    }5x5") {
+            if (method == "scharr5x5") {
                 OpenLF::operators::ST st = Scharr5x5_structure_tensor(channel, i, focus, direction, smoothing_scale);
                 ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
-            }  
+            }
             if (method == "focused_vigra") {
                 OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(m_horizontal_epis[channel][i], f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "vigra");
                 ori = ori_.ori;
-        }
+            }
             if (method == "focused_scharr5x5") {
                 OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(m_horizontal_epis[channel][i], f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "scharr_5x5");
                 ori = ori_.ori;
@@ -560,9 +557,9 @@ std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth(std
             orientations_horizontal[channel].push_back(ori);
         }
     }
-    
+
     if (direction == VERTICAL) {
-    
+
         orientations_vertical[channel].clear();
         array_2D ori;
         //#pragma omp parallel for
@@ -571,14 +568,14 @@ std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth(std
                 OpenLF::operators::ST st = OpenLF::operators::Structure_Tensor::vigra_structure_tensor(channel, i, focus, direction, inner_scale, outer_scale);
                 ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
             }
-            if (method == "scharr5x5") { 
+            if (method == "scharr5x5") {
                 OpenLF::operators::ST st = Scharr5x5_structure_tensor(channel, i, focus, direction, smoothing_scale);
                 ori = OpenLF::operators::Structure_Tensor::orientation(st, coherence, coh_threshold, max_slope);
-            }  
+            }
             if (method == "focused_vigra") {
                 OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(m_vertical_epis[channel][i], f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "vigra");
                 ori = ori_.ori;
-        }
+            }
             if (method == "focused_scharr5x5") {
                 OpenLF::operators::orientation ori_ = OpenLF::operators::Structure_Tensor::focused_orientation(m_vertical_epis[channel][i], f, inner_scale, outer_scale, smoothing_scale, max_slope, coh_threshold, "scharr_5x5");
                 ori = ori_.ori;
@@ -590,7 +587,6 @@ std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth(std
     std::vector<array_2D> images = OpenLF::operators::Structure_Tensor::images_from_orientations(channel, direction);
     return images;
 }
-
 
 std::vector<array_2D> OpenLF::operators::Structure_Tensor::reconstruct_depth_lightweight(std::string channel, std::string method, std::string coherence,  DIRECTION direction, double inner_scale, double outer_scale, double smoothing_scale, double coh_threshold, double max_slope, focuses f) {
 
