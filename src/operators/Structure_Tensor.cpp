@@ -325,7 +325,7 @@ OpenLF::operators::orientation OpenLF::operators::Structure_Tensor::focused_orie
     return ori;
 }
 
-/* this function reconstructs lightfield images from epis (for testing) */
+/* this function reconstructs lightfield images from epis (for testing purposes) */
 std::vector<array_2D> OpenLF::operators::Structure_Tensor::images_from_epis(std::string channel, DIRECTION direction) {
 
     std::vector<array_2D> images;    

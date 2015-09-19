@@ -121,7 +121,7 @@ public:
     //***** reconstruction of images from epis/orientations
     //********************************************************
 
-    /* this function reconstructs lightfield images from epis (for testing) */
+    /* this function reconstructs lightfield images from epis (for testing purposes) */
     std::vector<array_2D> images_from_epis(std::string channel, DIRECTION direction = HORIZONTAL);
 
     /* this function reconstructs lightfield images from orientations vector */

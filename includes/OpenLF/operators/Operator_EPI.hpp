@@ -65,7 +65,7 @@ public:
     Operator_EPI(std::vector<std::string> inslots, std::vector<std::string> outslots) : Operator(inslots,outslots) {};
     virtual ~Operator_EPI();
      
-    /* loads epis into a map for a given channel */
+    /* Loads epis into a map for a given channel. Not always necessary, since cumbersome.*/
     void load_epi_containers(std::string channel);
     
     /* this function refocuses a given epi, saving only the central straight region */ 

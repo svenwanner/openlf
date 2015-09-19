@@ -456,9 +456,10 @@ void test_operator::testMethod() {
 
     std::string filename_woods_overlay_v = test_data2_dir+method+"_orientation_image_overlay_v.jpg";
     OpenLF::image::io::imsave_HQ_float(filename_woods_overlay_v, overlay_v);
-
+/*
     array_2D rotated_overlay_v(48,64);
-    vigra::rotateImage(overlay_v,rotated_overlay_v,-90);
+    vigra::rotateImage(overlay_v,rotated_overlay_v,90);
+    vigra::rotateImage(rotated_overlay_v,rotated_overlay_v,180);
 
     std::string filename_woods_overlay_v_rotated = test_data2_dir+method+"_orientation_image_overlay_v_rotated.jpg";
     OpenLF::image::io::imsave_HQ_float(filename_woods_overlay_v_rotated, rotated_overlay_v);
@@ -472,7 +473,7 @@ void test_operator::testMethod() {
     array_2D depth = ST3->get_depth_image("r", method ,coherence, focus, inner_scale, outer_scale, smoothing_scale, coh_threshold, max_slope, f);
     std::string filename_woods_depth = test_data2_dir+method+"_depth_woods.jpg";
     OpenLF::image::io::imsave_HQ_float(filename_woods_depth, depth);
-
+*/
     /*********************************************************************
      *                     Test from buddha 4D     
      *********************************************************************/

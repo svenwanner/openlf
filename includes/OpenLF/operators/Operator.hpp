@@ -64,8 +64,10 @@ public:
 
     virtual void process();
         
+    // store temporary any computed ImageChannel 
     std::map<std::string,OpenLF::image::ImageChannel> m_tmp_memory;
 
+    // store temporary any MultiArray result
     std::map<std::string,vigra::MultiArrayView<2, float>> m_tmp_views;
 
 protected:
