@@ -179,6 +179,11 @@ if(BUILD_WORKFLOWS)
   add_subdirectory(workflows)
 endif()
 
+
+find_package(Boost REQUIRED COMPONENTS filesystem system)
+add_executable(teststuff src/bin/test.cpp)
+target_link_libraries(teststuff clif cliini clif_vigra ${Boost_LIBRARIES})
+
 #--------------------------------------------------------------
 # TESTS 
 #-------------------------------------------------------------- 
