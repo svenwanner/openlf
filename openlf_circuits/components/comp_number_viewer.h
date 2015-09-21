@@ -26,7 +26,7 @@
 
 #include "DSPatch.h"
 #include <iostream>
-#include "gui\includes\QtpComp.h"
+#include "gui/includes/QtpComp.h"
 
 class SignalPrinter : public DspComponent
 {

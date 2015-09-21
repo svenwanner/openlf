@@ -18,7 +18,7 @@
 *
 * Author Maximilian Diebold
 */
-#include "components\comp_logical_and.h"
+#include "components/comp_logical_and.h"
 
 // 3. Implement virtual Process_() method
 // ======================================

@@ -25,7 +25,7 @@
 
 #include "DSPatch.h"
 #include <iostream>
-#include "gui\includes\QtpComp.h"
+#include "gui/includes/QtpComp.h"
 #include <iostream>
 
 // 1. Derive component class from DspComponent

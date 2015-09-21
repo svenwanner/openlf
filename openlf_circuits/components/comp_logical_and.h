@@ -31,7 +31,7 @@
 
 #include "DSPatch.h"
 #include <iostream>
-#include "gui\includes\QtpComp.h"
+#include "gui/includes/QtpComp.h"
 #include <string>
 #include "opencv2/highgui.hpp"
 #include "opencv2/core.hpp"

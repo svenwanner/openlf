@@ -28,15 +28,15 @@
 #include <vigra/stdimage.hxx>
 #include <vigra/impex.hxx>
 
-#include "dspatch\DspComponent.h"
-#include "gui\includes\QtpMain.h"
+#include "dspatch/DspComponent.h"
+#include "gui/includes/QtpMain.h"
 #include "qwidget.h"
 
-#include "components\comp_logical_and.h"
-#include "components\comp_bool_signal.h"
-#include "components\comp_number_viewer.h"
+#include "components/comp_logical_and.h"
+#include "components/comp_bool_signal.h"
+#include "components/comp_number_viewer.h"
 
-class circuit_demo : public QWidget
+class circuit_demo
 
 {
 private:
