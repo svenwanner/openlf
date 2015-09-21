@@ -16,7 +16,6 @@ public:
   }
 };
 
-//FlexMAV
 class GaussianBlur : public DspComponent {
 public:
   GaussianBlur()
@@ -37,7 +36,103 @@ protected:
   }
 };
 
+class LFSource : public DspComponent {
+public:
+  LFSource()
+  {
+    AddOutput_("output");
+  }
+protected:
+  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
+  {
+    const DspParameter *filepath = GetParameter(0);
+    const DspParameter *set = GetParameter(1);
+    
+    ClifFile f_in(*filepath->GetString(), H5F_ACC_RDONLY);
+
+    Dataset *out = f_in.openDataset(*set->GetInt());
+    
+    outputs.SetValue(0, out);
+  }
+};
+
+class LFSink : public DspComponent {
+public:
+  LFSource()
+  {
+    AddOutput_("input");
+  }
+protected:
+  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
+  {
+    const DspParameter *filepath = GetParameter(0);
+    
+    ClifFile f_out(*filepath->GetString(), H5F_ACC_RDWR);
+
+    //TODO implement flush
+    //f_out.write();
+  }
+};
+
+class LF2EPI : public DspComponent {
+public:
+  LFSource()
+  {
+    AddInput_("input");
+    AddOutput_("LF");
+    AddOutput_("EPI");
+  }
+protected:
+  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
+  {
+
+  }
+};
+
+class EPI2LF : public DspComponent {
+public:
+  LFSource()
+  {
+    AddInput_("input");
+    AddOutput_("LF");
+    AddOutput_("EPI");
+  }
+protected:
+  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
+  {
+
+  }
+};
+
 int main(const int argc, const char *argv[])
 {
+  DspCircuit circuit;
+  
+  LFSource source;
+  GaussianBlur blur;
+  
+  LF2EPI epi_in;
+  EPI2LF epi_out;
+  
+  circuit.AddComponent(source, "source");
+  circuit.AddComponent(blur, "blur");
+  circuit.AddComponent(epi_in, "epi_in");
+  circuit.AddComponent(epi_out, "epi_out");
+  
+  circuit.ConnectOutToIn(source, 0, epi_in, 0);
+  
+  circuit.ConnectOutToIn(epi_in, 1, blur, 0);
+  circuit.ConnectOutToIn(blur, 0, epi_out, 1);
+  
+  circuit.ConnectOutToIn(source, 0, epi_out, 0);
+  
+  //allocate data objects for signals
+  openlf::circuitSetup(circuit);
+  
+  circuit.Tick();
+  circuit.Reset();
+  
+  openlf::circuitBreakdown(circuit);
+  
   return EXIT_SUCCESS;
 }
