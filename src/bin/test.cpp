@@ -36,3 +36,8 @@ protected:
     in->call<gaussian_blur_dispatcher>(in, out);
   }
 };
+
+int main(const int argc, const char *argv[])
+{
+  return EXIT_SUCCESS;
+}
