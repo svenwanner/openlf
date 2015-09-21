@@ -179,10 +179,18 @@ if(BUILD_WORKFLOWS)
   add_subdirectory(workflows)
 endif()
 
+#--------------------------------------------------------------
+# All the new Stuff 
+#-------------------------------------------------------------- 
 
-find_package(Boost REQUIRED COMPONENTS filesystem system)
-add_executable(teststuff src/bin/test.cpp)
-target_link_libraries(teststuff clif cliini clif_vigra ${Boost_LIBRARIES})
+include_directories(include)
+include_directories(include/openlf)
+include_directories(include/openlf/components)
+
+add_subdirectory(src/lib/components)
+
+#add_executable(teststuff src/bin/test.cpp)
+#target_link_libraries(teststuff clif cliini clif_vigra ${Boost_LIBRARIES})
 
 #--------------------------------------------------------------
 # TESTS 

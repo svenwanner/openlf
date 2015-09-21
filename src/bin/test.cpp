@@ -1,6 +1,8 @@
 #include "openlf.hpp"
-
+/*
 #include <vigra/convolution.hxx>
+
+#include <string>
 
 using namespace vigra;
 using namespace clif;
@@ -48,7 +50,7 @@ protected:
     const DspParameter *filepath = GetParameter(0);
     const DspParameter *set = GetParameter(1);
     
-    ClifFile f_in(*filepath->GetString(), H5F_ACC_RDONLY);
+    ClifFile f_in(std::string(filepath->GetString()->c_str()), H5F_ACC_RDONLY);
 
     Dataset *out = f_in.openDataset(*set->GetInt());
     
@@ -102,11 +104,11 @@ protected:
   {
 
   }
-};
+};*/
 
 int main(const int argc, const char *argv[])
 {
-  DspCircuit circuit;
+  /*DspCircuit circuit;
   
   LFSource source;
   GaussianBlur blur;
@@ -132,7 +134,7 @@ int main(const int argc, const char *argv[])
   circuit.Tick();
   circuit.Reset();
   
-  openlf::circuitBreakdown(circuit);
+  openlf::circuitBreakdown(circuit);*/
   
   return EXIT_SUCCESS;
 }

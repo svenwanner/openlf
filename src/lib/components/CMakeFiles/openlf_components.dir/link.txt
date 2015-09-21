@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC  -Wall -std=c++11 -pedantic -Wno-long-long -Wextra -fopenmp -O3 -DNDEBUG  -shared -Wl,-soname,libopenlf_components.so -o ../../../build/lib/libopenlf_components.so CMakeFiles/openlf_components.dir/epi.cpp.o CMakeFiles/openlf_components.dir/gauss.cpp.o -lclif -lcliini -lclif_vigra -lDSPatch -lboost_filesystem -lboost_system 

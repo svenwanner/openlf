@@ -3,5 +3,6 @@
 
 #include "openlf/types.hpp"
 #include "dspatch/DspComponent.h"
+#include "dspatch/DspCircuit.h"
 
 #endif
