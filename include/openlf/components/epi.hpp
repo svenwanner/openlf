@@ -14,6 +14,7 @@ class EpiCircuit : public DspComponent {
 public:
   EpiCircuit();
   
+  //TODO discuss:: use method or settings from DSPatch?
   void set(DspCircuit *circuit);
 protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
