@@ -186,8 +186,12 @@ endif()
 include_directories(include)
 include_directories(include/openlf)
 include_directories(include/openlf/components)
-
+include_directories(include/openlf/workflows)
+include_directories(include/openlf/operators)
+#
 add_subdirectory(src/lib/components)
+add_subdirectory(src/lib/workflows)
+add_subdirectory(src/lib/operators)
 
 #add_executable(teststuff src/bin/test.cpp)
 #target_link_libraries(teststuff clif cliini clif_vigra ${Boost_LIBRARIES})

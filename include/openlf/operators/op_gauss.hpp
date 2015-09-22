@@ -17,10 +17,7 @@
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 *
 * Author Sven Wanner, Maximilian Diebold, Hendrick Siedelmann 
-* 
-* 
-*Third Party Libs:
-* DsPatch Flow based programming framework (http://flowbasedprogramming.com/DSPatch/) 
+*
 */
 
 
@@ -34,10 +31,10 @@
 namespace openlf { namespace components {
 
 class GaussianBlur : public DspComponent {
-public:
-  GaussianBlur();
-protected:
-  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+    public:
+      GaussianBlur();
+    protected:
+      virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 };
 
 }} //namespace openlf::components
