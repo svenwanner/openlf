@@ -1,4 +1,4 @@
-#include "comp_gauss.hpp"
+#include "op_gauss.hpp"
 
 #include "vigra/convolution.hxx"
 
@@ -25,13 +25,13 @@ public:
 
 }
 
-op_gauss::op_gauss()
+OP_Gauss::OP_Gauss()
 {
   AddInput_("input");
   AddOutput_("output");
 }
 
-void op_gauss::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
+void OP_Gauss::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   FlexMAV<2> *in;
   FlexMAV<2> *out;

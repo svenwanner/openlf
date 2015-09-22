@@ -81,7 +81,7 @@ Message(CMAKE_LIBRARY_OUTPUT_DIRECTORY " : ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 #find_package(OpenGL)
 find_package(HDF5 REQUIRED )
 find_package(VIGRA REQUIRED )
-#find_package(OpenCV)
+find_package(OpenCV REQUIRED)
 #find_package(Boost REQUIRED ) 
 find_package(Boost
              #1.55.0
@@ -194,7 +194,7 @@ add_subdirectory(src/lib/workflows)
 add_subdirectory(src/lib/operators)
 
 add_executable(teststuff src/bin/test.cpp)
-target_link_libraries(teststuff clif cliini clif_vigra ${Boost_LIBRARIES})
+target_link_libraries(teststuff clif cliini DSPatch clif_vigra ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY})
 
 #--------------------------------------------------------------
 # TESTS 
