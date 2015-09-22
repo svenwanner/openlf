@@ -21,8 +21,8 @@
 */
 
 
-#ifndef _OPENLF_COMP_GAUSS_H
-#define _OPENLF_COMP_GAUSS_H
+#ifndef _OPENLF_OP_GAUSS_H
+#define _OPENLF_OP_GAUSS_H
 
 #include <vigra/convolution.hxx>
 
@@ -30,11 +30,12 @@
 
 namespace openlf { namespace components {
 
-class GaussianBlur : public DspComponent {
+class Op_Gauss : public DspComponent {
     public:
-      GaussianBlur();
+      Op_Gauss();
     protected:
       virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+
 };
 
 }} //namespace openlf::components

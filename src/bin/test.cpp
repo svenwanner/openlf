@@ -1,140 +1,63 @@
 #include "openlf.hpp"
-/*
-#include <vigra/convolution.hxx>
 
-#include <string>
+#include "clif/clif.hpp"
+#include "clif/clif_vigra.hpp"
+#include "clif/flexmav.hpp"
+#include "comp_mav.hpp"
 
-using namespace vigra;
+#include <vigra/imageinfo.hxx>
+#include <vigra/impex.hxx>
+
 using namespace clif;
+using namespace vigra;
+using namespace openlf::components;
 
-template<typename T> class gaussian_blur_dispatcher {
+template<typename T> class save_flexmav {
 public:
-  void operator()(FlexMAV<2> *in_mav, FlexMAV<2> *out_mav)
-  {
-    MultiArrayView<2,T> *in = in_mav->template get<T>();
-    MultiArrayView<2,T> *out = out_mav->template get<T>();
-    
-    gaussianSmoothing(*in, *out, 3.0, 3.0);
-  }
+void operator()(FlexMAV<2> *img, const char *name)
+{    
+  exportImage(*img->get<T>(), ImageExportInfo(name));
+}
 };
-
-class GaussianBlur : public DspComponent {
-public:
-  GaussianBlur()
-  {
-    AddInput_("input");
-    AddOutput_("output");
-  }
-protected:
-  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
-  {
-    FlexMAV<2> *in;
-    FlexMAV<2> *out;
-    
-    inputs.GetValue(0, in);
-    outputs.GetValue(0, out);
-    
-    in->call<gaussian_blur_dispatcher>(in, out);
-  }
-};
-
-class LFSource : public DspComponent {
-public:
-  LFSource()
-  {
-    AddOutput_("output");
-  }
-protected:
-  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
-  {
-    const DspParameter *filepath = GetParameter(0);
-    const DspParameter *set = GetParameter(1);
-    
-    ClifFile f_in(std::string(filepath->GetString()->c_str()), H5F_ACC_RDONLY);
-
-    Dataset *out = f_in.openDataset(*set->GetInt());
-    
-    outputs.SetValue(0, out);
-  }
-};
-
-class LFSink : public DspComponent {
-public:
-  LFSource()
-  {
-    AddOutput_("input");
-  }
-protected:
-  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
-  {
-    const DspParameter *filepath = GetParameter(0);
-    
-    ClifFile f_out(*filepath->GetString(), H5F_ACC_RDWR);
-
-    //TODO implement flush
-    //f_out.write();
-  }
-};
-
-class LF2EPI : public DspComponent {
-public:
-  LFSource()
-  {
-    AddInput_("input");
-    AddOutput_("LF");
-    AddOutput_("EPI");
-  }
-protected:
-  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
-  {
-
-  }
-};
-
-class EPI2LF : public DspComponent {
-public:
-  LFSource()
-  {
-    AddInput_("input");
-    AddOutput_("LF");
-    AddOutput_("EPI");
-  }
-protected:
-  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
-  {
-
-  }
-};*/
 
 int main(const int argc, const char *argv[])
 {
-  /*DspCircuit circuit;
+  assert(argc == 3);
   
-  LFSource source;
-  GaussianBlur blur;
+  ClifFile f(argv[1], H5F_ACC_RDONLY);
+  Dataset *set = f.openDataset();
   
-  LF2EPI epi_in;
-  EPI2LF epi_out;
+  Subset3d *subset = new Subset3d(set, 0);
   
-  circuit.AddComponent(source, "source");
-  circuit.AddComponent(blur, "blur");
-  circuit.AddComponent(epi_in, "epi_in");
-  circuit.AddComponent(epi_out, "epi_out");
+  FlexMAV<2> source;
+  FlexMAV<2> *sink;
   
-  circuit.ConnectOutToIn(source, 0, epi_in, 0);
+  FlexMAVSource<2> comp_source;
+  FlexMAVSink  <2> comp_sink;
   
-  circuit.ConnectOutToIn(epi_in, 1, blur, 0);
-  circuit.ConnectOutToIn(blur, 0, epi_out, 1);
+  comp_source.set(&source);
   
-  circuit.ConnectOutToIn(source, 0, epi_out, 0);
+  DspCircuit outer_circuit;
+  outer_circuit.AddComponent(comp_source, "source");
+  outer_circuit.AddComponent(comp_sink, "sink");
   
-  //allocate data objects for signals
-  openlf::circuitSetup(circuit);
+  DspCircuit inner_circuit;
+  //TODO Sven, Max: your circuit FlexMAV<2> -> circuit -> FlexMAV<2>
+  DspComponent comp_gauss;
+  inner_circuit.AddComponent(comp_gauss, "blur");
   
-  circuit.Tick();
-  circuit.Reset();
   
-  openlf::circuitBreakdown(circuit);*/
+  outer_circuit.AddComponent(inner_circuit, "epi_circuit");
+  outer_circuit.ConnectOutToIn(comp_source, 0, inner_circuit, 0);
+  outer_circuit.ConnectOutToIn(inner_circuit, 0, comp_sink, 0);
+  
+  readEPI(subset, 1, source, 100, 5.0);
+      
+  outer_circuit.Tick();
+  
+  sink = comp_sink.get();
+  
+  sink->call<save_flexmav>(sink, argv[2]);
   
   return EXIT_SUCCESS;
 }

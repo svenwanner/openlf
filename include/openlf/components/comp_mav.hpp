@@ -46,7 +46,7 @@ public:
   {
     AddOutput_("output");
   }
-  void set(clif::FlexMAV<DIM> &mav)
+  void set(clif::FlexMAV<DIM> *mav)
   {
     _mav = mav;
   }
@@ -67,7 +67,7 @@ public:
   {
     AddInput_("input");
   }
-  clif::FlexMAV<DIM> get()
+  clif::FlexMAV<DIM>* get()
   {
     return _mav;
   }
