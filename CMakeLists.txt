@@ -119,7 +119,7 @@ ADD_DEFINITIONS(${HDF5_CPPFLAGS})
 # so that we will find TutorialConfig.h
 include_directories("${PROJECT_SOURCE_DIR}")
 
-ADD_LIBRARY(libopenlf SHARED ${SOURCES} )
+#ADD_LIBRARY(libopenlf SHARED ${SOURCES} )
  
 
 #-------------------------------------------------------------
@@ -169,7 +169,7 @@ add_custom_target(
   Configure
   COMMAND ${CMAKE_CURRENT_LIST_DIR}/configure ${CMAKE_CURRENT_LIST_FILE}
   )
-target_link_libraries(libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY})
+#target_link_libraries(libopenlf ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${VIGRA_IMPEX_LIBRARY})
 
 #--------------------------------------------------------------
 # WORKFLOWS 
@@ -193,6 +193,8 @@ add_subdirectory(src/lib/components)
 add_subdirectory(src/lib/workflows)
 add_subdirectory(src/lib/operators)
 
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb -O0")
 add_executable(teststuff src/bin/test.cpp)
 target_link_libraries(teststuff clif cliini DSPatch clif_vigra ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY})
 
