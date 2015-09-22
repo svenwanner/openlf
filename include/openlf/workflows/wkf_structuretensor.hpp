@@ -24,7 +24,6 @@
 #ifndef WKF_STRUCTURETENSOR_HPP
 #define WKF_STRUCTURETENSOR_HPP
 
-#include <vigra/convolution.hxx>
 
 #include "openlf.hpp"
 
@@ -34,14 +33,38 @@ namespace openlf {
     class WKF_StructureTensor : public DspCircuit {
         private:
             DspCircuit *circ_structuretensor = std::nullptr_t();
-            OP_LoadImage *img1 = std::nullptr_t();
+            OP_LoadImage *img_in = std::nullptr_t();
+            OP_SaveImage *img_out = std::nullptr_t();
+            OP_Gauss *gauss = std::nullptr_t();
         public:
           WKF_StructureTensor() {
               
-              
-          }
+            // 1. Create a DspCircuit where we can route our components
+            circ_structuretensor = new DspCircuit;
+            img_in = new OP_LoadImage;
+            img_out = new OP_SaveImage;
+            gauss = new OP_Gauss;
+                
+            // 2. Create instances of the components needed for our circuit
+            circ_structuretensor->AddComponent(img_in, "LoadImage");
+            circ_structuretensor->AddComponent(img_out, "SaveImage");
+            circ_structuretensor->AddComponent(gauss, "Gauss");
+
+            circ_structuretensor->ConnectOutToIn(img_in, 0, gauss, 0);
+            circ_structuretensor->ConnectOutToIn(gauss, 0, img_out, 0);
+          };
+          
+          ~circuit_demo() { 
+            delete circ_structuretensor;
+            delete img_in;
+            delete img_out;
+            delete gauss;
+          };
+          
         protected:
           virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+          
+         
     };
 
 }} //namespace openlf::components
@@ -88,7 +111,11 @@ public:
 		//OR circuit.ConnectOutToIn("Logic AND", "output", "Bool Printer", 0);
 
 	};
-	~circuit_demo(){ release(); };
+	~circuit_demo(){ delete circuit;
+		delete signal1;
+		delete signal2;
+		delete boolPrinter;
+		delete logicAnd; };
 
 	void run(){ 
 		circuit->Tick(); 

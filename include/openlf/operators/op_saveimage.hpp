@@ -21,8 +21,8 @@
 */
 
 
-#ifndef _OPENLF_OP_LOADIMAGE_H
-#define _OPENLF_OP_LOADIMAGE_H
+#ifndef _OPENLF_OP_SAVEIMAGE_H
+#define _OPENLF_OP_SAVEIMAGE_H
 
 
 #include "openlf.hpp"
@@ -30,10 +30,11 @@
 namespace openlf { 
     namespace components {
 
-    class OP_LoadImage : public DspComponent {
+    class OP_SaveImage : public DspComponent {
         public:
-          OP_LoadImage() {
-            AddOutput_("ImgOut");
+          OP_SaveImage() {
+              // add inputs
+		AddInput_("ImgIn");
           };
         protected:
           virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
