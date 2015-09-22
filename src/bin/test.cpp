@@ -27,7 +27,7 @@ int main(const int argc, const char *argv[])
   ClifFile f(argv[1], H5F_ACC_RDONLY);
   Dataset *set = f.openDataset();
   
-  Subset3d *subset = new Subset3d(set, 0);
+  Subset3d *subset = new Subset3d(set);
   
   FlexMAV<2> source;
   FlexMAV<2> *sink;
@@ -47,9 +47,9 @@ int main(const int argc, const char *argv[])
   inner_circuit.AddComponent(comp_gauss, "blur");
   
   
-  outer_circuit.AddComponent(inner_circuit, "epi_circuit");
-  outer_circuit.ConnectOutToIn(comp_source, 0, inner_circuit, 0);
-  outer_circuit.ConnectOutToIn(inner_circuit, 0, comp_sink, 0);
+  //outer_circuit.AddComponent(inner_circuit, "epi_circuit");
+  outer_circuit.ConnectOutToIn(comp_source, 0, comp_sink, 0);
+  //outer_circuit.ConnectOutToIn(inner_circuit, 0, comp_sink, 0);
   
   readEPI(subset, 1, source, 100, 5.0);
       

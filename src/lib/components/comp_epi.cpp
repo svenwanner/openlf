@@ -59,7 +59,7 @@ void EpiCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //maybe an internal clif::Dataset? What does DSPatch recommend?
   outputs.SetValue(0, out);
   
-  assert(_circuit);
+  assert(_epi_circuit);
   assert(in);
   assert(out);
   
