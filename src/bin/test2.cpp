@@ -7,6 +7,7 @@
 #include "clif/clif_vigra.hpp"
 #include "clif/flexmav.hpp"
 #include "comp_mav.hpp"
+#include "op_gauss.hpp"
 #include "operators.hpp"
 
 
@@ -37,16 +38,15 @@ int main(const int argc, const char *argv[])
   
   FlexMAVSource<2> comp_source;
   FlexMAVSink  <2> comp_sink;
-  OP_Gauss2 comp_gauss;
+  OP_Gauss comp_gauss;
   
   DspCircuit outer_circuit;
   outer_circuit.AddComponent(comp_source, "source");
   outer_circuit.AddComponent(comp_sink, "sink");
-
   outer_circuit.AddComponent(comp_gauss, "blur");
   
-  comp_gauss.SetParameter(0, DspParameter(DspParameter::ParamType::Float, 11.0f));
-  comp_gauss.SetParameter(1, DspParameter(DspParameter::ParamType::Float, 11.0f));
+  //comp_gauss.SetParameter(0, DspParameter(DspParameter::ParamType::Float, 11.0f));
+  //comp_gauss.SetParameter(1, DspParameter(DspParameter::ParamType::Float, 11.0f));
   
   outer_circuit.ConnectOutToIn(comp_source, 0, comp_gauss, 0);
   outer_circuit.ConnectOutToIn(comp_gauss, 0, comp_sink, 0);
