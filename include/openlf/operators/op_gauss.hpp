@@ -25,6 +25,7 @@
 #define _OPENLF_OP_GAUSS_H
 
 #include "openlf.hpp"
+#include "clif/flexmav.hpp"
 
 namespace openlf { 
     namespace components {
@@ -34,7 +35,8 @@ namespace openlf {
           OP_Gauss();
         protected:
           virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
-
+        private:
+          FlexMAV<2> output_image;
     };
 
 }} //namespace openlf::components
