@@ -24,8 +24,12 @@
 
 #include <vigra/convolution.hxx>
 
+#define OPENLF_OP_CONSTRUCT_PARAMS \
+  AddParameter_("x blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
+  AddParameter_("y blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
+
 OPENLF_OP_START(OP_Gauss2)
 
-    gaussianSmoothing(*in, *out, 5.0, 5.0);
+    gaussianSmoothing(*in, *out, *op->GetParameter(0)->GetFloat(), *op->GetParameter(1)->GetFloat());
     
 OPENLF_OP_END(OP_Gauss2)
