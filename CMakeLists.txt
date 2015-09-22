@@ -50,7 +50,7 @@ add_executable(teststuff2 src/bin/test2.cpp)
 add_executable(testthings3 fuckthis/test.cpp)
 target_link_libraries(testthings3 clif cliini DSPatch clif_vigra ${HDF5_CPP_LIBRARY} ${HDF5_LIBRARIES} ${Boost_LIBRARIES})
 
-target_link_libraries(teststuff DSPatch clif cliini  clif_vigra ${Boost_LIBRARIES} ${HDF5_CPP_LIBRARY} ${HDF5_LIBRARIES} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY})
+target_link_libraries(teststuff openlf_workflows  openlf_components  openlf_operators DSPatch clif cliini  clif_vigra ${Boost_LIBRARIES} ${HDF5_CPP_LIBRARY} ${HDF5_LIBRARIES} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY})
 #target_link_libraries(teststuff DSPatch cliini clif clif_vigra ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY})
 target_link_libraries(teststuff2 openlf_operators openlf_workflows openlf_components clif cliini DSPatch clif_vigra ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY})
 

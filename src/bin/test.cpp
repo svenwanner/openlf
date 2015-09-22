@@ -1,4 +1,4 @@
-/*#include <vigra/imageinfo.hxx>
+#include <vigra/imageinfo.hxx>
 #include <vigra/impex.hxx>
 
 #include "openlf.hpp"
@@ -8,14 +8,14 @@
 #include "clif/flexmav.hpp"
 #include "comp_mav.hpp"
 #include "wkf_structuretensor.hpp"
-*/
+
 #include "clif/clif.hpp"
 
 #include <H5Cpp.h>
 #include <H5File.h>
 
 using namespace clif;
-/*using namespace vigra;
+using namespace vigra;
 using namespace openlf::components;
 
 template<typename T> class save_flexmav {
@@ -25,14 +25,14 @@ void operator()(FlexMAV<2> *img, const char *name)
   exportImage(*img->get<T>(), ImageExportInfo(name));
 }
 };
-*/
+
 int main(const int argc, const char *argv[])
 {
   assert(argc == 3);
   
   // create clif dataset
   ClifFile f(argv[1]);
-  /*Dataset *set = f.openDataset();
+  Dataset *set = f.openDataset();
   
   // get slice of clif dataset
   Subset3d *subset = new Subset3d(set);
@@ -49,7 +49,8 @@ int main(const int argc, const char *argv[])
   DspCircuit outer_circuit;
    // define inner circuit to keep programm flow
   WKF_StructureTensor circ_structuretensor;
-  
+  //OP_Gauss circ_structuretensor;
+
   //add components to circuit
   outer_circuit.AddComponent(comp_source, "source");
   outer_circuit.AddComponent(comp_sink, "sink");
@@ -76,5 +77,5 @@ int main(const int argc, const char *argv[])
   // save results
   sink->call<save_flexmav>(sink, argv[2]);
   
-  return EXIT_SUCCESS;*/
+  return EXIT_SUCCESS;
 }
