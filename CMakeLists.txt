@@ -194,18 +194,18 @@ add_subdirectory(src/lib/workflows)
 add_subdirectory(src/lib/operators)
 
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb -O0")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb -O0 -std=c++11")
 add_executable(teststuff src/bin/test.cpp)
 add_executable(teststuff2 src/bin/test2.cpp)
-target_link_libraries(teststuff openlf_operators openlf_workflows openlf_components DSPatch clif_vigra ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY})
-target_link_libraries(teststuff2 openlf_operators openlf_workflows openlf_components clif cliini DSPatch clif_vigra ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY})
+target_link_libraries(teststuff clif cliini DSPatch clif_vigra ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY})
+target_link_libraries(teststuff2 clif cliini DSPatch clif_vigra ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY})
 
 #--------------------------------------------------------------
 # TESTS 
 #-------------------------------------------------------------- 
-if(BUILD_TEST)
-  set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/bin/tests)
-  add_subdirectory(tests)
-  enable_testing()
-endif()
+#if(BUILD_TEST)
+##  set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/bin/tests)
+#  add_subdirectory(tests)
+#  enable_testing()
+#endif()
 

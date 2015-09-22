@@ -10,7 +10,6 @@
 #include "operators.hpp"
 
 
-
 using namespace clif;
 using namespace vigra;
 using namespace openlf::components;
