@@ -33,9 +33,9 @@
 
 namespace openlf { namespace components {
 
-class GaussianBlur : public DspComponent {
+class op_gauss : public DspComponent {
 public:
-  GaussianBlur();
+  op_gauss();
 protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 };
