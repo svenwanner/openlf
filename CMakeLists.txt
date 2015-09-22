@@ -34,7 +34,7 @@ OPTION(WITH_OPENGM "Include OpenGM" OFF)
 file(GLOB_RECURSE SOURCES src/*.cpp)
 include_directories(./src/)
 file(GLOB_RECURSE headers ./include/*.hpp)
-include_directories(./includes/)
+include_directories(./include/)
 
 #--------------------------------------------------------------
 # warning level

@@ -31,12 +31,7 @@ namespace openlf {
 
     class OP_LoadImage : public DspComponent {
         public:
-          OP_LoadImage() {
-            // add outputs
-            AddOutput_("ImgOut");
-            // add parameter
-            AddParameter_("InPath", DspParameter(DspParameter::FilePath, ""));
-          };
+          OP_LoadImage();
         protected:
           virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
     };

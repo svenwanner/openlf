@@ -25,8 +25,8 @@
 #define WKF_STRUCTURETENSOR_HPP
 
 
-#define DEMO_IN_PATH "bla"
-#define DEMO_OUT_PATH "blub"
+#define DEMO_IN_PATH "/home/swanner/Projects/openlf/tests/data/lena_rgb.jpg"
+#define DEMO_OUT_PATH "/home/swanner/Projects/openlf/tests/data/lena_rgb_out.jpg"
 
 #include "openlf.hpp"
 
