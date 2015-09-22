@@ -4,6 +4,7 @@
 #include "clif/clif_vigra.hpp"
 #include "clif/flexmav.hpp"
 #include "comp_mav.hpp"
+#include "op_gauss.hpp"
 
 #include <vigra/imageinfo.hxx>
 #include <vigra/impex.hxx>
@@ -35,24 +36,28 @@ int main(const int argc, const char *argv[])
   FlexMAVSource<2> comp_source;
   FlexMAVSink  <2> comp_sink;
   
-  comp_source.set(&source);
-  
   DspCircuit outer_circuit;
   outer_circuit.AddComponent(comp_source, "source");
   outer_circuit.AddComponent(comp_sink, "sink");
   
   DspCircuit inner_circuit;
   //TODO Sven, Max: your circuit FlexMAV<2> -> circuit -> FlexMAV<2>
-  DspComponent comp_gauss;
-  inner_circuit.AddComponent(comp_gauss, "blur");
+  OP_Gauss comp_gauss;
+  //inner_circuit.AddComponent(comp_gauss, "blur");
   
   
+  outer_circuit.AddComponent(comp_gauss, "gauss");
   //outer_circuit.AddComponent(inner_circuit, "epi_circuit");
-  outer_circuit.ConnectOutToIn(comp_source, 0, comp_sink, 0);
-  //outer_circuit.ConnectOutToIn(inner_circuit, 0, comp_sink, 0);
+  
+  outer_circuit.ConnectOutToIn(comp_source, 0, comp_gauss, 0);
+  outer_circuit.ConnectOutToIn(comp_gauss, 0, comp_sink, 0);
   
   readEPI(subset, 1, source, 100, 5.0);
       
+  //outer_circuit.Tick();
+  
+  comp_source.set(&source);
+  
   outer_circuit.Tick();
   
   sink = comp_sink.get();

@@ -54,7 +54,10 @@ public:
 protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   {
-    outputs.SetValue(0, _mav); 
+    bool stat;
+    printf("source set %p\n", _mav);
+    stat = outputs.SetValue(0, _mav); 
+    assert(stat);
   }
   
 private:
@@ -76,6 +79,7 @@ protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   {
     inputs.GetValue(0, _mav); 
+    printf("sink got %p\n", _mav);
   }
   
 private:
