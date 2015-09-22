@@ -1,3 +1,6 @@
+#include <vigra/imageinfo.hxx>
+#include <vigra/impex.hxx>
+
 #include "openlf.hpp"
 
 #include "clif/clif.hpp"
@@ -6,8 +9,7 @@
 #include "comp_mav.hpp"
 #include "operators.hpp"
 
-#include <vigra/imageinfo.hxx>
-#include <vigra/impex.hxx>
+
 
 using namespace clif;
 using namespace vigra;

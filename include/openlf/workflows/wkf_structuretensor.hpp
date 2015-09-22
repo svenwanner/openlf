@@ -20,15 +20,13 @@
 *
 */
 
-#pragma once
 #ifndef WKF_STRUCTURETENSOR_HPP
 #define WKF_STRUCTURETENSOR_HPP
 
 
-#define DEMO_IN_PATH "/home/swanner/Projects/openlf/tests/data/lena_rgb.jpg"
-#define DEMO_OUT_PATH "/home/swanner/Projects/openlf/tests/data/lena_rgb_out.jpg"
-
 #include "openlf.hpp"
+#include "operators/op_gauss.hpp"
+
 
 namespace openlf { 
     namespace components {
@@ -36,39 +34,19 @@ namespace openlf {
     class WKF_StructureTensor : public DspCircuit {
         private:
             DspCircuit *circ_structuretensor = std::nullptr_t();
-            OP_LoadImage *img_in = std::nullptr_t();
-            OP_SaveImage *img_out = std::nullptr_t();
+            
+            int pInnerScale;
+            float inner_scale;
+            float outer_scale = 1.0;
+            
             OP_Gauss *gauss = std::nullptr_t();
         public:
-          WKF_StructureTensor() {
-              
-            // 1. Create a DspCircuit where we can route our components
-            circ_structuretensor = new DspCircuit;
-            img_in = new OP_LoadImage;
-            img_out = new OP_SaveImage;
-            gauss = new OP_Gauss;
-                
-            // 2. Create instances of the components needed for our circuit
-            circ_structuretensor->AddComponent(img_in, "LoadImage");
-            circ_structuretensor->AddComponent(img_out, "SaveImage");
-            circ_structuretensor->AddComponent(gauss, "Gauss");
-            
-            img_in->SetParameter(0, DspParameter(DspParameter::FilePath, DEMO_IN_PATH))
-            img_out->SetParameter(0, DspParameter(DspParameter::FilePath, DEMO_OUT_PATH))
-
-            circ_structuretensor->ConnectOutToIn(img_in, 0, gauss, 0);
-            circ_structuretensor->ConnectOutToIn(gauss, 0, img_out, 0);
-          };
-          
-          ~circuit_demo() { 
-            delete circ_structuretensor;
-            delete img_in;
-            delete img_out;
-            delete gauss;
-          };
+          WKF_StructureTensor();
+          virtual ~WKF_StructureTensor();
           
         protected:
-          virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+          //virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+          virtual bool ParameterUpdating_(int index, DspParameter const& param);
           
          
     };

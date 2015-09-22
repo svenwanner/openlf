@@ -20,11 +20,13 @@
 *
 */
 
-#include "op_gauss.hpp"
-
 #include <vigra/convolution.hxx>
 #include <vigra/imageinfo.hxx>
 #include <vigra/impex.hxx>
+
+#include "op_gauss.hpp"
+
+
 
 #include "clif/flexmav.hpp"
 
