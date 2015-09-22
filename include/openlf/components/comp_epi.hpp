@@ -1,12 +1,12 @@
-#ifndef _OPENLF_EPI_H
-#define _OPENLF_EPI_H
+#ifndef _OPENLF_COMP_EPI_H
+#define _OPENLF_COMP_EPI_H
 
 #include "clif/flexmav.hpp"
 
 #include "dspatch/DspComponent.h"
 #include "dspatch/DspCircuit.h"
 
-#include "mav.hpp"
+#include "comp_mav.hpp"
 
 namespace openlf { namespace components {
 

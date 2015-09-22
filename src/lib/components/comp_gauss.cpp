@@ -1,4 +1,4 @@
-#include "gauss.hpp"
+#include "comp_gauss.hpp"
 
 #include "vigra/convolution.hxx"
 

@@ -1,4 +1,4 @@
-#include "epi.hpp"
+#include "comp_epi.hpp"
 
 #include "clif/subset3d.hpp"
 #include "clif/clif_vigra.hpp"

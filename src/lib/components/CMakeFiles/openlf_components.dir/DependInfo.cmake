@@ -4,8 +4,8 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/hendrik/projects/openlf/src/lib/components/epi.cpp" "/home/hendrik/projects/openlf/src/lib/components/CMakeFiles/openlf_components.dir/epi.cpp.o"
-  "/home/hendrik/projects/openlf/src/lib/components/gauss.cpp" "/home/hendrik/projects/openlf/src/lib/components/CMakeFiles/openlf_components.dir/gauss.cpp.o"
+  "/home/hendrik/projects/openlf/src/lib/components/comp_epi.cpp" "/home/hendrik/projects/openlf/src/lib/components/CMakeFiles/openlf_components.dir/comp_epi.cpp.o"
+  "/home/hendrik/projects/openlf/src/lib/components/comp_gauss.cpp" "/home/hendrik/projects/openlf/src/lib/components/CMakeFiles/openlf_components.dir/comp_gauss.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

@@ -1,5 +1,5 @@
-#ifndef _OPENLF_GAUSS_H
-#define _OPENLF_GAUSS_H
+#ifndef _OPENLF_COMP_GAUSS_H
+#define _OPENLF_COMP_GAUSS_H
 
 #include <vigra/convolution.hxx>
 

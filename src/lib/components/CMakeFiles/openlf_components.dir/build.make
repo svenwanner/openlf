@@ -57,64 +57,64 @@ include src/lib/components/CMakeFiles/openlf_components.dir/progress.make
 # Include the compile flags for this target's objects.
 include src/lib/components/CMakeFiles/openlf_components.dir/flags.make
 
-src/lib/components/CMakeFiles/openlf_components.dir/epi.cpp.o: src/lib/components/CMakeFiles/openlf_components.dir/flags.make
-src/lib/components/CMakeFiles/openlf_components.dir/epi.cpp.o: src/lib/components/epi.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/hendrik/projects/openlf/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/lib/components/CMakeFiles/openlf_components.dir/epi.cpp.o"
-	cd /home/hendrik/projects/openlf/src/lib/components && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/openlf_components.dir/epi.cpp.o -c /home/hendrik/projects/openlf/src/lib/components/epi.cpp
+src/lib/components/CMakeFiles/openlf_components.dir/comp_epi.cpp.o: src/lib/components/CMakeFiles/openlf_components.dir/flags.make
+src/lib/components/CMakeFiles/openlf_components.dir/comp_epi.cpp.o: src/lib/components/comp_epi.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/hendrik/projects/openlf/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/lib/components/CMakeFiles/openlf_components.dir/comp_epi.cpp.o"
+	cd /home/hendrik/projects/openlf/src/lib/components && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/openlf_components.dir/comp_epi.cpp.o -c /home/hendrik/projects/openlf/src/lib/components/comp_epi.cpp
 
-src/lib/components/CMakeFiles/openlf_components.dir/epi.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/openlf_components.dir/epi.cpp.i"
-	cd /home/hendrik/projects/openlf/src/lib/components && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hendrik/projects/openlf/src/lib/components/epi.cpp > CMakeFiles/openlf_components.dir/epi.cpp.i
+src/lib/components/CMakeFiles/openlf_components.dir/comp_epi.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/openlf_components.dir/comp_epi.cpp.i"
+	cd /home/hendrik/projects/openlf/src/lib/components && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hendrik/projects/openlf/src/lib/components/comp_epi.cpp > CMakeFiles/openlf_components.dir/comp_epi.cpp.i
 
-src/lib/components/CMakeFiles/openlf_components.dir/epi.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/openlf_components.dir/epi.cpp.s"
-	cd /home/hendrik/projects/openlf/src/lib/components && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hendrik/projects/openlf/src/lib/components/epi.cpp -o CMakeFiles/openlf_components.dir/epi.cpp.s
+src/lib/components/CMakeFiles/openlf_components.dir/comp_epi.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/openlf_components.dir/comp_epi.cpp.s"
+	cd /home/hendrik/projects/openlf/src/lib/components && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hendrik/projects/openlf/src/lib/components/comp_epi.cpp -o CMakeFiles/openlf_components.dir/comp_epi.cpp.s
 
-src/lib/components/CMakeFiles/openlf_components.dir/epi.cpp.o.requires:
+src/lib/components/CMakeFiles/openlf_components.dir/comp_epi.cpp.o.requires:
 
-.PHONY : src/lib/components/CMakeFiles/openlf_components.dir/epi.cpp.o.requires
+.PHONY : src/lib/components/CMakeFiles/openlf_components.dir/comp_epi.cpp.o.requires
 
-src/lib/components/CMakeFiles/openlf_components.dir/epi.cpp.o.provides: src/lib/components/CMakeFiles/openlf_components.dir/epi.cpp.o.requires
-	$(MAKE) -f src/lib/components/CMakeFiles/openlf_components.dir/build.make src/lib/components/CMakeFiles/openlf_components.dir/epi.cpp.o.provides.build
-.PHONY : src/lib/components/CMakeFiles/openlf_components.dir/epi.cpp.o.provides
+src/lib/components/CMakeFiles/openlf_components.dir/comp_epi.cpp.o.provides: src/lib/components/CMakeFiles/openlf_components.dir/comp_epi.cpp.o.requires
+	$(MAKE) -f src/lib/components/CMakeFiles/openlf_components.dir/build.make src/lib/components/CMakeFiles/openlf_components.dir/comp_epi.cpp.o.provides.build
+.PHONY : src/lib/components/CMakeFiles/openlf_components.dir/comp_epi.cpp.o.provides
 
-src/lib/components/CMakeFiles/openlf_components.dir/epi.cpp.o.provides.build: src/lib/components/CMakeFiles/openlf_components.dir/epi.cpp.o
+src/lib/components/CMakeFiles/openlf_components.dir/comp_epi.cpp.o.provides.build: src/lib/components/CMakeFiles/openlf_components.dir/comp_epi.cpp.o
 
 
-src/lib/components/CMakeFiles/openlf_components.dir/gauss.cpp.o: src/lib/components/CMakeFiles/openlf_components.dir/flags.make
-src/lib/components/CMakeFiles/openlf_components.dir/gauss.cpp.o: src/lib/components/gauss.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/hendrik/projects/openlf/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object src/lib/components/CMakeFiles/openlf_components.dir/gauss.cpp.o"
-	cd /home/hendrik/projects/openlf/src/lib/components && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/openlf_components.dir/gauss.cpp.o -c /home/hendrik/projects/openlf/src/lib/components/gauss.cpp
+src/lib/components/CMakeFiles/openlf_components.dir/comp_gauss.cpp.o: src/lib/components/CMakeFiles/openlf_components.dir/flags.make
+src/lib/components/CMakeFiles/openlf_components.dir/comp_gauss.cpp.o: src/lib/components/comp_gauss.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/hendrik/projects/openlf/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object src/lib/components/CMakeFiles/openlf_components.dir/comp_gauss.cpp.o"
+	cd /home/hendrik/projects/openlf/src/lib/components && /usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/openlf_components.dir/comp_gauss.cpp.o -c /home/hendrik/projects/openlf/src/lib/components/comp_gauss.cpp
 
-src/lib/components/CMakeFiles/openlf_components.dir/gauss.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/openlf_components.dir/gauss.cpp.i"
-	cd /home/hendrik/projects/openlf/src/lib/components && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hendrik/projects/openlf/src/lib/components/gauss.cpp > CMakeFiles/openlf_components.dir/gauss.cpp.i
+src/lib/components/CMakeFiles/openlf_components.dir/comp_gauss.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/openlf_components.dir/comp_gauss.cpp.i"
+	cd /home/hendrik/projects/openlf/src/lib/components && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hendrik/projects/openlf/src/lib/components/comp_gauss.cpp > CMakeFiles/openlf_components.dir/comp_gauss.cpp.i
 
-src/lib/components/CMakeFiles/openlf_components.dir/gauss.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/openlf_components.dir/gauss.cpp.s"
-	cd /home/hendrik/projects/openlf/src/lib/components && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hendrik/projects/openlf/src/lib/components/gauss.cpp -o CMakeFiles/openlf_components.dir/gauss.cpp.s
+src/lib/components/CMakeFiles/openlf_components.dir/comp_gauss.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/openlf_components.dir/comp_gauss.cpp.s"
+	cd /home/hendrik/projects/openlf/src/lib/components && /usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hendrik/projects/openlf/src/lib/components/comp_gauss.cpp -o CMakeFiles/openlf_components.dir/comp_gauss.cpp.s
 
-src/lib/components/CMakeFiles/openlf_components.dir/gauss.cpp.o.requires:
+src/lib/components/CMakeFiles/openlf_components.dir/comp_gauss.cpp.o.requires:
 
-.PHONY : src/lib/components/CMakeFiles/openlf_components.dir/gauss.cpp.o.requires
+.PHONY : src/lib/components/CMakeFiles/openlf_components.dir/comp_gauss.cpp.o.requires
 
-src/lib/components/CMakeFiles/openlf_components.dir/gauss.cpp.o.provides: src/lib/components/CMakeFiles/openlf_components.dir/gauss.cpp.o.requires
-	$(MAKE) -f src/lib/components/CMakeFiles/openlf_components.dir/build.make src/lib/components/CMakeFiles/openlf_components.dir/gauss.cpp.o.provides.build
-.PHONY : src/lib/components/CMakeFiles/openlf_components.dir/gauss.cpp.o.provides
+src/lib/components/CMakeFiles/openlf_components.dir/comp_gauss.cpp.o.provides: src/lib/components/CMakeFiles/openlf_components.dir/comp_gauss.cpp.o.requires
+	$(MAKE) -f src/lib/components/CMakeFiles/openlf_components.dir/build.make src/lib/components/CMakeFiles/openlf_components.dir/comp_gauss.cpp.o.provides.build
+.PHONY : src/lib/components/CMakeFiles/openlf_components.dir/comp_gauss.cpp.o.provides
 
-src/lib/components/CMakeFiles/openlf_components.dir/gauss.cpp.o.provides.build: src/lib/components/CMakeFiles/openlf_components.dir/gauss.cpp.o
+src/lib/components/CMakeFiles/openlf_components.dir/comp_gauss.cpp.o.provides.build: src/lib/components/CMakeFiles/openlf_components.dir/comp_gauss.cpp.o
 
 
 # Object files for target openlf_components
 openlf_components_OBJECTS = \
-"CMakeFiles/openlf_components.dir/epi.cpp.o" \
-"CMakeFiles/openlf_components.dir/gauss.cpp.o"
+"CMakeFiles/openlf_components.dir/comp_epi.cpp.o" \
+"CMakeFiles/openlf_components.dir/comp_gauss.cpp.o"
 
 # External object files for target openlf_components
 openlf_components_EXTERNAL_OBJECTS =
 
-build/lib/libopenlf_components.so: src/lib/components/CMakeFiles/openlf_components.dir/epi.cpp.o
-build/lib/libopenlf_components.so: src/lib/components/CMakeFiles/openlf_components.dir/gauss.cpp.o
+build/lib/libopenlf_components.so: src/lib/components/CMakeFiles/openlf_components.dir/comp_epi.cpp.o
+build/lib/libopenlf_components.so: src/lib/components/CMakeFiles/openlf_components.dir/comp_gauss.cpp.o
 build/lib/libopenlf_components.so: src/lib/components/CMakeFiles/openlf_components.dir/build.make
 build/lib/libopenlf_components.so: /usr/lib64/libboost_filesystem.so
 build/lib/libopenlf_components.so: /usr/lib64/libboost_system.so
@@ -127,8 +127,8 @@ src/lib/components/CMakeFiles/openlf_components.dir/build: build/lib/libopenlf_c
 
 .PHONY : src/lib/components/CMakeFiles/openlf_components.dir/build
 
-src/lib/components/CMakeFiles/openlf_components.dir/requires: src/lib/components/CMakeFiles/openlf_components.dir/epi.cpp.o.requires
-src/lib/components/CMakeFiles/openlf_components.dir/requires: src/lib/components/CMakeFiles/openlf_components.dir/gauss.cpp.o.requires
+src/lib/components/CMakeFiles/openlf_components.dir/requires: src/lib/components/CMakeFiles/openlf_components.dir/comp_epi.cpp.o.requires
+src/lib/components/CMakeFiles/openlf_components.dir/requires: src/lib/components/CMakeFiles/openlf_components.dir/comp_gauss.cpp.o.requires
 
 .PHONY : src/lib/components/CMakeFiles/openlf_components.dir/requires
 

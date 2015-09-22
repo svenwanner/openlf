@@ -1,5 +1,5 @@
-#ifndef _OPENLF_MAV_H
-#define _OPENLF_MAV_H
+#ifndef _OPENLF_COMP_MAV_H
+#define _OPENLF_COMP_MAV_H
 
 #include "clif/flexmav.hpp"
 #include "dspatch/DspComponent.h"

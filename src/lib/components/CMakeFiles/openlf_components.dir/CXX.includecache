@@ -6,17 +6,17 @@
 
 #IncludeRegexTransform: 
 
-/home/hendrik/projects/openlf/src/lib/components/epi.cpp
-epi.hpp
-/home/hendrik/projects/openlf/src/lib/components/epi.hpp
+/home/hendrik/projects/openlf/src/lib/components/comp_epi.cpp
+comp_epi.hpp
+/home/hendrik/projects/openlf/src/lib/components/comp_epi.hpp
 clif/subset3d.hpp
 /home/hendrik/projects/openlf/src/lib/components/clif/subset3d.hpp
 clif/clif_vigra.hpp
 /home/hendrik/projects/openlf/src/lib/components/clif/clif_vigra.hpp
 
-/home/hendrik/projects/openlf/src/lib/components/gauss.cpp
-gauss.hpp
-/home/hendrik/projects/openlf/src/lib/components/gauss.hpp
+/home/hendrik/projects/openlf/src/lib/components/comp_gauss.cpp
+comp_gauss.hpp
+/home/hendrik/projects/openlf/src/lib/components/comp_gauss.hpp
 vigra/convolution.hxx
 /home/hendrik/projects/openlf/src/lib/components/vigra/convolution.hxx
 clif/flexmav.hpp
@@ -30,23 +30,23 @@ include/dspatch/DspComponent.h
 dspatch/DspCircuit.h
 include/dspatch/DspCircuit.h
 
-include/openlf/components/epi.hpp
+include/openlf/components/comp_epi.hpp
 clif/flexmav.hpp
 include/openlf/components/clif/flexmav.hpp
 dspatch/DspComponent.h
 include/openlf/components/dspatch/DspComponent.h
 dspatch/DspCircuit.h
 include/openlf/components/dspatch/DspCircuit.h
-mav.hpp
-include/openlf/components/mav.hpp
+comp_mav.hpp
+include/openlf/components/comp_mav.hpp
 
-include/openlf/components/gauss.hpp
+include/openlf/components/comp_gauss.hpp
 vigra/convolution.hxx
 -
 openlf.hpp
 include/openlf/components/openlf.hpp
 
-include/openlf/components/mav.hpp
+include/openlf/components/comp_mav.hpp
 clif/flexmav.hpp
 include/openlf/components/clif/flexmav.hpp
 dspatch/DspComponent.h

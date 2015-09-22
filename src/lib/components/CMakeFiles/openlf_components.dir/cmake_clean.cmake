@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/openlf_components.dir/epi.cpp.o"
-  "CMakeFiles/openlf_components.dir/gauss.cpp.o"
+  "CMakeFiles/openlf_components.dir/comp_epi.cpp.o"
+  "CMakeFiles/openlf_components.dir/comp_gauss.cpp.o"
   "../../../build/lib/libopenlf_components.pdb"
   "../../../build/lib/libopenlf_components.so"
 )
