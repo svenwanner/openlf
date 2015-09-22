@@ -32,7 +32,9 @@ namespace openlf {
     class OP_LoadImage : public DspComponent {
         public:
           OP_LoadImage() {
+            // add outputs
             AddOutput_("ImgOut");
+            // add parameter
             AddParameter_("InPath", DspParameter(DspParameter::FilePath, ""));
           };
         protected:

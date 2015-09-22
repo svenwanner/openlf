@@ -32,12 +32,11 @@ namespace openlf {
     class OP_Gauss : public DspComponent {
         public:
           OP_Gauss() {
-              AddInput_("ImgIn");
-              AddOutput_("SmoothOut");
+            AddInput_("ImgIn");
+            AddOutput_("SmoothOut");
           };
         protected:
           virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
-
     };
 
 }} //namespace openlf::components
