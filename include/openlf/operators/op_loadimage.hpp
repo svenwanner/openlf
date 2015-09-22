@@ -24,13 +24,15 @@
 #ifndef _OPENLF_OP_LOADIMAGE_H
 #define _OPENLF_OP_LOADIMAGE_H
 
-#include "openlf.hpp"
-
 #include <iostream>
 #include "vigra/impex.hxx"
 #include <vigra/stdimage.hxx>
 #include "vigra/imageinfo.hxx"
 #include "vigra/multi_array.hxx"
+
+#include "openlf.hpp"
+
+
 
 namespace openlf { 
     namespace components {

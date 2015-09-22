@@ -21,32 +21,37 @@
 */
 
 
-#ifndef _OPENLF_OP_SAVEIMAGE_H
-#define _OPENLF_OP_SAVEIMAGE_H
-
-#include <iostream>
-#include "vigra/impex.hxx"
-#include <vigra/stdimage.hxx>
-#include "vigra/imageinfo.hxx"
-#include "vigra/multi_array.hxx"
-
-#include "openlf.hpp"
-
-
+#include "wkf_structuretensor.hpp"
 
 namespace openlf { 
     namespace components {
 
-    class OP_SaveImage : public DspComponent {
-        public:
-            int pFilePath;  // FilePath
-            const char* filePath = std::nullptr_t();
-            OP_SaveImage();
-        protected:
-            virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
-            virtual bool ParameterUpdating_(int index, DspParameter const& param);
+    WKF_StructureTensor::WKF_StructureTensor() {
+        
+        circ_structuretensor = new DspCircuit;
+        
+        AddInput_("EpiIn");
+        AddOutput_("EpiOut");
+        
+        pInnerScale = AddParameter_("InnerScale", DspParameter(DspParameter::Float, 0.6f));
+        
+        gauss = new OP_Gauss;
+        
+        circ_structuretensor->AddComponent(gauss, "GaussSmoothing");
+        
+        circ_structuretensor->ConnectInToIn(0, gauss, 0);
+        circ_structuretensor->ConnectOutToOut(gauss, 0, 0);
+    }
+    
+    bool WKF_StructureTensor::ParameterUpdating_(int index, const DspParameter& param) {
+        
+        if (index == pInnerScale) {
+            inner_scale = *param.GetFloat();
+            return true;
+        }
+    }
+    
+    WKF_StructureTensor::~WKF_StructureTensor() { 
+        delete circ_structuretensor;
     };
-
-}} //namespace openlf::components
-
-#endif
+}}
