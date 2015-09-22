@@ -48,7 +48,7 @@
 \
   template<typename T> class NAME##dispatcher {\
   public:\
-    void operator()(FlexMAV<2> *in_mav, FlexMAV<2> *out_mav)\
+    void operator()(FlexMAV<2> *in_mav, FlexMAV<2> *out_mav, DspSignalBus *inputs, DspSignalBus *outputs)\
     {\
       MultiArrayView<2,T> *in = in_mav->template get<T>();\
       MultiArrayView<2,T> *out = out_mav->template get<T>();
@@ -77,7 +77,7 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
   \
   _output_image.create(in->shape(), in->type());\
 \
-  in->call<NAME##dispatcher>(in, out_ptr);\
+  in->call<NAME##dispatcher>(in, out_ptr, &inputs, &outputs);\
   \
   stat = outputs.SetValue(0, out_ptr);\
 }\

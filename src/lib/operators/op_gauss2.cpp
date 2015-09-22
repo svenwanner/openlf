@@ -22,12 +22,7 @@
 
 #include "operators.hpp"
 
-
 #include <vigra/convolution.hxx>
-/*#include <vigra/imageinfo.hxx>
-#include <vigra/impex.hxx>
-
-#include "clif/flexmav.hpp"*/
 
 OPENLF_OP_START(OP_Gauss2)
 
