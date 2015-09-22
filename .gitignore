@@ -19,6 +19,4 @@ latex/
 /tests/test_example.cpp
 /tests/test_example.hpp
 /tests/test_example_run.cpp
-*.cmake
-*CMake*
-*cmake*
+

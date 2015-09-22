@@ -32,9 +32,10 @@ namespace openlf {
 
     class OP_Gauss : public DspComponent {
         public:
-          OP_Gauss();
+            OP_Gauss();
         protected:
           virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+
         private:
           clif::FlexMAV<2> _output_image;
     };

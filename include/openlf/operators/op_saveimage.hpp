@@ -35,6 +35,7 @@ namespace openlf {
           OP_SaveImage() {
             // add inputs
             AddInput_("ImgIn");
+            // add parameter
             AddParameter_("OutPath", DspParameter(DspParameter::FilePath, ""));
           };
         protected:
