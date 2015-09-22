@@ -30,9 +30,9 @@
 
 namespace openlf { namespace components {
 
-class Op_Gauss : public DspComponent {
+class OP_Gauss : public DspComponent {
     public:
-      Op_Gauss();
+      OP_Gauss();
     protected:
       virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 

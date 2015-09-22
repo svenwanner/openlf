@@ -34,9 +34,12 @@ namespace openlf {
     class WKF_StructureTensor : public DspCircuit {
         private:
             DspCircuit *circ_structuretensor = std::nullptr_t();
-            Op_LoadImage *img1 = std::nullptr_t();
+            OP_LoadImage *img1 = std::nullptr_t();
         public:
-          WKF_StructureTensor();
+          WKF_StructureTensor() {
+              
+              
+          }
         protected:
           virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
     };

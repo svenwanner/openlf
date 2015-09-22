@@ -31,9 +31,9 @@
 namespace openlf { 
     namespace components {
 
-    class Op_LoadImage : public DspComponent {
+    class OP_LoadImage : public DspComponent {
         public:
-          Op_LoadImage();
+          OP_LoadImage();
         protected:
           virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
     };
