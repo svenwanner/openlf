@@ -25,7 +25,8 @@
 
 #include "clif/clif_vigra.hpp"
 #include "clif/flexmav.hpp"
-#include "operator_macro.hpp"
+
+#define OPENLF_OP_CONSTRUCT_PARAMS
 
 #define OPENLF_OP_CLASS_HEADER(NAME) \
     class NAME : public DspComponent { \
@@ -33,6 +34,7 @@
             NAME(); \
         protected: \
           virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs); \
+          virtual bool ParameterUpdating_ (int i, DspParameter const &p); \
         private: \
           clif::FlexMAV<2> _output_image; \
     };
@@ -48,10 +50,11 @@
 \
   template<typename T> class NAME##dispatcher {\
   public:\
-    void operator()(FlexMAV<2> *in_mav, FlexMAV<2> *out_mav, DspSignalBus *inputs, DspSignalBus *outputs)\
+    void operator()(NAME *op, FlexMAV<2> *in_mav, FlexMAV<2> *out_mav, DspSignalBus *inputs, DspSignalBus *outputs)\
     {\
       MultiArrayView<2,T> *in = in_mav->template get<T>();\
       MultiArrayView<2,T> *out = out_mav->template get<T>();
+      
       
 #define OPENLF_OP_END(NAME) \
 }\
@@ -63,6 +66,7 @@ NAME::NAME()\
 {\
   AddInput_("input");\
   AddOutput_("output");\
+  OPENLF_OP_CONSTRUCT_PARAMS \
 }\
 \
 void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
@@ -77,9 +81,13 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
   \
   _output_image.create(in->shape(), in->type());\
 \
-  in->call<NAME##dispatcher>(in, out_ptr, &inputs, &outputs);\
+  in->call<NAME##dispatcher>(this, in, out_ptr, &inputs, &outputs);\
   \
   stat = outputs.SetValue(0, out_ptr);\
+}\
+bool NAME::ParameterUpdating_ (int i, DspParameter const &p) \
+{ \
+  SetParameter_(i, p); \
 }\
 }}
 
