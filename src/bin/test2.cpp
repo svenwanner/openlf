@@ -35,19 +35,13 @@ int main(const int argc, const char *argv[])
   
   FlexMAVSource<2> comp_source;
   FlexMAVSink  <2> comp_sink;
+  OP_Gauss2 comp_gauss;
   
   DspCircuit outer_circuit;
   outer_circuit.AddComponent(comp_source, "source");
   outer_circuit.AddComponent(comp_sink, "sink");
-  
-  DspCircuit inner_circuit;
-  //TODO Sven, Max: your circuit FlexMAV<2> -> circuit -> FlexMAV<2>
-  OP_Gauss2 comp_gauss;
-  //inner_circuit.AddComponent(comp_gauss, "blur");
-  
-  
-  outer_circuit.AddComponent(comp_gauss, "gauss");
-  //outer_circuit.AddComponent(inner_circuit, "epi_circuit");
+
+  outer_circuit.AddComponent(comp_gauss, "blur");
   
   outer_circuit.ConnectOutToIn(comp_source, 0, comp_gauss, 0);
   outer_circuit.ConnectOutToIn(comp_gauss, 0, comp_sink, 0);
