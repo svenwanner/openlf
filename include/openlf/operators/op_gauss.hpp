@@ -37,7 +37,7 @@ namespace openlf {
           virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 
         private:
-          FlexMAV<2> output_image;
+          clif::FlexMAV<2> _output_image;
     };
 
 }} //namespace openlf::components
