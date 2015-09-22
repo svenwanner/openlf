@@ -14,7 +14,7 @@ EpiCircuit::EpiCircuit()
   AddOutput_("output");
   
   _circuit.AddComponent(_source, "source");
-  _circuit.AddComponent(_sink, "blur");
+  _circuit.AddComponent(_sink, "sink");
 }
   
 void EpiCircuit::set(DspCircuit *circuit)
