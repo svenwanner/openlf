@@ -24,7 +24,6 @@
 #ifndef _OPENLF_OP_LOADIMAGE_H
 #define _OPENLF_OP_LOADIMAGE_H
 
-
 #include "openlf.hpp"
 
 namespace openlf { 
@@ -34,6 +33,7 @@ namespace openlf {
         public:
           OP_LoadImage() {
             AddOutput_("ImgOut");
+            AddParameter_("InPath", DspParameter(DspParameter::FilePath, ""));
           };
         protected:
           virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);

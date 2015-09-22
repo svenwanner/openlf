@@ -24,19 +24,21 @@
 #ifndef _OPENLF_OP_GAUSS_H
 #define _OPENLF_OP_GAUSS_H
 
-#include <vigra/convolution.hxx>
-
 #include "openlf.hpp"
 
-namespace openlf { namespace components {
+namespace openlf { 
+    namespace components {
 
-class OP_Gauss : public DspComponent {
-    public:
-      OP_Gauss();
-    protected:
-      virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+    class OP_Gauss : public DspComponent {
+        public:
+          OP_Gauss() {
+              AddInput_("ImgIn");
+              AddOutput_("SmoothOut");
+          };
+        protected:
+          virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 
-};
+    };
 
 }} //namespace openlf::components
 

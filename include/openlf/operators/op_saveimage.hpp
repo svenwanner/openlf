@@ -33,8 +33,9 @@ namespace openlf {
     class OP_SaveImage : public DspComponent {
         public:
           OP_SaveImage() {
-              // add inputs
-		AddInput_("ImgIn");
+            // add inputs
+            AddInput_("ImgIn");
+            AddParameter_("OutPath", DspParameter(DspParameter::FilePath, ""));
           };
         protected:
           virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);

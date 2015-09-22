@@ -25,6 +25,9 @@
 #define WKF_STRUCTURETENSOR_HPP
 
 
+#define DEMO_IN_PATH "bla"
+#define DEMO_OUT_PATH "blub"
+
 #include "openlf.hpp"
 
 namespace openlf { 
@@ -49,6 +52,9 @@ namespace openlf {
             circ_structuretensor->AddComponent(img_in, "LoadImage");
             circ_structuretensor->AddComponent(img_out, "SaveImage");
             circ_structuretensor->AddComponent(gauss, "Gauss");
+            
+            img_in->SetParameter(0, DspParameter(DspParameter::FilePath, DEMO_IN_PATH))
+            img_out->SetParameter(0, DspParameter(DspParameter::FilePath, DEMO_OUT_PATH))
 
             circ_structuretensor->ConnectOutToIn(img_in, 0, gauss, 0);
             circ_structuretensor->ConnectOutToIn(gauss, 0, img_out, 0);
