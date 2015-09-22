@@ -193,8 +193,8 @@ add_subdirectory(src/lib/components)
 add_subdirectory(src/lib/workflows)
 add_subdirectory(src/lib/operators)
 
-#add_executable(teststuff src/bin/test.cpp)
-#target_link_libraries(teststuff clif cliini clif_vigra ${Boost_LIBRARIES})
+add_executable(teststuff src/bin/test.cpp)
+target_link_libraries(teststuff clif cliini clif_vigra ${Boost_LIBRARIES})
 
 #--------------------------------------------------------------
 # TESTS 
