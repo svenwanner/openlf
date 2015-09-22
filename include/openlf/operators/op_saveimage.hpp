@@ -27,19 +27,23 @@
 
 #include "openlf.hpp"
 
+#include <iostream>
+#include "vigra/impex.hxx"
+#include <vigra/stdimage.hxx>
+#include "vigra/imageinfo.hxx"
+#include "vigra/multi_array.hxx"
+
 namespace openlf { 
     namespace components {
 
     class OP_SaveImage : public DspComponent {
         public:
-          OP_SaveImage() {
-            // add inputs
-            AddInput_("ImgIn");
-            // add parameter
-            AddParameter_("OutPath", DspParameter(DspParameter::FilePath, ""));
-          };
+            int pFilePath;  // FilePath
+            const char* filePath = std::nullptr_t();
+            OP_SaveImage();
         protected:
-          virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+            virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+            virtual bool ParameterUpdating_(int index, DspParameter const& param);
     };
 
 }} //namespace openlf::components

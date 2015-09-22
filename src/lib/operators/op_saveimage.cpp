@@ -20,31 +20,28 @@
 *
 */
 
-
-#ifndef _OPENLF_OP_LOADIMAGE_H
-#define _OPENLF_OP_LOADIMAGE_H
-
-#include "openlf.hpp"
-
-#include <iostream>
-#include "vigra/impex.hxx"
-#include <vigra/stdimage.hxx>
-#include "vigra/imageinfo.hxx"
-#include "vigra/multi_array.hxx"
+#include "op_saveimage.hpp"
 
 namespace openlf { 
     namespace components {
 
-    class OP_LoadImage : public DspComponent {
-        public:       
-            int pFilePath;  // FilePath
-            const char* filePath = std::nullptr_t();
-            OP_LoadImage();
-        protected:
-            virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
-            virtual bool ParameterUpdating_(int index, DspParameter const& param);
-    };
+    OP_SaveImage::OP_SaveImage() {
+        // add inputs
+        AddInput_("ImgIn");
+        // add parameter
+        pFilePath = AddParameter_("OutPath", DspParameter(DspParameter::FilePath, ""));
+    }
+    
+    void OP_LoadImage::Process_(DspSignalBus& inputs, DspSignalBus& outputs) {
+        
+    }
+    
+    bool OP_SaveImage::ParameterUpdating_(int index, const DspParameter& param) {
+        
+        if (index == pFilePath) {
+            filePath = param.GetString()->c_str();
+            return true;
+        }
+    }
 
-}} //namespace openlf::components
-
-#endif
+}}
