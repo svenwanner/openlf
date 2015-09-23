@@ -40,6 +40,8 @@ namespace openlf {
    * \param y blur <float> blur scale in y dimension
    */
   OPENLF_OP_CLASS_HEADER(OP_VigraGauss)
+  //============================================================================
+          
           
    /*! \brief Simple vigra gradient magnitude operator
    * 
@@ -48,7 +50,17 @@ namespace openlf {
    * \param scale <float> pre-bluring scale
    */
   OPENLF_OP_CLASS_HEADER(OP_VigraGradientMagnitude)
-
+  //============================================================================   
+          
+          
+  /*! \brief Simple vigra gradient magnitude operator
+   * 
+   * Pre-bluring gradient magnitude operator.
+   * 
+   * \param scale <float> pre-bluring scale
+   */
+  OPENLF_OP_CLASS_HEADER(OP_VigraConvolveOneDimension)
+  //============================================================================
 }} //namespace openlf::components
 
 #endif
