@@ -20,9 +20,9 @@ using namespace openlf::components;
 
 template<typename T> class save_flexmav {
 public:
-void operator()(FlexMAV<2> *img, const char *name)
+void operator()(FlexMAV<3> *img, const char *name)
 {    
-  exportImage(*img->get<T>(), ImageExportInfo(name));
+  //exportImage(*img->get<T>(), ImageExportInfo(name));
 }
 };
 
