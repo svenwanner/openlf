@@ -7,7 +7,6 @@
 #include "clif/clif_vigra.hpp"
 #include "clif/flexmav.hpp"
 #include "comp_mav.hpp"
-#include "op_gauss.hpp"
 #include "operators.hpp"
 
 

@@ -25,8 +25,11 @@
 
 
 #include "openlf.hpp"
-#include "operators/op_gauss.hpp"
+#include "operators.hpp"
 
+using namespace clif;
+using namespace vigra;
+using namespace openlf::components;
 
 namespace openlf { 
     namespace components {
@@ -36,10 +39,13 @@ namespace openlf {
             DspCircuit *circ_structuretensor = std::nullptr_t();
             
             int pInnerScale;
+            int pOuterScale;
             float inner_scale;
-            float outer_scale = 1.0;
+            float outer_scale;
             
-            OP_Gauss *gauss = std::nullptr_t();
+            OP_Gauss2 inner_gauss;
+            OP_Gauss2 outer_gauss;
+            
         public:
           WKF_StructureTensor();
           virtual ~WKF_StructureTensor();
