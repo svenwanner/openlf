@@ -21,6 +21,7 @@
 */
 
 #include <vigra/separableconvolution.hxx>
+#include <vigra/multi_convolution.hxx>
 #include "operators.hpp"
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
@@ -28,9 +29,9 @@
 
 OPENLF_OP_START(OP_VigraConvolveOneDimension)
     
-//    Kernel1D<float> gauss;
-//    gauss.initGaussian(*op->GetParameter(0)->GetFloat());
-//    convolveMultiArrayOneDimension(*in, *out, 1, gauss);
+    Kernel1D<float> gauss;
+    gauss.initGaussian(*op->GetParameter(0)->GetFloat());
+    convolveMultiArrayOneDimension(*in, *out, 1, gauss);
     
 OPENLF_OP_END(OP_VigraConvolveOneDimension)
 
