@@ -67,6 +67,23 @@ namespace openlf {
    */
   OPENLF_OP_CLASS_HEADER(OP_ScharrY)
   //============================================================================
+          
+          
+  /*! \brief Simple horizontal plus vertical scharr gradient operator
+   * 
+   * Horizontal (X outslot 0) and vertical (y outslot 1) scharr gradient operator
+   */
+  OPENLF_OP_CLASS_HEADER(OP_Scharr)
+  //============================================================================
+          
+          
+  /*! \brief Tensor operator
+   * 
+   * Operator builds a tensor from incoming channel slots (channel 0 called x, channel 1 called y)
+   * Output are 3 channels [xx, xy, yy] 
+   */
+  OPENLF_OP_CLASS_HEADER(OP_Tensor2x2)
+  //============================================================================
   
   
   OPENLF_OP_XY_CLASS_HEADER(OP_Test, 1, 1)

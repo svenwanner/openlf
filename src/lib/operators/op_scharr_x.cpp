@@ -28,7 +28,6 @@
 
 OPENLF_OP_START(OP_ScharrX)
         
-    std::cout << "Hallo H Welt" << std::endl;
     Kernel1D<float> scharr;
     scharr.initExplicitly(-1,1) = -1.0/2.0, 0.0, 1.0/2.0;
     scharr.setBorderTreatment(BORDER_TREATMENT_REFLECT);

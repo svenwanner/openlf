@@ -39,14 +39,15 @@ namespace openlf {
     
         AddComponent(inner_gauss, "InnerSmoothing");
         AddComponent(outer_gauss, "OuterSmoothing");
-        AddComponent(scharr_x, "ScharrX");
-        AddComponent(scharr_y, "ScharrY");
+        //AddComponent(scharr_xy, "Gradients");
+//        AddComponent(scharr_x, "ScharrX");
+//        AddComponent(scharr_y, "ScharrY");
         
-        ConnectInToIn(0, inner_gauss, 0);
-        ConnectOutToIn(inner_gauss, 0, scharr_x, 0);
-        ConnectOutToIn(inner_gauss, 0, scharr_y, 0);
-        ConnectOutToIn(scharr_x, 0, outer_gauss, 0);
-        ConnectOutToOut(outer_gauss, 0, 0);
+//        ConnectInToIn(0, inner_gauss, 0);
+//        ConnectOutToIn(inner_gauss, 0, scharr_x, 0);
+//        ConnectOutToIn(inner_gauss, 0, scharr_y, 0);
+//        ConnectOutToIn(scharr_x, 0, outer_gauss, 0);
+//        ConnectOutToOut(outer_gauss, 0, 0);
         
         SetParameter(pInnerScale, pinner);
         SetParameter(pOuterScale, pouter);
