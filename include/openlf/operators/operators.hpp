@@ -61,6 +61,10 @@ namespace openlf {
    */
   OPENLF_OP_CLASS_HEADER(OP_VigraConvolveOneDimension)
   //============================================================================
+  
+  
+  OPENLF_OP_XY_CLASS_HEADER(OP_Test, 1, 1)
+  
 }} //namespace openlf::components
 
 #endif
