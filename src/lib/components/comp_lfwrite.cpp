@@ -53,22 +53,10 @@ void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   assert(in);
   assert(filename->size());
   
-  ClifFile f;
-  f.create(*filename);
-  
-  Dataset *save_set;
-  
-  //FIXME error handling
-  if (dataset_name)
-    save_set = f.createDataset(*dataset_name);
-  else
-    save_set = f.createDataset("default");
-  
-  //TODO link
-  save_set->append(in->data);
-  save_set->writeAttributes();
-  
-  delete save_set;
+  H5::H5File f_out(filename->c_str(), H5F_ACC_TRUNC);
+  Dataset out_set;
+  out_set.link(f_out, in->data);
+  out_set.writeAttributes();
 }
 
 bool COMP_LFWrite::ParameterUpdating_ (int i, DspParameter const &p)
