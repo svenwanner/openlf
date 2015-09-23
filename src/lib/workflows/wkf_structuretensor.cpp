@@ -52,6 +52,7 @@ namespace openlf {
         AddComponent(outer_gauss_1, "OuterSmoothing_1");
         AddComponent(outer_gauss_2, "OuterSmoothing_2");
         AddComponent(tensor, "Tensor");
+        AddComponent(tensor2orientation, "Tensor2Orientation");
         
         //========== Connect Operators =============
         
@@ -66,12 +67,13 @@ namespace openlf {
         ConnectOutToIn(tensor, 0, outer_gauss_0, 0);
         ConnectOutToIn(tensor, 1, outer_gauss_1, 0);
         ConnectOutToIn(tensor, 2, outer_gauss_2, 0);
-        // compute orientation from tensor
-        ConnectOutToIn(outer_gauss_0, 0, tensor, 0);
-        ConnectOutToIn(outer_gauss_1, 0, tensor, 1);
-        ConnectOutToIn(outer_gauss_2, 0, tensor, 2);
+        // connect st channels to  merge operator
+        ConnectOutToIn(outer_gauss_0, 0, tensor2orientation, 0);
+        ConnectOutToIn(outer_gauss_1, 0, tensor2orientation, 1);
+        ConnectOutToIn(outer_gauss_2, 0, tensor2orientation, 2);
         // return orientation
         ConnectOutToOut(tensor2orientation, 0, 0);
+        //ConnectOutToOut(outer_gauss_1, 0, 0);
         
         //==========================================
         
@@ -101,6 +103,6 @@ namespace openlf {
     }
     
     WKF_StructureTensor::~WKF_StructureTensor() { 
-        //delete circ_structuretensor;
+ 
     };
 }}

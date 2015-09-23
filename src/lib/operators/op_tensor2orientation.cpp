@@ -20,15 +20,23 @@
 *
 */
 
-#include <vigra/convolution.hxx>
+#include "vigra/convolution.hxx"
+#include "vigra/multi_math.hxx"
+#include <vigra/mathutil.hxx>
 #include "operators.hpp"
+
 #include <cmath>
+
+using namespace vigra::multi_math;
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
 
 OPENLF_OP_START(OP_Tensor2Orientation, 3, 1, 3, 3)
+  
+    *out[0] = (*in[1]) * (*in[1]) ;
         
-    *out[0] = std::tan(std::atan2(2*std::round(*in[1]*10^10)/10^10, std::round(*in[2]*10^10)/10^10 - std::round(*in[0]*10^10)/10^10 + 10^(-25)));
+        
+    //*out[0] = vigra::tan(vigra::atan2(2*vigra::round(*in[1]*10^10)/10^10, vigra::round(*in[2]*10^10)/10^10 - vigra::round(*in[0]*10^10)/10^10 + 10^(-25)));
     //*out[1] = std::sqrt( \
               (std::round(*in[2]*10^10)/10^10 - std::round(*in[0]*10^10)/10^10) \
              *(std::round(*in[2]*10^10)/10^10 - std::round(*in[0]*10^10)/10^10) \

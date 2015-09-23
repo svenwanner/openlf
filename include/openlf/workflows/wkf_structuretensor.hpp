@@ -34,7 +34,6 @@ namespace openlf {
 
     class WKF_StructureTensor : public DspCircuit {
         private:
-            //DspCircuit *circ_structuretensor = std::nullptr_t();
             
             // declare parameter indices and container
             int pInnerScale;
