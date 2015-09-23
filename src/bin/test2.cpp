@@ -16,9 +16,11 @@ using namespace openlf::components;
 
 template<typename T> class save_flexmav {
 public:
-void operator()(FlexMAV<2> *img, const char *name)
+void operator()(FlexMAV<3> *img, const char *name)
 {    
-  exportImage(*img->get<T>(), ImageExportInfo(name));
+  MultiArrayView<3,T> *i = img->get<T>();
+  MultiArrayView<2,T> channel = i->bindAt(2, 1);
+  exportImage(channel, ImageExportInfo(name));
 }
 };
 
@@ -31,25 +33,26 @@ int main(const int argc, const char *argv[])
   
   Subset3d *subset = new Subset3d(set);
   
-  FlexMAV<2> source;
-  FlexMAV<2> *sink;
+  FlexMAV<3> source;
+  FlexMAV<3> *sink;
   
-  FlexMAVSource<2> comp_source;
-  FlexMAVSink  <2> comp_sink;
-  OP_VigraGauss comp_gauss;
+  FlexMAVSource<3> comp_source;
+  FlexMAVSink  <3> comp_sink;
+  //OP_VigraGauss comp_gauss;
   
   DspCircuit outer_circuit;
   outer_circuit.AddComponent(comp_source, "source");
   outer_circuit.AddComponent(comp_sink, "sink");
-  outer_circuit.AddComponent(comp_gauss, "blur");
+  //outer_circuit.AddComponent(comp_gauss, "blur");
   
-  comp_gauss.SetParameter(0, DspParameter(DspParameter::ParamType::Float, 21.0f));
-  comp_gauss.SetParameter(1, DspParameter(DspParameter::ParamType::Float, 21.0f));
+  //comp_gauss.SetParameter(0, DspParameter(DspParameter::ParamType::Float, 21.0f));
+  //comp_gauss.SetParameter(1, DspParameter(DspParameter::ParamType::Float, 21.0f));
   
-  outer_circuit.ConnectOutToIn(comp_source, 0, comp_gauss, 0);
-  outer_circuit.ConnectOutToIn(comp_gauss, 0, comp_sink, 0);
+  outer_circuit.ConnectOutToIn(comp_source, 0, comp_sink, 0);
+  //outer_circuit.ConnectOutToIn(comp_source, 0, comp_gauss, 0);
+  //outer_circuit.ConnectOutToIn(comp_gauss, 0, comp_sink, 0);
   
-  readEPI(subset, 1, source, 100, 5.0);
+  readEPI(subset, source, 100, 5.0);
       
   //outer_circuit.Tick();
   
@@ -59,7 +62,7 @@ int main(const int argc, const char *argv[])
   
   sink = comp_sink.get();
   
-  sink->call<save_flexmav>(sink, argv[2]);
+  source.call<save_flexmav>(&source, argv[2]);
   
   return EXIT_SUCCESS;
 }
