@@ -26,8 +26,6 @@
 #include "clif/clif_vigra.hpp"
 #include "clif/flexmav.hpp"
 
-#define OPENLF_OP_CONSTRUCT_PARAMS
-
 #define OPENLF_OP_CLASS_HEADER(NAME) \
     class NAME : public DspComponent { \
         public: \

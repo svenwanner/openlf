@@ -4,6 +4,7 @@
 #include "clif/dataset.hpp"
 
 class LF {
+public:
   clif::Dataset *data;
   clif::path path;
   //time_t timestamp
