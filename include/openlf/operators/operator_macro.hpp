@@ -26,7 +26,12 @@
 //#include "clif/clif_vigra.hpp"
 //#include "clif/flexmav.hpp"
 
-#define OPENLF_OP_CLASS_HEADER(NAME) \
+#ifdef OPENLF_OP_CONSTRUCT_PARAMS
+#undef OPENLF_OP_CONSTRUCT_PARAMS
+#endif
+#define OPENLF_OP_CONSTRUCT_PARAMS
+
+#define OPENLF_OP_SINGLE2D_CLASS_HEADER(NAME) \
     class NAME : public DspComponent { \
         public: \
             NAME(); \
@@ -38,7 +43,7 @@
     };
     
 
-#define OPENLF_OP_START(NAME) \
+#define OPENLF_OP_SINGLE2D_START(NAME) \
   namespace openlf { namespace components { \
 \
   using namespace vigra;\
@@ -54,7 +59,7 @@
       MultiArrayView<2,T> *out = out_mav->template get<T>();
       
       
-#define OPENLF_OP_END(NAME) \
+#define OPENLF_OP_SINGLE2D_END(NAME) \
 }\
 };\
 \
@@ -116,7 +121,7 @@ bool NAME::ParameterUpdating_ (int i, DspParameter const &p) \
 #define M_REPEAT2_(N, X, Y) M_REPEAT2__(N, X, Y)
 #define M_REPEAT2(N, X, Y) M_REPEAT2_(M_EXPAND(N), X, Y)
     
-#define OPENLF_OP_XY_CLASS_HEADER(NAME,INCOUNT,OUTCOUNT) \
+#define OPENLF_OP_CLASS_HEADER(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM) \
 class NAME : public DspComponent { \
     public: \
         NAME(); \
@@ -124,10 +129,10 @@ class NAME : public DspComponent { \
       virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs); \
       virtual bool ParameterUpdating_ (int i, DspParameter const &p); \
     private: \
-      clif::FlexMAV<2> _output_image[OUTCOUNT]; \
+      clif::FlexMAV<OUTDIM> _output_image[OUTCOUNT]; \
 };
 
-#define OPENLF_OP_XY_START(NAME,INCOUNT,OUTCOUNT) \
+#define OPENLF_OP_START(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM) \
   namespace openlf { namespace components { \
 \
   using namespace vigra;\
@@ -137,17 +142,17 @@ class NAME : public DspComponent { \
 \
   template<typename T> class NAME##dispatcher {\
   public:\
-    void operator()(NAME *op, FlexMAV<2> **in_mav, FlexMAV<2> **out_mav, DspSignalBus *inputs, DspSignalBus *outputs)\
+    void operator()(NAME *op, FlexMAV<INDIM> **in_mav, FlexMAV<OUTDIM> **out_mav, DspSignalBus *inputs, DspSignalBus *outputs)\
     {\
-      MultiArrayView<2, T> *in[INCOUNT]; \
-      MultiArrayView<2, T> *out[OUTCOUNT]; \
+      MultiArrayView<INDIM, T> *in[INCOUNT]; \
+      MultiArrayView<OUTDIM, T> *out[OUTCOUNT]; \
       for(int i=0;i<INCOUNT;i++) \
         in[i] = in_mav[i]->template get<T>();  \
       for(int i=0;i<OUTCOUNT;i++) \
         out[i] = out_mav[i]->template get<T>(); 
       
       
-#define OPENLF_OP_XY_END(NAME,INCOUNT,OUTCOUNT) \
+#define OPENLF_OP_END(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM) \
 }\
 };\
 \
@@ -163,14 +168,14 @@ NAME::NAME()\
 void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
 {\
   bool stat;\
-  FlexMAV<2> *in[INCOUNT];\
+  FlexMAV<INDIM> *in[INCOUNT];\
   \
   for(int i=0;i<INCOUNT;i++) { \
     stat = inputs.GetValue(i, in[i]); \
     assert(stat); \
   } \
   \
-  FlexMAV<2> *out_ptr[OUTCOUNT];\
+  FlexMAV<OUTDIM> *out_ptr[OUTCOUNT];\
   for(int i=0;i<OUTCOUNT;i++) { \
     out_ptr[i] = &_output_image[i]; \
     _output_image[i].create(in[0]->shape(), in[0]->type());\

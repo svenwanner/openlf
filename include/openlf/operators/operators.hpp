@@ -39,7 +39,7 @@ namespace openlf {
    * \param x blur <float> blur scale in x dimension
    * \param y blur <float> blur scale in y dimension
    */
-  OPENLF_OP_CLASS_HEADER(OP_VigraGauss)
+  OPENLF_OP_SINGLE2D_CLASS_HEADER(OP_VigraGauss)
   //============================================================================
           
           
@@ -49,7 +49,7 @@ namespace openlf {
    * 
    * \param scale <float> pre-bluring scale
    */
-  OPENLF_OP_CLASS_HEADER(OP_VigraGradientMagnitude)
+  OPENLF_OP_SINGLE2D_CLASS_HEADER(OP_VigraGradientMagnitude)
   //============================================================================   
           
           
@@ -57,7 +57,7 @@ namespace openlf {
    * 
    * Horizontal scharr gradient operator
    */
-  OPENLF_OP_CLASS_HEADER(OP_ScharrX)
+  OPENLF_OP_SINGLE2D_CLASS_HEADER(OP_ScharrX)
   //============================================================================
           
           
@@ -65,7 +65,7 @@ namespace openlf {
    * 
    * Vertical scharr gradient operator
    */
-  OPENLF_OP_CLASS_HEADER(OP_ScharrY)
+  OPENLF_OP_SINGLE2D_CLASS_HEADER(OP_ScharrY)
   //============================================================================
           
           
@@ -73,7 +73,7 @@ namespace openlf {
    * 
    * Horizontal (X outslot 0) and vertical (y outslot 1) scharr gradient operator
    */
-  OPENLF_OP_CLASS_HEADER(OP_Scharr)
+  OPENLF_OP_CLASS_HEADER(OP_Scharr, 1, 2, 3, 3)
   //============================================================================
           
           
@@ -82,11 +82,20 @@ namespace openlf {
    * Operator builds a tensor from incoming channel slots (channel 0 called x, channel 1 called y)
    * Output are 3 channels [xx, xy, yy] 
    */
-  OPENLF_OP_CLASS_HEADER(OP_Tensor2x2)
+  OPENLF_OP_CLASS_HEADER(OP_Tensor2x2, 2, 3, 3, 3)
+  //============================================================================
+          
+          
+   /*! \brief Tensor operator
+   * 
+   * Operator builds a tensor from incoming channel slots (channel 0 called x, channel 1 called y)
+   * Output are 3 channels [xx, xy, yy] 
+   */
+  OPENLF_OP_CLASS_HEADER(OP_Tensor2Orientation, 3, 1, 3, 3)
   //============================================================================
   
   
-  OPENLF_OP_XY_CLASS_HEADER(OP_Test, 1, 1)
+  OPENLF_OP_CLASS_HEADER(OP_Test, 1, 1, 2, 2)
   
 }} //namespace openlf::components
 

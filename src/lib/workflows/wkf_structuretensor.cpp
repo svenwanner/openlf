@@ -27,30 +27,55 @@ namespace openlf {
     namespace components {
 
     WKF_StructureTensor::WKF_StructureTensor() {
-                
+               
+        // define inputs
         AddInput_("EpiIn");
         AddOutput_("EpiOut");
         
+        // create Parameter
         DspParameter pinner = DspParameter(DspParameter::Float, 0.3f);
         DspParameter pouter = DspParameter(DspParameter::Float, 6.0f);
         
+        // add parameter
         pInnerScale = AddParameter_("InnerScale", pinner);
         pOuterScale = AddParameter_("OuterScale", pouter);
-    
-        AddComponent(inner_gauss, "InnerSmoothing");
-        AddComponent(outer_gauss, "OuterSmoothing");
-        //AddComponent(scharr_xy, "Gradients");
-//        AddComponent(scharr_x, "ScharrX");
-//        AddComponent(scharr_y, "ScharrY");
         
-//        ConnectInToIn(0, inner_gauss, 0);
-//        ConnectOutToIn(inner_gauss, 0, scharr_x, 0);
-//        ConnectOutToIn(inner_gauss, 0, scharr_y, 0);
-//        ConnectOutToIn(scharr_x, 0, outer_gauss, 0);
-//        ConnectOutToOut(outer_gauss, 0, 0);
-        
+        // set parameter
         SetParameter(pInnerScale, pinner);
         SetParameter(pOuterScale, pouter);
+    
+        // add components
+        AddComponent(inner_gauss, "InnerSmoothing");
+        AddComponent(scharr_xy, "Gradients");
+        AddComponent(tensor, "Tensor");
+        AddComponent(outer_gauss_0, "OuterSmoothing_0");
+        AddComponent(outer_gauss_1, "OuterSmoothing_1");
+        AddComponent(outer_gauss_2, "OuterSmoothing_2");
+        AddComponent(tensor, "Tensor");
+        
+        //========== Connect Operators =============
+        
+        // inner smoothing
+        ConnectInToIn(0, inner_gauss, 0);
+        // compute gradients
+        ConnectOutToIn(inner_gauss, 0, scharr_xy, 0);
+        // make tensor from gradients
+        ConnectOutToIn(scharr_xy, 0, tensor, 0);
+        ConnectOutToIn(scharr_xy, 1, tensor, 1);
+        // smooth tensor components
+        ConnectOutToIn(tensor, 0, outer_gauss_0, 0);
+        ConnectOutToIn(tensor, 1, outer_gauss_1, 0);
+        ConnectOutToIn(tensor, 2, outer_gauss_2, 0);
+        // compute orientation from tensor
+        ConnectOutToIn(outer_gauss_0, 0, tensor, 0);
+        ConnectOutToIn(outer_gauss_1, 0, tensor, 1);
+        ConnectOutToIn(outer_gauss_2, 0, tensor, 2);
+        // return orientation
+        ConnectOutToOut(tensor2orientation, 0, 0);
+        
+        //==========================================
+        
+        
     }
     
     bool WKF_StructureTensor::ParameterUpdating_(int index, const DspParameter& param) {
@@ -65,8 +90,12 @@ namespace openlf {
         if (index == pOuterScale) {
             outer_scale = *param.GetFloat();
             std::cout << "Parameter Update outer_scale : " << outer_scale << std::endl;
-            outer_gauss.SetParameter(0, DspParameter(DspParameter::ParamType::Float, outer_scale));
-            //outer_gauss.SetParameter(1, DspParameter(DspParameter::ParamType::Float, outer_scale));
+            outer_gauss_0.SetParameter(0, DspParameter(DspParameter::ParamType::Float, outer_scale));
+            outer_gauss_0.SetParameter(1, DspParameter(DspParameter::ParamType::Float, outer_scale));
+            outer_gauss_1.SetParameter(0, DspParameter(DspParameter::ParamType::Float, outer_scale));
+            outer_gauss_1.SetParameter(1, DspParameter(DspParameter::ParamType::Float, outer_scale));
+            outer_gauss_2.SetParameter(0, DspParameter(DspParameter::ParamType::Float, outer_scale));
+            outer_gauss_2.SetParameter(1, DspParameter(DspParameter::ParamType::Float, outer_scale));
             return true;
         }
     }

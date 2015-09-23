@@ -25,11 +25,20 @@
 #include "operators.hpp"
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
-  AddParameter_("x blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
-  AddParameter_("y blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
 
-OPENLF_OP_START(OP_Test, 1, 1, 2, 2)
-
-    gaussianSmoothing(*in[0], *out[0], *op->GetParameter(0)->GetFloat(), *op->GetParameter(1)->GetFloat());
+OPENLF_OP_START(OP_Test, 1, 2, 3, 3)
+        
+    Kernel1D<float> D;
+    D.initExplicitly(-1,1) = -1.0/2.0, 0.0, 1.0/2.0;
+    D.setBorderTreatment(BORDER_TREATMENT_REFLECT);
+    Kernel1D<float> S;
+    S.initExplicitly(-1,1) = 3.0/16.0, 10.0/16.0, 3.0/16.0;
+    S.setBorderTreatment(BORDER_TREATMENT_REFLECT);
+                
+    convolveMultiArrayOneDimension(*in[0], *out[0], 1, D);
+    convolveMultiArrayOneDimension(*out[0], *out[0], 0, S);
     
-OPENLF_OP_END(OP_Test, 1, 1, 2, 2)
+    convolveMultiArrayOneDimension(*in[0], *out[1], 0, D);
+    convolveMultiArrayOneDimension(*out[1], *out[1], 0, S);
+    
+OPENLF_OP_END(OP_Test, 1, 2, 3, 3)

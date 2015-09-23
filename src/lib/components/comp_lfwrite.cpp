@@ -33,7 +33,7 @@ namespace openlf { namespace components {
   
 COMP_LFWrite::COMP_LFWrite()
 {
-  AddOutput_("input");
+  AddInput_("input");
   AddParameter_("filename", DspParameter(DspParameter::ParamType::String));
   AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
 }
@@ -56,11 +56,19 @@ void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   ClifFile f;
   f.create(*filename);
   
+  Dataset *save_set;
+  
   //FIXME error handling
   if (dataset_name)
-    in->data = f.createDataset(*dataset_name);
+    save_set = f.createDataset(*dataset_name);
   else
-    in->data = f.createDataset("default");
+    save_set = f.createDataset("default");
+  
+  //TODO link
+  save_set->append(in->data);
+  save_set->writeAttributes();
+  
+  delete save_set;
 }
 
 bool COMP_LFWrite::ParameterUpdating_ (int i, DspParameter const &p)

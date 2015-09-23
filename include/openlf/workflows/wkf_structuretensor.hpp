@@ -34,18 +34,22 @@ namespace openlf {
 
     class WKF_StructureTensor : public DspCircuit {
         private:
-            DspCircuit *circ_structuretensor = std::nullptr_t();
+            //DspCircuit *circ_structuretensor = std::nullptr_t();
             
+            // declare parameter indices and container
             int pInnerScale;
             int pOuterScale;
             float inner_scale;
             float outer_scale;
             
+            // define operators
             OP_VigraGauss inner_gauss;
-            OP_VigraGauss outer_gauss;
-            OP_ScharrX scharr_x;
-            OP_ScharrY scharr_y;
-            //OP_Scharr scharr_xy;
+            OP_VigraGauss outer_gauss_0;
+            OP_VigraGauss outer_gauss_1;
+            OP_VigraGauss outer_gauss_2;
+            OP_Scharr scharr_xy;
+            OP_Tensor2x2 tensor;
+            OP_Tensor2Orientation tensor2orientation;
             
         public:
           WKF_StructureTensor();

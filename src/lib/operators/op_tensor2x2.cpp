@@ -25,11 +25,12 @@
 #include "operators.hpp"
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
-  AddParameter_("x blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
-  AddParameter_("y blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
 
-OPENLF_OP_START(OP_Test, 1, 1, 2, 2)
+OPENLF_OP_START(OP_Tensor2x2, 2, 3, 3, 3)
+        
+    *out[0] = (*in[0])*(*in[0]);
+    *out[1] = (*in[1])*(*in[0]);
+    *out[2] = (*in[1])*(*in[1]);
+ 
+OPENLF_OP_END(OP_Tensor2x2, 2, 3, 3, 3)
 
-    gaussianSmoothing(*in[0], *out[0], *op->GetParameter(0)->GetFloat(), *op->GetParameter(1)->GetFloat());
-    
-OPENLF_OP_END(OP_Test, 1, 1, 2, 2)
