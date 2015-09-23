@@ -23,11 +23,11 @@
 #include <vigra/convolution.hxx>
 #include "operators.hpp"
 
-#define OPENLF_OP_CONSTRUCT_PARAMS \
+#define OPENLF_OP_SINGLE2D_CONSTRUCT_PARAMS \
   AddParameter_("scale", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
 
-OPENLF_OP_START(OP_VigraGradientMagnitude)
+OPENLF_OP_SINGLE2D_START(OP_VigraGradientMagnitude)
     
     //gaussianGradientMagnitude(*in, *out, *op->GetParameter(0)->GetFloat());
     
-OPENLF_OP_END(OP_VigraGradientMagnitude)
+OPENLF_OP_SINGLE2D_END(OP_VigraGradientMagnitude)

@@ -26,7 +26,7 @@
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
 
-OPENLF_OP_START(OP_ScharrY)
+OPENLF_OP_SINGLE2D_START(OP_ScharrY)
     std::cout << "Hallo V Welt" << std::endl;
     Kernel1D<float> scharr;
     scharr.initExplicitly(-1,1) = -1.0/2.0, 0.0, 1.0/2.0;
@@ -35,5 +35,5 @@ OPENLF_OP_START(OP_ScharrY)
     scharr.initExplicitly(-1,1) = 3.0/16.0, 10.0/16.0, 3.0/16.0;
     convolveMultiArrayOneDimension(*out, *out, 1, scharr);
     
-OPENLF_OP_END(OP_ScharrY)
+OPENLF_OP_SINGLE2D_END(OP_ScharrY)
 

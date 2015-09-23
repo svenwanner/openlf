@@ -28,8 +28,8 @@
   AddParameter_("x blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
   AddParameter_("y blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
 
-OPENLF_OP_XY_START(OP_Test, 1, 1)
+OPENLF_OP_START(OP_Test, 1, 1, 2, 2)
 
     gaussianSmoothing(*in[0], *out[0], *op->GetParameter(0)->GetFloat(), *op->GetParameter(1)->GetFloat());
     
-OPENLF_OP_XY_END(OP_Test, 1, 1)
+OPENLF_OP_END(OP_Test, 1, 1, 2, 2)

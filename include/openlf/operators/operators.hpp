@@ -39,7 +39,7 @@ namespace openlf {
    * \param x blur <float> blur scale in x dimension
    * \param y blur <float> blur scale in y dimension
    */
-  OPENLF_OP_CLASS_HEADER(OP_VigraGauss)
+  OPENLF_OP_SINGLE2D_CLASS_HEADER(OP_VigraGauss)
   //============================================================================
           
           
@@ -49,7 +49,7 @@ namespace openlf {
    * 
    * \param scale <float> pre-bluring scale
    */
-  OPENLF_OP_CLASS_HEADER(OP_VigraGradientMagnitude)
+  OPENLF_OP_SINGLE2D_CLASS_HEADER(OP_VigraGradientMagnitude)
   //============================================================================   
           
           
@@ -57,7 +57,7 @@ namespace openlf {
    * 
    * Horizontal scharr gradient operator
    */
-  OPENLF_OP_CLASS_HEADER(OP_ScharrX)
+  OPENLF_OP_SINGLE2D_CLASS_HEADER(OP_ScharrX)
   //============================================================================
           
           
@@ -65,11 +65,11 @@ namespace openlf {
    * 
    * Vertical scharr gradient operator
    */
-  OPENLF_OP_CLASS_HEADER(OP_ScharrY)
+  OPENLF_OP_SINGLE2D_CLASS_HEADER(OP_ScharrY)
   //============================================================================
   
   
-  OPENLF_OP_XY_CLASS_HEADER(OP_Test, 1, 1)
+  OPENLF_OP_CLASS_HEADER(OP_Test, 1, 1, 2, 2)
   
 }} //namespace openlf::components
 
