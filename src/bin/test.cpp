@@ -9,6 +9,10 @@
 #include "comp_mav.hpp"
 #include "wkf_structuretensor.hpp"
 
+#include "clif/clif.hpp"
+
+#include <H5Cpp.h>
+#include <H5File.h>
 
 using namespace clif;
 using namespace vigra;
@@ -27,7 +31,7 @@ int main(const int argc, const char *argv[])
   assert(argc == 3);
   
   // create clif dataset
-  ClifFile f(argv[1], H5F_ACC_RDONLY);
+  ClifFile f(argv[1]);
   Dataset *set = f.openDataset();
   
   // get slice of clif dataset
@@ -45,7 +49,8 @@ int main(const int argc, const char *argv[])
   DspCircuit outer_circuit;
    // define inner circuit to keep programm flow
   WKF_StructureTensor circ_structuretensor;
-  
+  //OP_Gauss circ_structuretensor;
+
   //add components to circuit
   outer_circuit.AddComponent(comp_source, "source");
   outer_circuit.AddComponent(comp_sink, "sink");

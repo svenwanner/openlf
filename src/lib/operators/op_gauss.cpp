@@ -57,6 +57,8 @@ OP_Gauss::OP_Gauss()
 {
   AddInput_("input");
   AddOutput_("output");
+  
+  printf("gauss constructor!\n");
 }
 
 void OP_Gauss::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
@@ -71,6 +73,8 @@ void OP_Gauss::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   FlexMAV<2> *out_ptr = &_output_image;
   
   _output_image.create(in->shape(), in->type());
+  
+  printf("gauss process %p!\n", in, &_output_image);
 
   in->call<op_gauss_dispatcher>(in, out_ptr);
   

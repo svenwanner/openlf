@@ -88,6 +88,7 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
 bool NAME::ParameterUpdating_ (int i, DspParameter const &p) \
 { \
   SetParameter_(i, p); \
+  return true;\
 }\
 }}
 
