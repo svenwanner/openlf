@@ -20,26 +20,16 @@
 *
 */
 
+#include <vigra/convolution.hxx>
+#include "operators.hpp"
 
-#ifndef _OPENLF_OP_GAUSS_H
-#define _OPENLF_OP_GAUSS_H
 
-#include "openlf.hpp"
-#include "clif/flexmav.hpp"
+#define OPENLF_OP_CONSTRUCT_PARAMS \
+  AddParameter_("x blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
+  AddParameter_("y blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
 
-namespace openlf { 
-    namespace components {
+OPENLF_OP_START(OP_VigraGauss)
 
-    class OP_Gauss : public DspComponent {
-        public:
-            OP_Gauss();
-        protected:
-          virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
-
-        private:
-          clif::FlexMAV<2> _output_image;
-    };
-
-}} //namespace openlf::components
-
-#endif
+    gaussianSmoothing(*in, *out, *op->GetParameter(0)->GetFloat(), *op->GetParameter(1)->GetFloat());
+    
+OPENLF_OP_END(OP_VigraGauss)

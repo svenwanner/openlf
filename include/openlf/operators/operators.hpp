@@ -32,7 +32,22 @@
 namespace openlf { 
     namespace components {
 
-  OPENLF_OP_CLASS_HEADER(OP_Gauss2)
+  /*! \brief Simple vigra based gaussian smoothing operator
+   * 
+   * Dimension separated vigra based gaussian smoothing operator.
+   * 
+   * \param x blur <float> blur scale in x dimension
+   * \param y blur <float> blur scale in y dimension
+   */
+  OPENLF_OP_CLASS_HEADER(OP_VigraGauss)
+          
+   /*! \brief Simple vigra gradient magnitude operator
+   * 
+   * Pre-bluring gradient magnitude operator.
+   * 
+   * \param scale <float> pre-bluring scale
+   */
+  OPENLF_OP_CLASS_HEADER(OP_VigraGradientMagnitude)
 
 }} //namespace openlf::components
 

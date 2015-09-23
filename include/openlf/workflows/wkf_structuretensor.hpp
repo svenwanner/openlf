@@ -25,8 +25,11 @@
 
 
 #include "openlf.hpp"
-#include "operators/op_gauss.hpp"
+#include "operators.hpp"
 
+using namespace clif;
+using namespace vigra;
+using namespace openlf::components;
 
 namespace openlf { 
     namespace components {
@@ -36,10 +39,13 @@ namespace openlf {
             DspCircuit *circ_structuretensor = std::nullptr_t();
             
             int pInnerScale;
+            int pOuterScale;
             float inner_scale;
-            float outer_scale = 1.0;
+            float outer_scale;
             
-            OP_Gauss *gauss = std::nullptr_t();
+            OP_VigraGauss inner_gauss;
+            OP_VigraGauss outer_gauss;
+            
         public:
           WKF_StructureTensor();
           virtual ~WKF_StructureTensor();
@@ -54,77 +60,3 @@ namespace openlf {
 }} //namespace openlf::components
 
 #endif /* WKF_STRUCTURETENSOR_HPP */
-
-
-
-/*
-
-class circuit_demo
-
-{
-private:
-	// 1. Create a DspCircuit 
-	DspCircuit *circuit = std::nullptr_t();
-	// 2. Create instances of the components
-	SignalGenerator *signal1 = std::nullptr_t();
-	SignalGenerator *signal2 = std::nullptr_t();
-	SignalPrinter *boolPrinter = std::nullptr_t();
-	DspAnd *logicAnd = std::nullptr_t();
-
-public:
-	
-	// 2. Configure component IO buses
-	// ===============================
-	circuit_demo(){
-		// 1. Create a DspCircuit where we can route our components
-		circuit = new DspCircuit;
-		signal1 = new SignalGenerator;
-		signal2 = new SignalGenerator;
-		boolPrinter = new SignalPrinter;
-		logicAnd = new DspAnd;
-		// 2. Create instances of the components needed for our circuit
-		circuit->AddComponent(logicAnd, "Logic AND");
-		circuit->AddComponent(signal1, "Input Signal1");
-		circuit->AddComponent(signal2, "Input Signal2");
-		circuit->AddComponent(boolPrinter, "Bool Printer");
-
-		circuit->ConnectOutToIn(signal1, 0, logicAnd, 0);
-		circuit->ConnectOutToIn(signal2, 0, logicAnd, 1);
-		circuit->ConnectOutToIn(logicAnd, 0, boolPrinter, 0);
-		//OR circuit.ConnectOutToIn("Logic AND", 0, "Bool Printer", 0);
-		//OR circuit.ConnectOutToIn("Logic AND", "output", "Bool Printer", 0);
-
-	};
-	~circuit_demo(){ delete circuit;
-		delete signal1;
-		delete signal2;
-		delete boolPrinter;
-		delete logicAnd; };
-
-	void run(){ 
-		circuit->Tick(); 
-		circuit->Reset(); 
-	};
-
-	void show(QtpMain &tool){
-		tool.registerComponent(*logicAnd->getCompInfo("Logic AND"));
-		tool.registerComponent(*signal1->getCompInfo("Input Signal1"));
-		tool.registerComponent(*signal2->getCompInfo("Input Signal2"));
-		tool.registerComponent(*boolPrinter->getCompInfo("Bool Printer"));
-		tool.show();
-	}
-
-	void release(){
-		delete circuit;
-		delete signal1;
-		delete signal2;
-		delete boolPrinter;
-		delete logicAnd;
-	};
-
-};
-
-
-#endif // CIRCUIT_DEMO_H
- 
- */

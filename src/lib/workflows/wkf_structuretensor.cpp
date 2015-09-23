@@ -27,26 +27,41 @@ namespace openlf {
     namespace components {
 
     WKF_StructureTensor::WKF_StructureTensor() {
-        
-        circ_structuretensor = new DspCircuit;
-        
+                
         AddInput_("EpiIn");
         AddOutput_("EpiOut");
         
-        pInnerScale = AddParameter_("InnerScale", DspParameter(DspParameter::Float, 0.6f));
+        DspParameter pi = DspParameter(DspParameter::Float, 12.0f);
+        DspParameter po = DspParameter(DspParameter::Float, 12.0f);
         
-        gauss = new OP_Gauss;
+        pInnerScale = AddParameter_("InnerScale", pi);
+        pOuterScale = AddParameter_("OuterScale", po);
+    
+        AddComponent(inner_gauss, "InnerSmoothing");
+        AddComponent(outer_gauss, "OuterSmoothing");
         
-        circ_structuretensor->AddComponent(gauss, "GaussSmoothing");
+        ConnectInToIn(0, inner_gauss, 0);
+        ConnectOutToIn(inner_gauss, 0, outer_gauss, 0);
+        ConnectOutToOut(outer_gauss, 0, 0);
         
-        circ_structuretensor->ConnectInToIn(0, gauss, 0);
-        circ_structuretensor->ConnectOutToOut(gauss, 0, 0);
+        ParameterUpdating_(pInnerScale, pi);
+        ParameterUpdating_(pOuterScale, po);
     }
     
     bool WKF_StructureTensor::ParameterUpdating_(int index, const DspParameter& param) {
         
         if (index == pInnerScale) {
             inner_scale = *param.GetFloat();
+            std::cout << "Parameter Update inner_scale: " << inner_scale << std::endl;
+            inner_gauss.SetParameter(0, DspParameter(DspParameter::ParamType::Float, inner_scale));
+            inner_gauss.SetParameter(1, DspParameter(DspParameter::ParamType::Float, inner_scale));
+            return true;
+        }
+        if (index == pOuterScale) {
+            outer_scale = *param.GetFloat();
+            std::cout << "Parameter Update outer_scale : " << outer_scale << std::endl;
+            outer_gauss.SetParameter(0, DspParameter(DspParameter::ParamType::Float, outer_scale));
+            outer_gauss.SetParameter(1, DspParameter(DspParameter::ParamType::Float, outer_scale));
             return true;
         }
     }
