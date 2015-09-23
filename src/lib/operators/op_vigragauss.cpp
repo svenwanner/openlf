@@ -20,9 +20,9 @@
 *
 */
 
+#include <vigra/convolution.hxx>
 #include "operators.hpp"
 
-#include <vigra/convolution.hxx>
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
   AddParameter_("x blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \

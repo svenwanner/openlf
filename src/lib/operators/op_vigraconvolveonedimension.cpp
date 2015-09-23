@@ -20,35 +20,17 @@
 *
 */
 
+#include <vigra/separableconvolution.hxx>
+#include "operators.hpp"
 
-#ifndef _OPENLF_OP_OPERATORS_H
-#define _OPENLF_OP_OPERATORS_H
+#define OPENLF_OP_CONSTRUCT_PARAMS \
+  AddParameter_("scale", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
 
-#include "openlf.hpp"
-#include "clif/flexmav.hpp"
+OPENLF_OP_START(OP_VigraConvolveOneDimension)
+    
+//    Kernel1D<float> gauss;
+//    gauss.initGaussian(*op->GetParameter(0)->GetFloat());
+//    convolveMultiArrayOneDimension(*in, *out, 1, gauss);
+    
+OPENLF_OP_END(OP_VigraConvolveOneDimension)
 
-#include "operator_macro.hpp"
-
-namespace openlf { 
-    namespace components {
-
-  /*! \brief Simple vigra based gaussian smoothing operator
-   * 
-   * Dimension separated vigra based gaussian smoothing operator.
-   * 
-   * \param x blur <float> blur scale in x dimension
-   * \param y blur <float> blur scale in y dimension
-   */
-  OPENLF_OP_CLASS_HEADER(OP_VigraGauss)
-          
-   /*! \brief Simple vigra gradient magnitude operator
-   * 
-   * Pre-bluring gradient magnitude operator.
-   * 
-   * \param scale <float> pre-bluring scale
-   */
-  OPENLF_OP_CLASS_HEADER(OP_VigraGradientMagnitude)
-
-}} //namespace openlf::components
-
-#endif

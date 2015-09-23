@@ -1,2 +1,2 @@
-add_library(openlf_operators SHARED op_vigragauss.cpp)
+add_library(openlf_operators SHARED op_vigragauss.cpp op_vigragradientmagnitude.cpp op_vigraconvolveonedimension.cpp)
 target_link_libraries(openlf_operators clif cliini clif_vigra DSPatch ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
