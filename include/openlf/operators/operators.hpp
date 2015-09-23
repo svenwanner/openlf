@@ -32,7 +32,7 @@
 namespace openlf { 
     namespace components {
 
-  OPENLF_OP_CLASS_HEADER(OP_Gauss2)
+  OPENLF_OP_CLASS_HEADER(OP_VigraGauss)
 
 }} //namespace openlf::components
 

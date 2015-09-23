@@ -31,8 +31,8 @@ namespace openlf {
         AddInput_("EpiIn");
         AddOutput_("EpiOut");
         
-        DspParameter pi = DspParameter(DspParameter::Float, 11.0f);
-        DspParameter po = DspParameter(DspParameter::Float, 1.0f);
+        DspParameter pi = DspParameter(DspParameter::Float, 12.0f);
+        DspParameter po = DspParameter(DspParameter::Float, 12.0f);
         
         pInnerScale = AddParameter_("InnerScale", pi);
         pOuterScale = AddParameter_("OuterScale", po);

@@ -36,7 +36,7 @@ int main(const int argc, const char *argv[])
   
   FlexMAVSource<2> comp_source;
   FlexMAVSink  <2> comp_sink;
-  OP_Gauss2 comp_gauss;
+  OP_VigraGauss comp_gauss;
   
   DspCircuit outer_circuit;
   outer_circuit.AddComponent(comp_source, "source");
