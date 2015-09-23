@@ -33,7 +33,7 @@ namespace openlf { namespace components {
   
 COMP_LFWrite::COMP_LFWrite()
 {
-  AddOutput_("input");
+  AddInput_("input");
   AddParameter_("filename", DspParameter(DspParameter::ParamType::String));
   AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
 }
