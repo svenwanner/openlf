@@ -25,13 +25,16 @@
 #include "operators.hpp"
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
-  AddParameter_("scale", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
 
-OPENLF_OP_START(OP_VigraConvolveOneDimension)
+OPENLF_OP_START(OP_ScharrX)
+        
+    std::cout << "Hallo H Welt" << std::endl;
+    Kernel1D<float> scharr;
+    scharr.initExplicitly(-1,1) = -1.0/2.0, 0.0, 1.0/2.0;
+    scharr.setBorderTreatment(BORDER_TREATMENT_REFLECT);
+    convolveMultiArrayOneDimension(*in, *out, 1, scharr);
+    scharr.initExplicitly(-1,1) = 3.0/16.0, 10.0/16.0, 3.0/16.0;
+    convolveMultiArrayOneDimension(*out, *out, 0, scharr);
     
-    Kernel1D<float> gauss;
-    gauss.initGaussian(*op->GetParameter(0)->GetFloat());
-    convolveMultiArrayOneDimension(*in, *out, 1, gauss);
-    
-OPENLF_OP_END(OP_VigraConvolveOneDimension)
+OPENLF_OP_END(OP_ScharrX)
 

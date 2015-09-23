@@ -31,21 +31,25 @@ namespace openlf {
         AddInput_("EpiIn");
         AddOutput_("EpiOut");
         
-        DspParameter pi = DspParameter(DspParameter::Float, 12.0f);
-        DspParameter po = DspParameter(DspParameter::Float, 12.0f);
+        DspParameter pinner = DspParameter(DspParameter::Float, 0.3f);
+        DspParameter pouter = DspParameter(DspParameter::Float, 6.0f);
         
-        pInnerScale = AddParameter_("InnerScale", pi);
-        pOuterScale = AddParameter_("OuterScale", po);
+        pInnerScale = AddParameter_("InnerScale", pinner);
+        pOuterScale = AddParameter_("OuterScale", pouter);
     
         AddComponent(inner_gauss, "InnerSmoothing");
         AddComponent(outer_gauss, "OuterSmoothing");
+        AddComponent(scharr_x, "ScharrX");
+        AddComponent(scharr_y, "ScharrY");
         
         ConnectInToIn(0, inner_gauss, 0);
-        ConnectOutToIn(inner_gauss, 0, outer_gauss, 0);
+        ConnectOutToIn(inner_gauss, 0, scharr_x, 0);
+        ConnectOutToIn(inner_gauss, 0, scharr_y, 0);
+        ConnectOutToIn(scharr_x, 0, outer_gauss, 0);
         ConnectOutToOut(outer_gauss, 0, 0);
         
-        ParameterUpdating_(pInnerScale, pi);
-        ParameterUpdating_(pOuterScale, po);
+        SetParameter(pInnerScale, pinner);
+        SetParameter(pOuterScale, pouter);
     }
     
     bool WKF_StructureTensor::ParameterUpdating_(int index, const DspParameter& param) {
@@ -61,7 +65,7 @@ namespace openlf {
             outer_scale = *param.GetFloat();
             std::cout << "Parameter Update outer_scale : " << outer_scale << std::endl;
             outer_gauss.SetParameter(0, DspParameter(DspParameter::ParamType::Float, outer_scale));
-            outer_gauss.SetParameter(1, DspParameter(DspParameter::ParamType::Float, outer_scale));
+            //outer_gauss.SetParameter(1, DspParameter(DspParameter::ParamType::Float, outer_scale));
             return true;
         }
     }

@@ -45,6 +45,8 @@ namespace openlf {
             
             OP_VigraGauss inner_gauss;
             OP_VigraGauss outer_gauss;
+            OP_ScharrX scharr_x;
+            OP_ScharrY scharr_y;
             
         public:
           WKF_StructureTensor();

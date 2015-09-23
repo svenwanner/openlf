@@ -53,13 +53,19 @@ namespace openlf {
   //============================================================================   
           
           
-  /*! \brief Simple vigra gradient magnitude operator
+  /*! \brief Simple horizontal scharr gradient operator
    * 
-   * Pre-bluring gradient magnitude operator.
-   * 
-   * \param scale <float> pre-bluring scale
+   * Horizontal scharr gradient operator
    */
-  OPENLF_OP_CLASS_HEADER(OP_VigraConvolveOneDimension)
+  OPENLF_OP_CLASS_HEADER(OP_ScharrX)
+  //============================================================================
+          
+          
+  /*! \brief Simple vertical scharr gradient operator
+   * 
+   * Vertical scharr gradient operator
+   */
+  OPENLF_OP_CLASS_HEADER(OP_ScharrY)
   //============================================================================
   
   
