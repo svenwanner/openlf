@@ -20,11 +20,11 @@
 *
 */
 
+#include "clif/clif_vigra.hpp"
+#include "clif/subset3d.hpp"
+
 #include "comp_lfwrite.hpp"
 #include "openlf.hpp"
-
-#include "clif/subset3d.hpp"
-#include "clif/clif_vigra.hpp"
 
 using namespace clif;
 using namespace vigra;

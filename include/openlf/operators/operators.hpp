@@ -24,8 +24,8 @@
 #ifndef _OPENLF_OP_OPERATORS_H
 #define _OPENLF_OP_OPERATORS_H
 
-#include "openlf.hpp"
 #include "clif/flexmav.hpp"
+#include "openlf.hpp"
 
 #include "operator_macro.hpp"
 

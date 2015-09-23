@@ -23,8 +23,6 @@
 #ifndef WKF_STRUCTURETENSOR_HPP
 #define WKF_STRUCTURETENSOR_HPP
 
-
-#include "openlf.hpp"
 #include "operators.hpp"
 
 using namespace clif;
