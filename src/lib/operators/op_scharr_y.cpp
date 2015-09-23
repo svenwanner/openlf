@@ -20,16 +20,20 @@
 *
 */
 
-#include <vigra/convolution.hxx>
+#include <vigra/separableconvolution.hxx>
+#include <vigra/multi_convolution.hxx>
 #include "operators.hpp"
 
-
 #define OPENLF_OP_CONSTRUCT_PARAMS \
-  AddParameter_("x blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
-  AddParameter_("y blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
 
-OPENLF_OP_START(OP_VigraGauss)
-        
-    gaussianSmoothing(*in, *out, *op->GetParameter(0)->GetFloat(), *op->GetParameter(1)->GetFloat());
+OPENLF_OP_START(OP_ScharrY)
+    std::cout << "Hallo V Welt" << std::endl;
+    Kernel1D<float> scharr;
+    scharr.initExplicitly(-1,1) = -1.0/2.0, 0.0, 1.0/2.0;
+    scharr.setBorderTreatment(BORDER_TREATMENT_REFLECT);
+    convolveMultiArrayOneDimension(*in, *out, 0, scharr);
+    scharr.initExplicitly(-1,1) = 3.0/16.0, 10.0/16.0, 3.0/16.0;
+    convolveMultiArrayOneDimension(*out, *out, 1, scharr);
     
-OPENLF_OP_END(OP_VigraGauss)
+OPENLF_OP_END(OP_ScharrY)
+
