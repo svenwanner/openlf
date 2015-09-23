@@ -55,8 +55,6 @@ int main(const int argc, const char *argv[])
   //outer_circuit.ConnectOutToIn(comp_gauss, 0, comp_sink, 0);
   
   readEPI(subset, source, 100, 5.0);
-      
-  //outer_circuit.Tick();
   
   comp_source.set(&source);
   
@@ -64,7 +62,7 @@ int main(const int argc, const char *argv[])
   
   sink = comp_sink.get();
   
-  source.call<save_flexmav>(&source, argv[2]);
+  sink->call<save_flexmav>(sink, argv[2]);
   
   return EXIT_SUCCESS;
 }
