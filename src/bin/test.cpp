@@ -38,12 +38,12 @@ int main(const int argc, const char *argv[])
   Subset3d *subset = new Subset3d(set);
   
   // define outer sink and source
-  FlexMAV<2> source;
-  FlexMAV<2> *sink;
+  FlexMAV<3> source;
+  FlexMAV<3> *sink;
   
   // define outer components
-  FlexMAVSource<2> comp_source;
-  FlexMAVSink  <2> comp_sink;
+  FlexMAVSource<3> comp_source;
+  FlexMAVSink  <3> comp_sink;
   
   // add outer component slots to outer circuit
   DspCircuit outer_circuit;
@@ -61,7 +61,7 @@ int main(const int argc, const char *argv[])
   outer_circuit.ConnectOutToIn(circ_structuretensor, 0, comp_sink, 0);
   
   // read epi data into source
-  readEPI(subset, 1, source, 100, 5.0);
+  readEPI(subset, source, 100, 5.0);
       
   //outer_circuit.Tick();
   

@@ -101,6 +101,6 @@ namespace openlf {
     }
     
     WKF_StructureTensor::~WKF_StructureTensor() { 
-        delete circ_structuretensor;
+        //delete circ_structuretensor;
     };
 }}
