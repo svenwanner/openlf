@@ -67,11 +67,12 @@ int main(const int argc, const char *argv[])
   outer_circuit.AddComponent(circ_structuretensor, "structureTensor");
   
   // connect outer source and sink
-  outer_circuit.ConnectOutToIn(comp_source, 0, circ_structuretensor, 0);
+  outer_circuit.ConnectOutToIn(comp_source, 0, comp_sink, 0);
   outer_circuit.ConnectOutToIn(circ_structuretensor, 0, comp_sink, 0);
   
   // read epi data into source
-  readEPI(subset, source, 100, 0);
+
+  readEPI(subset, source, 1000, 3.5);
       
   //outer_circuit.Tick();
   

@@ -49,7 +49,6 @@ protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   {
     bool stat;
-    printf("source process %p\n", _mav);
     stat = outputs.SetValue(0, _mav); 
     assert(stat);
   }
@@ -73,8 +72,6 @@ protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   {
     inputs.GetValue(0, _mav); 
-    
-    printf("sink process %p\n", _mav);
   }
   
 private:
