@@ -25,6 +25,7 @@
 
 #include "operators.hpp"
 #include "comp_mav.hpp"
+
 using namespace clif;
 using namespace vigra;
 using namespace openlf::components;

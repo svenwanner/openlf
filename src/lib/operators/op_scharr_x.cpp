@@ -26,14 +26,14 @@
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
 
-OPENLF_OP_SINGLE2D_START(OP_ScharrX)
+OPENLF_OP_START(OP_ScharrX, 1, 1, 3, 3)
         
     Kernel1D<float> scharr;
     scharr.initExplicitly(-1,1) = -1.0/2.0, 0.0, 1.0/2.0;
     scharr.setBorderTreatment(BORDER_TREATMENT_REFLECT);
-    convolveMultiArrayOneDimension(*in, *out, 1, scharr);
+    convolveMultiArrayOneDimension(*in[0], *out[0], 1, scharr);
     scharr.initExplicitly(-1,1) = 3.0/16.0, 10.0/16.0, 3.0/16.0;
-    convolveMultiArrayOneDimension(*out, *out, 0, scharr);
+    convolveMultiArrayOneDimension(*out[0], *out[0], 0, scharr);
     
-OPENLF_OP_SINGLE2D_END(OP_ScharrX)
+OPENLF_OP_END(OP_ScharrX, 1, 1, 3, 3)
 

@@ -57,7 +57,7 @@ namespace openlf {
    * 
    * Horizontal scharr gradient operator
    */
-  OPENLF_OP_SINGLE2D_CLASS_HEADER(OP_ScharrX)
+  OPENLF_OP_CLASS_HEADER(OP_ScharrX, 1, 1, 3, 3)
   //============================================================================
           
           
@@ -65,7 +65,7 @@ namespace openlf {
    * 
    * Vertical scharr gradient operator
    */
-  OPENLF_OP_SINGLE2D_CLASS_HEADER(OP_ScharrY)
+  OPENLF_OP_CLASS_HEADER(OP_ScharrY, 1, 1, 3, 3)
   //============================================================================
           
           
