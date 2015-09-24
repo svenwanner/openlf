@@ -19,7 +19,7 @@
 * Author Sven Wanner, Maximilian Diebold, Hendrick Siedelmann 
 *
 */
-
+#include <vigra/impex.hxx>
 #include "clif/clif_vigra.hpp"
 #include "comp_epi.hpp"
 
@@ -124,9 +124,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     
     sink_mav = _sink.get();
     
-    if (i == 1000) {
+    /*if (i == 1000) {
       sink_mav->call<save_flexmav3>(sink_mav, "oneepi.tiff");
-    }
+    }*/
     
     //disp_store.subarray(Shape2(0,i),Shape2(epi_w,i+1)) = sink_mav->subarray(Shape3(0,epi_h/2,0),Shape3(epi_w,epi_h/2+1));
     
@@ -134,7 +134,14 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     
   }
   
-  disp_store.call<save_flexmav>(&disp_store, "centerview.tiff");
+  //disp_store.call<save_flexmav>(&disp_store, "centerview.tiff");
+  
+  ClifFile debugfile;
+  
+  debugfile.create("debug.clif");
+  Dataset *debugset = debugfile.createDataset("default");
+
+  disp_store.write(debugset, "testimage");
   //TODO store whatever we accumulated into the clif file 
 }
 
