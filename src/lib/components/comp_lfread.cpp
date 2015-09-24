@@ -23,6 +23,8 @@
 #include "clif/clif_vigra.hpp"
 #include "clif/subset3d.hpp"
 
+#include "clif/clif_cv.hpp"
+
 #include "comp_lfread.hpp"
 #include "openlf.hpp"
 
@@ -70,8 +72,8 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   assert(out->data->Datastore::valid());
   
-  //Mat img;
-  //readCvMat(_data, 0, tmp, flags | UNDISTORT, scale);
+  cv::Mat img;
+  readCvMat(out->data, 0, img);
   
   printf("lfread out data: %p store id %d\n", out->data, out->data->H5DataSet().getId());
   Subset3d subset(out->data, 0);

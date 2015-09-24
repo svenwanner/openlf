@@ -161,7 +161,7 @@ class NAME : public DspComponent { \
 NAME::NAME()\
 {\
   M_REPEAT(INCOUNT, AddInput_("input ## N");) \
-  M_REPEAT(INCOUNT, AddOutput_("output ## N");) \
+  M_REPEAT(OUTCOUNT, AddOutput_("output ## N");) \
   OPENLF_OP_CONSTRUCT_PARAMS \
 }\
 \
