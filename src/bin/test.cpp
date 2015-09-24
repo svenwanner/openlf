@@ -18,11 +18,21 @@ using namespace clif;
 using namespace vigra;
 using namespace openlf::components;
 
+//template<typename T> class save_flexmav {
+//public:
+//void operator()(FlexMAV<3> *img, const char *name)
+//{    
+//  //exportImage(*img->get<T>(), ImageExportInfo(name));
+//}
+//};
+
 template<typename T> class save_flexmav {
 public:
 void operator()(FlexMAV<3> *img, const char *name)
 {    
-  //exportImage(*img->get<T>(), ImageExportInfo(name));
+  MultiArrayView<3,T> *i = img->get<T>();
+  MultiArrayView<2,T> channel = i->bindAt(2, 1);
+  exportImage(channel, ImageExportInfo(name));
 }
 };
 

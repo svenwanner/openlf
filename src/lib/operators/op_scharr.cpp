@@ -39,6 +39,6 @@ OPENLF_OP_START(OP_Scharr, 1, 2, 3, 3)
     convolveMultiArrayOneDimension(*out[0], *out[0], 0, S);
     
     convolveMultiArrayOneDimension(*in[0], *out[1], 0, D);
-    convolveMultiArrayOneDimension(*out[1], *out[1], 0, S);
+    convolveMultiArrayOneDimension(*out[1], *out[1], 1, S);
     
 OPENLF_OP_END(OP_Scharr, 1, 2, 3, 3)

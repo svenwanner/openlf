@@ -39,7 +39,7 @@ namespace openlf {
    * \param x blur <float> blur scale in x dimension
    * \param y blur <float> blur scale in y dimension
    */
-  OPENLF_OP_SINGLE2D_CLASS_HEADER(OP_VigraGauss)
+  OPENLF_OP_CLASS_HEADER(OP_VigraGauss, 1, 1, 3, 3)
   //============================================================================
           
           

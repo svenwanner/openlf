@@ -19,17 +19,21 @@
 * Author Sven Wanner, Maximilian Diebold, Hendrick Siedelmann 
 *
 */
-
+#include <vigra/multi_convolution.hxx>
 #include <vigra/convolution.hxx>
 #include "operators.hpp"
 
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
-  AddParameter_("x blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
-  AddParameter_("y blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
+    AddParameter_("x blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
+    AddParameter_("y blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
 
-OPENLF_OP_SINGLE2D_START(OP_VigraGauss)
+OPENLF_OP_START(OP_VigraGauss, 1, 1, 3, 3)
         
-    gaussianSmoothing(*in, *out, *op->GetParameter(0)->GetFloat(), *op->GetParameter(1)->GetFloat());
-    
-OPENLF_OP_SINGLE2D_END(OP_VigraGauss)
+    for (int i=0; i < in[0]->shape()[2]; ++i){
+        vigra::MultiArrayView<2, T> channel_in = in[0]->bindAt(2, i);
+        vigra::MultiArrayView<2, T> channel_out = out[0]->bindAt(2, i);
+        gaussianSmoothing(channel_in, channel_out, *op->GetParameter(0)->GetFloat(), *op->GetParameter(0)->GetFloat());
+    }
+
+OPENLF_OP_END(OP_VigraGauss, 1, 1, 3, 3)
