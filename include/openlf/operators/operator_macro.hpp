@@ -173,7 +173,7 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
   for(int i=0;i<INCOUNT;i++) { \
     stat = inputs.GetValue(i, in[i]); \
     if (!stat) { \
-      printf("NAME: input %d not found - possible type mismatch?"); \
+      printf("NAME: input %d not found - possible type mismatch?", i); \
       abort(); \
     } \
   } \
@@ -188,7 +188,10 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
   \
   for(int i=0;i<OUTCOUNT;i++) { \
     stat = outputs.SetValue(i, out_ptr[i]);\
-    assert(stat); \
+    if (!stat) { \
+      printf("NAME: output %d set failed", i); \
+      abort(); \
+    } \
   } \
 }\
 bool NAME::ParameterUpdating_ (int i, DspParameter const &p) \

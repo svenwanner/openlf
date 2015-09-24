@@ -70,6 +70,9 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   assert(out->data->Datastore::valid());
   
+  //Mat img;
+  //readCvMat(_data, 0, tmp, flags | UNDISTORT, scale);
+  
   printf("lfread out data: %p store id %d\n", out->data, out->data->H5DataSet().getId());
   Subset3d subset(out->data, 0);
   printf("%d\n", subset.EPICount()); 
