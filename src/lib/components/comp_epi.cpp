@@ -30,7 +30,7 @@
 using namespace clif;
 using namespace vigra;
 
-template<typename T> class save_flexmav {
+template<typename T> class save_flexmav3 {
 public:
 void operator()(FlexMAV<3> *img, const char *name)
 {    
@@ -63,6 +63,25 @@ void COMP_Epi::set(DspComponent *circuit)
   _circuit.ConnectOutToIn(_epi_circuit, 0, _sink, 0);
 }
 
+template<typename T> class save_flexmav {
+public:
+void operator()(FlexMAV<2> *img, const char *name)
+{    
+  exportImage(*img->get<T>(), ImageExportInfo(name));
+}
+};
+
+template<typename T> class subarray_copy {
+public:
+void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<2> *disp_store)
+{    
+  disp_store->get<T>()->subarray  (Shape2(0,    line),
+                         Shape2(epi_w,line+1))
+    = sink_mav->get<T>()->bindAt(2,0).subarray(Shape2(0,    epi_h/2),
+                         Shape2(epi_w,epi_h/2+1));
+}
+};
+
 void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   LF *in = NULL;
@@ -89,21 +108,33 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   FlexMAV<3> *sink_mav;
   
+  FlexMAV<2> disp_store(imgShape(in->data), in->data->type());
+  
+  int epi_w = subset.EPIWidth();
+  int epi_h = subset.EPIHeight();
+  
   for(int i=0;i<subset.EPICount();i++) {
-    printf("proc epi %d\n", i);
+    if (i % 100 == 0)
+      printf("proc epi %d\n", i);
     readEPI(&subset, _source_mav, i, disparity);
     
     //tick the circuit to fill _sink_mav using _source_mav and the circuit
     _circuit.Tick();
     _circuit.Reset();
     
+    sink_mav = _sink.get();
     
     if (i == 1000) {
-      sink_mav = _sink.get();
-      sink_mav->call<save_flexmav>(sink_mav, "oneepi.tiff");
+      sink_mav->call<save_flexmav3>(sink_mav, "oneepi.tiff");
     }
     
+    //disp_store.subarray(Shape2(0,i),Shape2(epi_w,i+1)) = sink_mav->subarray(Shape3(0,epi_h/2,0),Shape3(epi_w,epi_h/2+1));
+    
+    disp_store.call<subarray_copy>(i,epi_w,epi_h,sink_mav,&disp_store);
+    
   }
+  
+  disp_store.call<save_flexmav>(&disp_store, "centerview.tiff");
   //TODO store whatever we accumulated into the clif file 
 }
 
