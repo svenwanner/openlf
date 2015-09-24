@@ -26,7 +26,7 @@
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
 
-OPENLF_OP_START(OP_Scharr, 1, 2, 3, 3)
+OPENLF_OP_START_T(OP_Scharr, 1, 2, 3, 3, float)
         
     Kernel1D<float> D;
     D.initExplicitly(-1,1) = -1.0/2.0, 0.0, 1.0/2.0;
@@ -41,4 +41,4 @@ OPENLF_OP_START(OP_Scharr, 1, 2, 3, 3)
     convolveMultiArrayOneDimension(*in[0], *out[1], 0, D);
     convolveMultiArrayOneDimension(*out[1], *out[1], 1, S);
     
-OPENLF_OP_END(OP_Scharr, 1, 2, 3, 3)
+OPENLF_OP_END_T(OP_Scharr, 1, 2, 3, 3, BaseType::FLOAT)

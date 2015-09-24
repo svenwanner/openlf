@@ -49,17 +49,6 @@ OPENLF_OP_START(OP_SaveImage, 1, 0, 3, 3)
         r = r_in;
         g = g_in;
         b = b_in;
-//        std::cout << in[0]->shape()[0] << " " << in[0]->shape()[1] << " " << in[0]->shape()[2] << std::endl;
-//        std::cout << channel_in.shape()[0] << " " << channel_in.shape()[1] << " " << channel_in.shape()[2] << std::endl;
-//        int n=0;
-//        for (int i=0; i<in[0]->shape()[0]; i++) {
-//            for (int j=0; j<in[0]->shape()[1]; j++) {
-//                r.data()[n] = in[0]->data()[n];
-//                g.data()[n] = in[0]->data()[n];
-//                b.data()[n] = in[0]->data()[n];
-//                n++;
-//            }
-//        }
         exportImage(channel_in, *op->GetParameter(0)->GetString());
     }
     

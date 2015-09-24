@@ -35,7 +35,7 @@ namespace openlf {
         // create Parameter
         DspParameter pinner = DspParameter(DspParameter::Float, 0.6f);
         DspParameter pouter = DspParameter(DspParameter::Float, 1.0f);
-        DspParameter pfilename = DspParameter(DspParameter::String, "/home/swanner/Projects/openlf/build/myImg.tif");
+        DspParameter pfilename = DspParameter(DspParameter::String, "");
         
         // add parameter
         pInnerScale = AddParameter_("InnerScale", pinner);
@@ -61,8 +61,18 @@ namespace openlf {
         
         // inner smoothing
         ConnectInToIn(0, inner_gauss, 0);
+        //--------
+//        SetParameter(pFilename, DspParameter(DspParameter::String, "/home/swanner/Projects/openlf/build/inner_scale.tif"));
+//        ConnectOutToIn(inner_gauss, 0, saveImage, 0);
+        //--------
         // compute gradients
         ConnectOutToIn(inner_gauss, 0, scharr_xy, 0);
+        //--------
+//        SetParameter(pFilename, DspParameter(DspParameter::String, "/home/swanner/Projects/openlf/build/scharr_y.tif"));
+//        ConnectOutToIn(scharr_xy, 0, saveImage, 0);
+//        SetParameter(pFilename, DspParameter(DspParameter::String, "/home/swanner/Projects/openlf/build/scharr_x.tif"));
+//        ConnectOutToIn(scharr_xy, 1, saveImage, 0);
+        //--------
         // make tensor from gradients
         ConnectOutToIn(scharr_xy, 0, tensor, 0);
         ConnectOutToIn(scharr_xy, 1, tensor, 1);
@@ -70,16 +80,24 @@ namespace openlf {
         ConnectOutToIn(tensor, 0, outer_gauss_0, 0);
         ConnectOutToIn(tensor, 1, outer_gauss_1, 0);
         ConnectOutToIn(tensor, 2, outer_gauss_2, 0);
+        //--------
+//        SetParameter(pFilename, DspParameter(DspParameter::String, "/home/swanner/Projects/openlf/build/st_0.tif"));
+//        ConnectOutToIn(tensor, 0, saveImage, 0);
+//        SetParameter(pFilename, DspParameter(DspParameter::String, "/home/swanner/Projects/openlf/build/st_1.tif"));
+//        ConnectOutToIn(tensor, 1, saveImage, 0);
+//        SetParameter(pFilename, DspParameter(DspParameter::String, "/home/swanner/Projects/openlf/build/st_2.tif"));
+//        ConnectOutToIn(tensor, 2, saveImage, 0);
+        //--------
         // connect st channels to  merge operator
         ConnectOutToIn(outer_gauss_0, 0, tensor2orientation, 0);
         ConnectOutToIn(outer_gauss_1, 0, tensor2orientation, 1);
         ConnectOutToIn(outer_gauss_2, 0, tensor2orientation, 2);
+        //--------
+//        SetParameter(pFilename, DspParameter(DspParameter::String, "/home/swanner/Projects/openlf/build/orientation.tif"));
+//        ConnectOutToIn(tensor2orientation, 0, saveImage, 0);
+        //--------
         // return orientation
         ConnectOutToOut(tensor2orientation, 0, 0);
-        
-        ConnectOutToIn(scharr_xy, 0, saveImage, 0);
-//        ConnectOutToOut(inner_scale, 0, 0);
-//        ConnectOutToOut(inner_gauss, 0, 0);
         
         //==========================================
         
