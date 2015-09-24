@@ -95,32 +95,6 @@ bool NAME::ParameterUpdating_ (int i, DspParameter const &p) \
 }\
 }}
 
-#define COMMA ,
-
-#define M_REPEAT_1(X, N) X
-#define M_REPEAT_2(X, N) X X
-#define M_REPEAT_3(X, N) X X X
-#define M_REPEAT_4(X, N) X X X X
-#define M_REPEAT_5(X, N) X M_REPEAT_4(X)
-#define M_REPEAT_6(X, N) M_REPEAT_3(X) M_REPEAT_3(X)
-
-#define M_REPEAT2_1(X, Y, N) X Y 
-#define M_REPEAT2_2(X, Y, N) X Y X Y
-#define M_REPEAT2_3(X, Y, N) X Y X Y X Y 
-#define M_REPEAT2_4(X, Y, N) X Y X Y X Y X Y 
-#define M_REPEAT2_5(X, Y, N) X Y  M_REPEAT2_4(X, Y)
-#define M_REPEAT2_6(X, Y, N) M_REPEAT2_3(X, Y) M_REPEAT2_3(X, Y)
-
-#define M_EXPAND(...) __VA_ARGS__
-
-#define M_REPEAT__(N, X) M_EXPAND(M_REPEAT_ ## N)(X, N)
-#define M_REPEAT_(N, X) M_REPEAT__(N, X)
-#define M_REPEAT(N, X) M_REPEAT_(M_EXPAND(N), X)
-
-#define M_REPEAT2__(N, X, Y) M_EXPAND(M_REPEAT2_ ## N)(X, Y, N)
-#define M_REPEAT2_(N, X, Y) M_REPEAT2__(N, X, Y)
-#define M_REPEAT2(N, X, Y) M_REPEAT2_(M_EXPAND(N), X, Y)
-    
 #define OPENLF_OP_CLASS_HEADER(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM) \
 class NAME : public DspComponent { \
     public: \
@@ -160,8 +134,15 @@ class NAME : public DspComponent { \
 \
 NAME::NAME()\
 {\
-  M_REPEAT(INCOUNT, AddInput_("input ## N");) \
-  M_REPEAT(OUTCOUNT, AddOutput_("output ## N");) \
+  char buf[64]; \
+  for(int i=0;i<INCOUNT;i++) { \
+    sprintf(buf, "input_%d", i); \
+    AddInput_(buf); \
+  } \
+  for(int i=0;i<OUTCOUNT;i++) { \
+    sprintf(buf, "output_%d", i); \
+    AddOutput_(buf); \
+  } \
   OPENLF_OP_CONSTRUCT_PARAMS \
 }\
 \
