@@ -34,11 +34,16 @@ int main(const int argc, const char *argv[])
   COMP_LFWrite out;
   COMP_Epi epi;
   
+  
+  OP_Test gauss;
+  
   graph.AddComponent(in, "in");
   graph.AddComponent(out, "out");
   graph.AddComponent(epi, "epi");
   graph.ConnectOutToIn(in, 0, epi, 0);
   graph.ConnectOutToIn(epi, 0, out, 0);
+  
+  epi.set(&gauss);
   
   in.SetParameter(0, DspParameter(DspParameter::ParamType::String, argv[1]));
   out.SetParameter(0, DspParameter(DspParameter::ParamType::String, argv[2]));

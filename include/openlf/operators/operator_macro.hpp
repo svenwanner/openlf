@@ -172,7 +172,10 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
   \
   for(int i=0;i<INCOUNT;i++) { \
     stat = inputs.GetValue(i, in[i]); \
-    assert(stat); \
+    if (!stat) { \
+      printf("NAME: input %d not found - possible type mismatch?"); \
+      abort(); \
+    } \
   } \
   \
   FlexMAV<OUTDIM> *out_ptr[OUTCOUNT];\

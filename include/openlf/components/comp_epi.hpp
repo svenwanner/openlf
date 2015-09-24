@@ -37,18 +37,17 @@ public:
   COMP_Epi();
   
   //TODO discuss:: use method or settings from DSPatch?
-  void set(DspCircuit *circuit);
+  void set(DspComponent *circuit);
 protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 private:
   DspCircuit _circuit;
-  FlexMAVSource<2> _source;
-  FlexMAVSink  <2> _sink;
-  clif::FlexMAV<2> _source_mav;
-  clif::FlexMAV<2> _sink_mav;
+  FlexMAVSource<3> _source;
+  FlexMAVSink  <3> _sink;
+  clif::FlexMAV<3> _source_mav;
   
   //user provided circuit (which has FlexMAV input and output)
-  DspCircuit *_epi_circuit = NULL;
+  DspComponent *_epi_circuit = NULL;
 };
 
 }} //namespace openlf::components

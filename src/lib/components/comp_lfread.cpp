@@ -45,6 +45,7 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   const std::string *filename;
   const std::string *dataset_name = NULL;
   
+  //FIXME reuse!
   //outputs.GetValue(0, out);
   if (!out) {
     out = new LF;
@@ -66,6 +67,12 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     out->data = f.openDataset(*dataset_name);
   else
     out->data = f.openDataset();
+  
+  assert(out->data->Datastore::valid());
+  
+  printf("lfread out data: %p store id %d\n", out->data, out->data->H5DataSet().getId());
+  Subset3d subset(out->data, 0);
+  printf("%d\n", subset.EPICount()); 
   
   out->path = path();
 }

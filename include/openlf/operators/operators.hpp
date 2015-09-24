@@ -95,7 +95,7 @@ namespace openlf {
   //============================================================================
   
   
-  OPENLF_OP_CLASS_HEADER(OP_Test, 1, 1, 2, 2)
+  OPENLF_OP_CLASS_HEADER(OP_Test, 1, 1, 3, 3)
   
 }} //namespace openlf::components
 

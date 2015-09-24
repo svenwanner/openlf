@@ -40,19 +40,19 @@ int main(const int argc, const char *argv[])
   
   FlexMAVSource<3> comp_source;
   FlexMAVSink  <3> comp_sink;
-  //OP_VigraGauss comp_gauss;
+  OP_Test comp_gauss;
   
   DspCircuit outer_circuit;
   outer_circuit.AddComponent(comp_source, "source");
   outer_circuit.AddComponent(comp_sink, "sink");
-  //outer_circuit.AddComponent(comp_gauss, "blur");
+  outer_circuit.AddComponent(comp_gauss, "blur");
   
   //comp_gauss.SetParameter(0, DspParameter(DspParameter::ParamType::Float, 21.0f));
   //comp_gauss.SetParameter(1, DspParameter(DspParameter::ParamType::Float, 21.0f));
   
-  outer_circuit.ConnectOutToIn(comp_source, 0, comp_sink, 0);
-  //outer_circuit.ConnectOutToIn(comp_source, 0, comp_gauss, 0);
-  //outer_circuit.ConnectOutToIn(comp_gauss, 0, comp_sink, 0);
+  //outer_circuit.ConnectOutToIn(comp_source, 0, comp_sink, 0);
+  outer_circuit.ConnectOutToIn(comp_source, 0, comp_gauss, 0);
+  outer_circuit.ConnectOutToIn(comp_gauss, 0, comp_sink, 0);
   
   readEPI(subset, source, 100, 5.0);
   
