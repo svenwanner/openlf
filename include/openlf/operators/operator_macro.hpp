@@ -182,6 +182,25 @@ bool NAME::ParameterUpdating_ (int i, DspParameter const &p) \
 }\
 }}      
       
+#define OPENLF_OP_START_T(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM,OUTCTYPE) \
+  namespace openlf { namespace components { \
+\
+  using namespace vigra;\
+  using namespace clif;\
+\
+  namespace { \
+\
+  template<typename T> class NAME##dispatcher {\
+  public:\
+    void operator()(NAME *op, FlexMAV<INDIM> **in_mav, FlexMAV<OUTDIM> **out_mav, DspSignalBus *inputs, DspSignalBus *outputs)\
+    {\
+      MultiArrayView<INDIM, T> *in[INCOUNT]; \
+      MultiArrayView<OUTDIM, OUTCTYPE> *out[OUTCOUNT]; \
+      for(int i=0;i<INCOUNT;i++) \
+        in[i] = in_mav[i]->template get<T>();  \
+      for(int i=0;i<OUTCOUNT;i++) \
+        out[i] = out_mav[i]->template get<OUTCTYPE>(); 
+      
 #define OPENLF_OP_END_T(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM,OUTBASETYPE) \
 }\
 };\
