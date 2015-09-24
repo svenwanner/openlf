@@ -35,14 +35,17 @@ namespace openlf {
         // create Parameter
         DspParameter pinner = DspParameter(DspParameter::Float, 0.6f);
         DspParameter pouter = DspParameter(DspParameter::Float, 1.0f);
+        DspParameter pfilename = DspParameter(DspParameter::String, "/home/swanner/Projects/openlf/build/myImg.tif");
         
         // add parameter
         pInnerScale = AddParameter_("InnerScale", pinner);
         pOuterScale = AddParameter_("OuterScale", pouter);
+        pFilename = AddParameter_("Filename", pfilename);
         
         // set parameter
         SetParameter(pInnerScale, pinner);
         SetParameter(pOuterScale, pouter);
+        SetParameter(pFilename, pfilename);
     
         // add components
         AddComponent(inner_gauss, "InnerSmoothing");
@@ -52,6 +55,7 @@ namespace openlf {
         AddComponent(outer_gauss_2, "OuterSmoothing_2");
         AddComponent(tensor, "Tensor");
         AddComponent(tensor2orientation, "Tensor2Orientation");
+        AddComponent(saveImage, "SaveImage");
         
         //========== Connect Operators =============
         
@@ -73,7 +77,8 @@ namespace openlf {
         // return orientation
         ConnectOutToOut(tensor2orientation, 0, 0);
         
-//        ConnectOutToOut(outer_gauss_0, 0, 0);
+        ConnectOutToIn(scharr_xy, 0, saveImage, 0);
+//        ConnectOutToOut(inner_scale, 0, 0);
 //        ConnectOutToOut(inner_gauss, 0, 0);
         
         //==========================================
@@ -99,6 +104,11 @@ namespace openlf {
             outer_gauss_1.SetParameter(1, DspParameter(DspParameter::ParamType::Float, outer_scale));
             outer_gauss_2.SetParameter(0, DspParameter(DspParameter::ParamType::Float, outer_scale));
             outer_gauss_2.SetParameter(1, DspParameter(DspParameter::ParamType::Float, outer_scale));
+            return true;
+        }
+        if (index == pFilename) {
+            std::cout << "Parameter Update filename : " << *param.GetString() << std::endl;
+            saveImage.SetParameter(0, DspParameter(DspParameter::ParamType::String, *param.GetString()));
             return true;
         }
     }

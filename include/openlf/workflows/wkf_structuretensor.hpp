@@ -39,8 +39,10 @@ namespace openlf {
             // declare parameter indices and container
             int pInnerScale;
             int pOuterScale;
+            int pFilename;
             float inner_scale;
             float outer_scale;
+            const char* filename;
             
             // define operators
             OP_VigraGauss inner_gauss;
@@ -50,6 +52,7 @@ namespace openlf {
             OP_Scharr scharr_xy;
             OP_Tensor2x2 tensor;
             OP_Tensor2Orientation tensor2orientation;
+            OP_SaveImage saveImage;
             
         public:
           WKF_StructureTensor();
