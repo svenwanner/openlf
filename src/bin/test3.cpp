@@ -43,7 +43,7 @@ int main(const int argc, const char *argv[])
   graph.ConnectOutToIn(in, 0, epi, 0);
   graph.ConnectOutToIn(epi, 0, out, 0);
   
-  epi.set(&gauss);
+  //epi.set(&gauss);
   
   in.SetParameter(0, DspParameter(DspParameter::ParamType::String, argv[1]));
   out.SetParameter(0, DspParameter(DspParameter::ParamType::String, argv[2]));

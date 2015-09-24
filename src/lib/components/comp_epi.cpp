@@ -49,6 +49,7 @@ COMP_Epi::COMP_Epi()
   
   _circuit.AddComponent(_source, "source");
   _circuit.AddComponent(_sink, "sink");
+  _circuit.ConnectOutToIn(_source, 0, _sink, 0);
 }
   
 void COMP_Epi::set(DspComponent *circuit)
@@ -69,22 +70,17 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   assert(inputs.GetValue(0, in));
   
-  printf("epi in data: %p\n", in->data);
-  Subset3d subset1(in->data, 0);
-  printf("%d\n", subset1.EPICount()); 
-  
   out = new LF();
   out->data = new Dataset();
   out->data->memory_link(in->data);
   
   outputs.SetValue(0, out);
   
-  assert(_epi_circuit);
   assert(in);
   assert(out);
   
   //TODO get settings using DSPatch routines...
-  double disparity = 10;
+  double disparity = 5;
   int subset_idx = 0; //we could also loop over all subsets or specify subset using string name
   
   Subset3d subset(in->data, subset_idx);
@@ -94,6 +90,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   FlexMAV<3> *sink_mav;
   
   for(int i=0;i<subset.EPICount();i++) {
+    printf("proc epi %d\n", i);
     readEPI(&subset, _source_mav, i, disparity);
     
     //tick the circuit to fill _sink_mav using _source_mav and the circuit
@@ -101,7 +98,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     _circuit.Reset();
     
     
-    if (i == subset.EPICount() / 2) {
+    if (i == 1000) {
       sink_mav = _sink.get();
       sink_mav->call<save_flexmav>(sink_mav, "oneepi.tiff");
     }
