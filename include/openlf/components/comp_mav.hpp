@@ -29,12 +29,6 @@
 #include "clif/dataset.hpp"
 
 namespace openlf {
-  
-class LF {
-public:
-  clif::Dataset *dataset;
-  std::string path;
-};
 
 namespace components {
   

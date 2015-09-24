@@ -8,6 +8,7 @@
 #include "clif/flexmav.hpp"
 #include "comp_lfread.hpp"
 #include "comp_lfwrite.hpp"
+#include "comp_epi.hpp"
 #include "operators.hpp"
 
 
@@ -31,14 +32,16 @@ int main(const int argc, const char *argv[])
   
   COMP_LFRead in;
   COMP_LFWrite out;
+  COMP_Epi epi;
   
   graph.AddComponent(in, "in");
   graph.AddComponent(out, "out");
-  graph.ConnectOutToIn(in, 0, out, 0);
+  graph.AddComponent(epi, "epi");
+  graph.ConnectOutToIn(in, 0, epi, 0);
+  graph.ConnectOutToIn(epi, 0, out, 0);
   
   in.SetParameter(0, DspParameter(DspParameter::ParamType::String, argv[1]));
   out.SetParameter(0, DspParameter(DspParameter::ParamType::String, argv[2]));
-  
   
   graph.Tick();
   graph.Reset();

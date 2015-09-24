@@ -25,13 +25,14 @@
 #include "clif/subset3d.hpp"
 #include "clif/clif_vigra.hpp"
 
+#include "openlf/types.hpp"
 
 using namespace clif;
 using namespace vigra;
 
 namespace openlf { namespace components {
   
-EpiCircuit::EpiCircuit()
+COMP_Epi::COMP_Epi()
 {
   AddInput_("input");
   AddOutput_("output");
@@ -40,7 +41,7 @@ EpiCircuit::EpiCircuit()
   _circuit.AddComponent(_sink, "sink");
 }
   
-void EpiCircuit::set(DspCircuit *circuit)
+void COMP_Epi::set(DspCircuit *circuit)
 {
   if (_epi_circuit)
     _circuit.RemoveComponent(_epi_circuit);
@@ -49,18 +50,20 @@ void EpiCircuit::set(DspCircuit *circuit)
   _circuit.AddComponent(_epi_circuit, "epi_circuit");
 }
 
-void EpiCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
+void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   LF *in = NULL;
   LF *out = NULL;
   
   inputs.GetValue(0, in);
-  //FIXME Hendrik: create linked copy of input in->dataset
-  //out = ...
-  //maybe an internal clif::Dataset? What does DSPatch recommend?
+  
+  out = new LF();
+  out->data = new Dataset();
+  out->data->memory_link(in->data);
+  
   outputs.SetValue(0, out);
   
-  assert(_epi_circuit);
+  /*assert(_epi_circuit);
   assert(in);
   assert(out);
   
@@ -78,7 +81,7 @@ void EpiCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
       _circuit.Tick();
       
       //TODO accumulate _sink_mav into whatever we want (e.g. center-view disparity)
-    }
+    }*/
   //TODO store whatever we accumulated into the clif file 
 }
 

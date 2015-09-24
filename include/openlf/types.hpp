@@ -3,6 +3,8 @@
 
 #include "clif/dataset.hpp"
 
+namespace openlf {
+
 class LF {
 public:
   clif::Dataset *data;
@@ -10,5 +12,6 @@ public:
   //time_t timestamp
 };
 
+}
 
 #endif

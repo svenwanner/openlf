@@ -32,9 +32,9 @@
 
 namespace openlf { namespace components {
 
-class EpiCircuit : public DspComponent {
+class COMP_Epi : public DspComponent {
 public:
-  EpiCircuit();
+  COMP_Epi();
   
   //TODO discuss:: use method or settings from DSPatch?
   void set(DspCircuit *circuit);
