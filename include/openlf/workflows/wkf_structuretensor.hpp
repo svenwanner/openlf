@@ -48,9 +48,8 @@ namespace openlf {
             OP_VigraGauss outer_gauss_1;
             OP_VigraGauss outer_gauss_2;
             OP_Scharr scharr_xy;
-            FlexMAVSink<3> op_end;
-//            OP_Tensor2x2 tensor;
-            //OP_Tensor2Orientation tensor2orientation;
+            OP_Tensor2x2 tensor;
+            OP_Tensor2Orientation tensor2orientation;
             
         public:
           WKF_StructureTensor();

@@ -23,20 +23,19 @@
 #include "vigra/convolution.hxx"
 #include "vigra/multi_math.hxx"
 #include <vigra/matrix.hxx>
-
 #include "operators.hpp"
 
-using namespace vigra::multi_math;
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
 
 OPENLF_OP_START(OP_Tensor2Orientation, 3, 1, 3, 3)
-std::cout << "in tensor" << std::endl;
 // Todo: add elementwise round method to the computation, otherwise numerical errors can appear
 
-//for (int i=0; i < in[0]->size(); ++i){
-//    std::cout << in[0]->data()[i] << std::endl;
-//}
+for (int i=0; i < in[0]->size(); ++i){
+    
+    out[0]->data()[i] = std::tan(std::atan2(2*std::round(in[1]->data()[i]*1e10)/1e10, std::round(in[2]->data()[i]*1e10)/1e10 - std::round(in[0]->data()[i]*1e10)/1e10 + 10e-25));
+
+}
 
 
 
