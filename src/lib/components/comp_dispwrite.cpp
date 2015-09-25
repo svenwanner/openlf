@@ -69,6 +69,7 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //FIXME read/pass actual datastore!
   Subset3d subset(in->data, 0);
   
+  float scale = 1.0;
   
   cv::Mat img;
   readCvMat(in->data, disp.shape()[2]/2, img, UNDISTORT | CVT_8U);
@@ -94,7 +95,7 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   Shape2 p;
   for(p[1] = 0; p[1] < h; ++p[1])
     for (p[0] = 0; p[0] < w; ++p[0]) {
-      double depth = subset.disparity2depth(centerview[p]);
+      double depth = subset.disparity2depth(centerview[p], scale);
       if (depth >= 0 && depth <= 2000) {
         if (img.type() == CV_8UC3) {
           cv::Vec3b col = img.at<cv::Vec3b>(p[1],p[0]);

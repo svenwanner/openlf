@@ -33,7 +33,7 @@ OPENLF_OP_START(OP_VigraGauss, 1, 1, 3, 3)
     for (int i=0; i < in[0]->shape()[2]; ++i){
         vigra::MultiArrayView<2, T> channel_in = in[0]->bindAt(2, i);
         vigra::MultiArrayView<2, T> channel_out = out[0]->bindAt(2, i);
-        gaussianSmoothing(channel_in, channel_out, *op->GetParameter(0)->GetFloat(), *op->GetParameter(0)->GetFloat());
+        gaussianSmoothing(channel_in, channel_out, *op->GetParameter(0)->GetFloat(), *op->GetParameter(1)->GetFloat());
     }
 
 OPENLF_OP_END(OP_VigraGauss, 1, 1, 3, 3)

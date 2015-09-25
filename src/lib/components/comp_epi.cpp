@@ -73,17 +73,19 @@ void operator()(FlexMAV<2> *img, const char *name)
 
 template<typename T> class subarray_copy {
 public:
-void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4> *disp_store, double disp_offset)
+void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4> *disp_store, float disp_offset, float disp_scale)
 {
   for(int c=0;c<sink_mav->shape()[2];c++) {
     MultiArrayView<2,T> sink = sink_mav->get<T>()->bindAt(2, c);
     MultiArrayView<3,T> store = disp_store->get<T>()->bindAt(3, c);
     
-    for(int i=0;i<epi_h;i++) {
+    for(int i=epi_h/2;i<epi_h/2+1;i++) {
       //bind store y to epi line
       MultiArrayView<2,T> epi = store.bindAt(1, line);
       epi = sink;
       epi += disp_offset;
+      if (disp_scale != 1.0)
+        epi *= 1.0/disp_scale;
     }
   }
 }
@@ -123,10 +125,12 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   cv::Mat img;
   
+  float scale = 1.0;
+  
   for(int i=500;i<600/*subset.EPICount()*/;i++) {
     if (i % 10 == 0)
       printf("proc epi %d\n", i);
-    readEPI(&subset, _source_mav, i, disparity);
+    readEPI(&subset, _source_mav, i, disparity, ClifUnit::PIXELS, UNDISTORT, Interpolation::LINEAR, scale);
     
     //tick the circuit to fill _sink_mav using _source_mav and the circuit
     _circuit.Tick();
@@ -147,7 +151,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     if (!disp_store)
       disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), subset.EPIHeight(), sink_mav->shape()[2]), sink_mav->type());
     
-    disp_store->call<subarray_copy>(i,epi_w,epi_h,sink_mav,disp_store,disparity);
+    disp_store->call<subarray_copy>(i,epi_w,epi_h,sink_mav,disp_store,disparity,scale);
     
   }
   
