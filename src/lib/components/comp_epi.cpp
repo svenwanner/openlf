@@ -106,7 +106,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   assert(out);
   
   //TODO get settings using DSPatch routines...
-  double disparity = 5;
+  double disparity = 6;
   int subset_idx = 0; //we could also loop over all subsets or specify subset using string name
   
   //subset_idx -- extrinsics path
@@ -121,8 +121,10 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   int epi_w = subset.EPIWidth();
   int epi_h = subset.EPIHeight();
   
-  for(int i=0;i<100/*subset.EPICount()*/;i++) {
-    if (i % 100 == 0)
+  cv::Mat img;
+  
+  for(int i=500;i<600/*subset.EPICount()*/;i++) {
+    if (i % 10 == 0)
       printf("proc epi %d\n", i);
     readEPI(&subset, _source_mav, i, disparity);
     
@@ -131,6 +133,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     _circuit.Reset();
     
     sink_mav = _sink.get();
+    assert(sink_mav->type() == BaseType::FLOAT);
     
     /*if (i == 1000) {
       sink_mav->call<save_flexmav3>(sink_mav, "oneepi.tiff");
@@ -142,7 +145,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     //FlexMAV<2> sink_mav = sink_mav_temp->bindAt(2, 1);
     
     if (!disp_store)
-      disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), subset.EPIHeight(), sink_mav->shape()[2]), in->data->type());
+      disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), subset.EPIHeight(), sink_mav->shape()[2]), sink_mav->type());
     
     disp_store->call<subarray_copy>(i,epi_w,epi_h,sink_mav,disp_store,disparity);
     

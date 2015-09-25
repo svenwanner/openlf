@@ -22,6 +22,7 @@
 
 #include "clif/clif_vigra.hpp"
 #include "clif/subset3d.hpp"
+#include "clif/clif_cv.hpp"
 
 #include "comp_dispwrite.hpp"
 #include "openlf.hpp"
@@ -66,6 +67,10 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //FIXME read/pass actual datastore!
   Subset3d subset(in->data, 0);
   
+  
+  /*cv::Mat img;
+  readCvMat(in->data, img, (int)disp.shape()[2]/2, UNDISTORT | CVT_8U);*/
+  
   //centerview, channel 0
   MultiArrayView<2,float> centerview = disp.get<float>()->bindAt(3,0).bindAt(2,disp.shape()[2]/2);
   
@@ -89,7 +94,17 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     for (p[0] = 0; p[0] < w; ++p[0]) {
       double depth = subset.disparity2depth(centerview[p]);
       if (depth >= 0 && depth <= 2000) {
-        fprintf(pointfile, "%.3f %.3f %.3f\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth);
+        /*if (img.type() == CV_8UC3) {
+          Vec3u col = img.at<Vec3u>(p[1],p[0]);
+          fprintf(pointfile, "%.3f %.3f %.3f\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth,col[0],col[1],col[2]);
+        }
+        else (img.type() == CV_8UC1) {
+          uchar col = img.at<uchar>(p[1],p[0]);
+          fprintf(pointfile, "%.3f %.3f %.3f\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth,col,col,col);
+        }
+        else*/
+          fprintf(pointfile, "%.3f %.3f %.3f\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth);
+          
       }
       else
         fprintf(pointfile, "0 0 0\n");
