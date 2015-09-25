@@ -40,9 +40,9 @@ namespace {
     {
       MultiArrayView<INDIM, T> *in[INCOUNT]; 
       MultiArrayView<OUTDIM, T> *out[OUTCOUNT]; 
-      for(int i=0;i<1;i++) 
+      for(int i=0;i<INCOUNT;i++) 
         in[i] = in_mav[i]->template get<T>();  
-      for(int i=0;i<1;i++) 
+      for(int i=0;i<OUTCOUNT;i++) 
         out[i] = out_mav[i]->template get<T>(); 
       
       
