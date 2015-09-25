@@ -35,7 +35,7 @@ namespace openlf {
         // create Parameter
         DspParameter pinner = DspParameter(DspParameter::Float, 0.6f);
         DspParameter pouter = DspParameter(DspParameter::Float, 1.0f);
-        DspParameter pmincoh = DspParameter(DspParameter::Float, 0.9f);
+        DspParameter pmincoh = DspParameter(DspParameter::Float, 0.5f);
                 
         // add parameter
         pInnerScale = AddParameter_("InnerScale", pinner);
