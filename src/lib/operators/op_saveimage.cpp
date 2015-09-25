@@ -84,12 +84,12 @@ OPENLF_OP_START(OP_SaveImage, 1, 0, 3, 3)
         }
         
         float tmp = 0;
-        for (int i=0; i < in[0]->size()/3; ++i){
+        for (int i=0; i < in[0]->size()/3; ++i) {
             for (int c=0; c<3; c++) {
                 tmp = (float)channel_in.data()[i][c];
                 tmp /= (max-min);
                 tmp *= 255;
-                out_im.data()[i][c] = (vigra::UInt8)tmp;
+                out_im.data()[i][c] = (vigra::UInt8)std::ceil(tmp);
             }
         }
         std::cout << "save imagemapping range from (" << min << "," << max << ") to (0,255)" << std::endl;

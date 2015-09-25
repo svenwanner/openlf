@@ -39,11 +39,11 @@ namespace openlf {
             // declare parameter indices and container
             int pInnerScale;
             int pOuterScale;
-            int pFilename;
+            int pMinCoherence;
             float inner_scale;
             float outer_scale;
-            const char* filename;
-            
+            float min_coherence;
+                       
             // define operators
             OP_VigraGauss inner_gauss;
             OP_VigraGauss outer_gauss_0;
@@ -53,10 +53,37 @@ namespace openlf {
             OP_AverageChannels mergeChannel_0;
             OP_AverageChannels mergeChannel_1;
             OP_AverageChannels mergeChannel_2;
-            OP_Scharr scharr_xy;
+            OP_Scharr scharr_yx;
             OP_Tensor2x2 tensor;
             OP_Tensor2Orientation tensor2orientation;
-            OP_SaveImage saveImage;
+            
+            
+            // ######## DEBUG ##########
+            int pFilename_1;
+            int pFilename_2;
+            int pFilename_3;
+            int pFilename_4;
+            int pFilename_5;
+            int pFilename_6;
+            int pFilename_7;
+            int pFilename_8;
+            const char* filename_1;
+            const char* filename_2;
+            const char* filename_3;
+            const char* filename_4;
+            const char* filename_5;
+            const char* filename_6;
+            const char* filename_7;
+            const char* filename_8;
+            OP_SaveImage saveImage_1;
+            OP_SaveImage saveImage_2;
+            OP_SaveImage saveImage_3;
+            OP_SaveImage saveImage_4;
+            OP_SaveImage saveImage_5;
+            OP_SaveImage saveImage_6;
+            OP_SaveImage saveImage_7;
+            OP_SaveImage saveImage_8;
+            // ######## #################
             
         public:
           WKF_StructureTensor();
