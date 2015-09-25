@@ -46,7 +46,7 @@ OPENLF_OP_START_T(OP_Normalize, 1, 1, 3, 3, float)
         out[0]->data()[i] = tmp;
         //std::cout << out_im.data()[i] << std::endl;
     }
-    std::cout << "mapping range from (" << min << "," << max << ") to (0,1)" << std::endl;
+    //std::cout << "mapping range from (" << min << "," << max << ") to (0,1)" << std::endl;
     
     
 OPENLF_OP_END_T(OP_Normalize, 1, 1, 3, 3, BaseType::FLOAT)
