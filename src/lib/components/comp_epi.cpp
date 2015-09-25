@@ -73,12 +73,14 @@ void operator()(FlexMAV<2> *img, const char *name)
 
 template<typename T> class subarray_copy {
 public:
-void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<2> *disp_store)
-{    
-  disp_store->get<T>()->subarray  (Shape2(0,    line),
-                         Shape2(epi_w,line+1))
-    = sink_mav->get<T>()->bindAt(2,0).subarray(Shape2(0,    epi_h/2),
-                         Shape2(epi_w,epi_h/2+1));
+void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<3> *disp_store)
+{
+  MultiArrayView<2, T> sink = sink_mav->get<T>()->bindAt(2, 1);
+  
+  for(int i=0;i<epi_h;i++) {
+    //bind store y to epi line
+    disp_store->get<T>()->bindAt(1, line) = sink;
+  }
 }
 };
 
@@ -108,12 +110,13 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   FlexMAV<3> *sink_mav;
   
-  FlexMAV<2> disp_store(imgShape(in->data), in->data->type());
+  //TODO use epi size and count
+  FlexMAV<3> disp_store(Shape3(subset.EPIWidth(), subset.EPICount(), subset.EPIHeight()), in->data->type());
   
   int epi_w = subset.EPIWidth();
   int epi_h = subset.EPIHeight();
   
-  for(int i=0;i<subset.EPICount();i++) {
+  for(int i=0;i<100/*subset.EPICount()*/;i++) {
     if (i % 100 == 0)
       printf("proc epi %d\n", i);
     readEPI(&subset, _source_mav, i, disparity);
@@ -130,18 +133,24 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     
     //disp_store.subarray(Shape2(0,i),Shape2(epi_w,i+1)) = sink_mav->subarray(Shape3(0,epi_h/2,0),Shape3(epi_w,epi_h/2+1));
     
+    //bind color to green (for now)
+    //FlexMAV<2> sink_mav = sink_mav_temp->bindAt(2, 1);
+    
     disp_store.call<subarray_copy>(i,epi_w,epi_h,sink_mav,&disp_store);
     
   }
   
+  Datastore *datastore = out->data->addStore("disparity/default/data");
+  disp_store.write(datastore);
+  
   //disp_store.call<save_flexmav>(&disp_store, "centerview.tiff");
   
-  ClifFile debugfile;
+  /*ClifFile debugfile;
   
   debugfile.create("debug.clif");
   Dataset *debugset = debugfile.createDataset("default");
 
-  disp_store.write(debugset, "testimage");
+  disp_store.write(debugset, "testimage");*/
   //TODO store whatever we accumulated into the clif file 
 }
 

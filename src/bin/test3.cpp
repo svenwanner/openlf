@@ -8,6 +8,7 @@
 #include "clif/flexmav.hpp"
 #include "comp_lfread.hpp"
 #include "comp_lfwrite.hpp"
+#include "comp_dispwrite.hpp"
 #include "comp_epi.hpp"
 #include "operators.hpp"
 
@@ -31,7 +32,7 @@ int main(const int argc, const char *argv[])
   DspCircuit graph;
   
   COMP_LFRead in;
-  COMP_LFWrite out;
+  COMP_DispWrite out;
   COMP_Epi epi;
   
   
