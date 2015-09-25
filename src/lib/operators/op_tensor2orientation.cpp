@@ -27,24 +27,26 @@
 
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
+    AddParameter_("min_coherence", DspParameter(DspParameter::ParamType::Float, 0.8f)); \
 
-OPENLF_OP_START(OP_Tensor2Orientation, 3, 1, 3, 3)
-// Todo: add elementwise round method to the computation, otherwise numerical errors can appear
+OPENLF_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
 
 for (int i=0; i < in[0]->size(); ++i){
     
+    // orientation
     out[0]->data()[i] = std::tan(std::atan2(2*std::round(in[1]->data()[i]*1e10)/1e10, std::round(in[2]->data()[i]*1e10)/1e10 - std::round(in[0]->data()[i]*1e10)/1e10 + 10e-25));
-
+    // coherence
+    out[1]->data()[i] = std::sqrt( \
+              (std::round(in[2]->data()[i]*1e10)/1e10 - std::round(in[0]->data()[i]*1e10)/1e10) \
+             *(std::round(in[2]->data()[i]*1e10)/1e10 - std::round(in[0]->data()[i]*1e10)/1e10) \
+             + 4*std::round(in[1]->data()[i]*1e10)/1e10 * std::round(in[1]->data()[i]*1e10)/1e10) \
+             / ( std::round(in[0]->data()[i]*1e10)/1e10 + std::round(in[2]->data()[i]*1e10)/1e10 + 10e-25);
+    
+    // threshold orientation and check invalid coherence
+    if (out[0]->data()[i] > 1 || out[0]->data()[i] < -1 || out[1]->data()[i] < *op->GetParameter(0)->GetFloat()) {
+        out[0]->data()[i] = -1;
+        out[1]->data()[i] = 0;
+    }
 }
 
-
-
-//*out[0] = vigra::tan(vigra::atan2(2*vigra::round(*in[1]*10^10)/10^10, vigra::round(*in[2]*10^10)/10^10 - vigra::round(*in[0]*10^10)/10^10 + 10^(-25)));
-//*out[1] = std::sqrt( \
-              (std::round(*in[2]*10^10)/10^10 - std::round(*in[0]*10^10)/10^10) \
-             *(std::round(*in[2]*10^10)/10^10 - std::round(*in[0]*10^10)/10^10) \
-             + 4*std::round(*in[1]*10^10)/10^10*std::round(*in[1]*10^10)/10^10) \
-             / ( std::round(*in[0]*10^10)/10^10 + std::round(*in[2]*10^10)/10^10 + 10^(-25));
-
-
-OPENLF_OP_END(OP_Tensor2Orientation, 3, 1, 3, 3)
+OPENLF_OP_END(OP_Tensor2Orientation, 3, 2, 3, 3)
