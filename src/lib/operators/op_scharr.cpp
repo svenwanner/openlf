@@ -35,10 +35,10 @@ OPENLF_OP_START_T(OP_Scharr, 1, 2, 3, 3, float)
     S.initExplicitly(-1,1) = 3.0/16.0, 10.0/16.0, 3.0/16.0;
     S.setBorderTreatment(BORDER_TREATMENT_REFLECT);
                 
-    convolveMultiArrayOneDimension(*in[0], *out[0], 1, D);
-    convolveMultiArrayOneDimension(*out[0], *out[0], 0, S);
+    convolveMultiArrayOneDimension(*in[0], *out[1], 1, D);
+    convolveMultiArrayOneDimension(*out[1], *out[1], 0, S);
     
-    convolveMultiArrayOneDimension(*in[0], *out[1], 0, D);
-    convolveMultiArrayOneDimension(*out[1], *out[1], 1, S);
+    convolveMultiArrayOneDimension(*in[0], *out[0], 0, D);
+    convolveMultiArrayOneDimension(*out[0], *out[0], 1, S);
     
 OPENLF_OP_END_T(OP_Scharr, 1, 2, 3, 3, BaseType::FLOAT)

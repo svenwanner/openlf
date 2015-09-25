@@ -28,11 +28,11 @@
 
 OPENLF_OP_START(OP_Tensor2x2, 2, 3, 3, 3)
         
-    *out[0] = *in[0];
+    *out[0] = *in[0];   // x*x
     *out[0] *= *out[0];
-    *out[1] = *in[1];
-    *out[1] *= *out[1];
-    *out[2] = *in[2];
+    *out[1] = *in[0];   // x*y
+    *out[1] *= *in[1];
+    *out[2] = *in[1];   // y*y
     *out[2] *= *out[2];
     
 OPENLF_OP_END(OP_Tensor2x2, 2, 3, 3, 3)
