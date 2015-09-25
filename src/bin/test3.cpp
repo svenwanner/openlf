@@ -10,6 +10,7 @@
 #include "comp_lfwrite.hpp"
 #include "comp_dispwrite.hpp"
 #include "comp_epi.hpp"
+#include "wkf_structuretensor.hpp"
 #include "operators.hpp"
 
 
@@ -36,13 +37,15 @@ int main(const int argc, const char *argv[])
   COMP_Epi epi;
   
   
-  OP_Test gauss;
+  WKF_StructureTensor circuit;
   
   graph.AddComponent(in, "in");
   graph.AddComponent(out, "out");
   graph.AddComponent(epi, "epi");
   graph.ConnectOutToIn(in, 0, epi, 0);
   graph.ConnectOutToIn(epi, 0, out, 0);
+  
+  epi.set(&circuit);
   
   //epi.set(&gauss);
   

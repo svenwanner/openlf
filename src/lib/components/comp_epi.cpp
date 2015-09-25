@@ -118,7 +118,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   int epi_w = subset.EPIWidth();
   int epi_h = subset.EPIHeight();
   
-  for(int i=0;i<subset.EPICount();i++) {
+  for(int i=0;i<100/*subset.EPICount()*/;i++) {
     if (i % 100 == 0)
       printf("proc epi %d\n", i);
     readEPI(&subset, _source_mav, i, disparity);
