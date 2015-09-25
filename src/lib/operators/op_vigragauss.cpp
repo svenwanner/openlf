@@ -23,17 +23,29 @@
 #include <vigra/convolution.hxx>
 #include "operators.hpp"
 
+#include "opencv2/imgproc/imgproc.hpp"
+
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
     AddParameter_("x blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
     AddParameter_("y blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
 
 OPENLF_OP_START(OP_VigraGauss, 1, 1, 3, 3)
+
+  float sx = *op->GetParameter(0)->GetFloat();
+  float sy = *op->GetParameter(1)->GetFloat();
         
     for (int i=0; i < in[0]->shape()[2]; ++i){
         vigra::MultiArrayView<2, T> channel_in = in[0]->bindAt(2, i);
         vigra::MultiArrayView<2, T> channel_out = out[0]->bindAt(2, i);
-        gaussianSmoothing(channel_in, channel_out, *op->GetParameter(0)->GetFloat(), *op->GetParameter(1)->GetFloat());
+        
+        //gaussianSmoothing(channel_in, channel_out, *op->GetParameter(0)->GetFloat(), *op->GetParameter(1)->GetFloat());
+        
+        //Sorry vigra but OpenCv is 6x faster!
+        cv::Mat cv_in(cv::Size(channel_in.shape(0), channel_in.shape(1)), BaseType2CvDepth(in_mav[0]->type()), channel_in.data());
+        cv::Mat cv_out(cv::Size(channel_out.shape(0), channel_out.shape(1)), BaseType2CvDepth(out_mav[0]->type()), channel_out.data());
+        cv::Size ksize(cv::Point2i(sx*3.0, sy*3.0)*2+cv::Point2i(1,1));
+        cv::GaussianBlur(cv_in, cv_out, ksize, sx, sy);
     }
 
 OPENLF_OP_END(OP_VigraGauss, 1, 1, 3, 3)

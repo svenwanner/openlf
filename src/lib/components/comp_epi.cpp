@@ -127,7 +127,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   float scale = 1.0;
   
-  for(int i=500;i<600/*subset.EPICount()*/;i++) {
+  for(int i=500;i<510/*subset.EPICount()*/;i++) {
     if (i % 10 == 0)
       printf("proc epi %d\n", i);
     readEPI(&subset, _source_mav, i, disparity, ClifUnit::PIXELS, UNDISTORT, Interpolation::LINEAR, scale);
