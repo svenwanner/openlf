@@ -49,6 +49,8 @@ namespace openlf {
             OP_VigraGauss outer_gauss_0;
             OP_VigraGauss outer_gauss_1;
             OP_VigraGauss outer_gauss_2;
+            OP_Normalize normalize;
+            OP_AverageChannels mergeChannels;
             OP_Scharr scharr_xy;
             OP_Tensor2x2 tensor;
             OP_Tensor2Orientation tensor2orientation;

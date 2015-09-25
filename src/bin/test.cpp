@@ -72,7 +72,7 @@ int main(const int argc, const char *argv[])
   
   // read epi data into source
 
-  readEPI(subset, source, 1000, 3.5);
+  readEPI(subset, source, 1000, 6);
       
   //outer_circuit.Tick();
   

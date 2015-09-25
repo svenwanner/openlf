@@ -77,12 +77,29 @@ namespace openlf {
   //============================================================================
           
           
+ /*! \brief Normalization operator
+   * 
+   * Normalizes input and converts to float
+   */
+  OPENLF_OP_CLASS_HEADER(OP_Normalize, 1, 1, 3, 3)
+  //============================================================================
+          
+          
   /*! \brief Tensor operator
    * 
    * Operator builds a tensor from incoming channel slots (channel 0 called x, channel 1 called y)
    * Output are 3 channels [xx, xy, yy] 
    */
   OPENLF_OP_CLASS_HEADER(OP_Tensor2x2, 2, 3, 3, 3)
+  //============================================================================
+       
+ 
+  /*! \brief merge tensor color components operator
+   * 
+   * If a incoming tensor has rgb tensor components, merge them to a single tensor component 
+   * Output are 3 channels [xx, xy, yy] 
+   */
+  OPENLF_OP_CLASS_HEADER(OP_AverageChannels, 1, 1, 3, 3)
   //============================================================================
           
           
