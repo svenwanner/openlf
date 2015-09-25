@@ -24,6 +24,8 @@
 #include "clif/subset3d.hpp"
 #include "clif/clif_cv.hpp"
 
+#include "opencv2/core/core.hpp"
+
 #include "comp_dispwrite.hpp"
 #include "openlf.hpp"
 
@@ -68,8 +70,8 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   Subset3d subset(in->data, 0);
   
   
-  /*cv::Mat img;
-  readCvMat(in->data, img, (int)disp.shape()[2]/2, UNDISTORT | CVT_8U);*/
+  cv::Mat img;
+  readCvMat(in->data, disp.shape()[2]/2, img, UNDISTORT | CVT_8U);
   
   //centerview, channel 0
   MultiArrayView<2,float> centerview = disp.get<float>()->bindAt(3,0).bindAt(2,disp.shape()[2]/2);
@@ -82,9 +84,9 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
           "property float x\n"
           "property float y\n"
           "property float z\n"
-          /*"property uchar diffuse_red\n"
+          "property uchar diffuse_red\n"
           "property uchar diffuse_green\n"
-          "property uchar diffuse_blue\n"*/
+          "property uchar diffuse_blue\n"
           "end_header\n", centerview.shape(0)*centerview.shape(1));
   
   int w = centerview.shape(0);
@@ -94,20 +96,20 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     for (p[0] = 0; p[0] < w; ++p[0]) {
       double depth = subset.disparity2depth(centerview[p]);
       if (depth >= 0 && depth <= 2000) {
-        /*if (img.type() == CV_8UC3) {
-          Vec3u col = img.at<Vec3u>(p[1],p[0]);
-          fprintf(pointfile, "%.3f %.3f %.3f\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth,col[0],col[1],col[2]);
+        if (img.type() == CV_8UC3) {
+          cv::Vec3b col = img.at<cv::Vec3b>(p[1],p[0]);
+          fprintf(pointfile, "%.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth,col[0],col[1],col[2]);
         }
-        else (img.type() == CV_8UC1) {
+        else if (img.type() == CV_8UC1) {
           uchar col = img.at<uchar>(p[1],p[0]);
-          fprintf(pointfile, "%.3f %.3f %.3f\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth,col,col,col);
+          fprintf(pointfile, "%.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth,col,col,col);
         }
-        else*/
-          fprintf(pointfile, "%.3f %.3f %.3f\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth);
+        else
+          fprintf(pointfile, "%.3f %.3f %.3f 127 127 127\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth);
           
       }
       else
-        fprintf(pointfile, "0 0 0\n");
+        fprintf(pointfile, "0 0 0 0 0 0\n");
     }
     
   fprintf(pointfile,"\n");
