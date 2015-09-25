@@ -63,6 +63,41 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   disp.read(disp_store);
   
+  //FIXME read/pass actual datastore!
+  Subset3d subset(in->data, 0);
+  
+  //centerview, channel 0
+  MultiArrayView<2,float> centerview = disp.get<float>()->bindAt(3,0).bindAt(2,disp.shape()[2]/2);
+  
+  FILE *pointfile = fopen("debug.ply", "w");
+  
+  fprintf(pointfile, "ply\n"
+          "format ascii 1.0\n"
+          "element vertex %d\n"
+          "property float x\n"
+          "property float y\n"
+          "property float z\n"
+          /*"property uchar diffuse_red\n"
+          "property uchar diffuse_green\n"
+          "property uchar diffuse_blue\n"*/
+          "end_header\n", centerview.shape(0)*centerview.shape(1));
+  
+  int w = centerview.shape(0);
+  int h = centerview.shape(1);
+  Shape2 p;
+  for(p[1] = 0; p[1] < h; ++p[1])
+    for (p[0] = 0; p[0] < w; ++p[0]) {
+      double depth = subset.disparity2depth(centerview[p]);
+      if (depth >= 0 && depth <= 2000) {
+        fprintf(pointfile, "%.3f %.3f %.3f\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth);
+      }
+      else
+        fprintf(pointfile, "0 0 0\n");
+    }
+    
+  fprintf(pointfile,"\n");
+  fclose(pointfile);
+  
   ClifFile debugfile;
   debugfile.create("debug.clif");
   Dataset *debugset = debugfile.createDataset("default");

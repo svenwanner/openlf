@@ -73,15 +73,17 @@ void operator()(FlexMAV<2> *img, const char *name)
 
 template<typename T> class subarray_copy {
 public:
-void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4> *disp_store)
+void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4> *disp_store, double disp_offset)
 {
   for(int c=0;c<sink_mav->shape()[2];c++) {
-    MultiArrayView<2, T> sink = sink_mav->get<T>()->bindAt(2, c);
+    MultiArrayView<2,T> sink = sink_mav->get<T>()->bindAt(2, c);
     MultiArrayView<3,T> store = disp_store->get<T>()->bindAt(3, c);
     
     for(int i=0;i<epi_h;i++) {
       //bind store y to epi line
-      store.bindAt(1, line) = sink;
+      MultiArrayView<2,T> epi = store.bindAt(1, line);
+      epi = sink;
+      epi += disp_offset;
     }
   }
 }
@@ -107,6 +109,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   double disparity = 5;
   int subset_idx = 0; //we could also loop over all subsets or specify subset using string name
   
+  //subset_idx -- extrinsics path
   Subset3d subset(in->data, subset_idx);
   
   _source.set(&_source_mav);
@@ -141,24 +144,15 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     if (!disp_store)
       disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), subset.EPIHeight(), sink_mav->shape()[2]), in->data->type());
     
-    disp_store->call<subarray_copy>(i,epi_w,epi_h,sink_mav,disp_store);
+    disp_store->call<subarray_copy>(i,epi_w,epi_h,sink_mav,disp_store,disparity);
     
   }
   
+  out->path = std::string("disparity/default/data");
   Datastore *datastore = out->data->addStore("disparity/default/data");
   disp_store->write(datastore);
   
   delete disp_store;
-  
-  //disp_store.call<save_flexmav>(&disp_store, "centerview.tiff");
-  
-  /*ClifFile debugfile;
-  
-  debugfile.create("debug.clif");
-  Dataset *debugset = debugfile.createDataset("default");
-
-  disp_store.write(debugset, "testimage");*/
-  //TODO store whatever we accumulated into the clif file 
 }
 
 }} //namespace openlf::components

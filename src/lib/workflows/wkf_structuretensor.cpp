@@ -107,7 +107,7 @@ namespace openlf {
         ConnectOutToIn(outer_gauss_1, 0, tensor2orientation, 1);
         ConnectOutToIn(outer_gauss_2, 0, tensor2orientation, 2);
 //save --------
-        SetParameter(pFilename, DspParameter(DspParameter::String, "/home/swanner/Projects/openlf/build/orientation.tif"));
+        SetParameter(pFilename, DspParameter(DspParameter::String, "orientation.tif"));
         ConnectOutToIn(tensor2orientation, 0, saveImage, 0);
 //-------------
         // return orientation
