@@ -110,8 +110,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   FlexMAV<3> *sink_mav;
   
-  //TODO use epi size and count
-  FlexMAV<3> disp_store(Shape3(subset.EPIWidth(), subset.EPICount(), subset.EPIHeight()), in->data->type());
+  FlexMAV<4> disp_store(Shape3(subset.EPIWidth(), subset.EPICount(), subset.EPIHeight()), in->data->type());
   
   int epi_w = subset.EPIWidth();
   int epi_h = subset.EPIHeight();
