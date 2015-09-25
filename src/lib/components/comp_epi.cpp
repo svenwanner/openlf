@@ -73,20 +73,23 @@ void operator()(FlexMAV<2> *img, const char *name)
 
 template<typename T> class subarray_copy {
 public:
-void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<3> *disp_store)
+void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4> *disp_store)
 {
-  MultiArrayView<2, T> sink = sink_mav->get<T>()->bindAt(2, 1);
-  
-  for(int i=0;i<epi_h;i++) {
-    //bind store y to epi line
-    disp_store->get<T>()->bindAt(1, line) = sink;
+  for(int c=0;c<sink_mav->shape()[2];c++) {
+    MultiArrayView<2, T> sink = sink_mav->get<T>()->bindAt(2, c);
+    MultiArrayView<3,T> store = disp_store->get<T>()->bindAt(3, c);
+    
+    for(int i=0;i<epi_h;i++) {
+      //bind store y to epi line
+      store.bindAt(1, line) = sink;
+    }
   }
 }
 };
 
 void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
-  /*LF *in = NULL;
+  LF *in = NULL;
   LF *out = NULL;
   
   assert(inputs.GetValue(0, in));
@@ -115,7 +118,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   int epi_w = subset.EPIWidth();
   int epi_h = subset.EPIHeight();
   
-  for(int i=0;i<100/*subset.EPICount()*//*;i++) {
+  for(int i=0;i<subset.EPICount();i++) {
     if (i % 100 == 0)
       printf("proc epi %d\n", i);
     readEPI(&subset, _source_mav, i, disparity);
@@ -135,14 +138,17 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     //bind color to green (for now)
     //FlexMAV<2> sink_mav = sink_mav_temp->bindAt(2, 1);
     
-    /*if (!disp_store)
-      disp_store = new FlexMAV<3>(Shape3(subset.EPIWidth(), subset.EPICount(), subset.EPIHeight()), in->data->type());
+    if (!disp_store)
+      disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), subset.EPIHeight(), sink_mav->shape()[2]), in->data->type());
     
-    disp_store.call<subarray_copy>(i,epi_w,epi_h,sink_mav,&disp_store);
+    disp_store->call<subarray_copy>(i,epi_w,epi_h,sink_mav,disp_store);
+    
   }
   
   Datastore *datastore = out->data->addStore("disparity/default/data");
-  disp_store.write(datastore);
+  disp_store->write(datastore);
+  
+  delete disp_store;
   
   //disp_store.call<save_flexmav>(&disp_store, "centerview.tiff");
   
