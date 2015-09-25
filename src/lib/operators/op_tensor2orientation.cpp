@@ -25,27 +25,82 @@
 #include <vigra/matrix.hxx>
 #include "operators.hpp"
 
-
 #define OPENLF_OP_CONSTRUCT_PARAMS \
     AddParameter_("min_coherence", DspParameter(DspParameter::ParamType::Float, 0.8f)); \
 
 OPENLF_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
 
-for (int i=0; i < in[0]->shape()[0]*in[0]->shape()[1]; ++i){
+  float threshold = *op->GetParameter(0)->GetFloat();
+  threshold *= threshold;
+
+  float x,y,c_nom,c_denom,coherence,yx;
+  
+  //assume continuous array
+  T *in0, *in1, *in2;
+  float *out0, *out1;
+  
+  in0 = in[0]->data();
+  in1 = in[1]->data();
+  in2 = in[2]->data();
+  out0 = (float*)out[0]->data();
+  out1 = (float*)out[1]->data();
+  
+  int total = in[0]->shape()[0]*in[0]->shape()[1];
+
+  for (int i=0; i < total; ++i) {
+    y = 2*in1[i];
+    x = in2[i]-in0[i];
     
-    // orientation
-    out[0]->data()[i] = std::tan(std::atan2(2*in[1]->data()[i], in[2]->data()[i]-in[0]->data()[i] + 1e-25) / 2.0);
+    float xyd2 = in2[i] - in0[i];
+    xyd2 *= xyd2;
+    c_nom = xyd2 + 4 * in1[i]*in1[i];
+    c_denom = (in0[i] + in2[i]);
+    c_denom *= c_denom;
+    c_denom += FLT_MIN;;
+    coherence = c_nom / c_denom;
     
-    // coherence
-    float up = std::sqrt(std::pow(in[2]->data()[i] - in[0]->data()[i], 2) + 4 * std::pow(in[1]->data()[i], 2));
-    float down = in[0]->data()[i] + in[2]->data()[i] + 1e-25;
-    out[1]->data()[i] = up / down;
-    
-    // threshold orientation and check invalid coherence
-    if (out[0]->data()[i] > 1 || out[0]->data()[i] < -1 || out[1]->data()[i] < *op->GetParameter(0)->GetFloat()) {
-        out[0]->data()[i] = -1;
-        out[1]->data()[i] = 0;
+    if (x == 0) {
+      if (y && coherence < threshold) {
+          out0[i] = 0;
+          out1[i] = coherence;
+      }
     }
-}
+    else {
+      yx = y/x;
+    
+      if (x > 0.0) {
+        if (coherence < threshold) {
+            out0[i] = -1;
+            out1[i] = 0;
+        }
+        else {
+          out0[i] = (sqrt(yx*yx+1)-1)/yx;
+          out1[i] = coherence;
+        }
+      }
+      else if (x < 0 && y <= 0) {
+        yx  -= M_PI;
+        if (abs(yx) > 1 || coherence < threshold) {
+          out0[i] = -1;
+          out1[i] = 0;
+        }
+        else {
+          out0[i] = (sqrt(yx*yx+1)-1)/yx;
+          out1[i] = coherence;
+        }
+      }
+      else if (x < 0 && y >= 0) {
+        yx += M_PI;
+        if (abs(yx) > 1 || coherence < threshold) {
+            out0[i] = -1;
+            out1[i] = 0;
+        }
+        else {
+          out0[i] = (sqrt(yx*yx+1)-1)/yx;
+          out1[i] = coherence;
+        }
+      }
+    }
+  }
 
 OPENLF_OP_END(OP_Tensor2Orientation, 3, 2, 3, 3)
