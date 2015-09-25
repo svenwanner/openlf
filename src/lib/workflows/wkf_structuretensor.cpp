@@ -51,6 +51,9 @@ namespace openlf {
         AddComponent(inner_gauss, "InnerSmoothing");
         AddComponent(scharr_xy, "Gradients");
         AddComponent(normalize, "Normalize");
+        AddComponent(mergeChannel_0, "AverageChannel_0");
+        AddComponent(mergeChannel_1, "AverageChannel_1");
+        AddComponent(mergeChannel_2, "AverageChannel_2");
         AddComponent(outer_gauss_0, "OuterSmoothing_0");
         AddComponent(outer_gauss_1, "OuterSmoothing_1");
         AddComponent(outer_gauss_2, "OuterSmoothing_2");
@@ -83,10 +86,14 @@ namespace openlf {
         // make tensor from gradients
         ConnectOutToIn(scharr_xy, 0, tensor, 0);
         ConnectOutToIn(scharr_xy, 1, tensor, 1);
+        // merge channels
+        ConnectOutToIn(tensor, 0, mergeChannel_0, 0);
+        ConnectOutToIn(tensor, 1, mergeChannel_1, 0);
+        ConnectOutToIn(tensor, 2, mergeChannel_2, 0);
         // smooth tensor components
-        ConnectOutToIn(tensor, 0, outer_gauss_0, 0);
-        ConnectOutToIn(tensor, 1, outer_gauss_1, 0);
-        ConnectOutToIn(tensor, 2, outer_gauss_2, 0);
+        ConnectOutToIn(mergeChannel_0, 0, outer_gauss_0, 0);
+        ConnectOutToIn(mergeChannel_1, 0, outer_gauss_1, 0);
+        ConnectOutToIn(mergeChannel_2, 0, outer_gauss_2, 0);
 //save --------
 //        SetParameter(pFilename, DspParameter(DspParameter::String, "/home/swanner/Projects/openlf/build/st_0.tif"));
 //        ConnectOutToIn(tensor, 0, saveImage, 0);
@@ -100,8 +107,8 @@ namespace openlf {
         ConnectOutToIn(outer_gauss_1, 0, tensor2orientation, 1);
         ConnectOutToIn(outer_gauss_2, 0, tensor2orientation, 2);
 //save --------
-//        SetParameter(pFilename, DspParameter(DspParameter::String, "/home/swanner/Projects/openlf/build/orientation.tif"));
-//        ConnectOutToIn(tensor2orientation, 0, saveImage, 0);
+        SetParameter(pFilename, DspParameter(DspParameter::String, "/home/swanner/Projects/openlf/build/orientation.tif"));
+        ConnectOutToIn(tensor2orientation, 0, saveImage, 0);
 //-------------
         // return orientation
         ConnectOutToOut(tensor2orientation, 0, 0);
