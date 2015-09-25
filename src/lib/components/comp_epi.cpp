@@ -86,7 +86,7 @@ void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<3>
 
 void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
-  LF *in = NULL;
+  /*LF *in = NULL;
   LF *out = NULL;
   
   assert(inputs.GetValue(0, in));
@@ -110,12 +110,12 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   FlexMAV<3> *sink_mav;
   
-  FlexMAV<4> disp_store(Shape3(subset.EPIWidth(), subset.EPICount(), subset.EPIHeight()), in->data->type());
+  FlexMAV<4> *disp_store = NULL;
   
   int epi_w = subset.EPIWidth();
   int epi_h = subset.EPIHeight();
   
-  for(int i=0;i<100/*subset.EPICount()*/;i++) {
+  for(int i=0;i<100/*subset.EPICount()*//*;i++) {
     if (i % 100 == 0)
       printf("proc epi %d\n", i);
     readEPI(&subset, _source_mav, i, disparity);
@@ -135,8 +135,10 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     //bind color to green (for now)
     //FlexMAV<2> sink_mav = sink_mav_temp->bindAt(2, 1);
     
-    disp_store.call<subarray_copy>(i,epi_w,epi_h,sink_mav,&disp_store);
+    /*if (!disp_store)
+      disp_store = new FlexMAV<3>(Shape3(subset.EPIWidth(), subset.EPICount(), subset.EPIHeight()), in->data->type());
     
+    disp_store.call<subarray_copy>(i,epi_w,epi_h,sink_mav,&disp_store);
   }
   
   Datastore *datastore = out->data->addStore("disparity/default/data");
