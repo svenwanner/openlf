@@ -33,8 +33,27 @@ OPENLF_OP_START(OP_SaveImage, 1, 0, 3, 3)
         
     
     if (in[0]->shape()[2] == 1) {
+        vigra::MultiArray<2,vigra::UInt8> out_im(in[0]->shape()[0], in[0]->shape()[1]);
         vigra::MultiArrayView<2, T> channel_in = in[0]->bindAt(2, 0);
-        exportImage(channel_in, *op->GetParameter(0)->GetString());
+        float min = std::numeric_limits<float>::max();
+        float max = std::numeric_limits<float>::lowest();
+        for (int i=0; i < in[0]->size(); ++i){
+            if (max < in[0]->data()[i])
+                max = in[0]->data()[i];
+            if (min > in[0]->data()[i])
+                min = in[0]->data()[i];
+        }
+        float tmp = 0;
+        for (int i=0; i < in[0]->size()/3; ++i){
+            for (int c=0; c<3; c++) {
+                tmp = (float)channel_in.data()[i];
+                tmp /= (max-min);
+                tmp *= 255;
+                out_im.data()[i] = (vigra::UInt8)tmp;
+            }
+        }
+        std::cout << "save imagemapping range from (" << min << "," << max << ") to (0,255)" << std::endl;
+        exportImage(out_im, *op->GetParameter(0)->GetString());
     }
     else if (in[0]->shape()[2] == 3 || in[0]->shape()[2] == 4){
         vigra::MultiArray<2, vigra::RGBValue<T> > channel_in(in[0]->shape()[0], in[0]->shape()[1]);
