@@ -29,6 +29,24 @@
     AddParameter_("min_coherence", DspParameter(DspParameter::ParamType::Float, 0.8f)); \
 
 OPENLF_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
+/*
+for (int i=0; i < in[0]->shape()[0]*in[0]->shape()[1]; ++i){
+    
+    // orientation
+    out[0]->data()[i] = std::tan(std::atan2(2*in[1]->data()[i], in[2]->data()[i]-in[0]->data()[i] + 1e-25) / 2.0);
+    
+    // coherence
+    float up = std::sqrt(std::pow(in[2]->data()[i] - in[0]->data()[i], 2) + 4 * std::pow(in[1]->data()[i], 2));
+    float down = in[0]->data()[i] + in[2]->data()[i] + 1e-25;
+    out[1]->data()[i] = up / down;
+    
+    // threshold orientation and check invalid coherence
+    if (out[0]->data()[i] > 1 || out[0]->data()[i] < -1 || out[1]->data()[i] < *op->GetParameter(0)->GetFloat()) {
+        out[0]->data()[i] = -1;
+        out[1]->data()[i] = 0;
+    }
+}*/
+
 
   float threshold = *op->GetParameter(0)->GetFloat();
   threshold *= threshold;

@@ -28,12 +28,36 @@
 
 OPENLF_OP_START(OP_Tensor2x2, 2, 3, 3, 3)
         
-    *out[0] = *in[0];   // x*x
-    *out[0] *= *out[0];
-    *out[1] = *in[0];   // x*y
-    *out[1] *= *in[1];
-    *out[2] = *in[1];   // y*y
-    *out[2] *= *out[2];
+  /**out[0] = *in[0];   // x*x
+  *out[0] *= *out[0];
+  *out[1] = *in[0];   // x*y
+  *out[1] *= *in[1];
+  *out[2] = *in[1];   // y*y
+  *out[2] *= *out[2];*/
+
+  //assume continuous array
+  __restrict__ T *inx, *iny;
+  __restrict__ T *outxx, *outxy, *outyy;
+  
+  assert(in[0]->isUnstrided());
+  assert(in[1]->isUnstrided());
+  assert(out[0]->isUnstrided());
+  assert(out[1]->isUnstrided());
+  assert(out[2]->isUnstrided());
+
+  inx = in[0]->data();
+  iny = in[1]->data();
+  outxx = out[0]->data();
+  outxy = out[1]->data();
+  outyy = out[2]->data();
+
+  int total = in[0]->size();
+
+  for (int i=0;i<total;++i) {
+    outxx[i] = inx[i]*inx[i];
+    outxy[i] = inx[i]*iny[i];
+    outyy[i] = iny[i]*iny[i];
+  }
     
 OPENLF_OP_END(OP_Tensor2x2, 2, 3, 3, 3)
 
