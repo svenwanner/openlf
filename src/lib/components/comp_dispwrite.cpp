@@ -41,6 +41,124 @@ COMP_DispWrite::COMP_DispWrite()
   //AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
 }
 
+void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d &subset)
+{
+  FILE *pointfile = fopen(name, "w");
+  
+  int point_count = 0;
+  
+  int w = disp.shape(0);
+  int h = disp.shape(1);
+  
+  Shape2 p;
+  for(p[1] = 0; p[1] < h; ++p[1])
+    for (p[0] = 0; p[0] < w; ++p[0]) {
+      double depth;
+      if (!isnan(disp[p]) && disp[p] > 0) 
+        point_count++;
+    }
+  
+  fprintf(pointfile, "ply\n"
+          "format ascii 1.0\n"
+          "element vertex %d\n"
+          "property float x\n"
+          "property float y\n"
+          "property float z\n"
+          "property uchar diffuse_red\n"
+          "property uchar diffuse_green\n"
+          "property uchar diffuse_blue\n"
+          "end_header\n", point_count);
+  
+  for(p[1] = 0; p[1] < h; ++p[1])
+    for (p[0] = 0; p[0] < w; ++p[0]) {
+      double depth;
+      if (isnan(disp[p]) || disp[p] <= 0)
+        depth = -1;
+      else
+        depth = subset.disparity2depth(disp[p]);
+      if (depth >= 0) {
+        if (view.type() == CV_8UC3) {
+          cv::Vec3b col = view.at<cv::Vec3b>(p[1],p[0]);
+          fprintf(pointfile, "%.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth,col[0],col[1],col[2]);
+        }
+        else if (view.type() == CV_8UC1) {
+          uchar col = view.at<uchar>(p[1],p[0]);
+          fprintf(pointfile, "%.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth,col,col,col);
+        }
+        else
+          fprintf(pointfile, "%.3f %.3f %.3f 127 127 127\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth);
+          
+      }
+    }
+    if (isnan(disp[p]) || disp[p] <= 0)
+  fprintf(pointfile,"\n");
+  fclose(pointfile);
+}
+
+
+void write_obj(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d &subset)
+{
+  int v_idx = 1;
+  
+  int w = disp.shape(0);
+  int h = disp.shape(1);
+  
+  int buf1[w];
+  int buf2[w];
+  int *valid = buf1;
+  int *valid_last = buf2;
+  int *valid_tmp;
+  Shape2 p;
+  
+  FILE *pointfile = fopen(name, "w");
+  //fprintf(pointfile, "vn 0 0 -1\n");
+  
+  for(int i=0;i<w;i++) {
+      buf1[i] = 0;
+      buf2[i] = 0;
+  }
+  
+  for(p[1]=0;p[1]<h;++p[1]) {
+    valid_tmp = valid_last;
+    valid_last = valid;
+    valid = valid_tmp;
+    
+    for(p[0]=0;p[0]<w;++p[0]) {
+      if (isnan(disp[p]) || disp[p] <= 0)
+        valid[p[0]] = 0;
+      else {
+        valid[p[0]] = v_idx;
+        
+        double depth = subset.disparity2depth(disp[p]);
+        
+        if (view.type() == CV_8UC3) {
+          cv::Vec3b col = view.at<cv::Vec3b>(p[1],p[0]);
+          fprintf(pointfile, "v %.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth,col[0],col[1],col[2]);
+        }
+        else if (view.type() == CV_8UC1) {
+          uchar col = view.at<uchar>(p[1],p[0]);
+          fprintf(pointfile, "v %.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth,col,col,col);
+        }
+        else
+          fprintf(pointfile, "v %.3f %.3f %.3f 127 127 127\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth);
+        
+        v_idx ++;
+        
+        if (p[0]) {
+          if (valid[p[0]-1] && valid[p[0]] && valid_last[p[0]-1] && valid_last[p[0]]) {
+            fprintf(pointfile, "f %d %d %d %d\n", valid[p[0]-1], valid[p[0]], valid_last[p[0]], valid_last[p[0]-1]);
+            //more correct in some way but whatever
+            //fprintf(pointfile, "f %d %d %d\n", valid[p[0]-1], valid_last[p[0]], valid_last[p[0]-1]);
+            //fprintf(pointfile, "f %d %d %d\n", valid[p[0]-1], valid[p[0]], valid_last[p[0]]);
+          }
+        }
+      }
+    }
+  }
+  fprintf(pointfile,"\n");
+  fclose(pointfile);
+}
+
 void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   LF *in = NULL;
@@ -77,7 +195,10 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //centerview, channel 0
   MultiArrayView<2,float> centerview = disp.get<float>()->bindAt(3,0).bindAt(2,disp.shape()[2]/2);
   
-  FILE *pointfile = fopen("debug.ply", "w");
+  write_ply("debug.ply", centerview, img, subset);
+  write_obj("debug.obj", centerview, img, subset);
+  
+  /*FILE *pointfile = fopen("debug.ply", "w");
   
   int point_count = 0;
   
@@ -131,7 +252,7 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     }
     
   fprintf(pointfile,"\n");
-  fclose(pointfile);
+  fclose(pointfile);*/
   
   ClifFile debugfile;
   debugfile.create("debug.clif");
