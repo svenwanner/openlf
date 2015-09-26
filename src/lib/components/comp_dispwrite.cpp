@@ -77,7 +77,7 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //centerview, channel 0
   MultiArrayView<2,float> centerview = disp.get<float>()->bindAt(3,0).bindAt(2,disp.shape()[2]/2);
   
-  /*FILE *pointfile = fopen("debug.ply", "w");
+  FILE *pointfile = fopen("debug.ply", "w");
   
   fprintf(pointfile, "ply\n"
           "format ascii 1.0\n"
@@ -114,7 +114,7 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     }
     
   fprintf(pointfile,"\n");
-  fclose(pointfile);*/
+  fclose(pointfile);
   
   ClifFile debugfile;
   debugfile.create("debug.clif");

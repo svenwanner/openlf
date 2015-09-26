@@ -27,8 +27,11 @@
 
 #include "openlf/types.hpp"
 
+#include <omp.h>
+
 using namespace clif;
 using namespace vigra;
+using namespace std;
 
 template<typename T> class save_flexmav3 {
 public:
@@ -47,20 +50,20 @@ COMP_Epi::COMP_Epi()
   AddInput_("input");
   AddOutput_("output");
   
-  _circuit.AddComponent(_source, "source");
+  /*_circuit.AddComponent(_source, "source");
   _circuit.AddComponent(_sink, "sink");
-  _circuit.ConnectOutToIn(_source, 0, _sink, 0);
+  _circuit.ConnectOutToIn(_source, 0, _sink, 0);*/
 }
   
-void COMP_Epi::set(DspComponent *circuit)
+void COMP_Epi::set(OLFCircuit *circuit)
 {
-  if (_epi_circuit)
-    _circuit.RemoveComponent(_epi_circuit);
+  /*if (_epi_circuit)
+    _circuit.RemoveComponent(_epi_circuit);*/
   
   _epi_circuit = circuit;
-  _circuit.AddComponent(_epi_circuit, "epi_circuit");
+  /*_circuit.AddComponent(_epi_circuit, "epi_circuit");
   _circuit.ConnectOutToIn(_source, 0, _epi_circuit, 0);
-  _circuit.ConnectOutToIn(_epi_circuit, 0, _sink, 0);
+  _circuit.ConnectOutToIn(_epi_circuit, 0, _sink, 0);*/
 }
 
 template<typename T> class save_flexmav {
@@ -108,35 +111,61 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   assert(out);
   
   //TODO get settings using DSPatch routines...
-  double disparity = 6;
+  double disparity = 6.3;
   int subset_idx = 0; //we could also loop over all subsets or specify subset using string name
   
   //subset_idx -- extrinsics path
   Subset3d subset(in->data, subset_idx);
-  
-  _source.set(&_source_mav);
-  
-  FlexMAV<3> *sink_mav;
   
   FlexMAV<4> *disp_store = NULL;
   
   int epi_w = subset.EPIWidth();
   int epi_h = subset.EPIHeight();
   
-  cv::Mat img;
-  
   float scale = 1.0;
   
+  //setup circuit and threading
+  
+  int t_count = omp_get_max_threads();
+  /*
+   * DspCircuit _circuit;
+  FlexMAVSource<3> _source;
+  FlexMAVSink  <3> _sink;
+  clif::FlexMAV<3> _source_mav;*/
+  
+  vector<FlexMAVSource<3>> comp_source(t_count);
+  vector<FlexMAVSink<3>>   comp_sink(t_count);
+  vector<clif::FlexMAV<3>> mav_source(t_count);
+  
+  vector<OLFCircuit*>  epi_circuits(t_count);
+  vector<DspCircuit>   outer_circuit(t_count);
+  for(int i=0;i<t_count;i++) {
+    epi_circuits[i] = _epi_circuit->clone();
+    
+    outer_circuit[i].AddComponent(comp_source[i], "source");
+    outer_circuit[i].AddComponent(epi_circuits[i], "epi");
+    outer_circuit[i].AddComponent(comp_sink[i], "sink");
+    
+    outer_circuit[i].ConnectOutToIn(comp_source[i], 0, epi_circuits[i], 0);
+    outer_circuit[i].ConnectOutToIn(epi_circuits[i], 0, comp_sink[i], 0);
+    
+    comp_source[i].set(&mav_source[i]);
+  }
+  
+  FlexMAV<3> *sink_mav;
+  
+#pragma omp parallel for private(sink_mav)
   for(int i=0;i<subset.EPICount();i++) {
     if (i % 10 == 0)
       printf("proc epi %d\n", i);
-    readEPI(&subset, _source_mav, i, disparity, ClifUnit::PIXELS, UNDISTORT, Interpolation::LINEAR, scale);
+#pragma omp critical
+    readEPI(&subset, mav_source[omp_get_thread_num()], i, disparity, ClifUnit::PIXELS, UNDISTORT, Interpolation::LINEAR, scale);
     
     //tick the circuit to fill _sink_mav using _source_mav and the circuit
-    _circuit.Tick();
-    _circuit.Reset();
+    outer_circuit[omp_get_thread_num()].Tick();
+    outer_circuit[omp_get_thread_num()].Reset();
     
-    sink_mav = _sink.get();
+    sink_mav = comp_sink[omp_get_thread_num()].get();
     assert(sink_mav->type() == BaseType::FLOAT);
     
     /*if (i == 1000) {
@@ -147,7 +176,8 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     
     //bind color to green (for now)
     //FlexMAV<2> sink_mav = sink_mav_temp->bindAt(2, 1);
-    
+//TODO this should not be necessary
+#pragma omp critical
     if (!disp_store)
       disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), subset.EPIHeight(), sink_mav->shape()[2]), sink_mav->type());
     

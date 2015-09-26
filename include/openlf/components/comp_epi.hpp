@@ -29,6 +29,7 @@
 #include "dspatch/DspCircuit.h"
 
 #include "comp_mav.hpp"
+#include "openlf/types.hpp"
 
 namespace openlf { namespace components {
 
@@ -37,17 +38,12 @@ public:
   COMP_Epi();
   
   //TODO discuss:: use method or settings from DSPatch?
-  void set(DspComponent *circuit);
+  void set(OLFCircuit *circuit);
 protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
-private:
-  DspCircuit _circuit;
-  FlexMAVSource<3> _source;
-  FlexMAVSink  <3> _sink;
-  clif::FlexMAV<3> _source_mav;
-  
+private:  
   //user provided circuit (which has FlexMAV input and output)
-  DspComponent *_epi_circuit = NULL;
+  OLFCircuit *_epi_circuit = NULL;
 };
 
 }} //namespace openlf::components
