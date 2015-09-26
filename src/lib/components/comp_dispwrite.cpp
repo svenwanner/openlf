@@ -79,6 +79,24 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   FILE *pointfile = fopen("debug.ply", "w");
   
+  int point_count = 0;
+  
+  int w = centerview.shape(0);
+  int h = centerview.shape(1);
+  
+  Shape2 p;
+  for(p[1] = 0; p[1] < h; ++p[1])
+    for (p[0] = 0; p[0] < w; ++p[0]) {
+      double depth;
+      if (isnan(centerview[p]))
+        depth = -1;
+      else
+        depth = subset.disparity2depth(centerview[p], scale);
+      
+      if (depth >= 0)
+        point_count++;
+    }
+  
   fprintf(pointfile, "ply\n"
           "format ascii 1.0\n"
           "element vertex %d\n"
@@ -88,15 +106,16 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
           "property uchar diffuse_red\n"
           "property uchar diffuse_green\n"
           "property uchar diffuse_blue\n"
-          "end_header\n", centerview.shape(0)*centerview.shape(1));
+          "end_header\n", point_count);
   
-  int w = centerview.shape(0);
-  int h = centerview.shape(1);
-  Shape2 p;
   for(p[1] = 0; p[1] < h; ++p[1])
     for (p[0] = 0; p[0] < w; ++p[0]) {
-      double depth = subset.disparity2depth(centerview[p], scale);
-      if (depth >= 0 && depth <= 2000) {
+      double depth;
+      if (isnan(centerview[p]))
+        depth = -1;
+      else
+        depth = subset.disparity2depth(centerview[p], scale);
+      if (depth >= 0) {
         if (img.type() == CV_8UC3) {
           cv::Vec3b col = img.at<cv::Vec3b>(p[1],p[0]);
           fprintf(pointfile, "%.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth,col[0],col[1],col[2]);
@@ -109,8 +128,6 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
           fprintf(pointfile, "%.3f %.3f %.3f 127 127 127\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth);
           
       }
-      else
-        fprintf(pointfile, "0 0 0 0 0 0\n");
     }
     
   fprintf(pointfile,"\n");

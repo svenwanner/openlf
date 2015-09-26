@@ -88,7 +88,7 @@ for (int i=0; i < in[0]->shape()[0]*in[0]->shape()[1]; ++i){
     
       if (x > 0.0) {
         if (coherence < threshold) {
-            out0[i] = -1;
+            out0[i] = std::numeric_limits<float>::quiet_NaN();
             out1[i] = 0;
         }
         else {
@@ -99,7 +99,7 @@ for (int i=0; i < in[0]->shape()[0]*in[0]->shape()[1]; ++i){
       else if (x < 0 && y <= 0) {
         yx  -= M_PI;
         if (abs(yx) > 1 || coherence < threshold) {
-          out0[i] = -1;
+          out0[i] = std::numeric_limits<float>::quiet_NaN();
           out1[i] = 0;
         }
         else {
@@ -110,7 +110,7 @@ for (int i=0; i < in[0]->shape()[0]*in[0]->shape()[1]; ++i){
       else if (x < 0 && y >= 0) {
         yx += M_PI;
         if (abs(yx) > 1 || coherence < threshold) {
-            out0[i] = -1;
+            out0[i] = std::numeric_limits<float>::quiet_NaN();
             out1[i] = 0;
         }
         else {
