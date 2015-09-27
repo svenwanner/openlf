@@ -46,7 +46,7 @@ namespace {
         out[i] = out_mav[i]->template get<T>(); 
       
       
-      if (in[0]->shape()[2] == 1)
+      if (in[0]->shape()[2] != 3)
         *out[0] = *in[0];
       else {
         vigra::MultiArrayView<2, T> r_in;
