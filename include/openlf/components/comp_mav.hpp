@@ -49,12 +49,13 @@ protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   {
     bool stat;
+    assert(_mav);
     stat = outputs.SetValue(0, _mav); 
     assert(stat);
   }
   
 private:
-  clif::FlexMAV<DIM> *_mav;
+  clif::FlexMAV<DIM> *_mav = NULL;
 };
 
 template<uint DIM> class FlexMAVSink : public DspComponent {
@@ -71,11 +72,12 @@ public:
 protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   {
-    inputs.GetValue(0, _mav); 
+    inputs.GetValue(0, _mav);
+    assert(_mav);
   }
   
 private:
-  clif::FlexMAV<DIM> *_mav;
+  clif::FlexMAV<DIM> *_mav = NULL;
 };
 
 }} //namespace openlf::components
