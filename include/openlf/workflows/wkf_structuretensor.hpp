@@ -41,9 +41,8 @@ namespace openlf {
       int pInnerScale;
       int pOuterScale;
       int pMinCoherence;
-      float inner_scale;
-      float outer_scale;
-      float min_coherence;
+      int pInnerScaleV;
+      int pOuterScaleV;
       
       // define operators
       OP_VigraGauss inner_gauss;
@@ -67,6 +66,7 @@ namespace openlf {
     protected:
       //virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
       virtual bool ParameterUpdating_(int index, DspParameter const& param);
+      void setup_component_parameters();
       
       
     };

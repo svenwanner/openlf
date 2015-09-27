@@ -155,7 +155,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   FlexMAV<3> *sink_mav;
   
 #pragma omp parallel for private(sink_mav)
-  for(int i=0;i<subset.EPICount();i++) {
+  for(int i=350;i<550/*subset.EPICount()*/;i++) {
     if (i % 10 == 0)
       printf("proc epi %d\n", i);
 #pragma omp critical
