@@ -41,6 +41,9 @@ namespace openlf {
       int pInnerScale;
       int pOuterScale;
       int pMinCoherence;
+      
+      int pInDisp;
+      
       int pInnerScaleV;
       int pOuterScaleV;
       
@@ -49,7 +52,7 @@ namespace openlf {
       OP_VigraGauss outer_gauss_0;
       OP_VigraGauss outer_gauss_1;
       OP_VigraGauss outer_gauss_2;
-      OP_Normalize normalize;
+      //OP_Normalize normalize;
       OP_AverageChannels mergeChannel_0;
       OP_AverageChannels mergeChannel_1;
       OP_AverageChannels mergeChannel_2;

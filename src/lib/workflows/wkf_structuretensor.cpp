@@ -31,7 +31,11 @@ namespace openlf {
       
       // define inputs
       AddInput_("EpiIn");
-      AddOutput_("EpiOut");
+      AddOutput_("disparity");
+      AddOutput_("coherence");
+      
+      //input disparity
+      pInDisp = AddParameterFloat_("input disparity", 0.0);
       
       // add parameter with defaults values
       pInnerScale = AddParameterFloat_("InnerScale", 0.6);
@@ -47,7 +51,7 @@ namespace openlf {
       // add components
       AddComponent(inner_gauss, "InnerSmoothing");
       AddComponent(scharr_yx, "Gradients");
-      AddComponent(normalize, "Normalize");
+      //AddComponent(normalize, "Normalize");
       AddComponent(mergeChannel_0, "AverageChannel_0");
       AddComponent(mergeChannel_1, "AverageChannel_1");
       AddComponent(mergeChannel_2, "AverageChannel_2");
@@ -63,9 +67,9 @@ namespace openlf {
       // inner smoothing
       ConnectInToIn(0, inner_gauss, 0);
       // normalize input
-      ConnectOutToIn(inner_gauss, 0, normalize, 0);
+      //ConnectOutToIn(inner_gauss, 0, normalize, 0);
       // compute gradients
-      ConnectOutToIn(normalize, 0, scharr_yx, 0);
+      ConnectOutToIn(inner_gauss, 0, scharr_yx, 0);
       // make tensor from gradients
       ConnectOutToIn(scharr_yx, 0, tensor, 0);
       ConnectOutToIn(scharr_yx, 1, tensor, 1);
@@ -83,6 +87,7 @@ namespace openlf {
       ConnectOutToIn(outer_gauss_2, 0, tensor2orientation, 2);
       // return orientation
       ConnectOutToOut(tensor2orientation, 0, 0);
+      ConnectOutToOut(tensor2orientation, 1, 1);
     }
     
     void WKF_StructureTensor::setup_component_parameters()
@@ -125,6 +130,8 @@ namespace openlf {
       //min_coherence = *GetParameter(MinCoherence, DspParameter::ParamType::Float).GetFloat();
       //std::cout << "Parameter Update min_coherence: " << min_coherence << std::endl;
       tensor2orientation.SetParameter(0, *GetParameter(pMinCoherence));
+      tensor2orientation.SetParameter(1, *GetParameter(pInDisp));
+      
 
     }
     
