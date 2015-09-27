@@ -27,10 +27,15 @@
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
     AddParameter_("min_coherence", DspParameter(DspParameter::ParamType::Float, 0.8f)); \
+    AddParameter_("input disparity", DspParameter(DspParameter::ParamType::Float, 0.0f));
 
 OPENLF_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
-/*
-for (int i=0; i < in[0]->shape()[0]*in[0]->shape()[1]; ++i){
+
+  float threshold = *op->GetParameter(0)->GetFloat();
+  
+  float add = *op->GetParameter(1)->GetFloat();
+
+  /*for (int i=0; i < in[0]->shape()[0]*in[0]->shape()[1]; ++i) {
     
     // orientation
     out[0]->data()[i] = std::tan(std::atan2(2*in[1]->data()[i], in[2]->data()[i]-in[0]->data()[i] + 1e-25) / 2.0);
@@ -41,16 +46,17 @@ for (int i=0; i < in[0]->shape()[0]*in[0]->shape()[1]; ++i){
     out[1]->data()[i] = up / down;
     
     // threshold orientation and check invalid coherence
-    if (out[0]->data()[i] > 1 || out[0]->data()[i] < -1 || out[1]->data()[i] < *op->GetParameter(0)->GetFloat()) {
-        out[0]->data()[i] = -1;
-        out[1]->data()[i] = 0;
+    if (out[0]->data()[i] > 1 || out[0]->data()[i] < -1 || out[1]->data()[i] < threshold) {
+      out[0]->data()[i] = -1;
+      out[1]->data()[i] = 0;
     }
-}*/
+    else
+      out[0]->data()[i] += add;
+  }*/
 
 
-  float threshold = *op->GetParameter(0)->GetFloat();
   threshold *= threshold;
-
+  
   float x,y,c_nom,c_denom,coherence,yx;
   
   //assume continuous array
@@ -77,46 +83,26 @@ for (int i=0; i < in[0]->shape()[0]*in[0]->shape()[1]; ++i){
     c_denom += FLT_MIN;;
     coherence = c_nom / c_denom;
     
-    if (x == 0) {
-      if (y && coherence < threshold) {
-          out0[i] = 0;
-          out1[i] = coherence;
-      }
+    if (x <= 0) {
+      out0[i] = std::numeric_limits<float>::quiet_NaN();
+      out1[i] = -1;
     }
     else {
       yx = y/x;
     
       if (x > 0.0) {
-        if (coherence < threshold) {
+        if (coherence < threshold || in0[i] < 0.1) {
             out0[i] = std::numeric_limits<float>::quiet_NaN();
-            out1[i] = 0;
+            out1[i] = -1;
         }
         else {
-          out0[i] = (sqrt(yx*yx+1)-1)/yx;
+          out0[i] = add + (sqrt(yx*yx+1)-1)/yx;
           out1[i] = coherence;
         }
       }
-      else if (x < 0 && y <= 0) {
-        yx  -= M_PI;
-        if (abs(yx) > 1 || coherence < threshold) {
-          out0[i] = std::numeric_limits<float>::quiet_NaN();
-          out1[i] = 0;
-        }
-        else {
-          out0[i] = (sqrt(yx*yx+1)-1)/yx;
-          out1[i] = coherence;
-        }
-      }
-      else if (x < 0 && y >= 0) {
-        yx += M_PI;
-        if (abs(yx) > 1 || coherence < threshold) {
-            out0[i] = std::numeric_limits<float>::quiet_NaN();
-            out1[i] = 0;
-        }
-        else {
-          out0[i] = (sqrt(yx*yx+1)-1)/yx;
-          out1[i] = coherence;
-        }
+      else {
+        out0[i] = std::numeric_limits<float>::quiet_NaN();
+        out1[i] = -1;
       }
     }
   }
