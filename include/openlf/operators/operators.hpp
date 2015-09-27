@@ -121,6 +121,8 @@ namespace openlf {
   //============================================================================
   
   
+  OPENLF_OP_CLASS_HEADER(OP_MergeDispByCoherence, 2, 2, 3, 3)
+  
   OPENLF_OP_CLASS_HEADER(OP_Test, 1, 1, 3, 3)
   
 }} //namespace openlf::components
