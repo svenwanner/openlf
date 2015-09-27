@@ -22,6 +22,7 @@
 #include <vigra/impex.hxx>
 #include "clif/clif_vigra.hpp"
 #include "comp_epi.hpp"
+#include "operators.hpp"
 
 #include "clif/subset3d.hpp"
 
@@ -76,7 +77,7 @@ void operator()(FlexMAV<2> *img, const char *name)
 
 template<typename T> class subarray_copy {
 public:
-void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4> *disp_store, float disp_offset, float disp_scale)
+void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4> *disp_store, float disp_scale)
 {
   for(int c=0;c<sink_mav->shape()[2];c++) {
     MultiArrayView<2,T> sink = sink_mav->get<T>()->bindAt(2, c);
@@ -86,7 +87,6 @@ void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4>
       //bind store y to epi line
       MultiArrayView<2,T> epi = store.bindAt(1, line);
       epi = sink;
-      epi += disp_offset;
       if (disp_scale != 1.0)
         epi *= 1.0/disp_scale;
     }
@@ -111,7 +111,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   assert(out);
   
   //TODO get settings using DSPatch routines...
-  double disparity = 6.3;
+  float disparity = 6.3;
   int subset_idx = 0; //we could also loop over all subsets or specify subset using string name
   
   //subset_idx -- extrinsics path
@@ -136,26 +136,73 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   vector<FlexMAVSource<3>> comp_source(t_count);
   vector<FlexMAVSink<3>>   comp_sink(t_count);
   vector<clif::FlexMAV<3>> mav_source(t_count);
+  vector<OP_MergeDispByCoherence> merge(t_count);
   
+  //_epi_circuit->SetParameter(3, DspParameter(DspParameter::ParamType::Float, 0.95f));
+  
+ // _epi_circuit->SetParameter(1, DspParameter(DspParameter::ParamType::Float, 0.0f));
+  
+  _epi_circuit->SetParameter(2, DspParameter(DspParameter::ParamType::Float, 3.0f));
+  _epi_circuit->SetParameter(5, DspParameter(DspParameter::ParamType::Float, 27.0f));
+  
+  //FIXME delete!
   vector<OLFCircuit*>  epi_circuits(t_count);
   vector<DspCircuit>   outer_circuit(t_count);
   for(int i=0;i<t_count;i++) {
     epi_circuits[i] = _epi_circuit->clone();
     
     outer_circuit[i].AddComponent(comp_source[i], "source");
-    outer_circuit[i].AddComponent(epi_circuits[i], "epi");
+    outer_circuit[i].AddComponent(epi_circuits[i], "epi");  
     outer_circuit[i].AddComponent(comp_sink[i], "sink");
+    //temp
+    outer_circuit[i].AddComponent(merge[i], "merge");  
     
     outer_circuit[i].ConnectOutToIn(comp_source[i], 0, epi_circuits[i], 0);
-    outer_circuit[i].ConnectOutToIn(epi_circuits[i], 0, comp_sink[i], 0);
+    //temp
+    //outer_circuit[i].ConnectOutToIn(epi_circuits[i], 0, comp_sink[i], 0);
+    outer_circuit[i].ConnectOutToIn(epi_circuits[i], 0, merge[i], 0);
+    outer_circuit[i].ConnectOutToIn(epi_circuits[i], 1, merge[i], 1);
+    outer_circuit[i].ConnectOutToIn(merge[i], 0, comp_sink[i], 0);
     
     comp_source[i].set(&mav_source[i]);
   }
   
   FlexMAV<3> *sink_mav;
+      
+  #pragma omp parallel for private(sink_mav)
+  for(int i=0;i<subset.EPICount();i++) {
+    if (i % 10 == 0)
+      printf("proc epi %d\n", i);
+    
+    merge[omp_get_thread_num()].SetParameter(0, DspParameter(DspParameter::ParamType::Bool, true));
+    
+    for(float d=3.0f;d<=7.0f;d+=1.0f) {
+      epi_circuits[omp_get_thread_num()]->SetParameter(0, DspParameter(DspParameter::ParamType::Float, d));
+      
+      #pragma omp critical
+      readEPI(&subset, mav_source[omp_get_thread_num()], i, d, ClifUnit::PIXELS, UNDISTORT, Interpolation::LINEAR, scale);
+      
+      //tick the circuit to fill _sink_mav using _source_mav and the circuit
+      outer_circuit[omp_get_thread_num()].Tick();
+      outer_circuit[omp_get_thread_num()].Reset();
+      
+      merge[omp_get_thread_num()].SetParameter(0, DspParameter(DspParameter::ParamType::Bool, false));
+    }
+    
+    sink_mav = comp_sink[omp_get_thread_num()].get();
+    assert(sink_mav->type() == BaseType::FLOAT);
+    
+    //TODO this should not be necessary
+    #pragma omp critical
+    if (!disp_store)
+      disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), subset.EPIHeight(), sink_mav->shape()[2]), sink_mav->type());
+    
+    disp_store->call<subarray_copy>(i,epi_w,epi_h,sink_mav,disp_store,scale);
+    
+  }
   
-#pragma omp parallel for private(sink_mav)
-  for(int i=350;i<550/*subset.EPICount()*/;i++) {
+/*#pragma omp parallel for private(sink_mav)
+  for(int i=0;i<subset.EPICount();i++) {
     if (i % 10 == 0)
       printf("proc epi %d\n", i);
 #pragma omp critical
@@ -167,23 +214,15 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     
     sink_mav = comp_sink[omp_get_thread_num()].get();
     assert(sink_mav->type() == BaseType::FLOAT);
-    
-    /*if (i == 1000) {
-      sink_mav->call<save_flexmav3>(sink_mav, "oneepi.tiff");
-    }*/
-    
-    //disp_store.subarray(Shape2(0,i),Shape2(epi_w,i+1)) = sink_mav->subarray(Shape3(0,epi_h/2,0),Shape3(epi_w,epi_h/2+1));
-    
-    //bind color to green (for now)
-    //FlexMAV<2> sink_mav = sink_mav_temp->bindAt(2, 1);
+
 //TODO this should not be necessary
 #pragma omp critical
     if (!disp_store)
       disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), subset.EPIHeight(), sink_mav->shape()[2]), sink_mav->type());
     
-    disp_store->call<subarray_copy>(i,epi_w,epi_h,sink_mav,disp_store,disparity,scale);
+    disp_store->call<subarray_copy>(i,epi_w,epi_h,sink_mav,disp_store,scale);
     
-  }
+  }*/
   
   out->path = std::string("disparity/default/data");
   Datastore *datastore = out->data->addStore("disparity/default/data");
