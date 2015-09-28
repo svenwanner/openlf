@@ -16,7 +16,7 @@
 * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 *
-* Author Sven Wanner, Maximilian Diebold, Hendrick Siedelmann 
+* Author Sven Wanner, Maximilian Diebold, Hendrik Siedelmann 
 *
 */
 #include <vigra/impex.hxx>
@@ -142,7 +142,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
  // _epi_circuit->SetParameter(1, DspParameter(DspParameter::ParamType::Float, 0.0f));
   
-  _epi_circuit->SetParameter(2, DspParameter(DspParameter::ParamType::Float, 3.0f));
+  _epi_circuit->SetParameter(2, DspParameter(DspParameter::ParamType::Float, 1.0f));
   _epi_circuit->SetParameter(5, DspParameter(DspParameter::ParamType::Float, 27.0f));
   
   //FIXME delete!

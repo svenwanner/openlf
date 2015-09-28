@@ -16,7 +16,7 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * Author Sven Wanner, Maximilian Diebold, Hendrick Siedelmann 
+ * Author Sven Wanner, Maximilian Diebold, Hendrik Siedelmann 
  *
  */
 
@@ -91,7 +91,7 @@ OPENLF_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
       yx = y/x;
     
       if (x > 0.0) {
-        if (coherence < threshold || in0[i] < 0.1) {
+        if (coherence < threshold) {
             out0[i] = std::numeric_limits<float>::quiet_NaN();
             out1[i] = -1;
         }

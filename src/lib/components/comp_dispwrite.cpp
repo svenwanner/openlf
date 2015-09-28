@@ -16,7 +16,7 @@
 * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 *
-* Author Sven Wanner, Maximilian Diebold, Hendrick Siedelmann 
+* Author Sven Wanner, Maximilian Diebold, Hendrik Siedelmann 
 *
 */
 
@@ -133,7 +133,7 @@ void write_obj(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
         
         if (view.type() == CV_8UC3) {
           cv::Vec3b col = view.at<cv::Vec3b>(p[1],p[0]);
-          fprintf(pointfile, "v %.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth,col[0],col[1],col[2]);
+          fprintf(pointfile, "v %.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth,col[2],col[1],col[0]);
         }
         else if (view.type() == CV_8UC1) {
           uchar col = view.at<uchar>(p[1],p[0]);
