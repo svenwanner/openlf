@@ -90,6 +90,8 @@ public:
 
     DspComponent();
     virtual ~DspComponent();
+    
+    virtual DspComponent *clone();
 
     void SetCallback(Callback_t const& callback, void* userData = NULL);
 

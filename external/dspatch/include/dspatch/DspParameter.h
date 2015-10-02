@@ -30,6 +30,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <dspatch/DspThread.h>
 #include <string>
 #include <vector>
+#include <typeinfo>
 
 //=================================================================================================
 /// Value container used to hold non-transient component IO
@@ -58,7 +59,8 @@ public:
         String,
         FilePath, // this is essentially just a string, but helps when determining an appropriate user input method
         List,     // this type acts as a vector (available items), an int (index selected), and a string (item selected)
-        Trigger   // this type has no value, SetParam(triggerParam) simply represents a trigger. E.g. a button press
+        Trigger,   // this type has no value, SetParam(triggerParam) simply represents a trigger. E.g. a button press
+        Pointer
     };
 
     DspParameter();
@@ -66,7 +68,9 @@ public:
     DspParameter(ParamType const& type, int const& initValue, std::pair<int, int> const& valueRange = std::make_pair(-1, -1));
     DspParameter(ParamType const& type, float const& initValue, std::pair<float, float> const& valueRange = std::make_pair(-1.0f, -1.0f));
     DspParameter(ParamType const& type, std::string const& initValue);
+    DspParameter(ParamType const& type, const char * const initValue);
     DspParameter(ParamType const& type, std::vector<std::string> const& initValue);
+    template<typename T> DspParameter(ParamType const& type, T *initValue);
 
     ParamType Type() const;
     bool IsSet() const;
@@ -78,6 +82,8 @@ public:
     std::pair<float, float> const* GetFloatRange() const;
     std::string const* GetString() const;
     std::vector<std::string> const* GetList() const;
+    template<typename T> T* GetPointer() const;
+    template<typename T> void GetPointer(T* &value) const;
 
     bool SetBool(bool const& value);
     bool SetInt(int const& value);
@@ -86,6 +92,7 @@ public:
     bool SetFloatRange(std::pair<float, float> const& floatRange);
     bool SetString(std::string const& value);
     bool SetList(std::vector<std::string> const& value);
+    template <typename T> bool SetPointer(T* value);
 
     bool SetParam(DspParameter const& param);
 
@@ -104,7 +111,53 @@ private:
 
     std::string _stringValue;
     std::vector<std::string> _listValue;
+    void *_ptrValue;
+    const std::type_info *_ptrType = NULL;
 };
+
+template<typename T> T* DspParameter::GetPointer() const
+{
+    if (!_isSet || _type != Pointer || *_ptrType != typeid(T))
+    {
+        return NULL;
+    }
+
+    if (_type == Pointer)
+    {
+        return static_cast<T*>(_ptrValue);
+    }
+
+    return NULL;
+}
+
+template<typename T> void DspParameter::GetPointer(T* &value) const
+{
+  value = GetPointer<T>();
+}
+
+template<typename T> DspParameter::DspParameter(ParamType const& type, T *initValue)
+    : _type(type)
+    , _ptrType(&typeid(T))
+    , _isSet(false)
+    , _isRangeSet(false)
+{
+    if (!SetPointer(initValue))
+    {
+        _type = Null;
+    }
+}
+
+template<typename T> bool DspParameter::SetPointer(T* value)
+{
+    if (_type == Pointer && *_ptrType == typeid(T))
+    {
+        _ptrValue = static_cast<void*>(value);
+        _isSet = true;
+        return true;
+    }
+
+    return false;
+}
 
 //=================================================================================================
 

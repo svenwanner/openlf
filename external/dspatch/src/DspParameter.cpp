@@ -99,6 +99,17 @@ DspParameter::DspParameter(ParamType const& type, std::string const& initValue)
     }
 }
 
+DspParameter::DspParameter(ParamType const& type, const char * const initValue)
+    : _type(type)
+    , _isSet(false)
+    , _isRangeSet(false)
+{
+    if (!SetString(initValue))
+    {
+        _type = Null;
+    }
+}
+
 //-------------------------------------------------------------------------------------------------
 
 DspParameter::DspParameter(ParamType const& type, std::vector<std::string> const& initValue)
