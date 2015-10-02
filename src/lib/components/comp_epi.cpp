@@ -51,20 +51,11 @@ COMP_Epi::COMP_Epi()
   AddInput_("input");
   AddOutput_("output");
   
-  /*_circuit.AddComponent(_source, "source");
-  _circuit.AddComponent(_sink, "sink");
-  _circuit.ConnectOutToIn(_source, 0, _sink, 0);*/
-}
+  AddParameter_("epi circuit", DspParameter(DspParameter::ParamType::Pointer, (OLFCircuit*)&_default_epi_circuit));
+  AddParameter_("epi circuit name", DspParameter(DspParameter::ParamType::String, "default"));
   
-void COMP_Epi::set(OLFCircuit *circuit)
-{
-  /*if (_epi_circuit)
-    _circuit.RemoveComponent(_epi_circuit);*/
-  
-  _epi_circuit = circuit;
-  /*_circuit.AddComponent(_epi_circuit, "epi_circuit");
-  _circuit.ConnectOutToIn(_source, 0, _epi_circuit, 0);
-  _circuit.ConnectOutToIn(_epi_circuit, 0, _sink, 0);*/
+  AddParameter_("merge circuit", DspParameter(DspParameter::ParamType::Pointer, (OLFCircuit*)&_default_epi_circuit));
+  AddParameter_("epi circuit name", DspParameter(DspParameter::ParamType::String, "default"));
 }
 
 template<typename T> class save_flexmav {
@@ -127,29 +118,37 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //setup circuit and threading
   
   int t_count = omp_get_max_threads();
-  /*
-   * DspCircuit _circuit;
-  FlexMAVSource<3> _source;
-  FlexMAVSink  <3> _sink;
-  clif::FlexMAV<3> _source_mav;*/
+
+  const DspParameter *p;
+  OLFCircuit *epi_circuit;
+  const std::string *epi_name;
+  
+  p = GetParameter(0);
+  assert(p);
+  p->GetPointer(epi_circuit);
+  
+  p = GetParameter(1);
+  assert(p);
+  epi_name = p->GetString();
+  
   
   vector<FlexMAVSource<3>> comp_source(t_count);
   vector<FlexMAVSink<3>>   comp_sink(t_count);
   vector<clif::FlexMAV<3>> mav_source(t_count);
   vector<OP_MergeDispByCoherence> merge(t_count);
   
-  //_epi_circuit->SetParameter(3, DspParameter(DspParameter::ParamType::Float, 0.95f));
+  //epi_circuit->SetParameter(3, DspParameter(DspParameter::ParamType::Float, 0.95f));
   
- // _epi_circuit->SetParameter(1, DspParameter(DspParameter::ParamType::Float, 0.0f));
+ // epi_circuit->SetParameter(1, DspParameter(DspParameter::ParamType::Float, 0.0f));
   
-  _epi_circuit->SetParameter(2, DspParameter(DspParameter::ParamType::Float, 1.0f));
-  _epi_circuit->SetParameter(5, DspParameter(DspParameter::ParamType::Float, 27.0f));
+  epi_circuit->SetParameter(2, DspParameter(DspParameter::ParamType::Float, 1.0f));
+  epi_circuit->SetParameter(5, DspParameter(DspParameter::ParamType::Float, 27.0f));
   
   //FIXME delete!
   vector<OLFCircuit*>  epi_circuits(t_count);
   vector<DspCircuit>   outer_circuit(t_count);
   for(int i=0;i<t_count;i++) {
-    epi_circuits[i] = _epi_circuit->clone();
+    epi_circuits[i] = epi_circuit->clone();
     
     outer_circuit[i].AddComponent(comp_source[i], "source");
     outer_circuit[i].AddComponent(epi_circuits[i], "epi");  
@@ -170,7 +169,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   FlexMAV<3> *sink_mav;
       
   #pragma omp parallel for private(sink_mav)
-  for(int i=0;i<subset.EPICount();i++) {
+  for(int i=380;i<480/*subset.EPICount()*/;i++) {
     if (i % 10 == 0)
       printf("proc epi %d\n", i);
     

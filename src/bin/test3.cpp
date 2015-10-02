@@ -16,6 +16,7 @@
 
 using namespace clif;
 using namespace vigra;
+using namespace openlf;
 using namespace openlf::components;
 
 template<typename T> class save_flexmav {
@@ -25,6 +26,9 @@ void operator()(FlexMAV<2> *img, const char *name)
   exportImage(*img->get<T>(), ImageExportInfo(name));
 }
 };
+
+#define DPPT DspParameter::ParamType
+
 
 int main(const int argc, const char *argv[])
 {
@@ -45,9 +49,11 @@ int main(const int argc, const char *argv[])
   graph.ConnectOutToIn(in, 0, epi, 0);
   graph.ConnectOutToIn(epi, 0, out, 0);
   
-  epi.set(&circuit);
+  //epi.set(&circuit);
   
   //epi.set(&gauss);
+  epi.SetParameter(0, DspParameter(DPPT::Pointer, (OLFCircuit*)&circuit));
+  epi.SetParameter(1, DspParameter(DPPT::String, "st"));
   
   in.SetParameter(0, DspParameter(DspParameter::ParamType::String, argv[1]));
   out.SetParameter(0, DspParameter(DspParameter::ParamType::String, argv[2]));

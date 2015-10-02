@@ -30,20 +30,18 @@
 
 #include "comp_mav.hpp"
 #include "openlf/types.hpp"
+#include "wkf_structuretensor.hpp"
 
 namespace openlf { namespace components {
 
 class COMP_Epi : public DspComponent {
 public:
   COMP_Epi();
-  
-  //TODO discuss:: use method or settings from DSPatch?
-  void set(OLFCircuit *circuit);
 protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 private:  
-  //user provided circuit (which has FlexMAV input and output)
-  OLFCircuit *_epi_circuit = NULL;
+  WKF_StructureTensor _default_epi_circuit;
+  OP_MergeDispByCoherence _default_merge;
 };
 
 }} //namespace openlf::components
