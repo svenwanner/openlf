@@ -17,9 +17,7 @@ file(GLOB srcs src/*.cpp)
 file(GLOB hdrs include/*.h)
 file(GLOB in_hdrs include/dspatch/*.h)
 
-include_directories(
-    ${CMAKE_SOURCE_DIR}/include
-)
+include_directories(include)
 
 # Build shared (LGPL)
 add_library(

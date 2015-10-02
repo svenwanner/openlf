@@ -844,4 +844,9 @@ void DspComponent::_ReleaseThread(int threadNo)
     _releaseMutexes[nextThread].Unlock();
 }
 
+DspComponent* DspComponent::clone()
+{
+  return NULL;
+}
+
 //=================================================================================================

@@ -14,6 +14,10 @@ include_directories(${Boost_INCLUDE_DIR})
 include_directories(${VIGRA_INCLUDE_DIR})
 add_definitions(${HDF5_CPPFLAGS})
 
+add_subdirectory(external/dspatch)
+include_directories(external/dspatch/include)
+include_directories(external/dspatch/include/dspatch)
+
 include_directories(include)
 include_directories(include/openlf)
 include_directories(include/openlf/components)
