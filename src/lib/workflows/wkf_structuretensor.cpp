@@ -35,16 +35,16 @@ namespace openlf {
       AddOutput_("coherence");
       
       //input disparity
-      pInDisp = AddParameterFloat_("input disparity", 0.0);
+      pInDisp = AddParameter_("input disparity", DspParameter(DspParameter::Float, 0.0f));
       
       // add parameter with defaults values
-      pInnerScale = AddParameterFloat_("InnerScale", 0.6);
-      pOuterScale = AddParameterFloat_("OuterScale", 1.0);
-      pMinCoherence = AddParameterFloat_("MinCoherence", 0.5);
+      pInnerScale = AddParameter_("InnerScale", DspParameter(DspParameter::Float, 0.6f));
+      pOuterScale = AddParameter_("OuterScale", DspParameter(DspParameter::Float, 1.0f));
+      pMinCoherence = AddParameter_("MinCoherence", DspParameter(DspParameter::Float, 0.5f));
       
       //vertical blur separate
-      pInnerScaleV = AddParameterFloat_("InnerScaleV", -1.0);
-      pOuterScaleV = AddParameterFloat_("OuterScaleV", -1.0);
+      pInnerScaleV = AddParameter_("InnerScaleV", DspParameter(DspParameter::Float, -1.0f));
+      pOuterScaleV = AddParameter_("OuterScaleV", DspParameter(DspParameter::Float, -1.0f));
       
       setup_component_parameters();
       
@@ -162,7 +162,7 @@ namespace openlf {
       return true;      
     }
     
-    WKF_StructureTensor* WKF_StructureTensor::clone()
+    /*WKF_StructureTensor* WKF_StructureTensor::clone()
     {
       WKF_StructureTensor *dup = new WKF_StructureTensor();
       
@@ -171,5 +171,5 @@ namespace openlf {
         dup->SetParameter(i, *GetParameter(i));
       
       return dup;
-    }
+    }*/
 }} //namespace openlf::components

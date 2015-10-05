@@ -73,6 +73,17 @@ separate thread will spawn, automatically calling Tick() and Reset() methods con
 most commonly used to tick over an instance of DspCircuit).
 */
 
+#define DSPCOMPONENT_TRIVIAL_CLONE(CLASS) \
+virtual auto clone() -> decltype(this) \
+{ \
+  auto dup = new std::remove_pointer<decltype(this)>::type; \
+  \
+  for(int i=0;i<GetParameterCount();i++) \
+    dup->SetParameter(i, *GetParameter(i)); \
+  \
+  return dup; \
+};
+
 class DLLEXPORT DspComponent
 {
 public:

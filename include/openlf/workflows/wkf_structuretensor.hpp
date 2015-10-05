@@ -34,7 +34,7 @@ using namespace openlf::components;
 namespace openlf { 
   namespace components {
     
-    class WKF_StructureTensor : public OLFCircuit {
+    class WKF_StructureTensor : public DspCircuit {
     private:
       
       // declare parameter indices and container
@@ -64,7 +64,8 @@ namespace openlf {
       
     public:
       WKF_StructureTensor();
-      virtual WKF_StructureTensor* clone();
+
+      DSPCOMPONENT_TRIVIAL_CLONE(WKF_StructureTensor)
       
     protected:
       //virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);

@@ -52,7 +52,7 @@ int main(const int argc, const char *argv[])
   //epi.set(&circuit);
   
   //epi.set(&gauss);
-  epi.SetParameter(0, DspParameter(DPPT::Pointer, (OLFCircuit*)&circuit));
+  epi.SetParameter(0, DspParameter(DPPT::Pointer, (DspCircuit*)&circuit));
   epi.SetParameter(1, DspParameter(DPPT::String, "st"));
   
   in.SetParameter(0, DspParameter(DspParameter::ParamType::String, argv[1]));

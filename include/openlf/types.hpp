@@ -12,7 +12,7 @@ public:
   clif::path path;
   //time_t timestamp
 };
-
+/*
 class OLFCircuit : public DspCircuit {
 public:
   //clone must not share resoures - used for threading
@@ -26,7 +26,7 @@ protected:
     int idx = AddParameter_(name, p);
     return idx;
   }
-};
+};*/
 
 }
 

@@ -51,10 +51,10 @@ COMP_Epi::COMP_Epi()
   AddInput_("input");
   AddOutput_("output");
   
-  AddParameter_("epi circuit", DspParameter(DspParameter::ParamType::Pointer, (OLFCircuit*)&_default_epi_circuit));
+  AddParameter_("epi circuit", DspParameter(DspParameter::ParamType::Pointer, (DspCircuit*)&_default_epi_circuit));
   AddParameter_("epi circuit name", DspParameter(DspParameter::ParamType::String, "default"));
   
-  AddParameter_("merge circuit", DspParameter(DspParameter::ParamType::Pointer, (OLFCircuit*)&_default_epi_circuit));
+  AddParameter_("merge circuit", DspParameter(DspParameter::ParamType::Pointer, (DspCircuit*)&_default_epi_circuit));
   AddParameter_("epi circuit name", DspParameter(DspParameter::ParamType::String, "default"));
 }
 
@@ -120,7 +120,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   int t_count = omp_get_max_threads();
 
   const DspParameter *p;
-  OLFCircuit *epi_circuit;
+  DspCircuit *epi_circuit;
   const std::string *epi_name;
   
   p = GetParameter(0);
@@ -145,7 +145,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   epi_circuit->SetParameter(5, DspParameter(DspParameter::ParamType::Float, 27.0f));
   
   //FIXME delete!
-  vector<OLFCircuit*>  epi_circuits(t_count);
+  vector<DspComponent*>  epi_circuits(t_count);
   vector<DspCircuit>   outer_circuit(t_count);
   for(int i=0;i<t_count;i++) {
     epi_circuits[i] = epi_circuit->clone();
