@@ -138,11 +138,11 @@ NAME::NAME()\
   for(int i=0;i<INCOUNT;i++) { \
     sprintf(buf, "input_%d", i); \
     AddInput_(buf); \
-  } \
+  }\
   for(int i=0;i<OUTCOUNT;i++) { \
     sprintf(buf, "output_%d", i); \
     AddOutput_(buf); \
-  } \
+  }\
   OPENLF_OP_CONSTRUCT_PARAMS \
 }\
 \
@@ -150,38 +150,38 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
 {\
   bool stat;\
   FlexMAV<INDIM> *in[INCOUNT];\
-  \
+\
   for(int i=0;i<INCOUNT;i++) { \
     stat = inputs.GetValue(i, in[i]); \
     if (!stat) { \
       printf(#NAME ": input %d not found - possible type mismatch?", i); \
       abort(); \
-    } \
-  } \
-  \
-  FlexMAV<OUTDIM> *out_ptr[OUTCOUNT];\
+    }\
+  }\
+\
+  FlexMAV<OUTDIM> *out_ptr[std::max(1,OUTCOUNT)];\
   for(int i=0;i<OUTCOUNT;i++) { \
     out_ptr[i] = &_output_image[i]; \
     _output_image[i].create(in[0]->shape(), in[0]->type());\
   } \
 \
   in[0]->call<NAME##dispatcher>(this, in, out_ptr, &inputs, &outputs);\
-  \
+\
   for(int i=0;i<OUTCOUNT;i++) { \
     stat = outputs.SetValue(i, out_ptr[i]);\
     if (!stat) { \
       printf(#NAME ": output %d set failed", i); \
       abort(); \
-    } \
-  } \
+    }\
+  }\
 }\
-bool NAME::ParameterUpdating_ (int i, DspParameter const &p) \
-{ \
-  SetParameter_(i, p); \
+bool NAME::ParameterUpdating_ (int i, DspParameter const &p)\
+{\
+  SetParameter_(i, p);\
   return true;\
 }\
-}}      
-      
+}}
+
 #define OPENLF_OP_START_T(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM,OUTCTYPE) \
   namespace openlf { namespace components { \
 \

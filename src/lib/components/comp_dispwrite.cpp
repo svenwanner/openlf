@@ -54,7 +54,7 @@ void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
   for(p[1] = 0; p[1] < h; ++p[1])
     for (p[0] = 0; p[0] < w; ++p[0]) {
       double depth;
-      if (!isnan(disp[p]) && disp[p] > 0) 
+      if (!std::isnan(disp[p]) && disp[p] > 0) 
         point_count++;
     }
   
@@ -72,7 +72,7 @@ void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
   for(p[1] = 0; p[1] < h; ++p[1])
     for (p[0] = 0; p[0] < w; ++p[0]) {
       double depth;
-      if (isnan(disp[p]) || disp[p] <= 0)
+      if (std::isnan(disp[p]) || disp[p] <= 0)
         depth = -1;
       else
         depth = subset.disparity2depth(disp[p]);
@@ -90,7 +90,7 @@ void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
           
       }
     }
-    if (isnan(disp[p]) || disp[p] <= 0)
+    if (std::isnan(disp[p]) || disp[p] <= 0)
   fprintf(pointfile,"\n");
   fclose(pointfile);
 }
@@ -100,11 +100,11 @@ void write_obj(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
 {
   int v_idx = 1;
   
-  int w = disp.shape(0);
-  int h = disp.shape(1);
+  const int w = disp.shape(0);
+  const int h = disp.shape(1);
   
-  int buf1[w];
-  int buf2[w];
+  int *buf1 = new int[w];
+  int *buf2 = new int[w];
   int *valid = buf1;
   int *valid_last = buf2;
   int *valid_tmp;
@@ -124,7 +124,7 @@ void write_obj(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
     valid = valid_tmp;
     
     for(p[0]=0;p[0]<w;++p[0]) {
-      if (isnan(disp[p]) || disp[p] <= 0)
+      if (std::isnan(disp[p]) || disp[p] <= 0)
         valid[p[0]] = 0;
       else {
         valid[p[0]] = v_idx;
@@ -155,6 +155,8 @@ void write_obj(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
       }
     }
   }
+  delete buf1;
+  delete buf2;
   fprintf(pointfile,"\n");
   fclose(pointfile);
 }
