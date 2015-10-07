@@ -45,7 +45,6 @@ add_subdirectory(src/lib/components)
 add_subdirectory(src/lib/workflows)
 add_subdirectory(src/lib/operators)
 
-
 add_executable(teststuff src/bin/test.cpp)
 add_executable(teststuff2 src/bin/test2.cpp)
 add_executable(teststuff3 src/bin/test3.cpp)
