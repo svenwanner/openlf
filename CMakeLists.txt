@@ -23,6 +23,7 @@ find_package(OpenCV REQUIRED)
 find_package(clif REQUIRED)
 find_package(Boost COMPONENTS filesystem system REQUIRED)
 
+
 include_directories(${OPENCV_INCLUDE_DIR})
 include_directories(${HDF5_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIR})
@@ -46,9 +47,9 @@ add_subdirectory(src/lib/operators)
 
 
 add_executable(teststuff src/bin/test.cpp)
-#add_executable(teststuff2 src/bin/test2.cpp)
-#add_executable(teststuff3 src/bin/test3.cpp)
+add_executable(teststuff2 src/bin/test2.cpp)
+add_executable(teststuff3 src/bin/test3.cpp)
 
 target_link_libraries(teststuff  vigraimpex DSPatch ${CLIF_LIBRARIES} ${Boost_LIBRARIES} ${HDF5_CPP_LIBRARY} ${HDF5_LIBRARIES} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY} openlf_workflows  openlf_components  openlf_operators)
-#target_link_libraries(teststuff2 vigraimpex DSPatch ${CLIF_LIBRARIES} ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY} openlf_workflows  openlf_components  openlf_operators)
-#target_link_libraries(teststuff3 vigraimpex DSPatch clif cliini clif_vigra ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY} openlf_operators openlf_workflows openlf_components)
+target_link_libraries(teststuff2 vigraimpex DSPatch ${CLIF_LIBRARIES} ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY} openlf_workflows  openlf_components  openlf_operators)
+target_link_libraries(teststuff3 vigraimpex DSPatch ${CLIF_LIBRARIES} ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY} openlf_operators openlf_workflows openlf_components)
