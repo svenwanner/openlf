@@ -114,6 +114,43 @@ void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4>
 }
 };
 
+void component_apply_config(DspComponent *comp, LF *config, std::string parent)
+{
+  if (!config || !config->data)
+    return;
+  
+  path config_path = path("openlf") / parent / comp->GetComponentName();
+  
+  if (config && config->data) {
+    
+    for(uint i=0;i<comp->GetParameterCount();i++) {
+      double val;
+      Attribute *attr;
+      const DspParameter *param = comp->GetParameter(i);
+      path param_path;
+      
+      if (param->Type() != DPPT::Float) {
+        printf("FIXME: non-float parameter not yet handled (comp_epi)\n");
+        continue;
+      }
+      
+      param_path = config_path / comp->GetParameterName(i);
+      
+      attr = config->data->getMatch(param_path);
+      if (attr) {        
+        if (attr->type != BaseType::STRING) {
+          printf("FIXME: only string inputs supported atm. (comp_epi)\n");
+          continue;
+        }
+        
+        float val = atof(attr->getStr());
+        comp->SetParameter(i, DspParameter(DPPT::Float, val));
+        printf("DEBUG: set %s to %f\n", param_path.c_str(), val);
+      }
+    }
+  }
+}
+
 void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   LF *in = NULL;
@@ -163,6 +200,8 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   assert(p);
   epi_name = p->GetString();
   
+  epi_circuit->SetComponentName(*epi_name);
+  
   
   vector<FlexMAVSource<3>> comp_source(t_count);
   vector<FlexMAVSink<3>>   comp_sink(t_count);
@@ -176,7 +215,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   path config_path = path("openlf") / GetComponentName();
   path config_path_epi_circuit = config_path / *GetParameterString((int)P_IDX::Epi_Circuit_Name);
   
-  if (config && config->data) {
+  component_apply_config(epi_circuit, config, GetComponentName());
+  
+  /*if (config && config->data) {
     
     for(uint i=0;i<epi_circuit->GetParameterCount();i++) {
       double val;
@@ -205,7 +246,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         printf("set %f\n", val);
       }
     }
-  }
+  }*/
   
   //FIXME delete!
   vector<DspComponent*>  epi_circuits(t_count);
@@ -232,7 +273,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   FlexMAV<3> *sink_mav;
       
   #pragma omp parallel for private(sink_mav)
-  for(int i=300;i<650/*subset.EPICount()*/;i++) {
+  for(int i=380;i<450/*subset.EPICount()*/;i++) {
     if (i % 10 == 0)
       printf("proc epi %d\n", i);
     
