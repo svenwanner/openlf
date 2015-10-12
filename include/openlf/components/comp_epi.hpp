@@ -42,6 +42,8 @@ protected:
 private:  
   WKF_StructureTensor _default_epi_circuit;
   OP_MergeDispByCoherence _default_merge;
+  
+  template<typename T> void openlf_add_param(const char *name, T val, DspParameter::ParamType type, int idx);
 };
 
 }} //namespace openlf::components

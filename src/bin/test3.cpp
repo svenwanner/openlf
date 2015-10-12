@@ -37,6 +37,7 @@ int main(const int argc, const char *argv[])
   DspCircuit graph;
   
   COMP_LFRead in;
+  COMP_LFRead config;
   COMP_DispWrite out;
   COMP_Epi epi;
   
@@ -44,9 +45,11 @@ int main(const int argc, const char *argv[])
   WKF_StructureTensor circuit;
   
   graph.AddComponent(in, "in");
+  graph.AddComponent(config, "config");
   graph.AddComponent(out, "out");
   graph.AddComponent(epi, "epi");
   graph.ConnectOutToIn(in, 0, epi, 0);
+  graph.ConnectOutToIn(config, 0, epi, 1);
   graph.ConnectOutToIn(epi, 0, out, 0);
   
   //epi.set(&circuit);
@@ -56,6 +59,7 @@ int main(const int argc, const char *argv[])
   epi.SetParameter(1, DspParameter(DPPT::String, "st"));
   
   in.SetParameter(0, DspParameter(DspParameter::ParamType::String, argv[1]));
+  config.SetParameter(0, DspParameter(DspParameter::ParamType::String, "config.ini"));
   out.SetParameter(0, DspParameter(DspParameter::ParamType::String, argv[2]));
   
   graph.Tick();

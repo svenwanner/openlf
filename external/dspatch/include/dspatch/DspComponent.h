@@ -137,6 +137,8 @@ public:
     bool GetParameter(int index, DspParameter& param);
     DspParameter const* GetParameter(int index);
     bool SetParameter(int index, DspParameter const& param);
+    
+    std::string const* GetParameterString(int index);
 
     void Tick();
     void Reset();

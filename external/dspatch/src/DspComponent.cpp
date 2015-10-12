@@ -255,6 +255,22 @@ DspParameter const* DspComponent::GetParameter(int index)
     return result;
 }
 
+std::string const* DspComponent::GetParameterString(int index)
+{
+    std::string const *str;
+  
+    PauseAutoTick();
+    DspParameter const* result = GetParameter_(index);
+    ResumeAutoTick();
+    
+    if (!result)
+      return NULL;
+    
+    str = result->GetString();
+    
+    return str;
+}
+
 //-------------------------------------------------------------------------------------------------
 
 bool DspComponent::SetParameter(int index, DspParameter const& param)
