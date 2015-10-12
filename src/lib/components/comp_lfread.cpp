@@ -61,25 +61,35 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   assert(out);
   assert(filename->size());
   
-  //FIXME error handling
-  ClifFile f(*filename, H5F_ACC_RDONLY);
-  
-  //FIXME error handling
-  if (dataset_name)
-    out->data = f.openDataset(*dataset_name);
-  else
-    out->data = f.openDataset();
-  
-  assert(out->data->Datastore::valid());
-  
-  cv::Mat img;
-  readCvMat(out->data, 0, img);
-  
-  printf("lfread out data: %p store id %d\n", out->data, out->data->H5DataSet().getId());
-  Subset3d *subset = new Subset3d(out->data, 0);
-  printf("%d\n", subset->EPICount()); 
-  
-  out->path = path();
+  //FIXME move ini/clif handling decision into dataset class!
+  if (!strcmp(path(*filename).extension().c_str(), ".ini")) {
+    out->data = new Dataset();
+    
+    out->data->Attributes::open(filename->c_str(), NULL);
+    out->path = std::string();
+  }
+  else {
+    //FIXME error handling
+    ClifFile f(*filename, H5F_ACC_RDONLY);
+    
+    //FIXME error handling
+    if (dataset_name)
+      out->data = f.openDataset(*dataset_name);
+    else
+      out->data = f.openDataset();
+    
+    assert(out->data->Datastore::valid());
+    
+    //cv::Mat img;
+    //readCvMat(out->data, 0, img);
+    
+    printf("lfread out data: %p store id %d\n", out->data, out->data->H5DataSet().getId());
+    Subset3d *subset = new Subset3d(out->data, 0);
+    printf("%d\n", subset->EPICount()); 
+    
+    //TODO dataset name
+    out->path = path();
+  }
 }
 
 bool COMP_LFRead::ParameterUpdating_ (int i, DspParameter const &p)

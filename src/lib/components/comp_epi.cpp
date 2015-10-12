@@ -34,6 +34,8 @@ using namespace clif;
 using namespace vigra;
 using namespace std;
 
+#define DPPT DspParameter::ParamType
+
 template<typename T> class save_flexmav3 {
 public:
 void operator()(FlexMAV<3> *img, const char *name)
@@ -46,12 +48,39 @@ void operator()(FlexMAV<3> *img, const char *name)
 
 namespace openlf { namespace components {
   
+namespace {
+  enum class P_IDX : int {Epi_Circuit,Epi_Circuit_Name,Merge_Circuit,Merge_Circuit_Name};
+}
+
+/*#define OPENLF_P_ADD(IDX,NAME,TYPE,VALUE) \
+  { \
+  int i; \
+  i = AddParameter_(NAME, DspParameter(DspParameter::ParamType:: TYPE, VALUE); \
+  assert(i = (int)IDX); \
+  }*/
+
+/*template<typename T> void openlf_add_param(const char *name, T val, DPPT type, int idx)
+{
+  int i;
+  i = AddParameter_(name, DspParameter(type, val));
+  assert(i = (int)idx);
+}*/
+
+template<typename T> void COMP_Epi::openlf_add_param(const char *name, T val, DspParameter::ParamType type, int idx)
+{
+  int i;
+  i = AddParameter_(name, DspParameter(type, val));
+  assert(i == idx);
+}
+  
 COMP_Epi::COMP_Epi()
 {
   AddInput_("input");
+  AddInput_("config");
   AddOutput_("output");
   
-  AddParameter_("epi circuit", DspParameter(DspParameter::ParamType::Pointer, (DspCircuit*)&_default_epi_circuit));
+  //AddParameter_("epi circuit", DspParameter(DspParameter::ParamType::Pointer, (DspCircuit*)&_default_epi_circuit));
+  openlf_add_param("epi circuit", (DspCircuit*)&_default_epi_circuit, DPPT::Pointer, (int)P_IDX::Epi_Circuit);
   AddParameter_("epi circuit name", DspParameter(DspParameter::ParamType::String, "default"));
   
   AddParameter_("merge circuit", DspParameter(DspParameter::ParamType::Pointer, (DspCircuit*)&_default_epi_circuit));
@@ -88,9 +117,12 @@ void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4>
 void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   LF *in = NULL;
+  LF *config = NULL;
   LF *out = NULL;
   
   assert(inputs.GetValue(0, in));
+  
+  inputs.GetValue(1, config);
   
   out = new LF();
   out->data = new Dataset();
@@ -141,8 +173,39 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
  // epi_circuit->SetParameter(1, DspParameter(DspParameter::ParamType::Float, 0.0f));
   
-  epi_circuit->SetParameter(2, DspParameter(DspParameter::ParamType::Float, 1.0f));
-  epi_circuit->SetParameter(5, DspParameter(DspParameter::ParamType::Float, 27.0f));
+  path config_path = path("openlf") / GetComponentName();
+  path config_path_epi_circuit = config_path / *GetParameterString((int)P_IDX::Epi_Circuit_Name);
+  
+  if (config && config->data) {
+    
+    for(uint i=0;i<epi_circuit->GetParameterCount();i++) {
+      double val;
+      Attribute *attr;
+      const DspParameter *param = epi_circuit->GetParameter(i);
+      path param_path;
+      
+      if (param->Type() != DPPT::Float) {
+        printf("FIXME: non-float parameter not yet handled (comp_epi)\n");
+        continue;
+      }
+      
+      param_path = config_path_epi_circuit / epi_circuit->GetParameterName(i);
+      
+      printf("searching config for %s\n", param_path.c_str());
+      
+      attr = config->data->getMatch(param_path);
+      if (attr) {
+        if (attr->type != BaseType::STRING) {
+          printf("FIXME: only string inputs supported atm. (comp_epi)\n");
+          continue;
+        }
+        
+        float val = atof(attr->getStr());
+        epi_circuit->SetParameter(i, DspParameter(DPPT::Float, val));
+        printf("set %f\n", val);
+      }
+    }
+  }
   
   //FIXME delete!
   vector<DspComponent*>  epi_circuits(t_count);
@@ -169,7 +232,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   FlexMAV<3> *sink_mav;
       
   #pragma omp parallel for private(sink_mav)
-  for(int i=380;i<480/*subset.EPICount()*/;i++) {
+  for(int i=300;i<650/*subset.EPICount()*/;i++) {
     if (i % 10 == 0)
       printf("proc epi %d\n", i);
     
