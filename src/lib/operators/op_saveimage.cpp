@@ -29,7 +29,7 @@
 #define OPENLF_OP_CONSTRUCT_PARAMS \
     AddParameter_("filename", DspParameter(DspParameter::ParamType::String, "")); \
 
-OPENLF_OP_START(OP_SaveImage, 1, 0, 3, 3)   
+OPENLF_OP_START(OP_SaveImage, 1, 1, 3, 3)   
         
     
     if (in[0]->shape()[2] == 1) {
@@ -96,4 +96,4 @@ OPENLF_OP_START(OP_SaveImage, 1, 0, 3, 3)
         exportImage(out_im, *op->GetParameter(0)->GetString());
     }
     
-OPENLF_OP_END(OP_SaveImage, 1, 0, 3, 3)
+OPENLF_OP_END(OP_SaveImage, 1, 1, 3, 3)

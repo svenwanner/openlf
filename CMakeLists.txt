@@ -12,9 +12,10 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   # using Visual Studio C++
   message("use msvc")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ox /openmp")
-  set(CLIF_INCLUDE_DIR "D:/libs/include" CACHE PATH "Include path for external libraries")
+  #set(CLIF_INCLUDE_DIR "D:/libs/include" CACHE PATH "Include path for external libraries")
   include_directories(${LIBS_INCLUDE_DIR})
-  set (EXTRA_LIBS ${EXTRA_LIBS} "D:/libs/include")  #see parameter list here https://cmake.org/pipermail/cmake/2006-July/010189.html
+  #set (EXTRA_LIBS ${EXTRA_LIBS} "D:/libs/include")  #see parameter list here https://cmake.org/pipermail/cmake/2006-July/010189.html
+  add_definitions(-DOPENLF_COMPILER_MSVC)
 endif()
 
 find_package(HDF5 REQUIRED CXX)
@@ -30,6 +31,8 @@ include_directories(${HDF5_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${VIGRA_INCLUDE_DIR})
 include_directories(${CLIF_INCLUDE_DIRS})
+
+message("(${CLIF_INCLUDE_DIRS}")
 
 link_directories(${CLIF_LIBRARY_DIRS})
 
@@ -50,6 +53,14 @@ add_subdirectory(src/lib/operators)
 add_executable(teststuff src/bin/test.cpp)
 add_executable(teststuff2 src/bin/test2.cpp)
 add_executable(teststuff3 src/bin/test3.cpp)
+
+message("${CLIF_LIBRARIES}")
+message("${Boost_LIBRARIES}")
+message("${HDF5_CPP_LIBRARY}")
+message("${HDF5_LIBRARIES}")
+message("${OpenCV_LIBRARIES}")
+message("${VIGRA_IMPEX_LIBRARY}")
+
 
 target_link_libraries(teststuff  vigraimpex DSPatch ${CLIF_LIBRARIES} ${Boost_LIBRARIES} ${HDF5_CPP_LIBRARY} ${HDF5_LIBRARIES} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY} openlf_workflows  openlf_components  openlf_operators)
 target_link_libraries(teststuff2 vigraimpex DSPatch ${CLIF_LIBRARIES} ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY} openlf_workflows  openlf_components  openlf_operators)

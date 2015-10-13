@@ -117,7 +117,8 @@ namespace openlf {
    * Operator builds a tensor from incoming channel slots (channel 0 called x, channel 1 called y)
    * Output are 3 channels [xx, xy, yy] 
    */
-  OPENLF_OP_CLASS_HEADER(OP_SaveImage, 1, 0, 3, 3)
+  //FIXME zero output count not working (MSVC)
+  OPENLF_OP_CLASS_HEADER(OP_SaveImage, 1, 1, 3, 3)
   //============================================================================
   
   

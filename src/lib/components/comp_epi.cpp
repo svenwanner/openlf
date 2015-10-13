@@ -182,7 +182,7 @@ void get_non_nan_float_param(DspComponent *comp, float &val, int idx)
   
   printf("got %f copm %p\n", tmp, comp);
   
-  if (isnan(tmp))
+  if (std::isnan(tmp))
     return;
   
   val = tmp;

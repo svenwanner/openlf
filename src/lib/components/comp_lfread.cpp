@@ -62,7 +62,7 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   assert(filename->size());
   
   //FIXME move ini/clif handling decision into dataset class!
-  if (!strcmp(path(*filename).extension().c_str(), ".ini")) {
+  if (!strcmp(path(*filename).extension().generic_string().c_str(), ".ini")) {
     out->data = new Dataset();
     
     out->data->Attributes::open(filename->c_str(), NULL);

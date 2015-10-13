@@ -74,9 +74,9 @@ most commonly used to tick over an instance of DspCircuit).
 */
 
 #define DSPCOMPONENT_TRIVIAL_CLONE(CLASS) \
-virtual auto clone() -> decltype(this) \
+virtual DspComponent* clone() \
 { \
-  auto dup = new std::remove_pointer<decltype(this)>::type; \
+  auto dup = new CLASS(); \
   \
   for(int i=0;i<GetParameterCount();i++) \
     dup->SetParameter(i, *GetParameter(i)); \
