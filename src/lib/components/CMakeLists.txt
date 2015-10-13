@@ -1,2 +1,2 @@
-add_library(openlf_components SHARED comp_lfread.cpp comp_lfwrite.cpp comp_epi.cpp comp_dispwrite.cpp)
+add_library(openlf_components comp_lfread.cpp comp_lfwrite.cpp comp_epi.cpp comp_dispwrite.cpp)
 target_link_libraries(openlf_components clif cliini clif_vigra DSPatch ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
