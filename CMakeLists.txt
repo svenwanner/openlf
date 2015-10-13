@@ -23,13 +23,15 @@ find_package(OpenCV REQUIRED)
 find_package(clif REQUIRED)
 find_package(Boost COMPONENTS filesystem system REQUIRED)
 
+add_definitions(${HDF5_CPPFLAGS})
 
 include_directories(${OPENCV_INCLUDE_DIR})
 include_directories(${HDF5_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${VIGRA_INCLUDE_DIR})
 include_directories(${CLIF_INCLUDE_DIRS})
-add_definitions(${HDF5_CPPFLAGS})
+
+link_directories(${CLIF_LIBRARY_DIRS})
 
 add_subdirectory(external/dspatch)
 include_directories(external/dspatch/include)
