@@ -41,9 +41,10 @@ protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 private:  
   WKF_StructureTensor _default_epi_circuit;
-  OP_MergeDispByCoherence _default_merge;
+  OP_MergeDispByCoherence _default_merge_circuit;
   
   template<typename T> void openlf_add_param(const char *name, T val, DspParameter::ParamType type, int idx);
+  bool ParameterUpdating_(int index, const DspParameter& param);
 };
 
 }} //namespace openlf::components

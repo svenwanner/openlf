@@ -35,6 +35,7 @@
     class NAME : public DspComponent { \
         public: \
             NAME(); \
+            DSPCOMPONENT_TRIVIAL_CLONE(NAME); \
         protected: \
           virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs); \
           virtual bool ParameterUpdating_ (int i, DspParameter const &p); \
@@ -99,6 +100,7 @@ bool NAME::ParameterUpdating_ (int i, DspParameter const &p) \
 class NAME : public DspComponent { \
     public: \
         NAME(); \
+        DSPCOMPONENT_TRIVIAL_CLONE(NAME); \
     protected: \
       virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs); \
       virtual bool ParameterUpdating_ (int i, DspParameter const &p); \

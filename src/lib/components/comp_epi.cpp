@@ -49,22 +49,8 @@ void operator()(FlexMAV<3> *img, const char *name)
 namespace openlf { namespace components {
   
 namespace {
-  enum class P_IDX : int {Epi_Circuit,Epi_Circuit_Name,Merge_Circuit,Merge_Circuit_Name};
+  enum class P_IDX : int {Epi_Circuit,Merge_Circuit,DispStart,DispStop,DispStep};
 }
-
-/*#define OPENLF_P_ADD(IDX,NAME,TYPE,VALUE) \
-  { \
-  int i; \
-  i = AddParameter_(NAME, DspParameter(DspParameter::ParamType:: TYPE, VALUE); \
-  assert(i = (int)IDX); \
-  }*/
-
-/*template<typename T> void openlf_add_param(const char *name, T val, DPPT type, int idx)
-{
-  int i;
-  i = AddParameter_(name, DspParameter(type, val));
-  assert(i = (int)idx);
-}*/
 
 template<typename T> void COMP_Epi::openlf_add_param(const char *name, T val, DspParameter::ParamType type, int idx)
 {
@@ -79,12 +65,12 @@ COMP_Epi::COMP_Epi()
   AddInput_("config");
   AddOutput_("output");
   
-  //AddParameter_("epi circuit", DspParameter(DspParameter::ParamType::Pointer, (DspCircuit*)&_default_epi_circuit));
   openlf_add_param("epi circuit", (DspCircuit*)&_default_epi_circuit, DPPT::Pointer, (int)P_IDX::Epi_Circuit);
-  AddParameter_("epi circuit name", DspParameter(DspParameter::ParamType::String, "default"));
+  openlf_add_param("merge circuit", (DspCircuit*)&_default_merge_circuit, DPPT::Pointer, (int)P_IDX::Merge_Circuit);
   
-  AddParameter_("merge circuit", DspParameter(DspParameter::ParamType::Pointer, (DspCircuit*)&_default_epi_circuit));
-  AddParameter_("epi circuit name", DspParameter(DspParameter::ParamType::String, "default"));
+  openlf_add_param("DispStart", std::numeric_limits<float>::quiet_NaN(), DPPT::Float, (int)P_IDX::DispStart);
+  openlf_add_param("DispStop", std::numeric_limits<float>::quiet_NaN(), DPPT::Float, (int)P_IDX::DispStop);
+  openlf_add_param("DispStep", std::numeric_limits<float>::quiet_NaN(), DPPT::Float, (int)P_IDX::DispStep);
 }
 
 template<typename T> class save_flexmav {
@@ -114,13 +100,8 @@ void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4>
 }
 };
 
-void component_apply_config(DspComponent *comp, LF *config, std::string parent)
+void component_apply_config_path(DspComponent *comp, LF *config, path config_path)
 {
-  if (!config || !config->data)
-    return;
-  
-  path config_path = path("openlf") / parent / comp->GetComponentName();
-  
   if (config && config->data) {
     
     for(uint i=0;i<comp->GetParameterCount();i++) {
@@ -145,10 +126,66 @@ void component_apply_config(DspComponent *comp, LF *config, std::string parent)
         
         float val = atof(attr->getStr());
         comp->SetParameter(i, DspParameter(DPPT::Float, val));
-        printf("DEBUG: set %s to %f\n", param_path.c_str(), val);
+        printf("DEBUG: set comp %p %d %s to %f\n", comp, i, param_path.c_str(), val);
       }
+      else
+        printf("no match for %s\n", param_path.c_str());
     }
   }
+}
+
+
+void component_child_apply_config(DspComponent *comp, LF *config, std::string parent)
+{
+  path config_path;
+  std::string name = comp->GetComponentName();
+  
+  if (!parent.size())
+    parent = "default";
+  
+  if (!name.size())
+    name = "default";
+  
+  component_apply_config_path(comp, config, path("openlf") / parent / name);
+}
+
+void component_apply_config(DspComponent *comp, LF *config)
+{
+  path config_path;
+  std::string name = comp->GetComponentName();
+  
+  if (!name.size())
+    name = "default";
+  
+  component_apply_config_path(comp, config, path("openlf") / name);
+}
+
+std::string GetComponentNameDefault(DspComponent *comp, std::string default_name)
+{
+  std::string name = comp->GetComponentName();
+  
+  if (!name.size())
+    return default_name;
+  
+  return name;
+}
+
+void get_non_nan_float_param(DspComponent *comp, float &val, int idx)
+{
+  float tmp;
+  const DspParameter *p = comp->GetParameter(idx);
+
+  if (!p)
+    return;
+  
+  tmp = *p->GetFloat();
+  
+  printf("got %f copm %p\n", tmp, comp);
+  
+  if (isnan(tmp))
+    return;
+  
+  val = tmp;
 }
 
 void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
@@ -184,88 +221,60 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   float scale = 1.0;
   
+  float disp_start = 3.0, disp_stop = 7.0, disp_step = 1.0;
+  
   //setup circuit and threading
   
   int t_count = omp_get_max_threads();
 
   const DspParameter *p;
   DspCircuit *epi_circuit;
-  const std::string *epi_name;
+  DspCircuit *merge_circuit;
   
-  p = GetParameter(0);
+  p = GetParameter((int)P_IDX::Epi_Circuit);
   assert(p);
   p->GetPointer(epi_circuit);
   
-  p = GetParameter(1);
+  p = GetParameter((int)P_IDX::Merge_Circuit);
   assert(p);
-  epi_name = p->GetString();
-  
-  epi_circuit->SetComponentName(*epi_name);
-  
+  p->GetPointer(merge_circuit);
   
   vector<FlexMAVSource<3>> comp_source(t_count);
   vector<FlexMAVSink<3>>   comp_sink(t_count);
   vector<clif::FlexMAV<3>> mav_source(t_count);
-  vector<OP_MergeDispByCoherence> merge(t_count);
   
-  //epi_circuit->SetParameter(3, DspParameter(DspParameter::ParamType::Float, 0.95f));
+  component_child_apply_config(epi_circuit, config, GetComponentName());
+  component_child_apply_config(merge_circuit, config, GetComponentName());
+  component_apply_config(this, config);
   
- // epi_circuit->SetParameter(1, DspParameter(DspParameter::ParamType::Float, 0.0f));
+  get_non_nan_float_param(this, disp_start, (int)P_IDX::DispStart);
+  get_non_nan_float_param(this, disp_step, (int)P_IDX::DispStep);
+  get_non_nan_float_param(this, disp_stop, (int)P_IDX::DispStop);
   
-  path config_path = path("openlf") / GetComponentName();
-  path config_path_epi_circuit = config_path / *GetParameterString((int)P_IDX::Epi_Circuit_Name);
-  
-  component_apply_config(epi_circuit, config, GetComponentName());
-  
-  /*if (config && config->data) {
-    
-    for(uint i=0;i<epi_circuit->GetParameterCount();i++) {
-      double val;
-      Attribute *attr;
-      const DspParameter *param = epi_circuit->GetParameter(i);
-      path param_path;
-      
-      if (param->Type() != DPPT::Float) {
-        printf("FIXME: non-float parameter not yet handled (comp_epi)\n");
-        continue;
-      }
-      
-      param_path = config_path_epi_circuit / epi_circuit->GetParameterName(i);
-      
-      printf("searching config for %s\n", param_path.c_str());
-      
-      attr = config->data->getMatch(param_path);
-      if (attr) {
-        if (attr->type != BaseType::STRING) {
-          printf("FIXME: only string inputs supported atm. (comp_epi)\n");
-          continue;
-        }
-        
-        float val = atof(attr->getStr());
-        epi_circuit->SetParameter(i, DspParameter(DPPT::Float, val));
-        printf("set %f\n", val);
-      }
-    }
-  }*/
+  printf("%f %f %f\n", disp_start, disp_step, disp_stop);
   
   //FIXME delete!
   vector<DspComponent*>  epi_circuits(t_count);
+  vector<DspComponent*>  merge_circuits(t_count);
   vector<DspCircuit>   outer_circuit(t_count);
   for(int i=0;i<t_count;i++) {
     epi_circuits[i] = epi_circuit->clone();
+    merge_circuits[i] = merge_circuit->clone();
+    assert(epi_circuits[i]);
+    assert(merge_circuits[i]);
     
     outer_circuit[i].AddComponent(comp_source[i], "source");
     outer_circuit[i].AddComponent(epi_circuits[i], "epi");  
     outer_circuit[i].AddComponent(comp_sink[i], "sink");
     //temp
-    outer_circuit[i].AddComponent(merge[i], "merge");  
+    outer_circuit[i].AddComponent(merge_circuits[i], "merge");  
     
     outer_circuit[i].ConnectOutToIn(comp_source[i], 0, epi_circuits[i], 0);
     //temp
     //outer_circuit[i].ConnectOutToIn(epi_circuits[i], 0, comp_sink[i], 0);
-    outer_circuit[i].ConnectOutToIn(epi_circuits[i], 0, merge[i], 0);
-    outer_circuit[i].ConnectOutToIn(epi_circuits[i], 1, merge[i], 1);
-    outer_circuit[i].ConnectOutToIn(merge[i], 0, comp_sink[i], 0);
+    outer_circuit[i].ConnectOutToIn(epi_circuits[i], 0, merge_circuits[i], 0);
+    outer_circuit[i].ConnectOutToIn(epi_circuits[i], 1, merge_circuits[i], 1);
+    outer_circuit[i].ConnectOutToIn(merge_circuits[i], 0, comp_sink[i], 0);
     
     comp_source[i].set(&mav_source[i]);
   }
@@ -277,9 +286,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     if (i % 10 == 0)
       printf("proc epi %d\n", i);
     
-    merge[omp_get_thread_num()].SetParameter(0, DspParameter(DspParameter::ParamType::Bool, true));
+    merge_circuits[omp_get_thread_num()]->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, true));
     
-    for(float d=3.0f;d<=7.0f;d+=1.0f) {
+    for(float d=disp_start;d<=disp_stop;d+=disp_step) {
       epi_circuits[omp_get_thread_num()]->SetParameter(0, DspParameter(DspParameter::ParamType::Float, d));
       
       #pragma omp critical
@@ -289,7 +298,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
       outer_circuit[omp_get_thread_num()].Tick();
       outer_circuit[omp_get_thread_num()].Reset();
       
-      merge[omp_get_thread_num()].SetParameter(0, DspParameter(DspParameter::ParamType::Bool, false));
+      merge_circuits[omp_get_thread_num()]->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, false));
     }
     
     sink_mav = comp_sink[omp_get_thread_num()].get();
@@ -332,6 +341,14 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   disp_store->write(datastore);
   
   delete disp_store;
+}
+
+bool COMP_Epi::ParameterUpdating_(int index, const DspParameter& param)
+{  
+  //just store parameter 
+  SetParameter_(index, param);
+  
+  return true;      
 }
 
 }} //namespace openlf::components
