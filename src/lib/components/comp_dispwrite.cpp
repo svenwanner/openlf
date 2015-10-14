@@ -197,8 +197,8 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //centerview, channel 0
   MultiArrayView<2,float> centerview = disp.get<float>()->bindAt(3,0).bindAt(2,disp.shape()[2]/2);
   
-  write_ply("debug.ply", centerview, img, subset);
-  write_obj("debug.obj", centerview, img, subset);
+  //write_ply("debug.ply", centerview, img, subset);
+  //write_obj("debug.obj", centerview, img, subset);
   
   /*FILE *pointfile = fopen("debug.ply", "w");
   

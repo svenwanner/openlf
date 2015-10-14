@@ -49,7 +49,7 @@ void operator()(FlexMAV<3> *img, const char *name)
 namespace openlf { namespace components {
   
 namespace {
-  enum class P_IDX : int {Epi_Circuit,Merge_Circuit,DispStart,DispStop,DispStep};
+  enum class P_IDX : int {Epi_Circuit,Merge_Circuit,DispStart,DispStop,DispStep,StartLine,StopLine};
 }
 
 template<typename T> void COMP_Epi::openlf_add_param(const char *name, T val, DspParameter::ParamType type, int idx)
@@ -71,6 +71,9 @@ COMP_Epi::COMP_Epi()
   openlf_add_param("DispStart", std::numeric_limits<float>::quiet_NaN(), DPPT::Float, (int)P_IDX::DispStart);
   openlf_add_param("DispStop", std::numeric_limits<float>::quiet_NaN(), DPPT::Float, (int)P_IDX::DispStop);
   openlf_add_param("DispStep", std::numeric_limits<float>::quiet_NaN(), DPPT::Float, (int)P_IDX::DispStep);
+  
+  openlf_add_param("StartLine", std::numeric_limits<float>::quiet_NaN(), DPPT::Float, (int)P_IDX::StartLine);
+  openlf_add_param("StopLine", std::numeric_limits<float>::quiet_NaN(), DPPT::Float, (int)P_IDX::StopLine);
 }
 
 template<typename T> class save_flexmav {
@@ -89,7 +92,7 @@ void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4>
     MultiArrayView<2,T> sink = sink_mav->get<T>()->bindAt(2, c);
     MultiArrayView<3,T> store = disp_store->get<T>()->bindAt(3, c);
     
-    for(int i=epi_h/2;i<epi_h/2+1;i++) {
+    for(int i=0;i<epi_h;i++) {
       //bind store y to epi line
       MultiArrayView<2,T> epi = store.bindAt(1, line);
       epi = sink;
@@ -170,7 +173,7 @@ std::string GetComponentNameDefault(DspComponent *comp, std::string default_name
   return name;
 }
 
-void get_non_nan_float_param(DspComponent *comp, float &val, int idx)
+template<typename T> void get_non_nan_float_param(DspComponent *comp, T &val, int idx)
 {
   float tmp;
   const DspParameter *p = comp->GetParameter(idx);
@@ -225,6 +228,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   float scale = 1.0;
   
   float disp_start = 3.0, disp_stop = 7.0, disp_step = 1.0;
+  int start_line = 0, stop_line = subset.EPICount();
   
   //setup circuit and threading
   
@@ -253,6 +257,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   get_non_nan_float_param(this, disp_start, (int)P_IDX::DispStart);
   get_non_nan_float_param(this, disp_step, (int)P_IDX::DispStep);
   get_non_nan_float_param(this, disp_stop, (int)P_IDX::DispStop);
+  
+  get_non_nan_float_param(this, start_line, (int)P_IDX::StartLine);
+  get_non_nan_float_param(this, stop_line, (int)P_IDX::StopLine);
   
   printf("%f %f %f\n", disp_start, disp_step, disp_stop);
   
@@ -285,7 +292,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   FlexMAV<3> *sink_mav;
       
   #pragma omp parallel for private(sink_mav)
-  for(int i=0;i<subset.EPICount();i++) {
+  for(int i=start_line;i<stop_line;i++) {
     if (i % 10 == 0)
       printf("proc epi %d\n", i);
     
