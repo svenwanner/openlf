@@ -193,8 +193,11 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   LF *in = NULL;
   LF *config = NULL;
   LF *out = NULL;
+  bool res;
   
   assert(inputs.GetValue(0, in));
+  res = inputs.GetValue(0, in);
+  assert(res);
   
   inputs.GetValue(1, config);
   
