@@ -61,6 +61,13 @@ template<typename T> void COMP_Epi::openlf_add_param(const char *name, T val, Ds
   i = AddParameter_(name, DspParameter(type, val));
   assert(i == idx);
 }
+
+void COMP_Epi::openlf_add_param(const char *name, DspParameter::ParamType type, int idx)
+{
+  int i;
+  i = AddParameter_(name, DspParameter(type));
+  assert(i == idx);
+}
   
 COMP_Epi::COMP_Epi()
 {
@@ -71,12 +78,12 @@ COMP_Epi::COMP_Epi()
   openlf_add_param("epi circuit", (DspCircuit*)&_default_epi_circuit, DPPT::Pointer, (int)P_IDX::Epi_Circuit);
   openlf_add_param("merge circuit", (DspCircuit*)&_default_merge_circuit, DPPT::Pointer, (int)P_IDX::Merge_Circuit);
   
-  openlf_add_param("DispStart", std::numeric_limits<float>::quiet_NaN(), DPPT::Float, (int)P_IDX::DispStart);
-  openlf_add_param("DispStop", std::numeric_limits<float>::quiet_NaN(), DPPT::Float, (int)P_IDX::DispStop);
-  openlf_add_param("DispStep", std::numeric_limits<float>::quiet_NaN(), DPPT::Float, (int)P_IDX::DispStep);
+  openlf_add_param("DispStart", DPPT::Float, (int)P_IDX::DispStart);
+  openlf_add_param("DispStop", DPPT::Float, (int)P_IDX::DispStop);
+  openlf_add_param("DispStep", DPPT::Float, (int)P_IDX::DispStep);
   
-  openlf_add_param("StartLine", std::numeric_limits<float>::quiet_NaN(), DPPT::Float, (int)P_IDX::StartLine);
-  openlf_add_param("StopLine", std::numeric_limits<float>::quiet_NaN(), DPPT::Float, (int)P_IDX::StopLine);
+  openlf_add_param("StartLine", DPPT::Int, (int)P_IDX::StartLine);
+  openlf_add_param("StopLine", DPPT::Int, (int)P_IDX::StopLine);
 }
 
 template<typename T> class save_flexmav {
@@ -111,28 +118,29 @@ void component_apply_config_path(DspComponent *comp, LF *config, path config_pat
   if (config && config->data) {
     
     for(uint i=0;i<comp->GetParameterCount();i++) {
-      double val;
       Attribute *attr;
       const DspParameter *param = comp->GetParameter(i);
-      path param_path;
-      
-      if (param->Type() != DPPT::Float) {
-        printf("FIXME: non-float parameter not yet handled (comp_epi)\n");
-        continue;
-      }
-      
-      param_path = config_path / comp->GetParameterName(i);
+      path param_path = config_path / comp->GetParameterName(i);
       
       attr = config->data->getMatch(param_path);
-      if (attr) {        
-        if (attr->type != BaseType::STRING) {
-          printf("FIXME: only string inputs supported atm. (comp_epi)\n");
-          continue;
+      if (attr) {  
+        //TODO abstract this (add call... to DspType??)
+        switch (param->Type()) {
+          case DPPT::Float : 
+            float fval;
+            attr->convert(&fval);
+            comp->SetParameter(i, DspParameter(param->Type(), fval));
+            printf("DEBUG: set param %s to %f\n", param_path.c_str(), fval);
+            break;
+          case DPPT::Int : 
+            int ival;
+            attr->convert(&ival);
+            comp->SetParameter(i, DspParameter(param->Type(), ival));
+            printf("DEBUG: set param %s to %d\n", param_path.c_str(), ival);
+            break;
+          default:
+            printf("FIXME: unhandled parameter type! (comp_epi)\n");
         }
-        
-        float val = atof(attr->getStr());
-        comp->SetParameter(i, DspParameter(DPPT::Float, val));
-        printf("DEBUG: set comp %p %d %s to %f\n", comp, i, param_path.c_str(), val);
       }
       else
         printf("no match for %s\n", param_path.c_str());
@@ -176,22 +184,30 @@ std::string GetComponentNameDefault(DspComponent *comp, std::string default_name
   return name;
 }
 
-template<typename T> void get_non_nan_float_param(DspComponent *comp, T &val, int idx)
+template<typename T> void get_float_param(DspComponent *comp, T &val, int idx)
 {
-  float tmp;
+  const float *ptr;
   const DspParameter *p = comp->GetParameter(idx);
 
-  if (!p)
-    return;
+  if (!p) return;
+  ptr = p->GetFloat();
+  if (!ptr) return;
+  val = *ptr;
   
-  tmp = *p->GetFloat();
+  printf("got %d copm %p\n", val, comp);
+}
+
+template<typename T> void get_int_param(DspComponent *comp, T &val, int idx)
+{
+  const int *ptr;
+  const DspParameter *p = comp->GetParameter(idx);
+
+  if (!p) return;
+  ptr = p->GetInt();
+  if (!ptr) return;
+  val = *ptr;
   
-  printf("got %f copm %p\n", tmp, comp);
-  
-  if (std::isnan(tmp))
-    return;
-  
-  val = tmp;
+  printf("got %d copm %p\n", val, comp);
 }
 
 static void printprogress(int curr, int max, int &last, const char *fmt = NULL, ...)
@@ -281,12 +297,12 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   component_child_apply_config(merge_circuit, config, GetComponentName());
   component_apply_config(this, config);
   
-  get_non_nan_float_param(this, disp_start, (int)P_IDX::DispStart);
-  get_non_nan_float_param(this, disp_step, (int)P_IDX::DispStep);
-  get_non_nan_float_param(this, disp_stop, (int)P_IDX::DispStop);
+  get_float_param(this, disp_start, (int)P_IDX::DispStart);
+  get_float_param(this, disp_step, (int)P_IDX::DispStep);
+  get_float_param(this, disp_stop, (int)P_IDX::DispStop);
   
-  get_non_nan_float_param(this, start_line, (int)P_IDX::StartLine);
-  get_non_nan_float_param(this, stop_line, (int)P_IDX::StopLine);
+  get_int_param(this, start_line, (int)P_IDX::StartLine);
+  get_int_param(this, stop_line, (int)P_IDX::StopLine);
   
   printf("%f %f %f\n", disp_start, disp_step, disp_stop);
   

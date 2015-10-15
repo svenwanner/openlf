@@ -44,6 +44,7 @@ private:
   OP_MergeDispByCoherence _default_merge_circuit;
   
   template<typename T> void openlf_add_param(const char *name, T val, DspParameter::ParamType type, int idx);
+  void openlf_add_param(const char *name, DspParameter::ParamType type, int idx);
   bool ParameterUpdating_(int index, const DspParameter& param);
 };
 
