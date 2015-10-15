@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Zoom-Out.png</file>
+        <file>Zoom-In.png</file>
+        <file>saveAs.png</file>
+        <file>save.png</file>
+        <file>print.png</file>
+        <file>open.png</file>
+        <file>lenna.png</file>
+        <file>info.png</file>
+        <file>exit.png</file>
+        <file>Show.png</file>
+        <file>main.png</file>
+    </qresource>
+</RCC>
