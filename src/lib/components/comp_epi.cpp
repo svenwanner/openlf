@@ -30,6 +30,9 @@
 
 #include <omp.h>
 
+//for printprogress
+#include <cstdarg>
+
 using namespace clif;
 using namespace vigra;
 using namespace std;
@@ -191,6 +194,32 @@ template<typename T> void get_non_nan_float_param(DspComponent *comp, T &val, in
   val = tmp;
 }
 
+static void printprogress(int curr, int max, int &last, const char *fmt = NULL, ...)
+{
+  last = (last + 1) % 4;
+  int pos = curr*60/max;
+  char unf[] = "                                                             ]";
+  char fin[] = "[============================================================]";
+  char buf[100];
+  
+  char cs[] = "-\\|/";
+  memcpy(buf, fin, pos+1);
+  buf[pos+1] = cs[last];
+  memcpy(buf+pos+2, unf+pos+2, 62-pos-2+1);
+  if (!fmt) {
+    printf("%s\r", buf);
+  }
+  else {
+    printf("%s", buf);
+    va_list arglist;
+    va_start(arglist, fmt);
+    vprintf(fmt, arglist);
+    va_end(arglist);
+    printf("\r");
+  }
+  fflush(NULL);
+}
+
 void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   LF *in = NULL;
@@ -213,8 +242,6 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   assert(in);
   assert(out);
   
-  //TODO get settings using DSPatch routines...
-  float disparity = 6.3;
   int subset_idx = 0; //we could also loop over all subsets or specify subset using string name
   
   //subset_idx -- extrinsics path
@@ -291,10 +318,17 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   FlexMAV<3> *sink_mav;
       
+  int progress = 0;
+  int done = 0;
+  printf("\n");
   #pragma omp parallel for private(sink_mav)
   for(int i=start_line;i<stop_line;i++) {
-    if (i % 10 == 0)
-      printf("proc epi %d\n", i);
+#pragma omp critical 
+    {
+      if (done % 10 == 0)
+        printprogress(done, stop_line-start_line, progress);
+      done++;
+    }
     
     merge_circuits[omp_get_thread_num()]->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, true));
     
@@ -322,29 +356,6 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     disp_store->call<subarray_copy>(i,epi_w,epi_h,sink_mav,disp_store,scale);
     
   }
-  
-/*#pragma omp parallel for private(sink_mav)
-  for(int i=0;i<subset.EPICount();i++) {
-    if (i % 10 == 0)
-      printf("proc epi %d\n", i);
-#pragma omp critical
-    readEPI(&subset, mav_source[omp_get_thread_num()], i, disparity, ClifUnit::PIXELS, UNDISTORT, Interpolation::LINEAR, scale);
-    
-    //tick the circuit to fill _sink_mav using _source_mav and the circuit
-    outer_circuit[omp_get_thread_num()].Tick();
-    outer_circuit[omp_get_thread_num()].Reset();
-    
-    sink_mav = comp_sink[omp_get_thread_num()].get();
-    assert(sink_mav->type() == BaseType::FLOAT);
-
-//TODO this should not be necessary
-#pragma omp critical
-    if (!disp_store)
-      disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), subset.EPIHeight(), sink_mav->shape()[2]), sink_mav->type());
-    
-    disp_store->call<subarray_copy>(i,epi_w,epi_h,sink_mav,disp_store,scale);
-    
-  }*/
   
   out->path = std::string("disparity/default/data");
   Datastore *datastore = out->data->addStore("disparity/default/data");
