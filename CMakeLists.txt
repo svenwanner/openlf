@@ -32,6 +32,8 @@ include_directories(${Boost_INCLUDE_DIR})
 include_directories(${VIGRA_INCLUDE_DIR})
 include_directories(${CLIF_INCLUDE_DIRS})
 
+message("(${CLIF_INCLUDE_DIRS}")
+
 link_directories(${CLIF_LIBRARY_DIRS})
 #FIXME needed for boost under windows - whats the proper way? Boost_LIBRARY_DIR?
 link_directories($ENV{Path})
@@ -54,6 +56,14 @@ add_executable(teststuff src/bin/test.cpp)
 add_executable(teststuff2 src/bin/test2.cpp)
 add_executable(teststuff3 src/bin/test3.cpp)
 
-target_link_libraries(teststuff openlf_workflows openlf_components openlf_operators)
-target_link_libraries(teststuff2 openlf_workflows openlf_components openlf_operators)
-target_link_libraries(teststuff3 openlf_workflows openlf_components openlf_operators)
+message("${CLIF_LIBRARIES}")
+message("${Boost_LIBRARIES}")
+message("${HDF5_CPP_LIBRARY}")
+message("${HDF5_LIBRARIES}")
+message("${OpenCV_LIBRARIES}")
+message("${VIGRA_IMPEX_LIBRARY}")
+
+
+target_link_libraries(teststuff  vigraimpex DSPatch ${CLIF_LIBRARIES} ${Boost_LIBRARIES} ${HDF5_CPP_LIBRARY} ${HDF5_LIBRARIES} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY} openlf_workflows  openlf_components  openlf_operators)
+target_link_libraries(teststuff2 vigraimpex DSPatch ${CLIF_LIBRARIES} ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY} openlf_workflows  openlf_components  openlf_operators)
+target_link_libraries(teststuff3 vigraimpex DSPatch ${CLIF_LIBRARIES} ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY} openlf_operators openlf_workflows openlf_components)
