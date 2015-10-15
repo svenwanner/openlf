@@ -1,8 +1,8 @@
 #ifndef GUI_TOOLBOX_H
 #define GUI_TOOLBOX_H
 
-#include "qnemainwindow.h"
-#include "lfcamconfigurator.h"
+#include "qnodeseditor/include/qnemainwindow.h"
+#include "LFCamconfigurator/include/lfcamconfigurator.h"
 #include <iostream>
 #include <string>
 #include <QMainWindow>

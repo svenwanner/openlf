@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>LF_GUI</class>
- <widget class="QMainWindow" name="LF_GUI">
+ <class>GUI_Toolbox</class>
+ <widget class="QMainWindow" name="GUI_Toolbox">
   <property name="enabled">
    <bool>true</bool>
   </property>
@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>LF_GUI</string>
+   <string>GUI_Toolbox</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QSlider" name="Slider_selectHoropter">

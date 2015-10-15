@@ -20,7 +20,6 @@ find_package(OpenCV REQUIRED)
 file(GLOB srcs src/*.cpp)
 file(GLOB hdrs include/*.h)
 file(GLOB Resources resources/*.qrc)
-#file(GLOB ui_form ui_forms/*.ui )
 
 QT5_ADD_RESOURCES(ResourceSources ${Resources})
 
@@ -28,7 +27,6 @@ QT5_ADD_RESOURCES(ResourceSources ${Resources})
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
 	${CMAKE_SOURCE_DIR}/src
-	${CMAKE_SOURCE_DIR}/ui_forms
 	${Qt5Widgets_INCLUDE_DIRS}
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${Boost_INCLUDE_DIRS}
@@ -40,10 +38,9 @@ add_definitions(${Qt5Widgets_DEFINITIONS})
 set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 add_subdirectory (external/qnodeseditor)
-include_directories(external/qnodeseditor/include)
-
 add_subdirectory (external/LFCamconfigurator)
-include_directories(external/LFCamconfigurator/include)
+
+include_directories(external)
 
 ################################################################################
 ######################## WINDOWS ###############################################
@@ -75,6 +72,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	set(LIBS_LIB_DIR "/usr/local/lib" CACHE PATH "Lib path for external libraries")
 	link_directories(${LIBS_LIB_DIR})
 #Define output target and link dependencies
+	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 	add_executable( ${PROJECT_NAME} ${srcs} ${hdrs} ${ResourceSources})
 	target_link_libraries(${PROJECT_NAME} ${Vigra_LIBS} Qt5::Widgets Qt5::Gui Qt5::Core ${OpenCV_LIBS} ${Boost_LIBRARIES} qnodeseditor LFCamconfigurator)
 	
