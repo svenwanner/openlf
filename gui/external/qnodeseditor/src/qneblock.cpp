@@ -54,8 +54,7 @@ QNEBlock::QNEBlock(DspComponent *comp, QGraphicsScene *scene, QGraphicsItem *par
   
   component = comp;
   
-  addPort(comp->GetComponentName().c_str(), 0, QNEPort::NamePort);
-  
+  //input and output ports MUST come first! (for getPortIdx!)
   for(int i=0;i<comp->GetInputCount();i++) {
     QNEPort *p = addPort(comp->GetInputName(i).c_str(), false, 0, 0);
     p->setNEBlock(this);
@@ -65,6 +64,8 @@ QNEBlock::QNEBlock(DspComponent *comp, QGraphicsScene *scene, QGraphicsItem *par
     QNEPort *p = addPort(comp->GetOutputName(i).c_str(), true, 0, 0);
     p->setNEBlock(this);
   }
+  
+  addPort(comp->GetComponentName().c_str(), 0, QNEPort::NamePort);
 }
 
 QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int ptr)
