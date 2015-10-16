@@ -37,6 +37,7 @@ namespace openlf { namespace components {
 class COMP_Epi : public DspComponent {
 public:
   COMP_Epi();
+  DSPCOMPONENT_TRIVIAL_CLONE(COMP_Epi);
 protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 private:  

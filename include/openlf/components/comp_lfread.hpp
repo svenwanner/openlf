@@ -31,7 +31,7 @@ namespace openlf { namespace components {
 class COMP_LFRead : public DspComponent {
 public:
   COMP_LFRead();
-  
+  DSPCOMPONENT_TRIVIAL_CLONE(COMP_LFRead);
 protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 private:
