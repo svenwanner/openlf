@@ -40,9 +40,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "qneport.h"
 #include <iostream>
 
+
 QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
 {
-
 	mdiArea = new QMdiArea;
 	mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -68,10 +68,7 @@ QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
 	/*
     scene = new QGraphicsScene();
 
-
     setWindowTitle(tr("Node Editor"));
-
-
 
     QDockWidget *dock = new QDockWidget(tr("Nodes"), this);
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -103,8 +100,8 @@ QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
     b->setPos(150, 0);
 
     b = b->clone();
-    b->setPos(150, 150);
-	*/
+    b->setPos(150, 150);*/
+
 }
 QNEMainWindow::~QNEMainWindow()
 {

@@ -139,7 +139,8 @@ public:
     bool SetParameter(int index, DspParameter const& param);
     
     std::string const* GetParameterString(int index);
-
+    DspCircuit* GetParentCircuit() { return _GetParentCircuit(); };
+    
     void Tick();
     void Reset();
 
@@ -147,7 +148,7 @@ public:
     void StopAutoTick();
     void PauseAutoTick();
     void ResumeAutoTick();
-
+    
 protected:
     virtual void Process_(DspSignalBus&, DspSignalBus&);
     virtual bool ParameterUpdating_(int, DspParameter const&);
