@@ -49,6 +49,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <QToolBar>
 #include <QVBoxLayout>
 
+#include "DspCircuit.h"
 
 class QNodesEditor;
 
@@ -66,7 +67,7 @@ private slots:
 	void addBlock();
 	void on_action_Pop_Out_triggered();
 	void createDockWindows();
-	void ListChanged(QString string);
+	void addComponent(QListWidgetItem *it);
 
 private:
 
@@ -200,5 +201,10 @@ private:
 
 	//QString curFile;
 	//bool isUntitled;
+        
+        DspCircuit *_circuit;
+        QGraphicsScene *_scene;
+        QGraphicsView *_view;
+        QNodesEditor *_editor;
 };
 

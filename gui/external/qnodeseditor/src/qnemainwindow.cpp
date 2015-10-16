@@ -28,6 +28,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 */
 
+#include "comp_epi.hpp"
+#include "comp_lfread.hpp"
+#include "comp_lfwrite.hpp"
+
 #include "qnemainwindow.h"
 #include "userinterface_qnemainwindow.h"
 
@@ -40,6 +44,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "qneport.h"
 #include <iostream>
 
+
+template <class T> class QVP
+{  
+public:
+    static T* asPtr(QVariant v) { return  (T *) v.value<void *>(); }
+    static QVariant asQVariant(T* ptr) { return qVariantFromValue((void *) ptr); }
+};
 
 QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
 {
@@ -63,44 +74,6 @@ QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
 	circuitViewer->show();
 
 	this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
-
-
-	/*
-    scene = new QGraphicsScene();
-
-    setWindowTitle(tr("Node Editor"));
-
-    QDockWidget *dock = new QDockWidget(tr("Nodes"), this);
-    dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    view = new QGraphicsView(dock);
-    view->setScene(scene);
-
-    view->setRenderHint(QPainter::Antialiasing, true);
-
-    dock->setWidget(view);
-    addDockWidget(Qt::LeftDockWidgetArea, dock);
-
-
-    nodesEditor = new QNodesEditor(this);
-    nodesEditor->install(scene);
-
-
-    QNEBlock *b = new QNEBlock(0);
-    scene->addItem(b);
-    b->addPort("test", 0, QNEPort::NamePort);
-    b->addPort("TestBlock", 0, QNEPort::TypePort);
-    b->addInputPort("in1");
-    b->addInputPort("in2");
-    b->addInputPort("in3");
-    b->addOutputPort("out1");
-    b->addOutputPort("out2");
-    b->addOutputPort("out3");
-
-    b = b->clone();
-    b->setPos(150, 0);
-
-    b = b->clone();
-    b->setPos(150, 150);*/
 
 }
 QNEMainWindow::~QNEMainWindow()
@@ -212,9 +185,16 @@ void QNEMainWindow::saveFile()
 	nodesEditor->save(ds);
 }
 
-void QNEMainWindow::ListChanged(QString string)
+
+void QNEMainWindow::addComponent(QListWidgetItem *it)
 {
-	std::cout << "hello" << std::endl;
+/*  DspComponent *comp = QVP<DatasetRoot>::asPtr(it->data(Qt::UserRole);
+  
+  comp = comp->clone();
+
+  _circuit->AddComponent(comp, "whatever");
+    
+  new QNEBlock(lf_in, scene);*/
 }
 
 void QNEMainWindow::loadFile()
@@ -242,6 +222,7 @@ void QNEMainWindow::addBlock()
 	}
 }
 
+
 void QNEMainWindow::createDockWindows()
 {
 	mdiArea->closeAllSubWindows();
@@ -258,12 +239,23 @@ void QNEMainWindow::createDockWindows()
 	viewMenu->addAction(dock->toggleViewAction());
 
 	// populate the items of the list
-	for (int i = 0; i < 10; i++)
-	{
-		List1->addItem("Item " + QString::number(i));
-	}
+	//for (int i = 0; i < 10; i++)
+	//{
+        QListWidgetItem *it;
+        it = new QListWidgetItem("LF reader");
+        it->setData(Qt::UserRole, QVP<DspComponent>::asQVariant(new COMP_LFRead()));
+        List1->addItem(it);
+        
+        it = new QListWidgetItem("LF writer");
+        it->setData(Qt::UserRole, QVP<DspComponent>::asQVariant(new COMP_LFWrite()));
+        List1->addItem(it);
+        
+        it = new QListWidgetItem("EPI");
+        it->setData(Qt::UserRole, QVP<DspComponent>::asQVariant(new COMP_Epi()));
+        List1->addItem(it);
+	//}
 
-	connect(List1, SIGNAL(currentTextChanged(QString)),this, SLOT(ListChanged(QString)));
+	connect(List1, SIGNAL(itemDoubleClicked(QListWidgetItem)),this, SLOT(addComponent(QListWidgetItem)));
 
 	docks.push_back(dock);
 	// ******************************************************************
@@ -282,18 +274,51 @@ void QNEMainWindow::createDockWindows()
 
 Circuit_Viewer::Circuit_Viewer(QWidget *parent) : QWidget(parent)
 {
-
-	this->setMinimumSize(600,600);
-	//this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-	setAttribute(Qt::WA_DeleteOnClose);
-	setMouseTracking(true);
-
-	scrollArea = new QScrollArea;
-	scrollArea->setBackgroundRole(QPalette::Dark);
-
-	createActions();
-	createToolbar();
-
+  
+  this->setMinimumSize(600,600);
+  //this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+  setAttribute(Qt::WA_DeleteOnClose);
+  setMouseTracking(true);
+  
+  scrollArea = new QScrollArea;
+  scrollArea->setBackgroundRole(QPalette::Dark);
+  
+  createActions();
+  createToolbar();
+  
+  _circuit = new DspCircuit();
+  
+  
+  _scene = new QGraphicsScene();
+  
+  
+  _view = new QGraphicsView(this);
+  _view->setScene(_scene);
+  //_view->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+  _view->setMinimumSize(600,600);
+  
+  _view->setRenderHint(QPainter::Antialiasing, true);
+  
+  _editor = new QNodesEditor(this);
+  _editor->install(_scene);
+  
+  
+  QNEBlock *b = new QNEBlock(0);
+  _scene->addItem(b);
+  b->addPort("test", 0, QNEPort::NamePort);
+  b->addPort("TestBlock", 0, QNEPort::TypePort);
+  b->addInputPort("in1");
+  b->addInputPort("in2");
+  b->addInputPort("in3");
+  b->addOutputPort("out1");
+  b->addOutputPort("out2");
+  b->addOutputPort("out3");
+  
+  b = b->clone();
+  b->setPos(150, 0);
+  
+  b = b->clone();
+  b->setPos(150, 150);
 }
 
 void Circuit_Viewer::createActions()
