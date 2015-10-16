@@ -48,6 +48,24 @@ QNEBlock::QNEBlock(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 	width = horzMargin;
 	height = vertMargin;
 }
+/*
+QNEBlock::QNEBlock(DspComponent *comp, QGraphicsItem *parent) : QGraphicsPathItem(parent)
+{
+	QPainterPath p;
+	p.addRoundedRect(-50, -15, 100, 30, 5, 5);
+	setPath(p);
+	setPen(QPen(Qt::darkGreen));
+	setBrush(Qt::green);
+	setFlag(QGraphicsItem::ItemIsMovable);
+	setFlag(QGraphicsItem::ItemIsSelectable);
+	horzMargin = 20;
+	vertMargin = 5;
+	width = horzMargin;
+	height = vertMargin;
+        
+        //for(int i=0;i<comp->GetInputCount()i++)
+          //addPort()
+}*/
 
 QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int ptr)
 {

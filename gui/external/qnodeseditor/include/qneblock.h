@@ -36,6 +36,7 @@ public:
 	enum { Type = QGraphicsItem::UserType + 3 };
 
     QNEBlock(QGraphicsItem *parent = 0);
+    //QNEBlock(DspComponent *comp, QGraphicsItem *parent = 0);
 
 	QNEPort* addPort(const QString &name, bool isOutput, int flags = 0, int ptr = 0);
 	void addInputPort(const QString &name);
