@@ -25,8 +25,8 @@ QT5_ADD_RESOURCES(ResourceSources ${Resources})
 
 #Add all directories and subdirectories of your project
 include_directories(
-    ${CMAKE_SOURCE_DIR}/include
-	${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+	${CMAKE_CURRENT_SOURCE_DIR}/src
 	${Qt5Widgets_INCLUDE_DIRS}
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${Boost_INCLUDE_DIRS}
@@ -35,7 +35,7 @@ include_directories(
 # We need add -DQT_WIDGETS_LIB when using QtWidgets in Qt 5.
 add_definitions(${Qt5Widgets_DEFINITIONS})
 
-set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 add_subdirectory (external/qnodeseditor)
 add_subdirectory (external/LFCamconfigurator)

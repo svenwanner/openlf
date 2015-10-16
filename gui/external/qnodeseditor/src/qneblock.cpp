@@ -32,6 +32,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #include "qneport.h"
 
+#include "openlf.hpp"
+
 QNEBlock::QNEBlock(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 {
 	QPainterPath p;
