@@ -9,8 +9,7 @@ file(GLOB srcs *.cpp src/*.cpp)
 file(GLOB hdrs include/*.h)
 file(GLOB Resources resources/*.qrc)
 
-QT5_ADD_RESOURCES(ResourceSources ${Resources})
-add_library (${PROJECT_NAME} ${srcs} ${hdrs} ${Resources})
+add_library (${PROJECT_NAME} ${srcs} ${hdrs})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(${PROJECT_NAME} DSPatch openlf_workflows openlf_components  openlf_operators)

@@ -73,6 +73,7 @@ void GUI_Toolbox::createToolBars(){
     fileToolBar->addSeparator();
     fileToolBar->addAction(showMainAct);
     fileToolBar->addAction(showAct);
+	fileToolBar->addSeparator();
 	fileToolBar->addAction(showAct_Node);
 
 }

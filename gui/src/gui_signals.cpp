@@ -40,7 +40,7 @@ void GUI_Toolbox::createActions(){
     showAct->setToolTip(tr("Show animated light-field"));
 	connect(showAct, SIGNAL(triggered()), this, SLOT(about()));
 
-	showAct_Node = new QAction(QIcon(":/Show.png"), tr("&ShowNode"), this);
+	showAct_Node = new QAction(QIcon(":/circuit.png"), tr("&ShowNode"), this);
 	showAct_Node->setToolTip(tr("Show workflow"));
 	connect(showAct_Node, SIGNAL(triggered()), this, SLOT(showNode()));
 

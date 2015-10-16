@@ -81,7 +81,7 @@ private:
 	QMenu *helpMenu = std::nullptr_t();
 	QMenu *viewMenu = std::nullptr_t();
 
-	QToolBar *fileToolBar;
+	QToolBar *fileToolBar = std::nullptr_t();
 
 	void createActions();
 	void createMenus();
@@ -131,7 +131,7 @@ private:
 
 
 
-class Circuit_Viewer : public QWidget
+class Circuit_Viewer : public QMainWindow
 {
 	Q_OBJECT
 
@@ -175,6 +175,7 @@ private:
 	void adjustScrollBar(QScrollBar *scrollBar, double factor);
 	void createToolbar();
 	void createActions();
+	void createMenus();
 
 	QAction *MousePosition;
 	QAction *saveAct;
@@ -187,12 +188,14 @@ private:
 	QAction *fitToWindowAct;
 
 	const int ToolBar_Height = 40;
+	QToolBar *ToolBar = std::nullptr_t();
+	QMenu *fileMenu = std::nullptr_t();
 
 	//QVBoxLayout* vbox;
 
 	//QMenuBar *menuBar;
 	//QMainWindow *inner;
-	QMenu *viewMenu;
+	//QMenu *viewMenu;
 
 	//QToolBar *fileToolBar;
 
