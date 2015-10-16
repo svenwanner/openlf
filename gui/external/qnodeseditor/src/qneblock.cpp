@@ -32,8 +32,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #include "qneport.h"
 
-#include "openlf.hpp"
-
 QNEBlock::QNEBlock(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 {
 	QPainterPath p;
@@ -48,24 +46,20 @@ QNEBlock::QNEBlock(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 	width = horzMargin;
 	height = vertMargin;
 }
-/*
-QNEBlock::QNEBlock(DspComponent *comp, QGraphicsItem *parent) : QGraphicsPathItem(parent)
+
+QNEBlock::QNEBlock(DspComponent *comp, QGraphicsScene *scene, QGraphicsItem *parent)
+: QNEBlock(parent)
 {
-	QPainterPath p;
-	p.addRoundedRect(-50, -15, 100, 30, 5, 5);
-	setPath(p);
-	setPen(QPen(Qt::darkGreen));
-	setBrush(Qt::green);
-	setFlag(QGraphicsItem::ItemIsMovable);
-	setFlag(QGraphicsItem::ItemIsSelectable);
-	horzMargin = 20;
-	vertMargin = 5;
-	width = horzMargin;
-	height = vertMargin;
-        
-        //for(int i=0;i<comp->GetInputCount()i++)
-          //addPort()
-}*/
+  scene->addItem(this);
+  
+  addPort(comp->GetComponentName().c_str(), 0, QNEPort::NamePort);
+  
+  for(int i=0;i<comp->GetInputCount();i++)
+    addPort(comp->GetInputName(i).c_str(), false, 0, 0);
+  
+  for(int i=0;i<comp->GetOutputCount();i++)
+    addPort(comp->GetOutputName(i).c_str(), true, 0, 0);
+}
 
 QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int ptr)
 {

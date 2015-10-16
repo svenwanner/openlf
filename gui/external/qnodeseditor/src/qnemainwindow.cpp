@@ -34,6 +34,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #include "qneport.h"
 
+#include "comp_epi.hpp"
+
 QNEMainWindow::QNEMainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
@@ -109,6 +111,10 @@ QNEMainWindow::QNEMainWindow(QWidget *parent) :
 
     b = b->clone();
     b->setPos(150, 150);
+    
+    DspComponent *epi_comp = new COMP_Epi();
+    
+    b = new QNEBlock(epi_comp, scene);
 }
 
 QNEMainWindow::~QNEMainWindow()
