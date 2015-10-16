@@ -48,8 +48,19 @@ void QNEConnection::updateCircuitConnection()
   if (m_port1 && m_port2) {
     DspComponent *comp_source, *comp_sink;
     DspCircuit *circuit;
+    QNEPort *src, *sink;
     
-    printf("FIXME need to detect what is input and what is output!\n");
+    if (m_port1->isOutput()) {
+      src = m_port1;
+      sink = m_port2;
+    }
+    else {
+      sink = m_port2;
+      src = m_port1;
+    }
+    
+    //only one may be 
+    assert((src->isOutput() || sink->isOutput()) && (src->isOutput() != sink->isOutput()));
     
     comp_source = m_port1->block()->component;
     comp_sink = m_port2->block()->component;
