@@ -11,6 +11,8 @@ file(GLOB hdrs include/*.h)
 add_library (${PROJECT_NAME} ${srcs} ${hdrs})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+target_link_libraries(${PROJECT_NAME} DSPatch openlf_workflows openlf_components  openlf_operators)
+
 install(
     TARGETS ${PROJECT_NAME}
     DESTINATION lib
