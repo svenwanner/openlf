@@ -26,10 +26,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include "qneconnection.h"
 
 #include "qneport.h"
+#include "qneblock.h"
 
 #include <QBrush>
 #include <QPen>
 #include <QGraphicsScene>
+
+#include "DspComponent.h"
 
 QNEConnection::QNEConnection(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 {
@@ -38,6 +41,26 @@ QNEConnection::QNEConnection(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 	setZValue(-1);
 	m_port1 = 0;
 	m_port2 = 0;
+}
+
+void QNEConnection::updateCircuitConnection()
+{
+  if (m_port1 && m_port2) {
+    DspComponent *comp_source, *comp_sink;
+    DspCircuit *circuit;
+    
+    printf("FIXME need to detect who is input and who is output!");
+    
+    comp_source = m_port1->block()->component;
+    comp_sink = m_port2->block()->component;
+    circuit = comp_sink->GetParentCircuit();
+    
+    circuit->ConnectOutToIn(comp_source,
+                            m_port1->block()->getPortIdx(m_port1),
+                            comp_sink,
+                            m_port2->block()->getPortIdx(m_port2)
+                           );
+  }
 }
 
 QNEConnection::~QNEConnection()

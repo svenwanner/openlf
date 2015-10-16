@@ -49,8 +49,11 @@ public:
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 	QNEBlock* clone();
 	QVector<QNEPort*> ports();
+        int getPortIdx(QNEPort *port);
 
 	int type() const { return Type; }
+	
+	DspComponent *component = NULL;
 
 protected:
 	QVariant itemChange(GraphicsItemChange change, const QVariant &value);

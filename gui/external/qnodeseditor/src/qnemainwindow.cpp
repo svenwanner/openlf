@@ -35,6 +35,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include "qneport.h"
 
 #include "comp_epi.hpp"
+#include "comp_lfread.hpp"
+#include "comp_lfwrite.hpp"
 
 QNEMainWindow::QNEMainWindow(QWidget *parent) :
     QMainWindow(parent)
@@ -112,9 +114,17 @@ QNEMainWindow::QNEMainWindow(QWidget *parent) :
     b = b->clone();
     b->setPos(150, 150);
     
-    DspComponent *epi_comp = new COMP_Epi();
+    DspCircuit circuit;    
+    COMP_Epi epi_comp;
+    COMP_LFRead lf_in;
+    COMP_LFWrite lf_out;
+    circuit.AddComponent(&epi_comp, "whatever");
+    circuit.AddComponent(&lf_in, "whatever");
+    circuit.AddComponent(&lf_out, "whatever");
     
-    b = new QNEBlock(epi_comp, scene);
+    new QNEBlock(&epi_comp, scene);
+    new QNEBlock(&lf_in, scene);
+    new QNEBlock(&lf_out, scene);
 }
 
 QNEMainWindow::~QNEMainWindow()

@@ -52,17 +52,23 @@ QNEBlock::QNEBlock(DspComponent *comp, QGraphicsScene *scene, QGraphicsItem *par
 {
   scene->addItem(this);
   
+  component = comp;
+  
   addPort(comp->GetComponentName().c_str(), 0, QNEPort::NamePort);
   
-  for(int i=0;i<comp->GetInputCount();i++)
-    addPort(comp->GetInputName(i).c_str(), false, 0, 0);
+  for(int i=0;i<comp->GetInputCount();i++) {
+    QNEPort *p = addPort(comp->GetInputName(i).c_str(), false, 0, 0);
+    p->setNEBlock(this);
+  }
   
-  for(int i=0;i<comp->GetOutputCount();i++)
-    addPort(comp->GetOutputName(i).c_str(), true, 0, 0);
+  for(int i=0;i<comp->GetOutputCount();i++) {
+    QNEPort *p = addPort(comp->GetOutputName(i).c_str(), true, 0, 0);
+    p->setNEBlock(this);
+  }
 }
 
 QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int ptr)
-{
+{  
 	QNEPort *port = new QNEPort(this);
 	port->setName(name);
 	port->setIsOutput(isOutput);
@@ -96,6 +102,17 @@ QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int pt
 	}
 
 	return port;
+}
+
+int QNEBlock::getPortIdx(QNEPort *port)
+{
+  int port_idx = 0;
+  QVector<QNEPort*> portlist = ports();
+  for(auto it=portlist.begin();it!=portlist.end() && *it != port;it++)
+    if ((*it)->isOutput() == port->isOutput())
+      port_idx++;
+    
+  return port_idx;
 }
 
 void QNEBlock::addInputPort(const QString &name)
