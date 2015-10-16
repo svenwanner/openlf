@@ -107,19 +107,16 @@ void QNEMainWindow::createMenus()
 	fileMenu->addAction(addAct);
 	fileMenu->addAction(loadAct);
 	fileMenu->addAction(saveAct);
-	//fileMenu->addSeparator();
+	fileMenu->addSeparator();
 	fileMenu->addAction(quitAct);
 
-	helpMenu = new QMenu(tr("&Help"), this);
+	//helpMenu = new QMenu(tr("&Help"), this);
 
 	viewMenu = new QMenu(tr("&File"), this);
 
 	menuBar()->addMenu(fileMenu);
-	menuBar()->addMenu(helpMenu);
+	//menuBar()->addMenu(helpMenu);
 	menuBar()->addMenu(viewMenu);
-
-	
-
 }
 
 
@@ -148,26 +145,22 @@ SIGNALS
 
 void QNEMainWindow::createActions()
 {
-	quitAct = new QAction(QIcon(":/images/exit.png"), tr("&Quit"), this);
+	quitAct = new QAction(QIcon(":/exit.png"), tr("&Quit"), this);
 	quitAct->setShortcuts(QKeySequence::Quit);
 	quitAct->setStatusTip(tr("Quit the application"));
 	connect(quitAct, SIGNAL(triggered()), qApp, SLOT(quit()));
 
-	loadAct = new QAction(QIcon(":/images/open.png"), tr("&Load"), this);
+	loadAct = new QAction(QIcon(":/open.png"), tr("&Load"), this);
 	loadAct->setShortcuts(QKeySequence::Open);
 	loadAct->setStatusTip(tr("Open a file"));
 	connect(loadAct, SIGNAL(triggered()), this, SLOT(loadFile()));
 
-	saveAct = new QAction(QIcon(":/images/arrow.png"), tr("&Save"), this);
+	saveAct = new QAction(QIcon(":/save.png"), tr("&Save"), this);
 	saveAct->setShortcuts(QKeySequence::Save);
 	saveAct->setStatusTip(tr("Save a file"));
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));
 
-	addAct = new QAction(QIcon(":/images/arrow.png"), tr("&Add"), this);
-	addAct->setStatusTip(tr("Add a block"));
-	connect(addAct, SIGNAL(triggered()), this, SLOT(addBlock()));
-
-	popOutAct = new QAction(QIcon(":/images/arrow.png"), tr("popOut"), this);
+	popOutAct = new QAction(QIcon(":/arrow.png"), tr("popOut"), this);
 	popOutAct->setStatusTip(tr("Pop Out Subwindow as own Window."));
 	connect(popOutAct, SIGNAL(triggered()), this, SLOT(on_action_Pop_Out_triggered()));
         
@@ -287,7 +280,7 @@ void QNEMainWindow::createDockWindows()
 
 
 
-Circuit_Viewer::Circuit_Viewer(QWidget *parent) : QWidget(parent)
+Circuit_Viewer::Circuit_Viewer(QWidget *parent) : QMainWindow(parent)
 {
   
   this->setMinimumSize(600,600);
@@ -298,9 +291,7 @@ Circuit_Viewer::Circuit_Viewer(QWidget *parent) : QWidget(parent)
   scrollArea = new QScrollArea;
   scrollArea->setBackgroundRole(QPalette::Dark);
   
-  createActions();
-  createToolbar();
-  
+
   _circuit = new DspCircuit();
   
   
@@ -334,33 +325,37 @@ Circuit_Viewer::Circuit_Viewer(QWidget *parent) : QWidget(parent)
   
   b = b->clone();
   b->setPos(150, 150);
+
+  createActions();
+  createToolbar();
+  createMenus();
 }
 
 void Circuit_Viewer::createActions()
 {
-	saveAct = new QAction(QIcon(":/images/save.png"), tr("&Save"), this);
+	saveAct = new QAction(QIcon(":/save.png"), tr("&Save"), this);
 	saveAct->setShortcuts(QKeySequence::Save);
 	saveAct->setStatusTip(tr("Save the document to disk"));
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
-	saveAsAct = new QAction(tr("Save &As..."), this);
+	saveAsAct = new QAction(QIcon(":/saveAs.png"), tr("Save &As..."), this);
 	saveAsAct->setShortcuts(QKeySequence::SaveAs);
 	saveAsAct->setStatusTip(tr("Save the document under a new name"));
 	connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
 
-	zoomInAct = new QAction(QIcon(":/images/Zoom-In.png"), tr("Zoom &In (25%)"), this);
+	zoomInAct = new QAction(QIcon(":/Zoom-In.png"), tr("Zoom &In (25%)"), this);
 	zoomInAct->setShortcut(tr("Ctrl++"));
 	connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
 
-	zoomOutAct = new QAction(QIcon(":/images/Zoom-Out.png"), tr("Zoom &Out (25%)"), this);
+	zoomOutAct = new QAction(QIcon(":/Zoom-Out.png"), tr("Zoom &Out (25%)"), this);
 	zoomOutAct->setShortcut(tr("Ctrl+-"));
 	connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
 
-	normalSizeAct = new QAction(tr("&Normal Size"), this);
+	normalSizeAct = new QAction(QIcon(":/normalView.png"), tr("&Normal Size"), this);
 	normalSizeAct->setShortcut(tr("Ctrl+S"));
 	connect(normalSizeAct, SIGNAL(triggered()), this, SLOT(normalSize()));
 
-	fitToWindowAct = new QAction(tr("&Fit to Window"), this);
+	fitToWindowAct = new QAction(QIcon(":/fittowindow.png"), tr("&Fit to Window"), this);
 	fitToWindowAct->setCheckable(true);
 	fitToWindowAct->setShortcut(tr("Ctrl+F"));
 	connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
@@ -368,20 +363,27 @@ void Circuit_Viewer::createActions()
 
 void Circuit_Viewer::createToolbar()
 {
-	QToolBar* toolBar = new QToolBar(this);
-	toolBar->setFixedHeight(ToolBar_Height);
-	toolBar->addAction(saveAct);
-	toolBar->addAction(zoomInAct);
-	toolBar->addAction(zoomOutAct);
-	toolBar->addAction(normalSizeAct);
-	toolBar->addAction(fitToWindowAct);
+	ToolBar = addToolBar(tr("File"));
+	//toolBar->setFixedHeight(ToolBar_Height);
+	ToolBar->addAction(saveAct);
+	ToolBar->addAction(zoomInAct);
+	ToolBar->addAction(zoomOutAct);
+	ToolBar->addAction(normalSizeAct);
+	ToolBar->addAction(fitToWindowAct);
 
-	QVBoxLayout* vbox = new QVBoxLayout(this);
+	
 
-	vbox->addWidget(toolBar);
-	vbox->addWidget(scrollArea);
-	vbox->setContentsMargins(0, 0, 0, 0);
-	vbox->setSpacing(0);
+}
+
+void Circuit_Viewer::createMenus()
+{
+	fileMenu = new QMenu(tr("&File"), this);
+	fileMenu->addAction(saveAct);
+	fileMenu->addAction(zoomInAct);
+	fileMenu->addAction(zoomOutAct);
+	fileMenu->addAction(normalSizeAct);
+	fileMenu->addAction(fitToWindowAct);
+	menuBar()->addMenu(fileMenu);
 }
 
 void Circuit_Viewer::normalSize()

@@ -11,5 +11,13 @@
         <file>exit.png</file>
         <file>Show.png</file>
         <file>main.png</file>
+		<file>Hilfe.png</file>
+        <file>blender.png</file>
+        <file>help.png</file>
+        <file>reset.png</file>
+		<file>arrow.png</file>
+		<file>circuit.png</file>
+		<file>fittowindow.png</file>
+		<file>normalView.png</file>
     </qresource>
 </RCC>

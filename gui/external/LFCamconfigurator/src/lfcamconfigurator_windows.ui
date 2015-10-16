@@ -5631,24 +5631,6 @@ disparity related to D2 (horizontal)</string>
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="actionSave_Configuration"/>
-    <addaction name="actionLoad_Configuration"/>
-    <addaction name="actionReset_Configuration"/>
-    <addaction name="actionExport_to_Blender"/>
-    <addaction name="actionExport_to_LF_Framework"/>
-   </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="title">
-     <string>Help</string>
-    </property>
-    <addaction name="actionHelp"/>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuHelp"/>
   </widget>
   <action name="actionSave_Configuration">
    <property name="text">
