@@ -28,6 +28,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #include <QMainWindow>
 #include <QtWidgets>
+#include <QMdiArea>
+#include <QSpinBox>
+#include <QDockWidget>
+
+#include <QTextEdit>
+#include <QMainWindow>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QApplication>
+#include <QtGui>
+#include <QScrollBar>
+#include <QScrollArea>
+#include <QLabel>
+#include <QAction>
+#include <QToolBar>
+#include <QMenu>
+#include <QMenuBar>
+#include <QLabel>
+#include <QToolBar>
+#include <QVBoxLayout>
 
 
 class QNodesEditor;
@@ -44,13 +64,141 @@ private slots:
 	void saveFile();
 	void loadFile();
 	void addBlock();
+	void on_action_Pop_Out_triggered();
+	void createDockWindows();
+	void ListChanged(QString string);
 
 private:
 
-	QNodesEditor *nodesEditor;
-    QMenu *fileMenu;
-    QGraphicsView *view;
-    QGraphicsScene *scene;
+	QMdiArea *mdiArea = std::nullptr_t();
+
+	QMenu *fileMenu = std::nullptr_t();
+	QMenu *helpMenu = std::nullptr_t();
+	QMenu *viewMenu = std::nullptr_t();
+
+	QToolBar *fileToolBar;
+
+	void createActions();
+	void createMenus();
+	void createToolBars();
+	void createStatusBar();
+	
+	std::vector<QDockWidget*> docks;
+
+	QNodesEditor *nodesEditor = std::nullptr_t();
+	QGraphicsView *view = std::nullptr_t();
+	QGraphicsScene *scene = std::nullptr_t();
+
+	QAction *quitAct = std::nullptr_t();
+	QAction *loadAct = std::nullptr_t();
+	QAction *saveAct = std::nullptr_t();
+	QAction *addAct = std::nullptr_t();
+	QAction *popOutAct = std::nullptr_t();
+
+	QListWidget *List1 = std::nullptr_t();
+	QListWidget *List2 = std::nullptr_t();
+
+	QDockWidget *dock = std::nullptr_t();
+	QDockWidget *dock2 = std::nullptr_t();
+
+	QSlider *slider = std::nullptr_t();
+	QSpinBox *spinBox = std::nullptr_t();
+
 };
 
 #endif // QNEMAINWINDOW_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Circuit_Viewer : public QWidget
+{
+	Q_OBJECT
+
+public:
+	Circuit_Viewer(QWidget *parent = 0);
+
+	//void open(const QString &title);
+	//void setImage(const QString &title, QPixmap *pxmap);
+	//void enableEPI(bool enable);
+
+	//QString userFriendlyCurrentFile();
+	//QString currentFile()  { return curFile; }
+
+	QScrollArea *scrollArea;
+
+protected:
+	//void mousePressEvent(QMouseEvent * e);
+	//void mouseMoveEvent(QMouseEvent* event);
+
+signals:
+	//void mouseClick(QPoint position);
+
+
+	private slots:
+
+	void save();
+	void saveAs();
+	void zoomIn();
+	void zoomOut();
+	void normalSize();
+	void fitToWindow();
+
+
+private:
+
+	// member variable to store click position
+	QPoint m_lastPoint;
+	// member variable - flag of click beginning
+	bool m_mouseClick;
+
+	void scaleImage(double factor);
+	void adjustScrollBar(QScrollBar *scrollBar, double factor);
+	void createToolbar();
+	void createActions();
+
+	QAction *MousePosition;
+	QAction *saveAct;
+	QAction *saveAsAct;
+	QAction *exitAct;
+	QAction *infoAct;
+	QAction *zoomInAct;
+	QAction *zoomOutAct;
+	QAction *normalSizeAct;
+	QAction *fitToWindowAct;
+
+	const int ToolBar_Height = 40;
+
+	//QVBoxLayout* vbox;
+
+	//QMenuBar *menuBar;
+	//QMainWindow *inner;
+	QMenu *viewMenu;
+
+	//QToolBar *fileToolBar;
+
+
+
+	//double scaleFactor;
+
+	//void setCurrentFile(const QString &fileName);
+	//QString strippedName(const QString &fullFileName);
+
+	//QString curFile;
+	//bool isUntitled;
+};
+
