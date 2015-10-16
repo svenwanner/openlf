@@ -44,21 +44,23 @@ QNEConnection::QNEConnection(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 }
 
 void QNEConnection::updateCircuitConnection()
-{
+{  
   if (m_port1 && m_port2) {
     DspComponent *comp_source, *comp_sink;
     DspCircuit *circuit;
     
-    printf("FIXME need to detect who is input and who is output!");
+    printf("FIXME need to detect what is input and what is output!\n");
     
     comp_source = m_port1->block()->component;
     comp_sink = m_port2->block()->component;
     circuit = comp_sink->GetParentCircuit();
+    int source_idx = m_port1->block()->getPortIdx(m_port1);
+    int sink_idx = m_port2->block()->getPortIdx(m_port2);
     
     circuit->ConnectOutToIn(comp_source,
-                            m_port1->block()->getPortIdx(m_port1),
+                            source_idx,
                             comp_sink,
-                            m_port2->block()->getPortIdx(m_port2)
+                            sink_idx
                            );
   }
 }
@@ -86,6 +88,8 @@ void QNEConnection::setPort1(QNEPort *p)
 	m_port1 = p;
 
 	m_port1->connections().append(this);
+        
+        updateCircuitConnection();
 }
 
 void QNEConnection::setPort2(QNEPort *p)
@@ -93,6 +97,8 @@ void QNEConnection::setPort2(QNEPort *p)
 	m_port2 = p;
 
 	m_port2->connections().append(this);
+        
+        updateCircuitConnection();
 }
 
 void QNEConnection::updatePosFromPorts()
