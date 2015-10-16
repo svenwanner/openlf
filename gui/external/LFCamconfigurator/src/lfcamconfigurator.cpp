@@ -66,6 +66,9 @@ LFCamConfigurator::LFCamConfigurator(QWidget *parent) : QMainWindow(parent),ui(n
     ui->setupUi(this);
     createActions();
     createMenus();
+
+	window()->setStyleSheet("QLineEdit { qproperty-frame: false }");
+
     //disable lineEdit
 
     ui->lineEdit_D_N->setStyleSheet( "background-color: gray; color : black;" );

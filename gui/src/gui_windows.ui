@@ -640,6 +640,24 @@
      <string>(Occlusion Handling)</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="Button_LFCamConfigurator">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>15</y>
+      <width>281</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+     </font>
+    </property>
+    <property name="text">
+     <string>LF-Cam-Configurator</string>
+    </property>
+   </widget>
    <widget class="Line" name="line_3">
     <property name="geometry">
      <rect>
@@ -681,7 +699,7 @@
      <x>0</x>
      <y>0</y>
      <width>806</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>
