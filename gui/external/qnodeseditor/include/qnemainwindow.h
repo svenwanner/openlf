@@ -49,6 +49,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <QToolBar>
 #include <QVBoxLayout>
 
+#include "qnesettings.h"
+
 #include "DspCircuit.h"
 
 class QNodesEditor;
@@ -70,6 +72,7 @@ private slots:
 	void on_action_tick_triggered();
 	void createDockWindows();
 	void addComponent(QListWidgetItem *it);
+	void showCompSettings(DspComponent *comp);
         
 signals:
 	void itemDoubleClicked();
@@ -112,6 +115,7 @@ private:
 	QSpinBox *spinBox = std::nullptr_t();
         
         Circuit_Viewer *_circuitViewer = NULL;
+        QNESettings *_settings = NULL;
 };
 
 #endif // QNEMAINWINDOW_H
@@ -152,6 +156,9 @@ public:
 
 	QScrollArea *scrollArea;
 
+signals:
+  void compSelected(DspComponent *comp);
+
 protected:
 	//void mousePressEvent(QMouseEvent * e);
 	//void mouseMoveEvent(QMouseEvent* event);
@@ -165,6 +172,7 @@ private slots:
 	void zoomOut();
 	void normalSize();
 	void fitToWindow();
+        void onCompSelected(DspComponent *comp);
 
 
 private:

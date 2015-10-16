@@ -64,7 +64,6 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 	{
 	case QEvent::GraphicsSceneMousePress:
 	{
-
 		switch ((int) me->button())
 		{
 		case Qt::LeftButton:
@@ -85,6 +84,8 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 				/* if (selBlock)
 					selBlock->setSelected(); */
 				// selBlock = (QNEBlock*) item;
+				printf("cemit compsel\n");
+				emit compSelected((dynamic_cast<QNEBlock*>(item))->component);
 			}
 			break;
 		}

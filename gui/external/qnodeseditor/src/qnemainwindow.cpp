@@ -64,16 +64,16 @@ QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
 	slider = new QSlider(Qt::Horizontal);
 	spinBox = new QSpinBox();
 
-
-	createActions();
 	createMenus();
 	createToolBars();
 	createDockWindows();
-
+        
 	_circuitViewer = new Circuit_Viewer();
 	mdiArea->addSubWindow(_circuitViewer);
 	_circuitViewer->setObjectName("circuitViewer");
 	_circuitViewer->show();
+        
+	createActions();
 
 	this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 
@@ -166,7 +166,8 @@ void QNEMainWindow::createActions()
         
         tickAct = new QAction(QIcon(":/images/arrow.png"), tr("tick"), this);
 	tickAct->setStatusTip(tr("Tick Circuit."));
-	connect(tickAct, SIGNAL(triggered()), this, SLOT(on_action_tick_triggered()));
+        
+        connect(_circuitViewer, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
 
 }
 
@@ -226,6 +227,11 @@ void QNEMainWindow::addComponent(QListWidgetItem *it)
   _circuitViewer->addComponent(comp);
 }
 
+void QNEMainWindow::showCompSettings(DspComponent *comp)
+{
+  printf("show setting!\n");
+  _settings->attach(comp);
+}
 
 void QNEMainWindow::createDockWindows()
 {
@@ -267,6 +273,12 @@ void QNEMainWindow::createDockWindows()
 
 	docks.push_back(dock);
 	// ******************************************************************
+        
+        QDockWidget *settings_dock = new QDockWidget(tr("Light Field Channels:"), this);
+	settings_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+	_settings = new QNESettings(settings_dock);
+	settings_dock->setWidget(_settings);
+	addDockWidget(Qt::RightDockWidgetArea, settings_dock);
 }
 
 
@@ -282,7 +294,6 @@ void QNEMainWindow::createDockWindows()
 
 Circuit_Viewer::Circuit_Viewer(QWidget *parent) : QMainWindow(parent)
 {
-  
   this->setMinimumSize(600,600);
   //this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
   setAttribute(Qt::WA_DeleteOnClose);
@@ -306,8 +317,7 @@ Circuit_Viewer::Circuit_Viewer(QWidget *parent) : QMainWindow(parent)
   _view->setRenderHint(QPainter::Antialiasing, true);
   
   _editor = new QNodesEditor(this);
-  _editor->install(_scene);
-  
+  _editor->install(_scene);  
   
   QNEBlock *b = new QNEBlock(0);
   _scene->addItem(b);
@@ -359,6 +369,8 @@ void Circuit_Viewer::createActions()
 	fitToWindowAct->setCheckable(true);
 	fitToWindowAct->setShortcut(tr("Ctrl+F"));
 	connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
+        
+        connect(_editor, SIGNAL(compSelected(DspComponent*)), this, SLOT(onCompSelected(DspComponent*)));
 }
 
 void Circuit_Viewer::createToolbar()
@@ -409,6 +421,11 @@ void Circuit_Viewer::fitToWindow()
 	}
 	zoomInAct->setEnabled(!fitToWindowAct->isChecked());
 	zoomOutAct->setEnabled(!fitToWindowAct->isChecked());
+}
+
+void Circuit_Viewer::onCompSelected(DspComponent *comp)
+{
+  emit compSelected(comp);
 }
 
 static int counter = 0;

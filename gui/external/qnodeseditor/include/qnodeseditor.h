@@ -28,6 +28,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #include <QObject>
 
+#include "DspComponent.h"
+
 class QGraphicsScene;
 class QNEConnection;
 class QGraphicsItem;
@@ -46,6 +48,9 @@ public:
 
 	void save(QDataStream &ds);
 	void load(QDataStream &ds);
+
+signals:
+	void compSelected(DspComponent *comp);
 
 private:
 	QGraphicsItem *itemAt(const QPointF&);
