@@ -67,6 +67,7 @@ private slots:
 	void loadFile();
 	void addBlock();
 	void on_action_Pop_Out_triggered();
+	void on_action_tick_triggered();
 	void createDockWindows();
 	void addComponent(QListWidgetItem *it);
         
@@ -99,6 +100,7 @@ private:
 	QAction *saveAct = std::nullptr_t();
 	QAction *addAct = std::nullptr_t();
 	QAction *popOutAct = std::nullptr_t();
+	QAction *tickAct = std::nullptr_t();
 
 	QListWidget *List1 = std::nullptr_t();
 	QListWidget *List2 = std::nullptr_t();
@@ -139,6 +141,7 @@ public:
 	Circuit_Viewer(QWidget *parent = 0);
 
         void addComponent(DspComponent *comp);
+        void tick();
         
 	//void open(const QString &title);
 	//void setImage(const QString &title, QPixmap *pxmap);

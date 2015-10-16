@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "comp_epi.hpp"
 #include "comp_lfread.hpp"
 #include "comp_lfwrite.hpp"
+#include "comp_dispwrite.hpp"
 #include "operators.hpp"
 
 #include "qnemainwindow.h"
@@ -94,6 +95,11 @@ void QNEMainWindow::on_action_Pop_Out_triggered()
 	}
 }
 
+void QNEMainWindow::on_action_tick_triggered()
+{
+  _circuitViewer->tick();
+}
+
 
 void QNEMainWindow::createMenus()
 {
@@ -125,6 +131,7 @@ void QNEMainWindow::createToolBars()
 	fileToolBar->addAction(loadAct);
 	fileToolBar->addAction(saveAct);
 	fileToolBar->addAction(popOutAct);
+	fileToolBar->addAction(tickAct);
 	fileToolBar->addSeparator();
 	fileToolBar->addAction(quitAct);
 
@@ -163,6 +170,10 @@ void QNEMainWindow::createActions()
 	popOutAct = new QAction(QIcon(":/images/arrow.png"), tr("popOut"), this);
 	popOutAct->setStatusTip(tr("Pop Out Subwindow as own Window."));
 	connect(popOutAct, SIGNAL(triggered()), this, SLOT(on_action_Pop_Out_triggered()));
+        
+        tickAct = new QAction(QIcon(":/images/arrow.png"), tr("tick"), this);
+	tickAct->setStatusTip(tr("Tick Circuit."));
+	connect(tickAct, SIGNAL(triggered()), this, SLOT(on_action_tick_triggered()));
 
 }
 
@@ -254,8 +265,8 @@ void QNEMainWindow::createDockWindows()
         it->setData(Qt::UserRole, QVP<DspComponent>::asQVariant(new COMP_Epi()));
         List1->addItem(it);
         
-        it = new QListWidgetItem("GAUSCH");
-        it->setData(Qt::UserRole, QVP<DspComponent>::asQVariant(new OP_VigraGauss()));
+        it = new QListWidgetItem("Write Mesh");
+        it->setData(Qt::UserRole, QVP<DspComponent>::asQVariant(new COMP_DispWrite()));
         List1->addItem(it);
 	//}
 
@@ -432,4 +443,11 @@ void Circuit_Viewer::save()
 
 void Circuit_Viewer::saveAs()
 {
+}
+
+
+void Circuit_Viewer::tick()
+{
+  _circuit->Tick();
+  _circuit->Reset();
 }
