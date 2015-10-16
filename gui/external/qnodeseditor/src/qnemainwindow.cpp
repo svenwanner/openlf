@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "comp_epi.hpp"
 #include "comp_lfread.hpp"
 #include "comp_lfwrite.hpp"
+#include "operators.hpp"
 
 #include "qnemainwindow.h"
 #include "userinterface_qnemainwindow.h"
@@ -68,10 +69,10 @@ QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
 	createToolBars();
 	createDockWindows();
 
-	Circuit_Viewer *circuitViewer = new Circuit_Viewer();
-	mdiArea->addSubWindow(circuitViewer);
-	circuitViewer->setObjectName("circuitViewer");
-	circuitViewer->show();
+	_circuitViewer = new Circuit_Viewer();
+	mdiArea->addSubWindow(_circuitViewer);
+	_circuitViewer->setObjectName("circuitViewer");
+	_circuitViewer->show();
 
 	this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 
@@ -185,18 +186,6 @@ void QNEMainWindow::saveFile()
 	nodesEditor->save(ds);
 }
 
-
-void QNEMainWindow::addComponent(QListWidgetItem *it)
-{
-/*  DspComponent *comp = QVP<DatasetRoot>::asPtr(it->data(Qt::UserRole);
-  
-  comp = comp->clone();
-
-  _circuit->AddComponent(comp, "whatever");
-    
-  new QNEBlock(lf_in, scene);*/
-}
-
 void QNEMainWindow::loadFile()
 {
 	QString fname = QFileDialog::getOpenFileName();
@@ -220,6 +209,17 @@ void QNEMainWindow::addBlock()
 		b->addPort(names[rand() % 10], rand() % 2, 0, 0);
         b->setPos(view->sceneRect().center().toPoint());
 	}
+}
+
+
+
+void QNEMainWindow::addComponent(QListWidgetItem *it)
+{
+  DspComponent *comp = QVP<DspComponent>::asPtr(it->data(Qt::UserRole));
+  
+  comp = comp->clone();
+
+  _circuitViewer->addComponent(comp);
 }
 
 
@@ -253,9 +253,13 @@ void QNEMainWindow::createDockWindows()
         it = new QListWidgetItem("EPI");
         it->setData(Qt::UserRole, QVP<DspComponent>::asQVariant(new COMP_Epi()));
         List1->addItem(it);
+        
+        it = new QListWidgetItem("GAUSCH");
+        it->setData(Qt::UserRole, QVP<DspComponent>::asQVariant(new OP_VigraGauss()));
+        List1->addItem(it);
 	//}
 
-	connect(List1, SIGNAL(itemDoubleClicked(QListWidgetItem)),this, SLOT(addComponent(QListWidgetItem)));
+	connect(List1, SIGNAL(itemDoubleClicked(QListWidgetItem*)),this, SLOT(addComponent(QListWidgetItem*)));
 
 	docks.push_back(dock);
 	// ******************************************************************
@@ -392,6 +396,13 @@ void Circuit_Viewer::fitToWindow()
 	}
 	zoomInAct->setEnabled(!fitToWindowAct->isChecked());
 	zoomOutAct->setEnabled(!fitToWindowAct->isChecked());
+}
+
+void Circuit_Viewer::addComponent(DspComponent *comp)
+{
+  _circuit->AddComponent(comp, "whatever");
+    
+  new QNEBlock(comp, _scene);
 }
 
 void Circuit_Viewer::scaleImage(double factor)

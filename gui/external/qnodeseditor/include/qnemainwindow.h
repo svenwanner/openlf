@@ -52,6 +52,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include "DspCircuit.h"
 
 class QNodesEditor;
+class Circuit_Viewer;
 
 class QNEMainWindow : public QMainWindow
 {
@@ -68,6 +69,9 @@ private slots:
 	void on_action_Pop_Out_triggered();
 	void createDockWindows();
 	void addComponent(QListWidgetItem *it);
+        
+signals:
+	void itemDoubleClicked();
 
 private:
 
@@ -104,7 +108,8 @@ private:
 
 	QSlider *slider = std::nullptr_t();
 	QSpinBox *spinBox = std::nullptr_t();
-
+        
+        Circuit_Viewer *_circuitViewer = NULL;
 };
 
 #endif // QNEMAINWINDOW_H
@@ -133,6 +138,8 @@ class Circuit_Viewer : public QWidget
 public:
 	Circuit_Viewer(QWidget *parent = 0);
 
+        void addComponent(DspComponent *comp);
+        
 	//void open(const QString &title);
 	//void setImage(const QString &title, QPixmap *pxmap);
 	//void enableEPI(bool enable);
@@ -146,11 +153,8 @@ protected:
 	//void mousePressEvent(QMouseEvent * e);
 	//void mouseMoveEvent(QMouseEvent* event);
 
-signals:
-	//void mouseClick(QPoint position);
 
-
-	private slots:
+private slots:
 
 	void save();
 	void saveAs();
