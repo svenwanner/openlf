@@ -398,9 +398,14 @@ void Circuit_Viewer::fitToWindow()
 	zoomOutAct->setEnabled(!fitToWindowAct->isChecked());
 }
 
+static int counter = 0;
+
 void Circuit_Viewer::addComponent(DspComponent *comp)
 {
-  _circuit->AddComponent(comp, "whatever");
+  char buf[64];
+  sprintf(buf, "whatefer%d", counter++);
+  bool success = _circuit->AddComponent(comp, buf);
+  assert(success);
     
   new QNEBlock(comp, _scene);
 }
