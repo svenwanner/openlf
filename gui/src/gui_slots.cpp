@@ -33,7 +33,7 @@ void GUI_Toolbox::about()
 void GUI_Toolbox::showNode()
 {
 	QNEMainWindow *QNEMW = new QNEMainWindow();
-	QNEMW->show();
+	QNEMW->showMaximized();
 }
 
 

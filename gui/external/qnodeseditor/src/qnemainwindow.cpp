@@ -73,10 +73,10 @@ QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
         
 	mdiArea->addSubWindow(_circuitViewer);
 	_circuitViewer->setObjectName("circuitViewer");
-	_circuitViewer->show();
+	_circuitViewer->showMaximized();
         
         
-	this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+	this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
 }
 QNEMainWindow::~QNEMainWindow()
@@ -298,13 +298,13 @@ void QNEMainWindow::createDockWindows()
 
 Circuit_Viewer::Circuit_Viewer(QWidget *parent) : QMainWindow(parent)
 {
-  this->setMinimumSize(600,600);
-  //this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+  this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
   setAttribute(Qt::WA_DeleteOnClose);
   setMouseTracking(true);
   
-  scrollArea = new QScrollArea;
-  scrollArea->setBackgroundRole(QPalette::Dark);
+  //scrollArea = new QScrollArea;
+  //scrollArea->setBackgroundRole(QPalette::Dark);
+  
   
 
   _circuit = new DspCircuit();
@@ -315,30 +315,15 @@ Circuit_Viewer::Circuit_Viewer(QWidget *parent) : QMainWindow(parent)
   
   _view = new QGraphicsView(this);
   _view->setScene(_scene);
-  //_view->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
-  _view->setMinimumSize(600,600);
+  _view->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+  //_view->setMinimumSize(600,600);
+  
+  setCentralWidget(_view);
   
   _view->setRenderHint(QPainter::Antialiasing, true);
   
   _editor = new QNodesEditor(this);
   _editor->install(_scene);  
-  
-  QNEBlock *b = new QNEBlock(0);
-  _scene->addItem(b);
-  b->addPort("test", 0, QNEPort::NamePort);
-  b->addPort("TestBlock", 0, QNEPort::TypePort);
-  b->addInputPort("in1");
-  b->addInputPort("in2");
-  b->addInputPort("in3");
-  b->addOutputPort("out1");
-  b->addOutputPort("out2");
-  b->addOutputPort("out3");
-  
-  b = b->clone();
-  b->setPos(150, 0);
-  
-  b = b->clone();
-  b->setPos(150, 150);
 
   createActions();
   createToolbar();
