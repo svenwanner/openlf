@@ -64,17 +64,18 @@ QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
 	slider = new QSlider(Qt::Horizontal);
 	spinBox = new QSpinBox();
 
-	createMenus();
-	createToolBars();
-	createDockWindows();
+	_circuitViewer = new Circuit_Viewer(this);
         
-	_circuitViewer = new Circuit_Viewer();
+	createActions();
+	createMenus();
+	createDockWindows();
+	createToolBars();
+        
 	mdiArea->addSubWindow(_circuitViewer);
 	_circuitViewer->setObjectName("circuitViewer");
 	_circuitViewer->show();
         
-	createActions();
-
+        
 	this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 
 }
@@ -109,12 +110,16 @@ void QNEMainWindow::createMenus()
 	fileMenu->addAction(saveAct);
 	fileMenu->addSeparator();
 	fileMenu->addAction(quitAct);
+        
+        QMenu *circuitMenu = new QMenu(tr("&Circuit"), this);
+	circuitMenu->addAction(tickAct);
 
 	//helpMenu = new QMenu(tr("&Help"), this);
 
-	viewMenu = new QMenu(tr("&File"), this);
+	viewMenu = new QMenu(tr("&View"), this);
 
 	menuBar()->addMenu(fileMenu);
+	menuBar()->addMenu(circuitMenu);
 	//menuBar()->addMenu(helpMenu);
 	menuBar()->addMenu(viewMenu);
 }
@@ -128,7 +133,6 @@ void QNEMainWindow::createToolBars()
 	fileToolBar->addAction(loadAct);
 	fileToolBar->addAction(saveAct);
 	fileToolBar->addAction(popOutAct);
-	fileToolBar->addAction(tickAct);
 	fileToolBar->addSeparator();
 	fileToolBar->addAction(quitAct);
 
@@ -166,7 +170,8 @@ void QNEMainWindow::createActions()
         
         tickAct = new QAction(QIcon(":/images/arrow.png"), tr("tick"), this);
 	tickAct->setStatusTip(tr("Tick Circuit."));
-        
+        connect(tickAct, SIGNAL(triggered()), this, SLOT(on_action_tick_triggered()));
+  
         connect(_circuitViewer, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
 
 }
@@ -229,7 +234,6 @@ void QNEMainWindow::addComponent(QListWidgetItem *it)
 
 void QNEMainWindow::showCompSettings(DspComponent *comp)
 {
-  printf("show setting!\n");
   _settings->attach(comp);
 }
 
@@ -433,7 +437,7 @@ static int counter = 0;
 void Circuit_Viewer::addComponent(DspComponent *comp)
 {
   char buf[64];
-  sprintf(buf, "whatefer%d", counter++);
+  sprintf(buf, "component_%d", counter++);
   bool success = _circuit->AddComponent(comp, buf);
   assert(success);
     
