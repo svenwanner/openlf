@@ -292,10 +292,14 @@ void Circuit_Viewer::adjustScrollBar(QScrollBar *scrollBar, double factor)
 }
 void Circuit_Viewer::save()
 {
+  saveAs();
 }
 
 void Circuit_Viewer::saveAs()
 {
+  QString path = QFileDialog::getSaveFileName(this, tr("select filename of circuit"));
+  
+  _circuit->save(path.toUtf8().constData());
 }
 
 

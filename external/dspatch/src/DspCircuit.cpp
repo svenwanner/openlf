@@ -493,4 +493,28 @@ void DspCircuit::changed()
   printf("circuit gen: %llu\n", c->_generation);
 }
 
+void DspCircuit::_save_comp(FILE *f, int i)
+{  
+  fprintf(f, "node [\n");
+  fprintf(f, "id %d\n", i);
+  fprintf(f, "label %s\n", _components[i]->GetComponentName());
+  fprintf(f, "]\n");
+}
+
+bool DspCircuit::save(std::string filename)
+{
+  FILE *f = fopen(filename.c_str(), "w");
+  if (!f)
+    return true;
+  
+  fprintf(f, "graph [\n");
+  for(int i=0;i<_components.size();i++)
+    _save_comp(f, i);
+  
+  fprintf(f, "]\n");
+  fclose(f);
+    
+  return false;
+}
+
 //=================================================================================================

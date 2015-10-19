@@ -67,6 +67,8 @@ public:
 
     void SetThreadCount(int threadCount);
     int GetThreadCount() const;
+    
+    bool save(std::string filename);
 
     bool AddComponent(DspComponent* component, std::string const& componentName = "");
     bool AddComponent(DspComponent& component, std::string const& componentName = "");
@@ -133,6 +135,8 @@ private:
 
     void _DisconnectComponent(int componentIndex);
     void _RemoveComponent(int componentIndex);
+    
+    void _save_comp(FILE *f, int i);
 
 private:
     std::vector<DspComponent*> _components;
