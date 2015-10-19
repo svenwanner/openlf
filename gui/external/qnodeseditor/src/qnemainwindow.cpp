@@ -403,13 +403,14 @@ void Circuit_Viewer::zoomOut()
 
 void Circuit_Viewer::fitToWindow()
 {
-	bool fitToWindow = fitToWindowAct->isChecked();
+	/*bool fitToWindow = fitToWindowAct->isChecked();
 	scrollArea->setWidgetResizable(fitToWindow);
 	if (!fitToWindow) {
 		normalSize();
 	}
 	zoomInAct->setEnabled(!fitToWindowAct->isChecked());
-	zoomOutAct->setEnabled(!fitToWindowAct->isChecked());
+	zoomOutAct->setEnabled(!fitToWindowAct->isChecked());*/
+        _view->fitInView(_scene->sceneRect(), Qt::KeepAspectRatio);
 }
 
 void Circuit_Viewer::onCompSelected(DspComponent *comp)
@@ -435,15 +436,15 @@ void Circuit_Viewer::scaleImage(double factor)
 	//scaleFactor *= factor;
 	//imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
 
-	adjustScrollBar(scrollArea->horizontalScrollBar(), factor);
+	/*adjustScrollBar(scrollArea->horizontalScrollBar(), factor);
 	adjustScrollBar(scrollArea->verticalScrollBar(), factor);
 
 	zoomInAct->setEnabled(factor < 3.0);
-	zoomOutAct->setEnabled(factor > 0.333);
+	zoomOutAct->setEnabled(factor > 0.333);*/
 }
 void Circuit_Viewer::adjustScrollBar(QScrollBar *scrollBar, double factor)
 {
-	scrollBar->setValue(int(factor * scrollBar->value()	+ ((factor - 1) * scrollBar->pageStep() / 2)));
+	/*scrollBar->setValue(int(factor * scrollBar->value()	+ ((factor - 1) * scrollBar->pageStep() / 2)));*/
 }
 void Circuit_Viewer::save()
 {

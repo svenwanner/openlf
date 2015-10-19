@@ -154,7 +154,7 @@ public:
 	//QString userFriendlyCurrentFile();
 	//QString currentFile()  { return curFile; }
 
-	QScrollArea *scrollArea;
+	//QScrollArea *scrollArea;
 
 signals:
   void compSelected(DspComponent *comp);
