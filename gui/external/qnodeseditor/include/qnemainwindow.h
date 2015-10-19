@@ -73,8 +73,8 @@ public:
 private slots:
 	void saveFile();
 	void loadFile();
-	void addBlock();
-	void on_action_tick_triggered();
+	void new_circuit();
+	void onApplicationFocusChanged();
 	void createDockWindows();
 	void addComponent(QListWidgetItem *it);
 	void showCompSettings(DspComponent *comp);
@@ -106,18 +106,13 @@ private:
 	QAction *quitAct = std::nullptr_t();
 	QAction *loadAct = std::nullptr_t();
 	QAction *saveAct = std::nullptr_t();
-	QAction *addAct = std::nullptr_t();
-	QAction *popOutAct = std::nullptr_t();
-	QAction *tickAct = std::nullptr_t();
+	QAction *newAct = std::nullptr_t();
 
 	QListWidget *List1 = std::nullptr_t();
 	QListWidget *List2 = std::nullptr_t();
 
 	QDockWidget *dock = std::nullptr_t();
 	QDockWidget *dock2 = std::nullptr_t();
-
-	QSlider *slider = std::nullptr_t();
-	QSpinBox *spinBox = std::nullptr_t();
         
     Circuit_Viewer *_circuitViewer = NULL;
     QNESettings *_settings = NULL;
@@ -145,8 +140,8 @@ public:
 	Circuit_Viewer(QMdiArea *mdiArea = 0, QMainWindow *parent = 0);
 	~Circuit_Viewer();
 
-        void addComponent(DspComponent *comp);
-        void tick();
+     void addComponent(DspComponent *comp);
+        
         
 	//void open(const QString &title);
 	//void setImage(const QString &title, QPixmap *pxmap);
@@ -159,6 +154,7 @@ public:
 
 signals:
   void compSelected(DspComponent *comp);
+  void focusChanged();
 
 protected:
 	//void mousePressEvent(QMouseEvent * e);
@@ -172,11 +168,11 @@ private slots:
         void load();
 	void zoomIn();
 	void zoomOut();
-	void normalSize();
 	void fitToWindow();
     void onCompSelected(DspComponent *comp);
 	void on_action_Pop_Out_triggered();
 	void on_action_Pop_In_triggered();
+	void tick();
 
 
 private:
@@ -203,14 +199,14 @@ private:
 	QAction *infoAct;
 	QAction *zoomInAct;
 	QAction *zoomOutAct;
-	QAction *normalSizeAct;
 	QAction *fitToWindowAct;
 	QAction *popInAct;
 	QAction *popOutAct;
+	QAction *tickAct;
 
 	const int ToolBar_Height = 40;
 	QToolBar *ToolBar = std::nullptr_t();
-	QMenu *fileMenu = std::nullptr_t();
+	QMenu *circuitMenu = std::nullptr_t();
 
 	//QVBoxLayout* vbox;
 

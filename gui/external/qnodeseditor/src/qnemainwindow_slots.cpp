@@ -73,17 +73,15 @@ void QNEMainWindow::loadFile()
 	nodesEditor->load(ds);
 }
 
-void QNEMainWindow::addBlock()
+void QNEMainWindow::new_circuit()
 {
-    QNEBlock *b = new QNEBlock(0);
-
-    scene->addItem(b);
-	static const char* names[] = {"Vin", "Voutsadfasdf", "Imin", "Imax", "mul", "add", "sub", "div", "Conv", "FFT"};
-	for (int i = 0; i < 4 + rand() % 3; i++)
-	{
-		b->addPort(names[rand() % 10], rand() % 2, 0, 0);
-        b->setPos(view->sceneRect().center().toPoint());
-	}
+	_circuitViewer = new Circuit_Viewer(mdiArea, this);
+	mdiArea->addSubWindow(_circuitViewer);
+	_circuitViewer->setObjectName("circuitViewer");
+	_circuitViewer->showMaximized();
+}
+void QNEMainWindow::onApplicationFocusChanged(){
+	std::cout << "hello" << std::endl;
 }
 
 void QNEMainWindow::addComponent(QListWidgetItem *it)
@@ -108,7 +106,8 @@ void QNEMainWindow::createDockWindows()
 		delete dock;
 	}
 
-	dock = new QDockWidget(tr("Components:"), this);
+
+	dock = new QDockWidget(tr("Component list:"), this);
 	dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	List1 = new QListWidget(dock);
 	dock->setWidget(List1);
@@ -129,14 +128,10 @@ void QNEMainWindow::createDockWindows()
 	docks.push_back(dock);
 	// ******************************************************************
         
-        QDockWidget *settings_dock = new QDockWidget(tr("Component Settings:"), this);
+
+    QDockWidget *settings_dock = new QDockWidget(tr("Component Settings:"), this);
 	settings_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	_settings = new QNESettings(settings_dock);
 	settings_dock->setWidget(_settings);
 	addDockWidget(Qt::RightDockWidgetArea, settings_dock);
-}
-
-void QNEMainWindow::on_action_tick_triggered()
-{
-	_circuitViewer->tick();
 }
