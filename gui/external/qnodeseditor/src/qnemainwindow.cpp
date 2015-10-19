@@ -314,8 +314,8 @@ void Circuit_Viewer::on_action_Pop_Out_triggered()
 		popInpopOutWidget->adjustSize();
 		popInpopOutWidget->move(QApplication::desktop()->screen()->rect().center() - popInpopOutWidget->rect().center());
 		popInpopOutWidget->hide();
-		sub->deleteLater();
 		mdiArea->removeSubWindow(popInpopOutWidget);
+		sub->close();
 		popInpopOutWidget->show();
 	}
 }
