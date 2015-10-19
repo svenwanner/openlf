@@ -33,7 +33,6 @@ GUI_Toolbox::GUI_Toolbox(QWidget *parent) : QMainWindow(parent), ui(new Ui::GUI_
     ui->lineEdit_cut_X->setEnabled(false);
     ui->lineEdit_cut_Y->setEnabled(false);
     this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
-    //setWindowTitle(tr("Light Field Toolbox"));
 }
 /*************************************************************
  *                     Destructor
