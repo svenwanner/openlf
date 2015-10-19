@@ -193,18 +193,29 @@ void QNEBlock::load(QDataStream &ds, QMap<quint64, QNEPort*> &portMap)
 
 void QNEBlock::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-	Q_UNUSED(option)
-	Q_UNUSED(widget)
-
-	if (isSelected()) {
-		painter->setPen(QPen(Qt::darkYellow));
-		painter->setBrush(Qt::yellow);
-	} else {
-		painter->setPen(QPen(Qt::darkGreen));
-		painter->setBrush(Qt::green);
-	}
-
-	painter->drawPath(path());
+  Q_UNUSED(option)
+  Q_UNUSED(widget)
+  
+  if (component && component->hasError()) {
+      if (isSelected()) {
+        painter->setPen(QPen(Qt::darkRed));
+        painter->setBrush(QColor(255,127,127));
+      } else {
+        painter->setPen(QPen(Qt::darkRed));
+        painter->setBrush(Qt::red);
+      }
+  }
+  else {
+      if (isSelected()) {
+        painter->setPen(QPen(Qt::darkYellow));
+        painter->setBrush(Qt::yellow);
+      } else {
+        painter->setPen(QPen(Qt::darkGreen));
+        painter->setBrush(Qt::green);
+      }
+    }
+    
+    painter->drawPath(path());
 }
 
 QNEBlock* QNEBlock::clone()

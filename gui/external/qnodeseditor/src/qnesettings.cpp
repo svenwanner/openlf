@@ -19,6 +19,9 @@ void QNESettings::attach(DspComponent *comp)
       
   _component = comp;
   
+  DspCircuit *c = comp->GetParentCircuit();
+  c->configure();
+  
   for(int i=0;i<_component->GetParameterCount();i++) {
     const DspParameter *param = _component->GetParameter(i);
     QHBoxLayout *hbox = new QHBoxLayout(_layout_w);
@@ -59,6 +62,7 @@ void QNESettings::attach(DspComponent *comp)
           hbox->addWidget(spinbox);
           spinbox->setProperty("component", QVariant::fromValue((void*)_component));
           spinbox->setProperty("idx", i);
+          spinbox->setMaximum(INT_MAX);
           const int *val = param->GetInt();
           if (val)
             spinbox->setValue(*val);
@@ -77,6 +81,9 @@ void QNESettings::textSettingChanged(QString text)
   int idx = sender()->property("idx").value<int>();
   
   comp->SetParameter(idx, DspParameter(DPPT::String, text.toStdString()));
+  
+  DspCircuit *c = comp->GetParentCircuit();
+  c->configure();
 }
 
 void QNESettings::floatSettingChanged(double val)
@@ -85,6 +92,9 @@ void QNESettings::floatSettingChanged(double val)
   int idx = sender()->property("idx").value<int>();
   
   comp->SetParameter(idx, DspParameter(DPPT::Float, (float)val));
+  
+  DspCircuit *c = comp->GetParentCircuit();
+  c->configure();
 }
 
 
@@ -94,6 +104,9 @@ void QNESettings::intSettingChanged(int val)
   int idx = sender()->property("idx").value<int>();
   
   comp->SetParameter(idx, DspParameter(DPPT::Int, val));
+  
+  DspCircuit *c = comp->GetParentCircuit();
+  c->configure();
 }
 
 void QNESettings::selFileClicked()

@@ -241,11 +241,10 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   LF *in = NULL;
   LF *config = NULL;
   LF *out = NULL;
-  bool res;
   
-  assert(inputs.GetValue(0, in));
-  res = inputs.GetValue(0, in);
-  assert(res);
+  printf("tick epi!\n");
+  
+  errorCond(inputs.GetValue(0, in)); RETURN_ON_ERROR
   
   inputs.GetValue(1, config);
   
@@ -255,8 +254,8 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   outputs.SetValue(0, out);
   
-  assert(in);
-  assert(out);
+  errorCond(in); RETURN_ON_ERROR
+  errorCond(out); RETURN_ON_ERROR
   
   int subset_idx = 0; //we could also loop over all subsets or specify subset using string name
   
@@ -273,6 +272,14 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   float disp_start = 3.0, disp_stop = 7.0, disp_step = 1.0;
   int start_line = 0, stop_line = subset.EPICount();
   
+  //FIXME get from input light field!
+  SetParameter_((int)P_IDX::DispStart, DspParameter(DPPT::Float, disp_start));
+  SetParameter_((int)P_IDX::DispStep, DspParameter(DPPT::Float, disp_step));
+  SetParameter_((int)P_IDX::DispStop, DspParameter(DPPT::Float, disp_stop));
+  
+  SetParameter_((int)P_IDX::StartLine, DspParameter(DPPT::Int, start_line));
+  SetParameter_((int)P_IDX::StopLine, DspParameter(DPPT::Int, stop_line));
+  
   //setup circuit and threading
   
   int t_count = omp_get_max_threads();
@@ -282,11 +289,11 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   DspCircuit *merge_circuit;
   
   p = GetParameter((int)P_IDX::Epi_Circuit);
-  assert(p);
+  errorCond(p, ""); RETURN_ON_ERROR
   p->GetPointer(epi_circuit);
   
   p = GetParameter((int)P_IDX::Merge_Circuit);
-  assert(p);
+  errorCond(p, ""); RETURN_ON_ERROR
   p->GetPointer(merge_circuit);
   
   vector<FlexMAVSource<3>> comp_source(t_count);
@@ -296,6 +303,11 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   component_child_apply_config(epi_circuit, config, GetComponentName());
   component_child_apply_config(merge_circuit, config, GetComponentName());
   component_apply_config(this, config);
+  
+  if (configOnly()) {
+    printf("config tick!\n");
+    return;
+  }
   
   get_float_param(this, disp_start, (int)P_IDX::DispStart);
   get_float_param(this, disp_step, (int)P_IDX::DispStep);

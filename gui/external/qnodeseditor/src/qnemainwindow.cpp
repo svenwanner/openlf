@@ -293,10 +293,14 @@ void Circuit_Viewer::adjustScrollBar(QScrollBar *scrollBar, double factor)
 }
 void Circuit_Viewer::save()
 {
+  saveAs();
 }
 
 void Circuit_Viewer::saveAs()
 {
+  QString path = QFileDialog::getSaveFileName(this, tr("select filename of circuit"));
+  
+  _circuit->save(path.toUtf8().constData());
 }
 
 
@@ -319,8 +323,8 @@ void Circuit_Viewer::on_action_Pop_Out_triggered()
 		popInpopOutWidget->adjustSize();
 		popInpopOutWidget->move(QApplication::desktop()->screen()->rect().center() - popInpopOutWidget->rect().center());
 		popInpopOutWidget->hide();
-		sub->deleteLater();
 		mdiArea->removeSubWindow(popInpopOutWidget);
+		sub->close();
 		popInpopOutWidget->show();
 	}
 }
