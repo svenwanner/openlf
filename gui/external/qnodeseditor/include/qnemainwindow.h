@@ -68,7 +68,6 @@ private slots:
 	void saveFile();
 	void loadFile();
 	void addBlock();
-	void on_action_Pop_Out_triggered();
 	void on_action_tick_triggered();
 	void createDockWindows();
 	void addComponent(QListWidgetItem *it);
@@ -140,11 +139,13 @@ private:
 
 
 class Circuit_Viewer : public QMainWindow
+
 {
 	Q_OBJECT
 
 public:
-	Circuit_Viewer(QWidget *parent = 0);
+	Circuit_Viewer(QMdiArea *mdiArea = 0, QMainWindow *parent = 0);
+	~Circuit_Viewer();
 
         void addComponent(DspComponent *comp);
         void tick();
@@ -174,10 +175,15 @@ private slots:
 	void zoomOut();
 	void normalSize();
 	void fitToWindow();
-        void onCompSelected(DspComponent *comp);
+    void onCompSelected(DspComponent *comp);
+	void on_action_Pop_Out_triggered();
+	void on_action_Pop_In_triggered();
 
 
 private:
+
+	QMdiArea *mdiArea;
+	QWidget *popInpopOutWidget;
 
 	// member variable to store click position
 	QPoint m_lastPoint;
@@ -199,6 +205,8 @@ private:
 	QAction *zoomOutAct;
 	QAction *normalSizeAct;
 	QAction *fitToWindowAct;
+	QAction *popInAct;
+	QAction *popOutAct;
 
 	const int ToolBar_Height = 40;
 	QToolBar *ToolBar = std::nullptr_t();
@@ -227,4 +235,3 @@ private:
         QGraphicsView *_view;
         QNodesEditor *_editor;
 };
-
