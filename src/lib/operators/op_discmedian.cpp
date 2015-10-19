@@ -27,13 +27,13 @@
 #define OPENLF_OP_CONSTRUCT_PARAMS \
     AddParameter_("radius", DspParameter(DspParameter::ParamType::Int, 0)); \
 
-OPENLF_OP_START(OP_DiscErosion, 1, 1, 3, 3)
+OPENLF_OP_START(OP_DiscMedian, 1, 1, 3, 3)
 
 //  int radius = *op->GetParameter(0)->GetInt();
 //    for (int i=0; i < in[0]->shape()[2]; ++i){
 //        vigra::MultiArrayView<2, T> channel_in = in[0]->bindAt(2, i);
 //        vigra::MultiArrayView<2, T> channel_out = out[0]->bindAt(2, i);
-//        vigra::discErosion(channel_in,channel_out, radius);
+//        vigra::discMedian(channel_in,channel_out, radius);
 //    }
 
-OPENLF_OP_END(OP_DiscErosion, 1, 1, 3, 3)
+OPENLF_OP_END(OP_DiscMedian, 1, 1, 3, 3)

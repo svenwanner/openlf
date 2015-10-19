@@ -59,16 +59,31 @@ namespace openlf {
    */
   OPENLF_OP_CLASS_HEADER(OP_DiscErosion, 1, 1, 3, 3)
 
+  /*! \brief Disc median operator
+   *
+   * Dimension separated vigra based median filter using a disc of given radius.
+   * \param radius <int> Radius of the disc used for the filter.
+   */
+  OPENLF_OP_CLASS_HEADER(OP_DiscMedian, 1, 1, 3, 3)
+
+  /*! \brief Gaussian sharpening operator
+   *
+   * Dimension separated vigra based gaussian sharpening filter.
+   * \param sharpening_factor <double> Sharpening factor.
+   * \param scale <double> Scale
+   */
+  OPENLF_OP_CLASS_HEADER(OP_GaussianSharpening, 1, 1, 3, 3)
 
 
 
 
-/*! \brief Simple vigra gradient magnitude operator
-*
-* Pre-bluring gradient magnitude operator.
-*
-* \param scale <float> pre-bluring scale
-*/
+
+ /*! \brief Simple vigra gradient magnitude operator
+  *
+  * Pre-bluring gradient magnitude operator.
+  *
+  * \param scale <float> pre-bluring scale
+  */
   OPENLF_OP_SINGLE2D_CLASS_HEADER(OP_VigraGradientMagnitude)
   //============================================================================   
           
