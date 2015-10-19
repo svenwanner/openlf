@@ -24,6 +24,7 @@
 #ifndef _OPENLF_OP_OPERATORS_H
 #define _OPENLF_OP_OPERATORS_H
 
+#include "clif/clif_vigra.hpp"
 #include "clif/flexmav.hpp"
 #include "dspatch/DspParameter.h"
 #include "dspatch/DspComponent.h"
