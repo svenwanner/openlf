@@ -44,6 +44,9 @@ void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   const std::string *filename;
   const std::string *dataset_name = NULL;
   
+  if (configOnly())
+    return;
+  
   inputs.GetValue(0, in);
   
   filename = GetParameter(0)->GetString();

@@ -116,6 +116,9 @@ public:
 
     void RemoveAllInputs();
     void RemoveAllOutputs();
+    
+    void configure();
+    virtual void changed();
 
 protected:
     virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
@@ -136,6 +139,8 @@ private:
 
     std::vector<DspCircuitThread> _circuitThreads;
     int _currentThreadIndex;
+    uint64_t _generation = 1;
+    uint64_t _configured_generation = 0;
 
     DspWireBus _inToInWires;
     DspWireBus _outToOutWires;
@@ -203,6 +208,7 @@ bool DspCircuit::ConnectInToIn(FromInputId const& fromInput, ToComponentType& to
     PauseAutoTick();
 
     bool result = _inToInWires.AddWire(_components[toComponentIndex], fromInputIndex, toInputIndex);
+    changed();
 
     ResumeAutoTick();
 
@@ -231,6 +237,7 @@ bool DspCircuit::ConnectOutToOut(FromComponentType& fromComponent,
     PauseAutoTick();
 
     bool result = _outToOutWires.AddWire(_components[fromComponentIndex], fromOutputIndex, toOutputIndex);
+    changed();
 
     ResumeAutoTick();
 
@@ -282,6 +289,7 @@ bool DspCircuit::DisconnectInToIn(FromInputId const& fromInput,
     PauseAutoTick();
 
     bool result = _inToInWires.RemoveWire(_components[toComponentIndex], fromInputIndex, toInputIndex);
+    changed();
 
     ResumeAutoTick();
 
@@ -310,6 +318,7 @@ bool DspCircuit::DisconnectOutToOut(FromComponentType const& fromComponent,
     PauseAutoTick();
 
     bool result = _outToOutWires.RemoveWire(_components[fromComponentIndex], fromOutputIndex, toOutputIndex);
+    changed();
 
     ResumeAutoTick();
 

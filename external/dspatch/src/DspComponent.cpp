@@ -61,6 +61,22 @@ DspComponent::~DspComponent()
 
 //=================================================================================================
 
+bool DspComponent::configOnly()
+{
+  DspComponent *comp = this;
+  while (comp->_GetParentCircuit())
+    comp = comp->_GetParentCircuit();
+  return comp->_configOnly;
+}
+
+void DspComponent::setConfigOnly(bool val)
+{
+  DspComponent *comp = this;
+  while (comp->_GetParentCircuit())
+    comp = comp->_GetParentCircuit();
+  comp->_configOnly = val;
+}
+
 void DspComponent::SetCallback(Callback_t const& callback, void* userData)
 {
     PauseAutoTick();
@@ -88,6 +104,7 @@ std::string DspComponent::GetComponentName() const
 void DspComponent::DisconnectInput(int inputIndex)
 {
     PauseAutoTick();
+    changed();
 
     // remove inputComponent from _inputWires
     for (int i = 0; i < _inputWires.GetWireCount(); i++)
@@ -108,6 +125,7 @@ void DspComponent::DisconnectInput(int inputIndex)
 void DspComponent::DisconnectInput(std::string const& inputName)
 {
     int inputIndex;
+    changed();
 
     PauseAutoTick();
 
@@ -124,6 +142,7 @@ void DspComponent::DisconnectInput(std::string const& inputName)
 void DspComponent::DisconnectInput(DspComponent const* inputComponent)
 {
     PauseAutoTick();
+    changed();
 
     // remove inputComponent from _inputWires
     for (int i = 0; i < _inputWires.GetWireCount(); i++)
@@ -143,6 +162,7 @@ void DspComponent::DisconnectInput(DspComponent const* inputComponent)
 void DspComponent::DisconnectAllInputs()
 {
     PauseAutoTick();
+    changed();
     _inputWires.RemoveAllWires();
     ResumeAutoTick();
 }
@@ -276,6 +296,7 @@ std::string const* DspComponent::GetParameterString(int index)
 bool DspComponent::SetParameter(int index, DspParameter const& param)
 {
     PauseAutoTick();
+    changed();
     bool result = ParameterUpdating_(index, param);
     ResumeAutoTick();
     return result;
@@ -423,6 +444,7 @@ bool DspComponent::ParameterUpdating_(int, DspParameter const&)
 
 bool DspComponent::AddInput_(std::string const& inputName)
 {
+    changed();
     for (size_t i = 0; i < _inputBuses.size(); i++)
     {
         _inputBuses[i]._AddSignal(inputName);
@@ -442,6 +464,7 @@ bool DspComponent::AddInput_(std::string const& inputName)
 
 bool DspComponent::AddOutput_(std::string const& outputName)
 {
+    changed();
     for (size_t i = 0; i < _outputBuses.size(); i++)
     {
         _outputBuses[i]._AddSignal(outputName);
@@ -461,6 +484,7 @@ bool DspComponent::AddOutput_(std::string const& outputName)
 
 int DspComponent::AddParameter_(std::string const& paramName, DspParameter const& param)
 {
+    changed();
     _parameters.push_back(std::make_pair(paramName, param));
     if (_callback)
     {
@@ -473,6 +497,7 @@ int DspComponent::AddParameter_(std::string const& paramName, DspParameter const
 
 bool DspComponent::RemoveInput_()
 {
+    changed();
     if (_inputBus._RemoveSignal())
     {
         if (_callback)
@@ -488,6 +513,7 @@ bool DspComponent::RemoveInput_()
 
 bool DspComponent::RemoveOutput_()
 {
+    changed();
     if (_outputBus._RemoveSignal())
     {
         if (_callback)
@@ -503,6 +529,7 @@ bool DspComponent::RemoveOutput_()
 
 bool DspComponent::RemoveParameter_()
 {
+    changed();
     if (!_parameters.empty())
     {
         _parameters.pop_back();
@@ -519,6 +546,7 @@ bool DspComponent::RemoveParameter_()
 
 void DspComponent::RemoveAllInputs_()
 {
+    changed();
     for (size_t i = 0; i < _inputBuses.size(); i++)
     {
         _inputBuses[i]._RemoveAllSignals();
@@ -534,6 +562,7 @@ void DspComponent::RemoveAllInputs_()
 
 void DspComponent::RemoveAllOutputs_()
 {
+    changed();
     for (size_t i = 0; i < _outputBuses.size(); i++)
     {
         _outputBuses[i]._RemoveAllSignals();
@@ -549,6 +578,7 @@ void DspComponent::RemoveAllOutputs_()
 
 void DspComponent::RemoveAllParameters_()
 {
+    changed();
     _parameters.clear();
     if (_callback)
     {
@@ -592,6 +622,7 @@ DspParameter const* DspComponent::GetParameter_(int index) const
 
 bool DspComponent::SetParameter_(int index, DspParameter const& param)
 {
+    changed();
     if ((size_t)index < _parameters.size())
     {
         if (_parameters[index].second.SetParam(param))
@@ -634,6 +665,7 @@ void DspComponent::_PauseAutoTick()
 
 void DspComponent::_SetParentCircuit(DspCircuit* parentCircuit)
 {
+    changed();
     if (_parentCircuit != parentCircuit && parentCircuit != this)
     {
         DspCircuit* currentParent = _parentCircuit;
@@ -676,6 +708,18 @@ bool DspComponent::_FindInput(int signalIndex, int& returnIndex) const
     }
 
     return false;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void DspComponent::changed()
+{
+  DspCircuit *c = _GetParentCircuit();
+  while (c && c->_GetParentCircuit())
+    c = c->_GetParentCircuit();
+  
+  if (c)
+    c->changed();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -806,6 +850,7 @@ void DspComponent::_ThreadReset(int threadNo)
 
 bool DspComponent::_SetInputSignal(int inputIndex, DspSignal const* newSignal)
 {
+    changed();
     return _inputBus.SetSignal(inputIndex, newSignal);
 }
 
@@ -813,6 +858,7 @@ bool DspComponent::_SetInputSignal(int inputIndex, DspSignal const* newSignal)
 
 bool DspComponent::_SetInputSignal(int inputIndex, int threadIndex, DspSignal const* newSignal)
 {
+    changed();
     return _inputBuses[threadIndex].SetSignal(inputIndex, newSignal);
 }
 
@@ -863,6 +909,33 @@ void DspComponent::_ReleaseThread(int threadNo)
 DspComponent* DspComponent::clone()
 {
   return NULL;
+}
+
+void DspComponent::errorCond(bool cond, const char *msg)
+{
+  _errorCond = false;
+  
+  if (!cond) {
+    if (configOnly()) {
+      if (msg) 
+        printf("ERROR: %s\n", msg); 
+      else
+        printf("config error!\n");
+      _errorCond = true;
+      _errorMsg = msg;
+      return; 
+    } 
+    else { 
+      if (msg) 
+        printf("ERROR: %s\n", msg); 
+      abort(); 
+    }
+  }
+}
+
+bool DspComponent::hasError()
+{
+  return _errorCond;
 }
 
 //=================================================================================================

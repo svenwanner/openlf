@@ -82,7 +82,9 @@ virtual DspComponent* clone() \
     dup->SetParameter(i, *GetParameter(i)); \
   \
   return dup; \
-};
+};   
+
+#define RETURN_ON_ERROR if (hasError()) return;
 
 class DLLEXPORT DspComponent
 {
@@ -149,6 +151,11 @@ public:
     void PauseAutoTick();
     void ResumeAutoTick();
     
+    bool configOnly();
+    void setConfigOnly(bool val);
+    void errorOnFalse(bool cond, const char *msg);
+    bool hasError();
+    
 protected:
     virtual void Process_(DspSignalBus&, DspSignalBus&);
     virtual bool ParameterUpdating_(int, DspParameter const&);
@@ -171,6 +178,7 @@ protected:
 
     DspParameter const* GetParameter_(int index) const;
     bool SetParameter_(int index, DspParameter const& param);
+    void errorCond(bool cond, const char *msg = NULL);
 
 private:
     virtual void _PauseAutoTick();
@@ -196,6 +204,10 @@ private:
 
     void _WaitForRelease(int threadNo);
     void _ReleaseThread(int threadNo);
+    
+    bool _configOnly = false;
+  
+    virtual void changed();
 
 private:
     friend class DspCircuit;
@@ -231,6 +243,8 @@ private:
 
     Callback_t _callback;
     void* _userData;
+    bool _errorCond = true;
+    const char *_errorMsg = NULL;
 };
 
 //=================================================================================================
@@ -249,6 +263,7 @@ bool DspComponent::ConnectInput(DspComponent* fromComponent, FromOutputId const&
 
     PauseAutoTick();
     _inputWires.AddWire(fromComponent, fromOutputIndex, toInputIndex);
+    changed();
     ResumeAutoTick();
 
     return true;
@@ -280,6 +295,7 @@ void DspComponent::DisconnectInput(DspComponent const* fromComponent,
 
     PauseAutoTick();
     _inputWires.RemoveWire(fromComponent, fromOutputIndex, toInputIndex);
+    changed();
     ResumeAutoTick();
 }
 
