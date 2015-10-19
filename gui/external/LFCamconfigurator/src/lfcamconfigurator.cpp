@@ -61,7 +61,7 @@ void LFCamConfigurator::createMenus(){
     menuBar()->setNativeMenuBar(false);
 }
 
-LFCamConfigurator::LFCamConfigurator(QWidget *parent) : QMainWindow(parent),ui(new Ui::LFCamConfigurator) {
+LFCamConfigurator::LFCamConfigurator(QWidget *parent) : QMainWindow(parent), ui(new Ui::LFCamConfigurator) {
 
     ui->setupUi(this);
     createActions();

@@ -47,6 +47,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 
 
+
 QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
 {
 	setAttribute(Qt::WA_DeleteOnClose);
@@ -301,8 +302,12 @@ void Circuit_Viewer::saveAs()
 
 void Circuit_Viewer::tick()
 {
-  _circuit->Tick();
-  _circuit->Reset();
+	Circuic_Thread  *_circuitThread = new Circuic_Thread(_circuit);
+	QThread *Thread = new QThread;
+	_circuitThread->moveToThread(Thread);
+	connect(Thread, SIGNAL(started()), _circuitThread, SLOT(run()));
+	Thread->start();
+	//threads.push_back(Thread);
 }
 
 

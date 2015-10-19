@@ -6,12 +6,11 @@
 #include "ui_gui_linux.h"
 #endif
 
-//#include "tools/LFCamConfigurator/includes/lfcamconfigurator.h"
+
 
 #ifndef __APPLE__
 	#include <omp.h>
 #endif
-
 
 
 /*************************************************************
@@ -21,12 +20,7 @@
 void GUI_Toolbox::OpenLFCamConfigurator(){
 
 	LFCamConfigurator *LFCC = new LFCamConfigurator();
-	QThread *Thread = new QThread;
-	LFCC->moveToThread(Thread);
-	connect(Thread, SIGNAL(started()), LFCC, SLOT(show()));
-	Thread->start();
-	threads.push_back(Thread);
-
+	LFCC->show();
 }
 
 void GUI_Toolbox::about()
@@ -37,12 +31,9 @@ void GUI_Toolbox::about()
 
 void GUI_Toolbox::showNode()
 {
-	QNEMainWindow *QNEMW = new QNEMainWindow();
-	QThread *Thread = new QThread;
-	QNEMW->moveToThread(Thread);
-	connect(Thread, SIGNAL(started()), QNEMW, SLOT(showMaximized()));
-	Thread->start();
-	threads.push_back(Thread);
+	QNEMainWindow *_QNEMW = new QNEMainWindow();
+	_QNEMW->show();
+
 }
 
 

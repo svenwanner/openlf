@@ -48,10 +48,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <QLabel>
 #include <QToolBar>
 #include <QVBoxLayout>
+#include "qnodesthreads.h"
 
 #include "qnesettings.h"
 
 #include "DspCircuit.h"
+
+
+
+
+
 
 class QNodesEditor;
 class Circuit_Viewer;
@@ -120,14 +126,6 @@ private:
 };
 
 #endif // QNEMAINWINDOW_H
-
-
-
-
-
-
-
-
 
 
 
