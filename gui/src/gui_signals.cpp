@@ -48,6 +48,6 @@ void GUI_Toolbox::createActions(){
 
 void GUI_Toolbox::createUIActions(){
 
-    connect(ui->Button_LFCamConfigurator, SIGNAL(clicked()),this, SLOT(OpenLFCamConfigurator()));
+	connect(ui->Button_LFCamConfigurator, SIGNAL(clicked()),this, SLOT(OpenLFCamConfigurator()));
 
 }
