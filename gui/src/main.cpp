@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 
     GUI_Toolbox gui;
 //    LFgui.loadConfigini(config_path);
-    gui.showMaximized();
+    gui.show();
 
 //     Prints welcome message...
     std::cout << "Welcome to Light-Field GUI" << std::endl;

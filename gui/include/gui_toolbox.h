@@ -70,6 +70,8 @@ private:
 	QNEMainWindow *QNEMW = std::nullptr_t();
 	LFCamConfigurator *LFCC = std::nullptr_t();
 
+	std::vector<QThread*> threads;
+
 
 };
 
