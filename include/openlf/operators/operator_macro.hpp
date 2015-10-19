@@ -23,9 +23,6 @@
 #ifndef _OPENLF_OP_MACRO_H
 #define _OPENLF_OP_MACRO_H
 
-//#include "clif/clif_vigra.hpp"
-//#include "clif/flexmav.hpp"
-
 #ifdef OPENLF_OP_CONSTRUCT_PARAMS
 #undef OPENLF_OP_CONSTRUCT_PARAMS
 #endif
