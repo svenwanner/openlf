@@ -26,6 +26,15 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <dspatch/DspCircuitThread.h>
 #include <dspatch/DspWire.h>
 
+#include <assert.h>
+#include <string.h>
+
+#include <unordered_map>
+
+extern "C" {
+#include "gml_parser.h"
+}
+
 //=================================================================================================
 
 DspCircuit::DspCircuit(int threadCount)
@@ -559,5 +568,186 @@ bool DspCircuit::save(std::string filename)
     
   return false;
 }
+
+void print_keys (struct GML_list_elem* list) {
+  
+  while (list) {
+    printf ("%s\n", list->key);
+    list = list->next;
+  }
+}
+
+static std::unordered_map<int,int> param2gmlType = {
+    {DspParameter::ParamType::Int,GML_value::GML_INT},
+    {DspParameter::ParamType::Float,GML_value::GML_DOUBLE},
+    {DspParameter::ParamType::String,GML_value::GML_STRING}
+  };
+
+DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentClone)(const std::string &typeName))
+{
+  
+  static struct {
+    void operator()(DspComponent *comp, GML_pair *node)
+    {
+      GML_pair *part;
+      
+      part = node;
+      while(part) {
+        auto found = param2gmlType.find((int)part->kind);
+        
+        if (found == param2gmlType.end())
+          printf("skip setting %s with unknown type\n", part->key);
+        else {
+          switch (found->first) {
+            
+          }
+        }
+        part = part->next;
+      }
+    }
+  } _gml_parse_add_params;
+  
+  static struct {
+    void operator()(DspCircuit *c, GML_pair *node, DspComponent *(*getComponentClone)(const std::string &typeName))
+    {
+      printf("add node\n");
+      GML_pair *part;
+      DspComponent *comp = NULL;
+      const char *name = NULL;
+      int id = -1;
+      GML_pair *params = NULL;
+      
+      assert(node->kind == GML_LIST);
+  
+      part = node->value.list;
+      while(part) {
+        if (!strcmp(part->key, "type")) {
+          assert(part->kind == GML_STRING);
+          const char *type = part->value.string;
+          printf("type %s\n", type);
+          comp = getComponentClone(type);
+        }
+        else if (!strcmp(part->key, "label")) {
+          assert(part->kind == GML_STRING);
+          name = part->value.string;
+          printf("name %s\n", name);
+        }
+        else if (!strcmp(part->key, "id")) {
+          assert(part->kind == GML_INT);
+          id = part->value.integer;
+        }
+        else if (!strcmp(part->key, "params")) {
+          assert(part->kind == GML_LIST);
+          params = part->value.list;
+        }
+        part = part->next;
+      }
+      
+      //FIXME make parsing errors from this!
+      assert(comp);
+      assert(name);
+      assert(id == c->GetComponentCount());
+      c->AddComponent(comp, name);
+      
+      if (params)
+        _gml_parse_add_params(comp, params);
+    }
+  } _gml_parse_add_component;
+  
+  static struct {  
+    void operator()(DspCircuit *c, GML_pair *node)
+    {
+      assert(node->kind == GML_LIST);
+      printf("add edge\n");
+    }
+  } _gml_parse_add_edge;
+  
+  static struct {  
+    DspCircuit *operator()(GML_pair *pair, DspComponent *(*getComponentClone)(const std::string &typeName))
+    {
+      DspCircuit *c = new DspCircuit;
+      struct GML_pair *start;
+      struct GML_pair *part;
+      
+      assert(pair->kind == GML_LIST);
+      
+      start = pair->value.list;
+      part = start;
+     
+      printf("parse circuit!\n");
+      
+      while (part) {
+        if (!strcmp(part->key, "node"))
+          _gml_parse_add_component(c, part,getComponentClone);
+        part = part->next;
+      }
+      
+      part = start;
+      while (part) {
+        if (!strcmp(part->key, "edge"))
+          _gml_parse_add_edge(c, part);
+        part = part->next;
+      }
+      
+      return c;
+    }
+  } _gml_parse_circuit;
+  
+  struct GML_pair* list;
+  struct GML_stat* stat=(struct GML_stat*)malloc(sizeof(struct GML_stat));
+  stat->key_list = NULL;
+  
+  FILE* file = fopen (filename.c_str(), "r");
+  if (!file)
+    return NULL;
+  
+  GML_init ();
+  list = GML_parser(file, stat, 0);
+  
+  if (stat->err.err_num != GML_OK) {
+    printf ("An error occured while reading line %d column %d of %s:\n", stat->err.line, stat->err.column, filename.c_str());
+    
+    switch (stat->err.err_num) {
+      case GML_UNEXPECTED:
+        printf ("UNEXPECTED CHARACTER");
+        break;
+        
+      case GML_SYNTAX:
+        printf ("SYNTAX ERROR"); 
+        break;
+        
+      case GML_PREMATURE_EOF:
+        printf ("PREMATURE EOF IN STRING");
+        break;
+        
+      case GML_TOO_MANY_DIGITS:
+        printf ("NUMBER WITH TOO MANY DIGITS");
+        break;
+        
+      case GML_OPEN_BRACKET:
+        printf ("OPEN BRACKETS LEFT AT EOF");
+        break;
+        
+      case GML_TOO_MANY_BRACKETS:
+        printf ("TOO MANY CLOSING BRACKETS");
+        break;
+        
+      default:
+        break;
+    }
+    
+    printf ("\n");
+  }      
+  GML_print_list(list, 0);
+  printf ("Keys used in %s: \n", filename.c_str());
+  print_keys(stat->key_list);
+  
+  _gml_parse_circuit(list, getComponentClone);
+  
+  GML_free_list (list, stat->key_list);
+  
+  return NULL;
+}
+
 
 //=================================================================================================

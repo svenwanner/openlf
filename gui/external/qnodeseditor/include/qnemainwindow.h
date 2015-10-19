@@ -169,6 +169,7 @@ private slots:
 
 	void save();
 	void saveAs();
+        void load();
 	void zoomIn();
 	void zoomOut();
 	void normalSize();
@@ -197,6 +198,7 @@ private:
 	QAction *MousePosition;
 	QAction *saveAct;
 	QAction *saveAsAct;
+	QAction *loadAct;
 	QAction *exitAct;
 	QAction *infoAct;
 	QAction *zoomInAct;

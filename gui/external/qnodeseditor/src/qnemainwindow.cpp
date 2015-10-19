@@ -162,13 +162,18 @@ void Circuit_Viewer::createActions()
 {
 	saveAct = new QAction(QIcon(":/save.png"), tr("&Save"), this);
 	saveAct->setShortcuts(QKeySequence::Save);
-	saveAct->setStatusTip(tr("Save the document to disk"));
+	saveAct->setStatusTip(tr("Save Circuit to disk"));
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
 	saveAsAct = new QAction(QIcon(":/saveAs.png"), tr("Save &As..."), this);
 	saveAsAct->setShortcuts(QKeySequence::SaveAs);
 	saveAsAct->setStatusTip(tr("Save the document under a new name"));
 	connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
+        
+	loadAct = new QAction(QIcon(":/load.png"), tr("&Save"), this);
+	loadAct->setShortcuts(QKeySequence::Open);
+	loadAct->setStatusTip(tr("Load Circuit from disk"));
+	connect(loadAct, SIGNAL(triggered()), this, SLOT(load()));
 
 	zoomInAct = new QAction(QIcon(":/Zoom-In.png"), tr("Zoom &In (25%)"), this);
 	zoomInAct->setShortcut(tr("Ctrl++"));
@@ -203,6 +208,7 @@ void Circuit_Viewer::createToolbar()
 	ToolBar = addToolBar(tr("File"));
 	//toolBar->setFixedHeight(ToolBar_Height);
 	ToolBar->addAction(saveAct);
+	ToolBar->addAction(loadAct);
 	ToolBar->addAction(zoomInAct);
 	ToolBar->addAction(zoomOutAct);
 	ToolBar->addAction(normalSizeAct);
@@ -296,6 +302,14 @@ void Circuit_Viewer::saveAs()
   
   _circuit->save(path.toUtf8().constData());
 }
+
+void Circuit_Viewer::load()
+{
+  QString path = QFileDialog::getOpenFileName(this, tr("select filename of circuit"));
+  
+  _circuit = DspCircuit::load(path.toUtf8().constData(), &OpenLF::getComponentClone);
+}
+
 
 
 void Circuit_Viewer::tick()

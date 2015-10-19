@@ -36,6 +36,9 @@ link_directories(${CLIF_LIBRARY_DIRS})
 #FIXME needed for boost under windows - whats the proper way? Boost_LIBRARY_DIR?
 link_directories($ENV{Path})
 
+add_subdirectory(external/gml_parser)
+include_directories(external/gml_parser)
+
 add_subdirectory(external/dspatch)
 include_directories(external/dspatch/include)
 include_directories(external/dspatch/include/dspatch)

@@ -29,6 +29,15 @@ public:
     return _comp_list;
   }
   
+  static DspComponent *getComponentClone(const std::string &typeName)
+  {
+    std::vector<DspComponent*> list = componentList();
+    
+    for(auto it=list.begin();it!=list.end();++it)
+      if (!typeName.compare((*it)->getTypeName()))
+        return *it;
+  }
+  
 private:  
    OpenLF(OpenLF const&)          = delete;
    void operator=(OpenLF const&)  = delete;
