@@ -35,6 +35,7 @@
     class NAME : public DspComponent { \
         public: \
             NAME(); \
+            DSPCOMPONENT_TRIVIAL_CLONE(NAME); \
         protected: \
           virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs); \
           virtual bool ParameterUpdating_ (int i, DspParameter const &p); \
@@ -99,6 +100,7 @@ bool NAME::ParameterUpdating_ (int i, DspParameter const &p) \
 class NAME : public DspComponent { \
     public: \
         NAME(); \
+        DSPCOMPONENT_TRIVIAL_CLONE(NAME); \
     protected: \
       virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs); \
       virtual bool ParameterUpdating_ (int i, DspParameter const &p); \
@@ -159,7 +161,7 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
     }\
   }\
 \
-  FlexMAV<OUTDIM> *out_ptr[std::max(1,OUTCOUNT)];\
+  FlexMAV<OUTDIM> *out_ptr[OUTCOUNT];\
   for(int i=0;i<OUTCOUNT;i++) { \
     out_ptr[i] = &_output_image[i]; \
     _output_image[i].create(in[0]->shape(), in[0]->type());\

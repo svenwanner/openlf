@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Hilfe.png</file>
+        <file>blender.png</file>
+        <file>help.png</file>
+        <file>open.png</file>
+        <file>reset.png</file>
+        <file>save.png</file>
+        <file>saveAs.png</file>
+        <file>exit.png</file>
+    </qresource>
+</RCC>

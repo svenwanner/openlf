@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.1)
+cmake_minimum_required (VERSION 2.8)
 project(OpenLF)
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
@@ -12,9 +12,10 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   # using Visual Studio C++
   message("use msvc")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ox /openmp")
-  set(CLIF_INCLUDE_DIR "D:/libs/include" CACHE PATH "Include path for external libraries")
+  #set(CLIF_INCLUDE_DIR "D:/libs/include" CACHE PATH "Include path for external libraries")
   include_directories(${LIBS_INCLUDE_DIR})
-  set (EXTRA_LIBS ${EXTRA_LIBS} "D:/libs/include")  #see parameter list here https://cmake.org/pipermail/cmake/2006-July/010189.html
+  #set (EXTRA_LIBS ${EXTRA_LIBS} "D:/libs/include")  #see parameter list here https://cmake.org/pipermail/cmake/2006-July/010189.html
+  add_definitions(-DOPENLF_COMPILER_MSVC)
 endif()
 
 find_package(HDF5 REQUIRED CXX)
@@ -23,13 +24,17 @@ find_package(OpenCV REQUIRED)
 find_package(clif REQUIRED)
 find_package(Boost COMPONENTS filesystem system REQUIRED)
 
+add_definitions(${HDF5_CPPFLAGS})
 
 include_directories(${OPENCV_INCLUDE_DIR})
 include_directories(${HDF5_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${VIGRA_INCLUDE_DIR})
 include_directories(${CLIF_INCLUDE_DIRS})
-add_definitions(${HDF5_CPPFLAGS})
+
+link_directories(${CLIF_LIBRARY_DIRS})
+#FIXME needed for boost under windows - whats the proper way? Boost_LIBRARY_DIR?
+link_directories($ENV{Path})
 
 add_subdirectory(external/dspatch)
 include_directories(external/dspatch/include)
@@ -44,6 +49,8 @@ include_directories(include/openlf/operators)
 add_subdirectory(src/lib/components)
 add_subdirectory(src/lib/workflows)
 add_subdirectory(src/lib/operators)
+
+add_subdirectory(gui)
 
 add_executable(teststuff src/bin/test.cpp)
 add_executable(teststuff2 src/bin/test2.cpp)

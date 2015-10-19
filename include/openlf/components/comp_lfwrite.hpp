@@ -31,7 +31,7 @@ namespace openlf { namespace components {
 class COMP_LFWrite : public DspComponent {
 public:
   COMP_LFWrite();
-  
+  DSPCOMPONENT_TRIVIAL_CLONE(COMP_LFWrite);
 protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 private:

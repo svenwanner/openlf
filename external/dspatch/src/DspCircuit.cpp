@@ -124,6 +124,7 @@ bool DspCircuit::AddComponent(DspComponent* component, std::string const& compon
         _components.push_back(component);
         ResumeAutoTick();
 
+        changed();
         return true;
     }
 
@@ -335,6 +336,24 @@ void DspCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 //=================================================================================================
 
+void DspCircuit::configure()
+{
+  //uhh ohh autotick stuff?!?
+  bool old = _configOnly;
+  
+  printf("conf gen: %llu circuit gen: %llu\n", _configured_generation, _generation);
+  
+  if (_configured_generation < _generation) {
+    printf("tick config!\n");
+    _configOnly = true;
+    Tick();
+    _configOnly = old;
+    _configured_generation = _generation;
+  }
+}
+
+//=================================================================================================
+
 void DspCircuit::_PauseAutoTick()
 {
     // pause auto tick
@@ -410,6 +429,7 @@ bool DspCircuit::_FindComponent(int componentIndex, int& returnIndex) const
 
 void DspCircuit::_DisconnectComponent(int componentIndex)
 {
+    changed();
     // remove component from _inputComponents and _inputWires
     _components[componentIndex]->DisconnectAllInputs();
 
@@ -445,6 +465,7 @@ void DspCircuit::_DisconnectComponent(int componentIndex)
 
 void DspCircuit::_RemoveComponent(int componentIndex)
 {
+    changed();
     _DisconnectComponent(componentIndex);
 
     // set the removed component's parent circuit to NULL
@@ -457,6 +478,43 @@ void DspCircuit::_RemoveComponent(int componentIndex)
     {
         _components.erase(_components.begin() + componentIndex);
     }
+}
+
+//=================================================================================================
+
+void DspCircuit::changed()
+{
+  DspCircuit *c = this;
+  while (c->_GetParentCircuit())
+    c = c->_GetParentCircuit();
+  
+  c->_generation++;
+  Reset();
+  printf("circuit gen: %llu\n", c->_generation);
+}
+
+void DspCircuit::_save_comp(FILE *f, int i)
+{  
+  fprintf(f, "node [\n");
+  fprintf(f, "id %d\n", i);
+  fprintf(f, "label %s\n", _components[i]->GetComponentName());
+  fprintf(f, "]\n");
+}
+
+bool DspCircuit::save(std::string filename)
+{
+  FILE *f = fopen(filename.c_str(), "w");
+  if (!f)
+    return true;
+  
+  fprintf(f, "graph [\n");
+  for(int i=0;i<_components.size();i++)
+    _save_comp(f, i);
+  
+  fprintf(f, "]\n");
+  fclose(f);
+    
+  return false;
 }
 
 //=================================================================================================

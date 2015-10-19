@@ -24,7 +24,11 @@
 
 #include "operators.hpp"
 
-#define OPENLF_OP_CONSTRUCT_PARAMS \
+#ifdef OPENLF_COMPILER_MSVC
+#define __restrict__
+#endif
+
+#define OPENLF_OP_CONSTRUCT_PARAMS
 
 OPENLF_OP_START(OP_Tensor2x2, 2, 3, 3, 3)
         

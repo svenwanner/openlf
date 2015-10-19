@@ -95,7 +95,6 @@ void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
   fclose(pointfile);
 }
 
-
 void write_obj(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d &subset)
 {
   int v_idx = 1;
@@ -167,6 +166,9 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   const std::string *filename;
   const std::string *dataset_name = NULL;
   
+  if (configOnly())
+    return;
+  
   inputs.GetValue(0, in);
   
   filename = GetParameter(0)->GetString();
@@ -199,62 +201,6 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   write_ply("debug.ply", centerview, img, subset);
   write_obj("debug.obj", centerview, img, subset);
-  
-  /*FILE *pointfile = fopen("debug.ply", "w");
-  
-  int point_count = 0;
-  
-  int w = centerview.shape(0);
-  int h = centerview.shape(1);
-  
-  Shape2 p;
-  for(p[1] = 0; p[1] < h; ++p[1])
-    for (p[0] = 0; p[0] < w; ++p[0]) {
-      double depth;
-      if (isnan(centerview[p]))
-        depth = -1;
-      else
-        depth = subset.disparity2depth(centerview[p], scale);
-      
-      if (depth >= 0)
-        point_count++;
-    }
-  
-  fprintf(pointfile, "ply\n"
-          "format ascii 1.0\n"
-          "element vertex %d\n"
-          "property float x\n"
-          "property float y\n"
-          "property float z\n"
-          "property uchar diffuse_red\n"
-          "property uchar diffuse_green\n"
-          "property uchar diffuse_blue\n"
-          "end_header\n", point_count);
-  
-  for(p[1] = 0; p[1] < h; ++p[1])
-    for (p[0] = 0; p[0] < w; ++p[0]) {
-      double depth;
-      if (isnan(centerview[p]))
-        depth = -1;
-      else
-        depth = subset.disparity2depth(centerview[p], scale);
-      if (depth >= 0) {
-        if (img.type() == CV_8UC3) {
-          cv::Vec3b col = img.at<cv::Vec3b>(p[1],p[0]);
-          fprintf(pointfile, "%.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth,col[0],col[1],col[2]);
-        }
-        else if (img.type() == CV_8UC1) {
-          uchar col = img.at<uchar>(p[1],p[0]);
-          fprintf(pointfile, "%.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth,col,col,col);
-        }
-        else
-          fprintf(pointfile, "%.3f %.3f %.3f 127 127 127\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth);
-          
-      }
-    }
-    
-  fprintf(pointfile,"\n");
-  fclose(pointfile);*/
   
   ClifFile debugfile;
   debugfile.create("debug.clif");

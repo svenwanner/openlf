@@ -44,8 +44,16 @@ COMP_LFRead::COMP_LFRead()
 void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   LF *out = NULL;
-  const std::string *filename;
+  const std::string *filename = NULL;
   const std::string *dataset_name = NULL;
+  
+  printf("tick reader!\n");
+  
+  filename = GetParameter(0)->GetString();
+  if (GetParameter(1))
+    dataset_name = GetParameter(1)->GetString();
+  
+  errorCond(filename && filename->size()); RETURN_ON_ERROR
   
   //FIXME reuse!
   //outputs.GetValue(0, out);
@@ -54,15 +62,8 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     outputs.SetValue(0, out);
   }
   
-  filename = GetParameter(0)->GetString();
-  if (GetParameter(1))
-    dataset_name = GetParameter(1)->GetString();
-  
-  assert(out);
-  assert(filename->size());
-  
   //FIXME move ini/clif handling decision into dataset class!
-  if (!strcmp(path(*filename).extension().c_str(), ".ini")) {
+  if (!strcmp(path(*filename).extension().generic_string().c_str(), ".ini")) {
     out->data = new Dataset();
     
     out->data->Attributes::open(filename->c_str(), NULL);
