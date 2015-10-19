@@ -30,6 +30,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <dspatch/DspComponent.h>
 #include <dspatch/DspWireBus.h>
 #include <dspatch/DspCircuitThread.h>
+#include <stdint.h>
 
 //=================================================================================================
 /// Workspace for adding and routing components
