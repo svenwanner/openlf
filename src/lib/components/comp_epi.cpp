@@ -71,6 +71,7 @@ void COMP_Epi::openlf_add_param(const char *name, DspParameter::ParamType type, 
   
 COMP_Epi::COMP_Epi()
 {
+  setTypeName_("procEPI2D");
   AddInput_("input");
   AddInput_("config");
   AddOutput_("output");

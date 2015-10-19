@@ -36,6 +36,7 @@ namespace openlf { namespace components {
   
 COMP_LFRead::COMP_LFRead()
 {
+  setTypeName_("readCLIF");
   AddOutput_("output");
   AddParameter_("filename", DspParameter(DspParameter::ParamType::String));
   AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));

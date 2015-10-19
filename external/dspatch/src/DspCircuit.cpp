@@ -497,7 +497,8 @@ void DspCircuit::_save_comp(FILE *f, int i)
 {  
   fprintf(f, "node [\n");
   fprintf(f, "id %d\n", i);
-  fprintf(f, "label %s\n", _components[i]->GetComponentName());
+  fprintf(f, "label %s\n", _components[i]->GetComponentName().c_str());
+  fprintf(f, "type %s\n", _components[i]->getTypeName().c_str());
   fprintf(f, "]\n");
 }
 

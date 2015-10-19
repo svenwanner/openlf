@@ -36,6 +36,7 @@ namespace openlf { namespace components {
   
 COMP_DispWrite::COMP_DispWrite()
 {
+  setTypeName_("writeMesh");
   AddInput_("input");
   AddParameter_("filename", DspParameter(DspParameter::ParamType::String));
   //AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));

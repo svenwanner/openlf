@@ -110,6 +110,7 @@ public:
 
     void SetComponentName(std::string const& componentName);
     std::string GetComponentName() const;
+    std::string GetComponentType() const;
 
     template <class FromOutputId, class ToInputId>
     bool ConnectInput(DspComponent* fromComponent, FromOutputId const& fromOutput, ToInputId const& toInput);
@@ -155,6 +156,7 @@ public:
     void setConfigOnly(bool val);
     void errorOnFalse(bool cond, const char *msg);
     bool hasError();
+    const std::string& getTypeName();
     
 protected:
     virtual void Process_(DspSignalBus&, DspSignalBus&);
@@ -179,6 +181,7 @@ protected:
     DspParameter const* GetParameter_(int index) const;
     bool SetParameter_(int index, DspParameter const& param);
     void errorCond(bool cond, const char *msg = NULL);
+    bool setTypeName_(std::string const& name);
 
 private:
     virtual void _PauseAutoTick();
@@ -208,7 +211,7 @@ private:
     bool _configOnly = false;
   
     virtual void changed();
-
+    
 private:
     friend class DspCircuit;
     friend class DspCircuitThread;
@@ -226,6 +229,7 @@ private:
     std::vector< std::pair<std::string, DspParameter> > _parameters;
 
     std::string _componentName;
+    std::string _componentType;
     bool _isAutoTickRunning;
     bool _isAutoTickPaused;
     int _pauseCount;
@@ -245,6 +249,7 @@ private:
     void* _userData;
     bool _errorCond = true;
     const char *_errorMsg = NULL;
+    std::string _typeName;
 };
 
 //=================================================================================================
