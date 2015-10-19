@@ -49,6 +49,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
 {
+	setAttribute(Qt::WA_DeleteOnClose);
+
 	mdiArea = new QMdiArea;
 	mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -57,7 +59,7 @@ QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
 	slider = new QSlider(Qt::Horizontal);
 	spinBox = new QSpinBox();
 
-	_circuitViewer = new Circuit_Viewer(this);
+	_circuitViewer = new Circuit_Viewer(mdiArea, this);
         
 	createActions();
 	createMenus();
@@ -77,22 +79,6 @@ QNEMainWindow::~QNEMainWindow()
 	mdiArea->closeAllSubWindows();
 }
 
-void QNEMainWindow::on_action_Pop_Out_triggered()
-{
-	if (mdiArea->activeSubWindow()){
-		QMdiSubWindow *sub = mdiArea->activeSubWindow();
-		QWidget *wid = sub->widget();
-		wid->hide();
-		sub->deleteLater();
-		mdiArea->removeSubWindow(wid);
-		wid->show();
-	}
-}
-
-void QNEMainWindow::on_action_tick_triggered()
-{
-  _circuitViewer->tick();
-}
 
 
 void QNEMainWindow::createMenus()
@@ -104,7 +90,7 @@ void QNEMainWindow::createMenus()
 	fileMenu->addSeparator();
 	fileMenu->addAction(quitAct);
         
-        QMenu *circuitMenu = new QMenu(tr("&Circuit"), this);
+    QMenu *circuitMenu = new QMenu(tr("&Circuit"), this);
 	circuitMenu->addAction(tickAct);
 
 	//helpMenu = new QMenu(tr("&Help"), this);
@@ -126,10 +112,9 @@ void QNEMainWindow::createToolBars()
 	fileToolBar->addAction(loadAct);
 	fileToolBar->addAction(saveAct);
 	fileToolBar->addAction(popOutAct);
+	fileToolBar->addAction(tickAct);
 	fileToolBar->addSeparator();
 	fileToolBar->addAction(quitAct);
-
-
 	fileToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 }
 
@@ -142,8 +127,7 @@ void QNEMainWindow::createToolBars()
 
 
 
-
-Circuit_Viewer::Circuit_Viewer(QWidget *parent) : QMainWindow(parent)
+Circuit_Viewer::Circuit_Viewer(QMdiArea *mdiArea, QMainWindow *parent) : QMainWindow(parent), mdiArea(mdiArea)
 {
   this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
   setAttribute(Qt::WA_DeleteOnClose);
@@ -176,6 +160,8 @@ Circuit_Viewer::Circuit_Viewer(QWidget *parent) : QMainWindow(parent)
   createToolbar();
   createMenus();
 }
+Circuit_Viewer::~Circuit_Viewer(){
+}
 
 void Circuit_Viewer::createActions()
 {
@@ -205,8 +191,16 @@ void Circuit_Viewer::createActions()
 	fitToWindowAct->setCheckable(true);
 	fitToWindowAct->setShortcut(tr("Ctrl+F"));
 	connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
+
+	popInAct = new QAction(QIcon(":/arrow_up.png"), tr("popOut"), this);
+	popInAct->setStatusTip(tr("Pop Out Subwindow as own Window."));
+	connect(popInAct, SIGNAL(triggered()), this, SLOT(on_action_Pop_In_triggered()));
+
+	popOutAct = new QAction(QIcon(":/arrow_down.png"), tr("popOut"), this);
+	popOutAct->setStatusTip(tr("Pop Out Subwindow as own Window."));
+	connect(popOutAct, SIGNAL(triggered()), this, SLOT(on_action_Pop_Out_triggered()));
         
-        connect(_editor, SIGNAL(compSelected(DspComponent*)), this, SLOT(onCompSelected(DspComponent*)));
+    connect(_editor, SIGNAL(compSelected(DspComponent*)), this, SLOT(onCompSelected(DspComponent*)));
 }
 
 void Circuit_Viewer::createToolbar()
@@ -218,7 +212,8 @@ void Circuit_Viewer::createToolbar()
 	ToolBar->addAction(zoomOutAct);
 	ToolBar->addAction(normalSizeAct);
 	ToolBar->addAction(fitToWindowAct);
-
+	ToolBar->addAction(popInAct);
+	ToolBar->addAction(popOutAct);
 	
 
 }
@@ -231,6 +226,8 @@ void Circuit_Viewer::createMenus()
 	fileMenu->addAction(zoomOutAct);
 	fileMenu->addAction(normalSizeAct);
 	fileMenu->addAction(fitToWindowAct);
+	fileMenu->addAction(popInAct);
+	fileMenu->addAction(popOutAct);
 	menuBar()->addMenu(fileMenu);
 }
 
@@ -306,4 +303,29 @@ void Circuit_Viewer::tick()
 {
   _circuit->Tick();
   _circuit->Reset();
+}
+
+
+void Circuit_Viewer::on_action_Pop_Out_triggered()
+{
+	if (mdiArea->activeSubWindow()){
+		QMdiSubWindow *sub = mdiArea->activeSubWindow();
+		popInpopOutWidget = sub->widget();
+		popInpopOutWidget->adjustSize();
+		popInpopOutWidget->move(QApplication::desktop()->screen()->rect().center() - popInpopOutWidget->rect().center());
+		popInpopOutWidget->hide();
+		sub->deleteLater();
+		mdiArea->removeSubWindow(popInpopOutWidget);
+		popInpopOutWidget->show();
+	}
+}
+
+void Circuit_Viewer::on_action_Pop_In_triggered()
+{
+	if (! mdiArea->activeSubWindow()){
+		std::cout << "hello" << std::endl;
+		mdiArea->addSubWindow(popInpopOutWidget);
+		popInpopOutWidget->show();
+		mdiArea->update();
+	}
 }
