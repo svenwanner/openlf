@@ -495,9 +495,39 @@ void DspCircuit::changed()
 
 void DspCircuit::_save_comp(FILE *f, int i)
 {  
+  DspComponent *comp = _components[i];
+  
   fprintf(f, "node [\n");
   fprintf(f, "id %d\n", i);
-  fprintf(f, "label %s\n", _components[i]->GetComponentName());
+  fprintf(f, "label \"%s\"\n", comp->GetComponentName().c_str());
+  if (!comp->getTypeName().size())
+    abort();
+  fprintf(f, "type \"%s\"\n", comp->getTypeName().c_str());
+  if (comp->GetParameterCount()) {
+    fprintf(f, "params [\n");
+    for(int i=0;i<comp->GetParameterCount();i++) {
+      const DspParameter *p = comp->GetParameter(i);
+      fprintf(f, "%s ", comp->GetParameterName(i).c_str());
+      if (p->IsSet())
+        switch (p->Type()) {
+          case DspParameter::ParamType::String :
+            fprintf(f, "\"%s\"\n", p->GetString()->c_str());
+            break;
+          case DspParameter::ParamType::Float :
+            fprintf(f, "%f\n", *p->GetFloat());
+            break;
+          case DspParameter::ParamType::Int :
+            fprintf(f, "%d\n", *p->GetInt());
+            break;
+          default:
+            fprintf(f, "\"(UNKNOWN)\"\n");
+        }
+      else
+        fprintf(f, "\"(UNSET)\"\n");
+    }
+    fprintf(f, "]\n");
+  }
+  
   fprintf(f, "]\n");
 }
 
@@ -510,6 +540,19 @@ bool DspCircuit::save(std::string filename)
   fprintf(f, "graph [\n");
   for(int i=0;i<_components.size();i++)
     _save_comp(f, i);
+  
+  for(int i=0;i<_components.size();i++)
+    for(int j=0;j<_components[i]->_inputWires.GetWireCount();j++) {
+      int idx;
+      DspWire *wire = _components[i]->_inputWires.GetWire(j);
+      _FindComponent(wire->linkedComponent, idx);
+      fprintf(f, "edge [\n");
+      fprintf(f, "source %d\n", idx);
+      fprintf(f, "target %d\n", i);
+      fprintf(f, "source_pad %d\n", wire->fromSignalIndex);
+      fprintf(f, "target_pad %d\n", wire->toSignalIndex);
+      fprintf(f, "]\n");
+    }
   
   fprintf(f, "]\n");
   fclose(f);

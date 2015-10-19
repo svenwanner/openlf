@@ -28,12 +28,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 */
 
-#include "comp_epi.hpp"
-#include "comp_lfread.hpp"
-#include "comp_lfwrite.hpp"
-#include "comp_dispwrite.hpp"
-#include "operators.hpp"
-
 #include "qnemainwindow.h"
 #include "userinterface_qnemainwindow.h"
 

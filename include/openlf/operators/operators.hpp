@@ -25,7 +25,8 @@
 #define _OPENLF_OP_OPERATORS_H
 
 #include "clif/flexmav.hpp"
-#include "openlf.hpp"
+#include "dspatch/DspParameter.h"
+#include "dspatch/DspComponent.h"
 
 #include "operator_macro.hpp"
 

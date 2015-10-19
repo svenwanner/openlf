@@ -71,12 +71,13 @@ void COMP_Epi::openlf_add_param(const char *name, DspParameter::ParamType type, 
   
 COMP_Epi::COMP_Epi()
 {
+  setTypeName_("procEPI2D");
   AddInput_("input");
   AddInput_("config");
   AddOutput_("output");
   
-  openlf_add_param("epi circuit", (DspCircuit*)&_default_epi_circuit, DPPT::Pointer, (int)P_IDX::Epi_Circuit);
-  openlf_add_param("merge circuit", (DspCircuit*)&_default_merge_circuit, DPPT::Pointer, (int)P_IDX::Merge_Circuit);
+  openlf_add_param("epiCircuit", (DspCircuit*)&_default_epi_circuit, DPPT::Pointer, (int)P_IDX::Epi_Circuit);
+  openlf_add_param("mergeCircuit", (DspCircuit*)&_default_merge_circuit, DPPT::Pointer, (int)P_IDX::Merge_Circuit);
   
   openlf_add_param("DispStart", DPPT::Float, (int)P_IDX::DispStart);
   openlf_add_param("DispStop", DPPT::Float, (int)P_IDX::DispStop);
