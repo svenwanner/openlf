@@ -76,8 +76,8 @@ COMP_Epi::COMP_Epi()
   AddInput_("config");
   AddOutput_("output");
   
-  openlf_add_param("epi circuit", (DspCircuit*)&_default_epi_circuit, DPPT::Pointer, (int)P_IDX::Epi_Circuit);
-  openlf_add_param("merge circuit", (DspCircuit*)&_default_merge_circuit, DPPT::Pointer, (int)P_IDX::Merge_Circuit);
+  openlf_add_param("epiCircuit", (DspCircuit*)&_default_epi_circuit, DPPT::Pointer, (int)P_IDX::Epi_Circuit);
+  openlf_add_param("mergeCircuit", (DspCircuit*)&_default_merge_circuit, DPPT::Pointer, (int)P_IDX::Merge_Circuit);
   
   openlf_add_param("DispStart", DPPT::Float, (int)P_IDX::DispStart);
   openlf_add_param("DispStop", DPPT::Float, (int)P_IDX::DispStop);
