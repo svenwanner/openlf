@@ -114,8 +114,10 @@ private:
 	QSlider *slider = std::nullptr_t();
 	QSpinBox *spinBox = std::nullptr_t();
         
-        Circuit_Viewer *_circuitViewer = NULL;
-        QNESettings *_settings = NULL;
+    Circuit_Viewer *_circuitViewer = NULL;
+    QNESettings *_settings = NULL;
+
+	std::vector<QThread*> threads;
 };
 
 #endif // QNEMAINWINDOW_H
