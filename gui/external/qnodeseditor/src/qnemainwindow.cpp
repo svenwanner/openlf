@@ -210,14 +210,10 @@ void Circuit_Viewer::createActions()
 
 bool Circuit_Viewer::event(QEvent* e)
 {
-	if (e->type() == QEvent::WindowStateChange){ event_memory = 1; }
-	if (e->type() == QEvent::Paint && event_memory){
-		std::cout << this << std::endl; 
-		event_memory = 0;
-		emit this->activated(this);
-	}
-	QMainWindow::changeEvent(e);
-	return true;
+  bool res = QMainWindow::event(e);
+  if (isActiveWindow())
+    emit this->activated(this);
+  return res;
 }
 
 void Circuit_Viewer::createToolbar()
@@ -344,7 +340,7 @@ void Circuit_Viewer::load()
       QNEConnection *conn = new QNEConnection();
       _scene->addItem(conn);
       conn->setPort1(p1);
-      conn->setPort1(p2);
+      conn->setPort2(p2);
       conn->setPos1(p1->scenePos());
       conn->setPos2(p2->scenePos());
       conn->updatePath();
