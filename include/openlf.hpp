@@ -1,6 +1,8 @@
 #ifndef _OPENLF_OPENLF_H
 #define _OPENLF_OPENLF_H
 
+#include "components/comp_mav.hpp"
+
 #include "openlf/types.hpp"
 #include "dspatch/DspComponent.h"
 #include "dspatch/DspCircuit.h"
@@ -9,7 +11,6 @@
 #include "components/comp_epi.hpp"
 #include "components/comp_lfread.hpp"
 #include "components/comp_lfwrite.hpp"
-#include "components/comp_mav.hpp"
 #include "components/comp_dispwrite.hpp"
 
 class OpenLF {
