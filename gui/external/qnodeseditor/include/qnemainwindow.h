@@ -74,6 +74,7 @@ private slots:
 	void createDockWindows();
 	void addComponent(QListWidgetItem *it);
 	void showCompSettings(DspComponent *comp);
+	void activate(QWidget* wid);
         
 signals:
 	void itemDoubleClicked();
@@ -150,18 +151,20 @@ public:
 
 signals:
   void compSelected(DspComponent *comp);
+
   void focusChanged();
 
+  void activated(QWidget* w);
+
 protected:
-	//void mousePressEvent(QMouseEvent * e);
-	//void mouseMoveEvent(QMouseEvent* event);
+	bool event(QEvent* e);
 
 
 private slots:
-
+	
 	void save();
 	void saveAs();
-        void load();
+    void load();
 	void zoomIn();
 	void zoomOut();
 	void fitToWindow();
@@ -172,6 +175,7 @@ private slots:
 
 
 private:
+	int event_memory;
 
 	QMdiArea *mdiArea;
 	QWidget *popInpopOutWidget;
@@ -204,6 +208,8 @@ private:
 	QToolBar *ToolBar = std::nullptr_t();
 	QMenu *circuitMenu = std::nullptr_t();
 
+
+	
 	//QVBoxLayout* vbox;
 
 	//QMenuBar *menuBar;

@@ -56,6 +56,8 @@ QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
 	setCentralWidget(mdiArea);
 
 	_circuitViewer = new Circuit_Viewer(mdiArea, this);
+	std::cout << "pare: " << _circuitViewer << std::endl;
+	connect(_circuitViewer, SIGNAL(activated(QWidget*)), this, SLOT(activate(QWidget*)));
 
         
 	createActions();
@@ -77,7 +79,11 @@ QNEMainWindow::~QNEMainWindow()
 	mdiArea->closeAllSubWindows();
 }
 
+void QNEMainWindow::activate(QWidget* wid){
+	
+	_circuitViewer = (Circuit_Viewer*)wid;
 
+};
 
 void QNEMainWindow::createMenus()
 {
@@ -199,7 +205,19 @@ void Circuit_Viewer::createActions()
 	connect(tickAct, SIGNAL(triggered()), this, SLOT(tick()));
         
     connect(_editor, SIGNAL(compSelected(DspComponent*)), this, SLOT(onCompSelected(DspComponent*)));
-	connect(this, SIGNAL(isActiveWindow), this, SLOT(onCompSelected(DspComponent*)));
+	
+}
+
+bool Circuit_Viewer::event(QEvent* e)
+{
+	if (e->type() == QEvent::WindowStateChange){ event_memory = 1; }
+	if (e->type() == QEvent::Paint && event_memory){
+		std::cout << this << std::endl; 
+		event_memory = 0;
+		emit this->activated(this);
+	}
+	QMainWindow::changeEvent(e);
+	return true;
 }
 
 void Circuit_Viewer::createToolbar()
@@ -236,7 +254,6 @@ void Circuit_Viewer::createMenus()
 	menuBar()->addMenu(circuitMenu);
 
 }
-
 
 void Circuit_Viewer::zoomIn(){
 	scaleImage(1.25); 
@@ -348,6 +365,7 @@ void Circuit_Viewer::tick()
 }
 
 
+
 void Circuit_Viewer::on_action_Pop_Out_triggered()
 {
 	if (mdiArea->activeSubWindow()){
@@ -370,3 +388,4 @@ void Circuit_Viewer::on_action_Pop_In_triggered()
 		mdiArea->update();
 	}
 }
+
