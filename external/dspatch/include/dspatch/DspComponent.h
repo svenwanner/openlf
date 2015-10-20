@@ -181,7 +181,7 @@ protected:
     DspParameter const* GetParameter_(int index) const;
     bool SetParameter_(int index, DspParameter const& param);
     void errorCond(bool cond, const char *msg = NULL);
-    bool setTypeName_(std::string const& name);
+    void setTypeName_(std::string const& name);
 
 private:
     virtual void _PauseAutoTick();
