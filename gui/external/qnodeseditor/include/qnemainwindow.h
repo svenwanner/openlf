@@ -48,6 +48,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <QLabel>
 #include <QToolBar>
 #include <QVBoxLayout>
+#include <QLineEdit>
 #include "qnodesthreads.h"
 
 #include "qnesettings.h"
@@ -77,6 +78,7 @@ private slots:
 	void showCompSettings(QNEBlock *comp);
 	void activate(QWidget* wid);
         void newCircuit(DspCircuit* c);
+        void circuitNameChanged(QString name);
         
 signals:
 	void itemDoubleClicked();
@@ -112,6 +114,9 @@ private:
 
 	QDockWidget *dock = std::nullptr_t();
 	QDockWidget *dock2 = std::nullptr_t();
+        QDockWidget *_circuit_dock = NULL;
+        
+        QLineEdit *_c_name_ed = NULL;
         
     Circuit_Viewer *_circuitViewer = NULL;
     QNESettings *_settings = NULL;
@@ -246,4 +251,6 @@ private:
         
         QNEBlock *_input_block = NULL;
         QNEBlock *_output_block = NULL;
+        
+        bool _extra_window = false;
 };

@@ -150,17 +150,35 @@ void QNEMainWindow::createDockWindows()
 	// ******************************************************************
         
 
-    QDockWidget *settings_dock = new QDockWidget(tr("Component Settings:"), this);
+        QDockWidget *settings_dock = new QDockWidget(tr("Component Settings:"), this);
 	settings_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	_settings = new QNESettings(settings_dock);
 	settings_dock->setWidget(_settings);
 	addDockWidget(Qt::RightDockWidgetArea, settings_dock);
+        
+        _circuit_dock = new QDockWidget(tr("Circuit Settings:"), this);
+	_circuit_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+        QWidget *box = new QWidget(_circuit_dock);
+        settings_dock->setWidget(box);
+	QFormLayout *layout = new QFormLayout(_circuit_dock);
+        box->setLayout(layout);
+        _c_name_ed = new QLineEdit(_circuit_dock);
+        connect(_c_name_ed, SIGNAL(textChanged(QString)), this, SLOT(circuitNameChanged(QString)));
+        _c_name_ed->setText(_circuitViewer->circuit()->GetComponentName().c_str());
+        layout->addRow(tr("&Name"), _c_name_ed);   
+        
+	addDockWidget(Qt::RightDockWidgetArea, _circuit_dock);
 }
 
 
 
 void QNEMainWindow::newCircuit(DspCircuit* c)
 {
-  printf("add new circuit!\n");
   _circuits.push_back(c);
+}
+
+
+void QNEMainWindow::circuitNameChanged(QString name)
+{
+  _circuitViewer->circuit()->SetComponentName(name.toUtf8().constData());
 }

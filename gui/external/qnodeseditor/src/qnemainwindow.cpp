@@ -82,7 +82,9 @@ QNEMainWindow::~QNEMainWindow()
 void QNEMainWindow::activate(QWidget* wid){
 	
 	_circuitViewer = (Circuit_Viewer*)wid;
-
+        
+        if (_c_name_ed)
+          _c_name_ed->setText(_circuitViewer->circuit()->GetComponentName().c_str());
 };
 
 void QNEMainWindow::createMenus()
@@ -206,8 +208,15 @@ void Circuit_Viewer::createActions()
 bool Circuit_Viewer::event(QEvent* e)
 {
   bool res = QMainWindow::event(e);
-  if (isActiveWindow())
-    emit this->activated(this);
+  if (_extra_window) {
+    if (isActiveWindow())
+      emit this->activated(this);
+  }
+  else {
+    QMdiSubWindow *subwin = mdiArea->activeSubWindow();
+    if (subwin && subwin->widget() == this)
+      emit this->activated(this);
+  }
   return res;
 }
 
@@ -468,6 +477,7 @@ void Circuit_Viewer::on_action_Pop_Out_triggered()
 		mdiArea->removeSubWindow(popInpopOutWidget);
 		sub->close();
 		popInpopOutWidget->show();
+                _extra_window = true;
 	}
 }
 
@@ -477,6 +487,7 @@ void Circuit_Viewer::on_action_Pop_In_triggered()
 		mdiArea->addSubWindow(popInpopOutWidget);
 		popInpopOutWidget->showMaximized();
 		mdiArea->update();
+                _extra_window = false;
 	}
 }
 
