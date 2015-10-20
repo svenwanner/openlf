@@ -47,12 +47,25 @@ QNEBlock::QNEBlock(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 	height = vertMargin;
 }
 
-QNEBlock::QNEBlock(DspComponent *comp, QGraphicsScene *scene, QGraphicsItem *parent)
+QNEBlock::QNEBlock(DspComponent *comp, QGraphicsScene *scene, BlockType type, QGraphicsItem *parent)
 : QNEBlock(parent)
 {
   scene->addItem(this);
   
+  _blockType = type;
   component = comp;
+  
+  if (!comp) {
+    if (_blockType == BlockType::Source) {
+      QNEPort *p = addPort("input_0", true);
+      p->setNEBlock(this);
+    }
+    else if (_blockType == BlockType::Sink) {
+      QNEPort *p = addPort("output_0", false);
+      p->setNEBlock(this);
+    }
+    return;
+  }
   
   //input and output ports MUST come first! (for getPortIdx!)
   for(int i=0;i<comp->GetInputCount();i++) {
@@ -66,6 +79,11 @@ QNEBlock::QNEBlock(DspComponent *comp, QGraphicsScene *scene, QGraphicsItem *par
   }
   
   addPort(comp->GetComponentName().c_str(), 0, QNEPort::NamePort);
+}
+
+QNEBlock::BlockType QNEBlock::blockType()
+{
+  return _blockType;
 }
 
 QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int ptr)

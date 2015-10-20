@@ -205,6 +205,7 @@ void Circuit_Viewer::createActions()
 	connect(tickAct, SIGNAL(triggered()), this, SLOT(tick()));
         
     connect(_editor, SIGNAL(compSelected(DspComponent*)), this, SLOT(onCompSelected(DspComponent*)));
+    connect(_editor, SIGNAL(compSelected(QNEBlock*)), this, SLOT(onCompSelected(QNEBlock*)));
 	
 }
 
@@ -272,6 +273,11 @@ void Circuit_Viewer::onCompSelected(DspComponent *comp)
   emit compSelected(comp);
 }
 
+void Circuit_Viewer::onCompSelected(QNEBlock *block)
+{
+  emit compSelected(block);
+}
+
 static int counter = 0;
 
 void Circuit_Viewer::addComponent(DspComponent *comp, bool gui_only)
@@ -286,6 +292,16 @@ void Circuit_Viewer::addComponent(DspComponent *comp, bool gui_only)
   _blocks.push_back(new QNEBlock(comp, _scene));
 }
 
+//FIXME delete old input comp if already existing!
+void Circuit_Viewer::addInputComponent()
+{   
+  _blocks.push_back(new QNEBlock(NULL, _scene, QNEBlock::BlockType::Source));
+}
+
+void Circuit_Viewer::addOutputComponent()
+{   
+  _blocks.push_back(new QNEBlock(NULL, _scene, QNEBlock::BlockType::Sink));
+}
 
 void Circuit_Viewer::adjustScrollBar(QScrollBar *scrollBar, double factor)
 {

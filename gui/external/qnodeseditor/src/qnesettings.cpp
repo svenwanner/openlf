@@ -75,6 +75,30 @@ void QNESettings::attach(DspComponent *comp)
 }
 
 
+void QNESettings::attach(QNEBlock *block)
+{
+  assert(block->blockType() != QNEBlock::BlockType::Regular);
+  
+  if (_layout_w)
+    delete _layout_w;
+  
+  _layout_w = new QWidget(this);
+  _layout.addWidget(_layout_w);
+
+   QFormLayout *actual_layout = new QFormLayout(_layout_w);
+  _layout_w->setLayout(actual_layout);
+  
+  QSpinBox *spinbox = new QSpinBox(_layout_w);
+  QHBoxLayout *hbox = new  QHBoxLayout;
+  hbox->addWidget(spinbox);
+  spinbox->setProperty("block", QVariant::fromValue((void*)block));
+  int portcount = block->ports().size();
+  spinbox->setValue(portcount);
+  spinbox->setMinimum(portcount);
+  connect(spinbox, SIGNAL(valueChanged(int)), this, SLOT(portCountChanged(int)));
+}
+
+
 void QNESettings::textSettingChanged(QString text)
 {
   DspComponent *comp = (DspComponent*)sender()->property("component").value<void*>();
@@ -116,4 +140,22 @@ void QNESettings::selFileClicked()
   QLineEdit *ed = sender()->property("ed").value<QLineEdit*>();
   
   ed->setText(path);
+}
+
+//FIXME change circuit input count on delete input port item!
+void QNESettings::portCountChanged(int val)
+{
+  QNEBlock *block = (QNEBlock*)sender()->property("block").value<void*>();
+  char buf[64];
+  
+  //FIXME update when special ports (name,type) are gone!
+  for(int i=block->ports().size();i<val;i++) 
+    if (block->blockType() == QNEBlock::BlockType::Source) {
+      sprintf(buf, "input_%d", i);
+      block->addOutputPort(buf);
+    }
+    else {
+      sprintf(buf, "output_%d", i);
+      block->addInputPort(buf);
+    }    
 }

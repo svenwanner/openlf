@@ -56,6 +56,7 @@ void QNEMainWindow::createActions()
 	newAct->setStatusTip(tr("New circuit"));
 	connect(newAct, SIGNAL(triggered()), this, SLOT(new_circuit()));
   
-    connect(_circuitViewer, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
-	connect(_circuitViewer, SIGNAL(focusChanged()), this, SLOT(onApplicationFocusChanged()));
+        connect(_circuitViewer, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
+        connect(_circuitViewer, SIGNAL(compSelected(QNEBlock*)), this, SLOT(showCompSettings(QNEBlock*)));
+        connect(_circuitViewer, SIGNAL(focusChanged()), this, SLOT(onApplicationFocusChanged()));
 }

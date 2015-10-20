@@ -89,14 +89,27 @@ void QNEMainWindow::addComponent(QListWidgetItem *it)
 {
   DspComponent *comp = QVP<DspComponent>::asPtr(it->data(Qt::UserRole));
   
-  comp = comp->clone();
+  if (comp) {
+    comp = comp->clone();
 
-  _circuitViewer->addComponent(comp);
+    _circuitViewer->addComponent(comp);
+  }
+  else {
+    if (!it->text().compare("Circuit Input"))
+      _circuitViewer->addInputComponent();
+    else if (!it->text().compare("Circuit Output"))
+      _circuitViewer->addOutputComponent();
+  }
 }
 
 void QNEMainWindow::showCompSettings(DspComponent *comp)
 {
   _settings->attach(comp);
+}
+
+void QNEMainWindow::showCompSettings(QNEBlock *block)
+{
+  _settings->attach(block);
 }
 
 void QNEMainWindow::createDockWindows()
@@ -117,6 +130,11 @@ void QNEMainWindow::createDockWindows()
 
         //populate component list
         QListWidgetItem *item;
+        item = new QListWidgetItem("Circuit Input");
+        List1->addItem(item);
+        item = new QListWidgetItem("Circuit Output");
+        List1->addItem(item);
+        
         std::vector<DspComponent*> comps = OpenLF::componentList();
         for(auto it=comps.begin();it!=comps.end();++it) {
           item = new QListWidgetItem((*it)->getTypeName().c_str());

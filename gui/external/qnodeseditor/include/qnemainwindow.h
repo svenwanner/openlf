@@ -74,6 +74,7 @@ private slots:
 	void createDockWindows();
 	void addComponent(QListWidgetItem *it);
 	void showCompSettings(DspComponent *comp);
+	void showCompSettings(QNEBlock *comp);
 	void activate(QWidget* wid);
         
 signals:
@@ -138,6 +139,8 @@ public:
 	~Circuit_Viewer();
 
      void addComponent(DspComponent *comp, bool gui_only = false);
+     void addInputComponent();
+     void addOutputComponent();
         
         
 	//void open(const QString &title);
@@ -151,6 +154,7 @@ public:
 
 signals:
   void compSelected(DspComponent *comp);
+  void compSelected(QNEBlock *block);
 
   void focusChanged();
 
@@ -168,7 +172,8 @@ private slots:
 	void zoomIn();
 	void zoomOut();
 	void fitToWindow();
-    void onCompSelected(DspComponent *comp);
+        void onCompSelected(DspComponent *comp);
+        void onCompSelected(QNEBlock *block);
 	void on_action_Pop_Out_triggered();
 	void on_action_Pop_In_triggered();
 	void tick();

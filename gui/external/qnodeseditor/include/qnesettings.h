@@ -26,6 +26,8 @@
 
 #include "DspCircuit.h"
 
+#include "qneblock.h"
+
 class QNESettings : public QWidget
 {
   Q_OBJECT
@@ -34,6 +36,7 @@ public:
   QNESettings(QWidget *parent = 0) : QWidget(parent) { setLayout(&_layout); };
   
   void attach(DspComponent *comp);
+  void attach(QNEBlock *block);
   
 protected:
   
@@ -48,6 +51,7 @@ private slots:
   void selFileClicked();
   void floatSettingChanged(double val);
   void intSettingChanged(int val);
+  void portCountChanged(int val);
 };
 
 #endif
