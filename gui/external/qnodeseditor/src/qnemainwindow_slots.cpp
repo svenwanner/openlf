@@ -73,9 +73,11 @@ void QNEMainWindow::loadFile()
 	nodesEditor->load(ds);
 }
 
-void QNEMainWindow::new_circuit()
+void QNEMainWindow::new_circuit_viewer()
 {
 	_circuitViewer = new Circuit_Viewer(mdiArea, this);
+        newCircuit(_circuitViewer->circuit());
+	connect(_circuitViewer, SIGNAL(newCircuit(DspCircuit*)), this, SLOT(newCircuit(DspCircuit*)));
 	connect(_circuitViewer, SIGNAL(activated(QWidget*)), this, SLOT(activate(QWidget*)));
 	mdiArea->addSubWindow(_circuitViewer);
 	_circuitViewer->setObjectName("circuitViewer");
@@ -153,4 +155,12 @@ void QNEMainWindow::createDockWindows()
 	_settings = new QNESettings(settings_dock);
 	settings_dock->setWidget(_settings);
 	addDockWidget(Qt::RightDockWidgetArea, settings_dock);
+}
+
+
+
+void QNEMainWindow::newCircuit(DspCircuit* c)
+{
+  printf("add new circuit!\n");
+  _circuits.push_back(c);
 }

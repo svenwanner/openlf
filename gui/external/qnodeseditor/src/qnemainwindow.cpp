@@ -55,21 +55,21 @@ QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
 	mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	setCentralWidget(mdiArea);
 
-	_circuitViewer = new Circuit_Viewer(mdiArea, this);
-	std::cout << "pare: " << _circuitViewer << std::endl;
-	connect(_circuitViewer, SIGNAL(activated(QWidget*)), this, SLOT(activate(QWidget*)));
 
+	_circuitViewer = new Circuit_Viewer(mdiArea, this);
+        newCircuit(_circuitViewer->circuit());
+	connect(_circuitViewer, SIGNAL(newCircuit(DspCircuit*)), this, SLOT(newCircuit(DspCircuit*)));
+	connect(_circuitViewer, SIGNAL(activated(QWidget*)), this, SLOT(activate(QWidget*)));
         
 	createActions();
 	createMenus();
 	createDockWindows();
-	createToolBars();
+	createToolBars();  
         
-	mdiArea->addSubWindow(_circuitViewer);
+        mdiArea->addSubWindow(_circuitViewer);
 	_circuitViewer->setObjectName("circuitViewer");
 	_circuitViewer->showMaximized();
-
-        
+              
         
 	this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
@@ -123,8 +123,6 @@ void QNEMainWindow::createToolBars()
 
 
 
-
-
 Circuit_Viewer::Circuit_Viewer(QMdiArea *mdiArea, QMainWindow *parent) : QMainWindow(parent), mdiArea(mdiArea)
 {
   this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -133,15 +131,11 @@ Circuit_Viewer::Circuit_Viewer(QMdiArea *mdiArea, QMainWindow *parent) : QMainWi
   setMouseTracking(true);
   
   //scrollArea = new QScrollArea;
-  //scrollArea->setBackgroundRole(QPalette::Dark);
-  
-  
-
-  _circuit = new DspCircuit();
-  
+  //scrollArea->setBackgroundRole(QPalette::Dark);  
   
   _scene = new QGraphicsScene();
   
+  _circuit = new DspCircuit();
   
   _view = new QGraphicsView(this);
   _view->setScene(_scene);
@@ -344,6 +338,7 @@ void Circuit_Viewer::load()
   _input_block = NULL;
   _output_block = NULL;
   _circuit = DspCircuit::load(path.toUtf8().constData(), &OpenLF::getComponentClone);
+  emit newCircuit(_circuit);
   
   //FIXME error msg
   if (!_circuit)
@@ -485,3 +480,7 @@ void Circuit_Viewer::on_action_Pop_In_triggered()
 	}
 }
 
+DspCircuit *Circuit_Viewer::circuit()
+{
+  return _circuit;
+}

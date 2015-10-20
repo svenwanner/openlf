@@ -69,13 +69,14 @@ public:
 private slots:
 	void saveFile();
 	void loadFile();
-	void new_circuit();
+	void new_circuit_viewer();
 	void onApplicationFocusChanged();
 	void createDockWindows();
 	void addComponent(QListWidgetItem *it);
 	void showCompSettings(DspComponent *comp);
 	void showCompSettings(QNEBlock *comp);
 	void activate(QWidget* wid);
+        void newCircuit(DspCircuit* c);
         
 signals:
 	void itemDoubleClicked();
@@ -116,6 +117,7 @@ private:
     QNESettings *_settings = NULL;
 
 	std::vector<QThread*> threads;
+        std::vector<DspCircuit*> _circuits;
 };
 
 #endif // QNEMAINWINDOW_H
@@ -141,6 +143,7 @@ public:
      void addComponent(DspComponent *comp, bool gui_only = false);
      void addInputComponent(int pads = 1);
      void addOutputComponent(int pads = 1);
+     DspCircuit *circuit();
         
         
 	//void open(const QString &title);
@@ -159,6 +162,7 @@ signals:
   void focusChanged();
 
   void activated(QWidget* w);
+  void newCircuit(DspCircuit* c);
 
 protected:
 	bool event(QEvent* e);
@@ -195,6 +199,7 @@ private:
 	void createToolbar();
 	void createActions();
 	void createMenus();
+        void check_add_circuit();
 
 	QAction *MousePosition;
 	QAction *saveAct;

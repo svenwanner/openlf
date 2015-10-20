@@ -54,7 +54,7 @@ void QNEMainWindow::createActions()
 	newAct = new QAction(QIcon(":/circuit.png"), tr("&Show"), this);
 	//saveAct->setShortcuts(QKeySequence::Save);
 	newAct->setStatusTip(tr("New circuit"));
-	connect(newAct, SIGNAL(triggered()), this, SLOT(new_circuit()));
+	connect(newAct, SIGNAL(triggered()), this, SLOT(new_circuit_viewer()));
   
         connect(_circuitViewer, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
         connect(_circuitViewer, SIGNAL(compSelected(QNEBlock*)), this, SLOT(showCompSettings(QNEBlock*)));
