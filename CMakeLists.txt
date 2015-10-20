@@ -11,7 +11,7 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   # using Visual Studio C++
   message("use msvc")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ox /openmp")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ox /openmp /D NOMINMAX")
   #set(CLIF_INCLUDE_DIR "D:/libs/include" CACHE PATH "Include path for external libraries")
   include_directories(${LIBS_INCLUDE_DIR})
   #set (EXTRA_LIBS ${EXTRA_LIBS} "D:/libs/include")  #see parameter list here https://cmake.org/pipermail/cmake/2006-July/010189.html
