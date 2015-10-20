@@ -295,12 +295,12 @@ void Circuit_Viewer::addComponent(DspComponent *comp, bool gui_only)
 //FIXME delete old input comp if already existing!
 void Circuit_Viewer::addInputComponent()
 {   
-  _blocks.push_back(new QNEBlock(NULL, _scene, QNEBlock::BlockType::Source));
+  _blocks.push_back(new QNEBlock(_circuit, _scene, QNEBlock::BlockType::Source));
 }
 
 void Circuit_Viewer::addOutputComponent()
 {   
-  _blocks.push_back(new QNEBlock(NULL, _scene, QNEBlock::BlockType::Sink));
+  _blocks.push_back(new QNEBlock(_circuit, _scene, QNEBlock::BlockType::Sink));
 }
 
 void Circuit_Viewer::adjustScrollBar(QScrollBar *scrollBar, double factor)

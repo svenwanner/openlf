@@ -47,7 +47,8 @@ void QNEConnection::updateCircuitConnection()
 {  
   if (m_port1 && m_port2) {
     DspComponent *comp_source, *comp_sink;
-    DspCircuit *circuit;
+    DspCircuit *circ_sink, *circ_source;
+    DspCircuit *circuit = NULL;
     QNEPort *src, *sink;
     
     if (m_port1->isOutput()) {
@@ -64,15 +65,26 @@ void QNEConnection::updateCircuitConnection()
     
     comp_source = m_port1->block()->component;
     comp_sink = m_port2->block()->component;
-    circuit = comp_sink->GetParentCircuit();
+    circ_source = m_port1->block()->circuit;
+    circ_sink = m_port2->block()->circuit;
+    if (comp_sink)
+      circuit = comp_sink->GetParentCircuit();
     int source_idx = m_port1->block()->getPortIdx(m_port1);
     int sink_idx = m_port2->block()->getPortIdx(m_port2);
     
-    circuit->ConnectOutToIn(comp_source,
-                            source_idx,
-                            comp_sink,
-                            sink_idx
-                           );
+    if (comp_source && comp_sink)
+      circuit->ConnectOutToIn(comp_source,
+                              source_idx,
+                              comp_sink,
+                              sink_idx
+                            );
+    else if (circ_source && comp_sink)
+      circ_source->ConnectInToIn(source_idx, comp_sink, sink_idx);
+    else if (comp_source && circ_sink)
+      circ_sink->ConnectOutToOut(comp_source, source_idx, sink_idx);
+    else 
+      //not yet supporte by DSPatch?
+      abort();
   }
 }
 

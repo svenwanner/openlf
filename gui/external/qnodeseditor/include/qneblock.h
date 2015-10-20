@@ -38,7 +38,8 @@ public:
         enum BlockType { Regular = 0, Source, Sink};
 
     QNEBlock(QGraphicsItem *parent = 0);
-    QNEBlock(DspComponent *comp, QGraphicsScene *scene, BlockType type = BlockType::Regular, QGraphicsItem *parent = 0);
+    QNEBlock(DspComponent *comp, QGraphicsScene *scene, QGraphicsItem *parent = 0);
+    QNEBlock(DspCircuit *c, QGraphicsScene *scene, BlockType type, QGraphicsItem *parent = 0);
 
 	QNEPort* addPort(const QString &name, bool isOutput, int flags = 0, int ptr = 0);
 	void addInputPort(const QString &name);
@@ -57,6 +58,7 @@ public:
 	int type() const { return Type; }
 	
 	DspComponent *component = NULL;
+	DspCircuit *circuit = NULL;
 
 protected:
 	QVariant itemChange(GraphicsItemChange change, const QVariant &value);
