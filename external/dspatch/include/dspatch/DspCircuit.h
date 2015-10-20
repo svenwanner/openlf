@@ -70,6 +70,7 @@ public:
     int GetThreadCount() const;
     
     bool save(std::string filename);
+    static DspCircuit* load(std::string filename, DspComponent *(*getComponentClone)(const std::string &typeName));
 
     bool AddComponent(DspComponent* component, std::string const& componentName = "");
     bool AddComponent(DspComponent& component, std::string const& componentName = "");

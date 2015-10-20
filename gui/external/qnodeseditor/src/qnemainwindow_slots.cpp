@@ -28,21 +28,13 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 */
 
-#include "comp_epi.hpp"
-#include "comp_lfread.hpp"
-#include "comp_lfwrite.hpp"
-#include "comp_dispwrite.hpp"
-#include "operators.hpp"
+#include "openlf.hpp"
 
 #include "qnemainwindow.h"
 #include "userinterface_qnemainwindow.h"
 
 #include "qneblock.h"
 #include "qnodeseditor.h"
-
-
-
-
 
 template <class T> class QVP
 {
@@ -81,17 +73,15 @@ void QNEMainWindow::loadFile()
 	nodesEditor->load(ds);
 }
 
-void QNEMainWindow::addBlock()
+void QNEMainWindow::new_circuit()
 {
-    QNEBlock *b = new QNEBlock(0);
-
-    scene->addItem(b);
-	static const char* names[] = {"Vin", "Voutsadfasdf", "Imin", "Imax", "mul", "add", "sub", "div", "Conv", "FFT"};
-	for (int i = 0; i < 4 + rand() % 3; i++)
-	{
-		b->addPort(names[rand() % 10], rand() % 2, 0, 0);
-        b->setPos(view->sceneRect().center().toPoint());
-	}
+	_circuitViewer = new Circuit_Viewer(mdiArea, this);
+	mdiArea->addSubWindow(_circuitViewer);
+	_circuitViewer->setObjectName("circuitViewer");
+	_circuitViewer->showMaximized();
+}
+void QNEMainWindow::onApplicationFocusChanged(){
+	std::cout << "hello" << std::endl;
 }
 
 void QNEMainWindow::addComponent(QListWidgetItem *it)
@@ -116,47 +106,32 @@ void QNEMainWindow::createDockWindows()
 		delete dock;
 	}
 
-	dock = new QDockWidget(tr("Light Field Channels:"), this);
+
+	dock = new QDockWidget(tr("Component list:"), this);
 	dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	List1 = new QListWidget(dock);
 	dock->setWidget(List1);
 	addDockWidget(Qt::RightDockWidgetArea, dock);
 	viewMenu->addAction(dock->toggleViewAction());
 
-	// populate the items of the list
-	//for (int i = 0; i < 10; i++)
-	//{
-        QListWidgetItem *it;
-        it = new QListWidgetItem("LF reader");
-        it->setData(Qt::UserRole, QVP<DspComponent>::asQVariant(new COMP_LFRead()));
-        List1->addItem(it);
-        
-        it = new QListWidgetItem("LF writer");
-        it->setData(Qt::UserRole, QVP<DspComponent>::asQVariant(new COMP_LFWrite()));
-        List1->addItem(it);
-        
-        it = new QListWidgetItem("EPI");
-        it->setData(Qt::UserRole, QVP<DspComponent>::asQVariant(new COMP_Epi()));
-        List1->addItem(it);
-        
-        it = new QListWidgetItem("Write Mesh");
-        it->setData(Qt::UserRole, QVP<DspComponent>::asQVariant(new COMP_DispWrite()));
-        List1->addItem(it);
-	//}
+        //populate component list
+        QListWidgetItem *item;
+        std::vector<DspComponent*> comps = OpenLF::componentList();
+        for(auto it=comps.begin();it!=comps.end();++it) {
+          item = new QListWidgetItem((*it)->getTypeName().c_str());
+          item->setData(Qt::UserRole, QVP<DspComponent>::asQVariant(*it));
+          List1->addItem(item);
+        }
 
 	connect(List1, SIGNAL(itemDoubleClicked(QListWidgetItem*)),this, SLOT(addComponent(QListWidgetItem*)));
 
 	docks.push_back(dock);
 	// ******************************************************************
         
-        QDockWidget *settings_dock = new QDockWidget(tr("Light Field Channels:"), this);
+
+    QDockWidget *settings_dock = new QDockWidget(tr("Component Settings:"), this);
 	settings_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	_settings = new QNESettings(settings_dock);
 	settings_dock->setWidget(_settings);
 	addDockWidget(Qt::RightDockWidgetArea, settings_dock);
-}
-
-void QNEMainWindow::on_action_tick_triggered()
-{
-	_circuitViewer->tick();
 }

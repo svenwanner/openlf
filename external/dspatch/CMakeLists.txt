@@ -16,7 +16,7 @@ endif()
 
 
 if(UNIX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -pthread")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -fPIC -pthread")
 endif(UNIX)
 
 if(CYGWIN OR MINGW)
@@ -44,6 +44,7 @@ target_link_libraries(
     ${PROJECT_NAME}
     -static-libgcc
     -static-libstdc++
+    gml_parser
 )
 
 # Link pthread and dl on Unix

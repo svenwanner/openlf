@@ -23,9 +23,6 @@
 #ifndef _OPENLF_OP_MACRO_H
 #define _OPENLF_OP_MACRO_H
 
-//#include "clif/clif_vigra.hpp"
-//#include "clif/flexmav.hpp"
-
 #ifdef OPENLF_OP_CONSTRUCT_PARAMS
 #undef OPENLF_OP_CONSTRUCT_PARAMS
 #endif
@@ -68,6 +65,7 @@
 \
 NAME::NAME()\
 {\
+  setTypeName_(#NAME); \
   AddInput_("input");\
   AddOutput_("output");\
   OPENLF_OP_CONSTRUCT_PARAMS \
@@ -136,6 +134,7 @@ class NAME : public DspComponent { \
 \
 NAME::NAME()\
 {\
+  setTypeName_(#NAME); \
   char buf[64]; \
   for(int i=0;i<INCOUNT;i++) { \
     sprintf(buf, "input_%d", i); \
@@ -211,6 +210,7 @@ bool NAME::ParameterUpdating_ (int i, DspParameter const &p)\
 \
 NAME::NAME()\
 {\
+  setTypeName_(#NAME); \
   char buf[64]; \
   for(int i=0;i<INCOUNT;i++) { \
     sprintf(buf, "input_%d", i); \

@@ -101,6 +101,13 @@ std::string DspComponent::GetComponentName() const
 
 //-------------------------------------------------------------------------------------------------
 
+std::string DspComponent::GetComponentType() const
+{
+    return _componentType;
+}
+
+//-------------------------------------------------------------------------------------------------
+
 void DspComponent::DisconnectInput(int inputIndex)
 {
     PauseAutoTick();
@@ -478,6 +485,19 @@ bool DspComponent::AddOutput_(std::string const& outputName)
         return true;
     }
     return false;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void DspComponent::setTypeName_(std::string const& name)
+{
+    _typeName = name;
+	return true;
+}
+
+const std::string& DspComponent::getTypeName()
+{
+  return _typeName;
 }
 
 //-------------------------------------------------------------------------------------------------

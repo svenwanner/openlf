@@ -50,11 +50,12 @@ void QNEMainWindow::createActions()
 	saveAct->setShortcuts(QKeySequence::Save);
 	saveAct->setStatusTip(tr("Save a file"));
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));
-        
-    tickAct = new QAction(QIcon(":/clock.png"), tr("tick"), this);
-	tickAct->setStatusTip(tr("Tick Circuit."));
-    connect(tickAct, SIGNAL(triggered()), this, SLOT(on_action_tick_triggered()));
+
+	newAct = new QAction(QIcon(":/circuit.png"), tr("&Show"), this);
+	//saveAct->setShortcuts(QKeySequence::Save);
+	newAct->setStatusTip(tr("New circuit"));
+	connect(newAct, SIGNAL(triggered()), this, SLOT(new_circuit()));
   
     connect(_circuitViewer, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
-
+	connect(_circuitViewer, SIGNAL(focusChanged()), this, SLOT(onApplicationFocusChanged()));
 }

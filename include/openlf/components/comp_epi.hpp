@@ -28,9 +28,8 @@
 #include "dspatch/DspComponent.h"
 #include "dspatch/DspCircuit.h"
 
-#include "comp_mav.hpp"
-#include "openlf/types.hpp"
-#include "wkf_structuretensor.hpp"
+#include "openlf/workflows/wkf_structuretensor.hpp"
+#include "openlf/operators/operators.hpp"
 
 namespace openlf { namespace components {
 

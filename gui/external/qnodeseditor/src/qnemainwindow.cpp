@@ -28,12 +28,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 */
 
-#include "comp_epi.hpp"
-#include "comp_lfread.hpp"
-#include "comp_lfwrite.hpp"
-#include "comp_dispwrite.hpp"
-#include "operators.hpp"
-
 #include "qnemainwindow.h"
 #include "userinterface_qnemainwindow.h"
 
@@ -51,16 +45,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
 {
 	setAttribute(Qt::WA_DeleteOnClose);
+	setWindowTitle(tr("Circuit Toolbox"));
+
 
 	mdiArea = new QMdiArea;
 	mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	setCentralWidget(mdiArea);
 
-	slider = new QSlider(Qt::Horizontal);
-	spinBox = new QSpinBox();
-
 	_circuitViewer = new Circuit_Viewer(mdiArea, this);
+
         
 	createActions();
 	createMenus();
@@ -70,6 +64,7 @@ QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
 	mdiArea->addSubWindow(_circuitViewer);
 	_circuitViewer->setObjectName("circuitViewer");
 	_circuitViewer->showMaximized();
+
         
         
 	this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -85,21 +80,17 @@ QNEMainWindow::~QNEMainWindow()
 void QNEMainWindow::createMenus()
 {
 	fileMenu = new QMenu(tr("&File"), this);
-	fileMenu->addAction(addAct);
 	fileMenu->addAction(loadAct);
 	fileMenu->addAction(saveAct);
+	fileMenu->addAction(newAct);
 	fileMenu->addSeparator();
 	fileMenu->addAction(quitAct);
         
-    QMenu *circuitMenu = new QMenu(tr("&Circuit"), this);
-	circuitMenu->addAction(tickAct);
-
 	//helpMenu = new QMenu(tr("&Help"), this);
 
 	viewMenu = new QMenu(tr("&View"), this);
 
 	menuBar()->addMenu(fileMenu);
-	menuBar()->addMenu(circuitMenu);
 	//menuBar()->addMenu(helpMenu);
 	menuBar()->addMenu(viewMenu);
 }
@@ -109,14 +100,12 @@ void QNEMainWindow::createToolBars()
 {
 	//ToolBar defined in source code
 	fileToolBar = addToolBar(tr("File"));
-	fileToolBar->addAction(addAct);
 	fileToolBar->addAction(loadAct);
 	fileToolBar->addAction(saveAct);
-	fileToolBar->addAction(popOutAct);
-	fileToolBar->addAction(tickAct);
+	fileToolBar->addAction(newAct);
 	fileToolBar->addSeparator();
 	fileToolBar->addAction(quitAct);
-	fileToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+	//fileToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 }
 
 
@@ -131,7 +120,8 @@ void QNEMainWindow::createToolBars()
 Circuit_Viewer::Circuit_Viewer(QMdiArea *mdiArea, QMainWindow *parent) : QMainWindow(parent), mdiArea(mdiArea)
 {
   this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-  setAttribute(Qt::WA_DeleteOnClose);
+
+  //setAttribute(Qt::WA_DeleteOnClose);
   setMouseTracking(true);
   
   //scrollArea = new QScrollArea;
@@ -166,15 +156,20 @@ Circuit_Viewer::~Circuit_Viewer(){
 
 void Circuit_Viewer::createActions()
 {
-	saveAct = new QAction(QIcon(":/save.png"), tr("&Save"), this);
+	saveAct = new QAction(QIcon(":/circuit_save.png"), tr("&Save"), this);
 	saveAct->setShortcuts(QKeySequence::Save);
-	saveAct->setStatusTip(tr("Save the document to disk"));
+	saveAct->setStatusTip(tr("Save Circuit to disk"));
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
-	saveAsAct = new QAction(QIcon(":/saveAs.png"), tr("Save &As..."), this);
+	saveAsAct = new QAction(QIcon(":/circuit_save.png"), tr("Save &As..."), this);
 	saveAsAct->setShortcuts(QKeySequence::SaveAs);
 	saveAsAct->setStatusTip(tr("Save the document under a new name"));
 	connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
+        
+	loadAct = new QAction(QIcon(":/load.png"), tr("&Save"), this);
+	loadAct->setShortcuts(QKeySequence::Open);
+	loadAct->setStatusTip(tr("Load Circuit from disk"));
+	connect(loadAct, SIGNAL(triggered()), this, SLOT(load()));
 
 	zoomInAct = new QAction(QIcon(":/Zoom-In.png"), tr("Zoom &In (25%)"), this);
 	zoomInAct->setShortcut(tr("Ctrl++"));
@@ -184,24 +179,25 @@ void Circuit_Viewer::createActions()
 	zoomOutAct->setShortcut(tr("Ctrl+-"));
 	connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
 
-	normalSizeAct = new QAction(QIcon(":/normalView.png"), tr("&Normal Size"), this);
-	normalSizeAct->setShortcut(tr("Ctrl+S"));
-	connect(normalSizeAct, SIGNAL(triggered()), this, SLOT(normalSize()));
-
 	fitToWindowAct = new QAction(QIcon(":/fittowindow.png"), tr("&Fit to Window"), this);
 	fitToWindowAct->setCheckable(true);
 	fitToWindowAct->setShortcut(tr("Ctrl+F"));
 	connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
 
-	popInAct = new QAction(QIcon(":/arrow_up.png"), tr("popOut"), this);
+	popInAct = new QAction(QIcon(":/arrow_down.png"), tr("popOut"), this);
 	popInAct->setStatusTip(tr("Pop Out Subwindow as own Window."));
 	connect(popInAct, SIGNAL(triggered()), this, SLOT(on_action_Pop_In_triggered()));
 
-	popOutAct = new QAction(QIcon(":/arrow_down.png"), tr("popOut"), this);
+	popOutAct = new QAction(QIcon(":/arrow_up.png"), tr("popOut"), this);
 	popOutAct->setStatusTip(tr("Pop Out Subwindow as own Window."));
 	connect(popOutAct, SIGNAL(triggered()), this, SLOT(on_action_Pop_Out_triggered()));
+
+	tickAct = new QAction(QIcon(":/clock.png"), tr("Tick"), this);
+	tickAct->setStatusTip(tr("Tick Circuit."));
+	connect(tickAct, SIGNAL(triggered()), this, SLOT(tick()));
         
     connect(_editor, SIGNAL(compSelected(DspComponent*)), this, SLOT(onCompSelected(DspComponent*)));
+	connect(this, SIGNAL(isActiveWindow), this, SLOT(onCompSelected(DspComponent*)));
 }
 
 void Circuit_Viewer::createToolbar()
@@ -209,53 +205,51 @@ void Circuit_Viewer::createToolbar()
 	ToolBar = addToolBar(tr("File"));
 	//toolBar->setFixedHeight(ToolBar_Height);
 	ToolBar->addAction(saveAct);
+	ToolBar->addAction(loadAct);
+	ToolBar->addSeparator();
 	ToolBar->addAction(zoomInAct);
 	ToolBar->addAction(zoomOutAct);
-	ToolBar->addAction(normalSizeAct);
 	ToolBar->addAction(fitToWindowAct);
+	ToolBar->addSeparator();
 	ToolBar->addAction(popInAct);
 	ToolBar->addAction(popOutAct);
-	
+	ToolBar->addSeparator();
+	ToolBar->addAction(tickAct);
+	//ToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
 }
 
 void Circuit_Viewer::createMenus()
 {
-	fileMenu = new QMenu(tr("&File"), this);
-	fileMenu->addAction(saveAct);
-	fileMenu->addAction(zoomInAct);
-	fileMenu->addAction(zoomOutAct);
-	fileMenu->addAction(normalSizeAct);
-	fileMenu->addAction(fitToWindowAct);
-	fileMenu->addAction(popInAct);
-	fileMenu->addAction(popOutAct);
-	menuBar()->addMenu(fileMenu);
+
+	circuitMenu = new QMenu(tr("&Circuit"), this);
+	circuitMenu->addAction(tickAct);
+	circuitMenu->addAction(saveAct);
+	circuitMenu->addAction(zoomInAct);
+	circuitMenu->addAction(zoomOutAct);
+	circuitMenu->addAction(fitToWindowAct);
+	circuitMenu->addAction(popInAct);
+	circuitMenu->addAction(popOutAct);
+
+	menuBar()->addMenu(circuitMenu);
+
 }
 
-void Circuit_Viewer::normalSize()
-{
-}
 
-void Circuit_Viewer::zoomIn()
-{
-	scaleImage(1.25);
+void Circuit_Viewer::zoomIn(){
+	scaleImage(1.25); 
 }
-
-void Circuit_Viewer::zoomOut()
-{
-	scaleImage(0.8);
+void Circuit_Viewer::zoomOut(){ 
+	scaleImage(0.8); 
+}
+void Circuit_Viewer::scaleImage(double factor){
+	_view->scale(factor, factor);
 }
 
 void Circuit_Viewer::fitToWindow()
 {
-	/*bool fitToWindow = fitToWindowAct->isChecked();
-	scrollArea->setWidgetResizable(fitToWindow);
-	if (!fitToWindow) {
-		normalSize();
-	}
-	zoomInAct->setEnabled(!fitToWindowAct->isChecked());
-	zoomOutAct->setEnabled(!fitToWindowAct->isChecked());*/
-        _view->fitInView(_scene->sceneRect(), Qt::KeepAspectRatio);
+    _view->fitInView(_scene->sceneRect(), Qt::KeepAspectRatio);
+	fitToWindowAct->setChecked(false);
 }
 
 void Circuit_Viewer::onCompSelected(DspComponent *comp)
@@ -275,18 +269,7 @@ void Circuit_Viewer::addComponent(DspComponent *comp)
   new QNEBlock(comp, _scene);
 }
 
-void Circuit_Viewer::scaleImage(double factor)
-{
-	//Q_ASSERT(imageLabel->pixmap());
-	//scaleFactor *= factor;
-	//imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
 
-	/*adjustScrollBar(scrollArea->horizontalScrollBar(), factor);
-	adjustScrollBar(scrollArea->verticalScrollBar(), factor);
-
-	zoomInAct->setEnabled(factor < 3.0);
-	zoomOutAct->setEnabled(factor > 0.333);*/
-}
 void Circuit_Viewer::adjustScrollBar(QScrollBar *scrollBar, double factor)
 {
 	/*scrollBar->setValue(int(factor * scrollBar->value()	+ ((factor - 1) * scrollBar->pageStep() / 2)));*/
@@ -302,6 +285,14 @@ void Circuit_Viewer::saveAs()
   
   _circuit->save(path.toUtf8().constData());
 }
+
+void Circuit_Viewer::load()
+{
+  QString path = QFileDialog::getOpenFileName(this, tr("select filename of circuit"));
+  
+  _circuit = DspCircuit::load(path.toUtf8().constData(), &OpenLF::getComponentClone);
+}
+
 
 
 void Circuit_Viewer::tick()
@@ -332,9 +323,8 @@ void Circuit_Viewer::on_action_Pop_Out_triggered()
 void Circuit_Viewer::on_action_Pop_In_triggered()
 {
 	if (! mdiArea->activeSubWindow()){
-		std::cout << "hello" << std::endl;
 		mdiArea->addSubWindow(popInpopOutWidget);
-		popInpopOutWidget->show();
+		popInpopOutWidget->showMaximized();
 		mdiArea->update();
 	}
 }
