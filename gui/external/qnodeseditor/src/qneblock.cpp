@@ -77,12 +77,16 @@ QNEBlock::QNEBlock(DspCircuit *c, QGraphicsScene *scene, BlockType type, QGraphi
   circuit = c;
   
   if (_blockType == BlockType::Source) {
-    QNEPort *p = addPort("input_0", true);
-    p->setNEBlock(this);
+    for(int i=0;i<c->GetInputCount();i++) {
+      QNEPort *p = addPort(c->GetInputName(i).c_str(), true);
+      p->setNEBlock(this);
+    }
   }
   else if (_blockType == BlockType::Sink) {
-    QNEPort *p = addPort("output_0", false);
-    p->setNEBlock(this);
+    for(int i=0;i<c->GetOutputCount();i++) {
+      QNEPort *p = addPort(c->GetOutputName(i).c_str(), false);
+      p->setNEBlock(this);
+    }
   }
 }
 

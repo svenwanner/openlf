@@ -78,6 +78,9 @@ public:
     void RemoveComponent(DspComponent const* component);
     void RemoveComponent(DspComponent const& component);
     void RemoveComponent(std::string const& componentName);
+    
+    DspWireBus *GetInToInWires();
+    DspWireBus *GetOutToOutWires();
 
     void RemoveAllComponents();
     

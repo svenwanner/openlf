@@ -139,8 +139,8 @@ public:
 	~Circuit_Viewer();
 
      void addComponent(DspComponent *comp, bool gui_only = false);
-     void addInputComponent();
-     void addOutputComponent();
+     void addInputComponent(int pads = 1);
+     void addOutputComponent(int pads = 1);
         
         
 	//void open(const QString &title);
@@ -238,4 +238,7 @@ private:
         QGraphicsView *_view;
         QNodesEditor *_editor;
         std::vector<QNEBlock*> _blocks;
+        
+        QNEBlock *_input_block = NULL;
+        QNEBlock *_output_block = NULL;
 };

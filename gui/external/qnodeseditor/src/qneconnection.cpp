@@ -111,22 +111,24 @@ void QNEConnection::setPos2(const QPointF &p)
 	pos2 = p;
 }
 
-void QNEConnection::setPort1(QNEPort *p)
+void QNEConnection::setPort1(QNEPort *p, bool gui_only)
 {
 	m_port1 = p;
 
 	m_port1->connections().append(this);
         
-        updateCircuitConnection();
+        if (!gui_only)
+          updateCircuitConnection();
 }
 
-void QNEConnection::setPort2(QNEPort *p)
+void QNEConnection::setPort2(QNEPort *p, bool gui_only)
 {
 	m_port2 = p;
 
 	m_port2->connections().append(this);
         
-        updateCircuitConnection();
+        if (!gui_only)
+          updateCircuitConnection();
 }
 
 void QNEConnection::updatePosFromPorts()

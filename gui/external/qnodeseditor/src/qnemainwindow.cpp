@@ -293,16 +293,30 @@ void Circuit_Viewer::addComponent(DspComponent *comp, bool gui_only)
 }
 
 //FIXME delete old input comp if already existing!
-void Circuit_Viewer::addInputComponent()
+void Circuit_Viewer::addInputComponent(int pads)
 {   
-  _circuit->AddInput("input_0");
-  _blocks.push_back(new QNEBlock(_circuit, _scene, QNEBlock::BlockType::Source));
+  char buf[64];
+
+  for(int i=0;i<pads;i++) {
+    sprintf(buf, "input_%d", i);
+    _circuit->AddInput(buf);
+  }
+  
+  _input_block = new QNEBlock(_circuit, _scene, QNEBlock::BlockType::Source);
+  _blocks.push_back(_input_block);
 }
 
-void Circuit_Viewer::addOutputComponent()
+void Circuit_Viewer::addOutputComponent(int pads)
 {   
-  _circuit->AddOutput("output_0");
-  _blocks.push_back(new QNEBlock(_circuit, _scene, QNEBlock::BlockType::Sink));
+  char buf[64];
+
+  for(int i=0;i<pads;i++) {
+    sprintf(buf, "output_%d", i);
+    _circuit->AddOutput(buf);
+  }
+  
+  _output_block = new QNEBlock(_circuit, _scene, QNEBlock::BlockType::Sink);
+  _blocks.push_back(_output_block);
 }
 
 void Circuit_Viewer::adjustScrollBar(QScrollBar *scrollBar, double factor)
@@ -327,8 +341,13 @@ void Circuit_Viewer::load()
   
   _scene->clear();
   _blocks.resize(0);
+  _input_block = NULL;
+  _output_block = NULL;
   _circuit = DspCircuit::load(path.toUtf8().constData(), &OpenLF::getComponentClone);
-  //FIXME original circuit is still allocated (and referenced by settings...)
+  
+  //FIXME error msg
+  if (!_circuit)
+    return;
   
   for(int i=0;i<_circuit->GetComponentCount();i++)
     addComponent(_circuit->GetComponent(i), true);
@@ -357,15 +376,78 @@ void Circuit_Viewer::load()
       
       QNEConnection *conn = new QNEConnection();
       _scene->addItem(conn);
-      conn->setPort1(p1);
-      conn->setPort2(p2);
+      conn->setPort1(p1, true);
+      conn->setPort2(p2, true);
+      conn->setPos1(p1->scenePos());
+      conn->setPos2(p2->scenePos());
+      conn->updatePath();
+    }
+  }
+  
+  //FIXME add input output count stuff
+  if (_circuit->GetInputCount()) {
+    addInputComponent(_circuit->GetInputCount());
+    
+    DspWireBus *inputs = _circuit->GetInToInWires();
+    for(int i=0;i<inputs->GetWireCount();i++) {
+      DspWire *input = inputs->GetWire(i);
+      int src_idx = input->fromSignalIndex;
+      int sink_idx = input->toSignalIndex;
+      DspComponent *target_comp = input->linkedComponent;
+      QNEBlock *target_block = NULL;
+      
+      for(int n=0;n<_blocks.size();n++)
+        if (target_comp == _blocks[n]->component) {
+          target_block = _blocks[n];
+          break;
+        }
+      assert(target_block);
+      
+      QNEPort *p1 = _input_block->getPortByIdx(src_idx, true);
+      QNEPort *p2 = target_block->getPortByIdx(sink_idx, false);
+      
+      QNEConnection *conn = new QNEConnection();
+      _scene->addItem(conn);
+      conn->setPort1(p1, true);
+      conn->setPort2(p2, true);
+      conn->setPos1(p1->scenePos());
+      conn->setPos2(p2->scenePos());
+      conn->updatePath();
+    }
+  }
+  
+  if (_circuit->GetOutputCount()) {
+    addOutputComponent(_circuit->GetOutputCount());    
+    
+    DspWireBus *outputs = _circuit->GetOutToOutWires();
+    for(int i=0;i<outputs->GetWireCount();i++) {
+      DspWire *output = outputs->GetWire(i);
+      int src_idx = output->fromSignalIndex;
+      int sink_idx = output->toSignalIndex;
+      DspComponent *source_comp = output->linkedComponent;
+      QNEBlock *source_block = NULL;
+      
+      for(int n=0;n<_blocks.size();n++)
+        if (source_comp == _blocks[n]->component) {
+          source_block = _blocks[n];
+          break;
+        }
+      assert(source_block);
+      
+      QNEPort *p1 = source_block->getPortByIdx(src_idx, true);
+      QNEPort *p2 = _output_block->getPortByIdx(sink_idx, false);
+      
+      QNEConnection *conn = new QNEConnection();
+      _scene->addItem(conn);
+      conn->setPort1(p1, true);
+      conn->setPort2(p2, true);
       conn->setPos1(p1->scenePos());
       conn->setPos2(p2->scenePos());
       conn->updatePath();
     }
   }
 }
-
+// 
 
 
 void Circuit_Viewer::tick()

@@ -36,7 +36,7 @@ public:
     
     for(auto it=list.begin();it!=list.end();++it)
       if (!typeName.compare((*it)->getTypeName()))
-        return *it;
+        return (*it)->clone();
   }
   
 private:  
