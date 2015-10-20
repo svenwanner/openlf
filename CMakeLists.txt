@@ -55,6 +55,9 @@ add_subdirectory(src/lib/operators)
 
 add_subdirectory(gui)
 
+add_executable(openlf src/bin/openlf.cpp)
+target_link_libraries(openlf ${CLIF_LIBRARIES} openlf_workflows openlf_components openlf_operators)
+
 add_executable(teststuff src/bin/test.cpp)
 add_executable(teststuff2 src/bin/test2.cpp)
 add_executable(teststuff3 src/bin/test3.cpp)
