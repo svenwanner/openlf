@@ -159,7 +159,7 @@ void QNEMainWindow::createDockWindows()
         _circuit_dock = new QDockWidget(tr("Circuit Settings:"), this);
 	_circuit_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
         QWidget *box = new QWidget(_circuit_dock);
-        settings_dock->setWidget(box);
+        _circuit_dock->setWidget(box);
 	QFormLayout *layout = new QFormLayout(_circuit_dock);
         box->setLayout(layout);
         _c_name_ed = new QLineEdit(_circuit_dock);

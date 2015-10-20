@@ -96,6 +96,8 @@ void QNESettings::attach(QNEBlock *block)
   spinbox->setValue(portcount);
   spinbox->setMinimum(portcount);
   connect(spinbox, SIGNAL(valueChanged(int)), this, SLOT(portCountChanged(int)));
+  
+  actual_layout->addRow(tr("Pad Count"), hbox);
 }
 
 
