@@ -29,11 +29,11 @@
 
 OPENLF_OP_START(OP_DiscDilation, 1, 1, 3, 3)
 
-//  int radius = *op->GetParameter(0)->GetInt();
-//    for (int i=0; i < in[0]->shape()[2]; ++i){
-//        vigra::MultiArrayView<2, T> channel_in = in[0]->bindAt(2, i);
-//        vigra::MultiArrayView<2, T> channel_out = out[0]->bindAt(2, i);
-//        vigra::discDilation(channel_in,channel_out, radius);
-//    }
+  int radius = *op->GetParameter(0)->GetInt();
+    for (int i=0; i < in[0]->shape()[2]; ++i){
+        vigra::MultiArrayView<2, T> channel_in = in[0]->bindAt(2, i);
+        vigra::MultiArrayView<2, T> channel_out = out[0]->bindAt(2, i);
+        vigra::discDilation(channel_in,channel_out, radius);
+    }
 
 OPENLF_OP_END(OP_DiscDilation, 1, 1, 3, 3)

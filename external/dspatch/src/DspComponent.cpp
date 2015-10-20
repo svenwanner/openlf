@@ -492,7 +492,7 @@ bool DspComponent::AddOutput_(std::string const& outputName)
 void DspComponent::setTypeName_(std::string const& name)
 {
     _typeName = name;
-	return true;
+	return;
 }
 
 const std::string& DspComponent::getTypeName()
