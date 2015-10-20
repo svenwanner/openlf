@@ -35,6 +35,8 @@ extern "C" {
 #include "gml_parser.h"
 }
 
+typedef unsigned int uint;
+
 //=================================================================================================
 
 DspCircuit::DspCircuit(int threadCount)
@@ -563,6 +565,28 @@ bool DspCircuit::save(std::string filename)
       fprintf(f, "source %d\n", idx);
       fprintf(f, "target %d\n", i);
       fprintf(f, "source_pad %d\n", wire->fromSignalIndex);
+      fprintf(f, "target_pad %d\n", wire->toSignalIndex);
+      fprintf(f, "]\n");
+    }
+    
+  for(uint i=0;i<_outToOutWires.GetWireCount();i++) {
+      int idx;
+      DspWire *wire = _outToOutWires.GetWire(i);
+      _FindComponent(wire->linkedComponent, idx);
+      fprintf(f, "outputedge [\n");
+      fprintf(f, "source %d\n", idx);
+      fprintf(f, "source_pad %d\n", wire->fromSignalIndex);
+      fprintf(f, "output_pad %d\n", wire->toSignalIndex);
+      fprintf(f, "]\n");
+    }
+    
+  for(uint i=0;i<_inToInWires.GetWireCount();i++) {
+      int idx;
+      DspWire *wire = _inToInWires.GetWire(i);
+      _FindComponent(wire->linkedComponent, idx);
+      fprintf(f, "inputedge [\n");
+      fprintf(f, "target %d\n", idx);
+      fprintf(f, "input_pad %d\n", wire->fromSignalIndex);
       fprintf(f, "target_pad %d\n", wire->toSignalIndex);
       fprintf(f, "]\n");
     }

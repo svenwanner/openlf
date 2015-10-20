@@ -152,10 +152,12 @@ void QNESettings::portCountChanged(int val)
   for(int i=block->ports().size();i<val;i++) 
     if (block->blockType() == QNEBlock::BlockType::Source) {
       sprintf(buf, "input_%d", i);
+      block->circuit->AddInput(buf);
       block->addOutputPort(buf);
     }
     else {
       sprintf(buf, "output_%d", i);
+      block->circuit->AddOutput(buf);
       block->addInputPort(buf);
     }    
 }
