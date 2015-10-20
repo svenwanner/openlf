@@ -51,13 +51,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include "qnodesthreads.h"
 
 #include "qnesettings.h"
+#include "qneblock.h"
 
 #include "DspCircuit.h"
-
-
-
-
-
 
 class QNodesEditor;
 class Circuit_Viewer;
@@ -140,7 +136,7 @@ public:
 	Circuit_Viewer(QMdiArea *mdiArea = 0, QMainWindow *parent = 0);
 	~Circuit_Viewer();
 
-     void addComponent(DspComponent *comp);
+     void addComponent(DspComponent *comp, bool gui_only = false);
         
         
 	//void open(const QString &title);
@@ -230,4 +226,5 @@ private:
         QGraphicsScene *_scene;
         QGraphicsView *_view;
         QNodesEditor *_editor;
+        std::vector<QNEBlock*> _blocks;
 };

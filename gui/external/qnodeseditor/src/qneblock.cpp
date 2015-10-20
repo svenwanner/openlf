@@ -116,6 +116,20 @@ int QNEBlock::getPortIdx(QNEPort *port)
   return port_idx;
 }
 
+QNEPort *QNEBlock::getPortByIdx(int idx, bool isOutput)
+{
+  int cur_idx = -1;
+  QVector<QNEPort*> portlist = ports();
+  for(int i=0;i<portlist.size();i++) {
+    if (portlist[i]->isOutput() == isOutput)
+      cur_idx++;
+    if (cur_idx == idx)
+      return portlist[i];
+  }
+
+  return NULL;
+}
+
 void QNEBlock::addInputPort(const QString &name)
 {
 	addPort(name, false);

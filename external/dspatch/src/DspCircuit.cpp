@@ -469,6 +469,14 @@ void DspCircuit::_DisconnectComponent(int componentIndex)
 
 //-------------------------------------------------------------------------------------------------
 
+DspComponent *DspCircuit::GetComponent(int n)
+{
+  return _components[n];
+}
+    
+//-------------------------------------------------------------------------------------------------
+
+
 void DspCircuit::_RemoveComponent(int componentIndex)
 {
     changed();
@@ -543,10 +551,10 @@ bool DspCircuit::save(std::string filename)
     return true;
   
   fprintf(f, "graph [\n");
-  for(int i=0;i<_components.size();i++)
+  for(uint i=0;i<_components.size();i++)
     _save_comp(f, i);
   
-  for(int i=0;i<_components.size();i++)
+  for(uint i=0;i<_components.size();i++)
     for(int j=0;j<_components[i]->_inputWires.GetWireCount();j++) {
       int idx;
       DspWire *wire = _components[i]->_inputWires.GetWire(j);

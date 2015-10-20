@@ -50,6 +50,7 @@ public:
 	QNEBlock* clone();
 	QVector<QNEPort*> ports();
         int getPortIdx(QNEPort *port);
+        QNEPort *getPortByIdx(int idx, bool isOutput);
 
 	int type() const { return Type; }
 	

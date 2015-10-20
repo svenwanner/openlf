@@ -129,9 +129,12 @@ public:
     void DisconnectInput(DspComponent const* inputComponent);
     void DisconnectAllInputs();
 
+    DspWireBus *GetInputWires();
+    
     int GetInputCount();
     int GetOutputCount();
     int GetParameterCount();
+    void GetInput(int n, DspComponent *&src, int &src_idx, int &sink_idx);
 
     std::string GetInputName(int index);
     std::string GetOutputName(int index);

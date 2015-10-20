@@ -38,6 +38,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <QFileDialog>
 
 #include "qneport.h"
+#include "qneconnection.h"
+
 #include <iostream>
 
 
@@ -259,14 +261,16 @@ void Circuit_Viewer::onCompSelected(DspComponent *comp)
 
 static int counter = 0;
 
-void Circuit_Viewer::addComponent(DspComponent *comp)
+void Circuit_Viewer::addComponent(DspComponent *comp, bool gui_only)
 {
   char buf[64];
   sprintf(buf, "component_%d", counter++);
-  bool success = _circuit->AddComponent(comp, buf);
-  assert(success);
+  if (!gui_only) {
+    bool success = _circuit->AddComponent(comp, buf);
+    assert(success);
+  }
     
-  new QNEBlock(comp, _scene);
+  _blocks.push_back(new QNEBlock(comp, _scene));
 }
 
 
@@ -290,7 +294,45 @@ void Circuit_Viewer::load()
 {
   QString path = QFileDialog::getOpenFileName(this, tr("select filename of circuit"));
   
+  //FIXME remove all previous gui elements (_blocks)
+  //FIXME remove lingering settings elements...
+  
   _circuit = DspCircuit::load(path.toUtf8().constData(), &OpenLF::getComponentClone);
+  
+  for(int i=0;i<_circuit->GetComponentCount();i++)
+    addComponent(_circuit->GetComponent(i), true);
+  
+  for(int i=0;i<_blocks.size();i++) {
+    QNEBlock *block = _blocks[i];
+    DspComponent *comp = _blocks[i]->component;
+    DspWireBus *inputs = comp->GetInputWires();
+    
+    for(int j=0;j<inputs->GetWireCount();j++) {
+      DspWire *input = inputs->GetWire(j);
+      int src_idx = input->fromSignalIndex;
+      int sink_idx = input->toSignalIndex;
+      DspComponent *source_comp = input->linkedComponent;
+      QNEBlock *source_block = NULL;
+      
+      for(int n=0;n<_blocks.size();n++) {
+        if (source_comp == _blocks[n]->component) {
+          source_block = _blocks[n];
+          break;
+        }
+      }
+      
+      QNEPort *p1 = source_block->getPortByIdx(src_idx, true);
+      QNEPort *p2 = block->getPortByIdx(sink_idx, false);
+      
+      QNEConnection *conn = new QNEConnection();
+      _scene->addItem(conn);
+      conn->setPort1(p1);
+      conn->setPort1(p2);
+      conn->setPos1(p1->scenePos());
+      conn->setPos2(p2->scenePos());
+      conn->updatePath();
+    }
+  }
 }
 
 

@@ -80,7 +80,9 @@ public:
     void RemoveComponent(std::string const& componentName);
 
     void RemoveAllComponents();
-
+    
+    DspComponent *GetComponent(int n);
+    
     template <class ComponentType>
     ComponentType* GetComponent(std::string const& componentName);
 

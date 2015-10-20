@@ -184,6 +184,14 @@ int DspComponent::GetInputCount()
     return inputCount;
 }
 
+void DspComponent::GetInput(int n, DspComponent *&src, int &src_idx, int &sink_idx)
+{
+  DspWire *w = _inputWires.GetWire(n);
+  src = w->linkedComponent;
+  src_idx = w->fromSignalIndex;
+  sink_idx = w->toSignalIndex;
+}
+
 //-------------------------------------------------------------------------------------------------
 
 int DspComponent::GetOutputCount()
@@ -610,6 +618,11 @@ void DspComponent::RemoveAllParameters_()
 int DspComponent::GetInputCount_()
 {
     return _inputBus.GetSignalCount();
+}
+
+DspWireBus *DspComponent::GetInputWires()
+{
+  return &_inputWires;
 }
 
 //-------------------------------------------------------------------------------------------------
