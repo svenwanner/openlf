@@ -307,10 +307,10 @@ void Circuit_Viewer::load()
 {
   QString path = QFileDialog::getOpenFileName(this, tr("select filename of circuit"));
   
-  //FIXME remove all previous gui elements (_blocks)
-  //FIXME remove lingering settings elements...
-  
+  _scene->clear();
+  _blocks.resize(0);
   _circuit = DspCircuit::load(path.toUtf8().constData(), &OpenLF::getComponentClone);
+  //FIXME original circuit is still allocated (and referenced by settings...)
   
   for(int i=0;i<_circuit->GetComponentCount();i++)
     addComponent(_circuit->GetComponent(i), true);
