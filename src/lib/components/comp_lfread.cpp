@@ -97,13 +97,18 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 bool COMP_LFRead::ParameterUpdating_ (int i, DspParameter const &p)
 {
   //we only have two parameters
+  printf("a\n");
   if (i >= 2)
     return false;
   
-  if (p.Type() != DspParameter::ParamType::String)
+  printf("b\n");
+  if (p.Type() != DspParameter::ParamType::String) {
+    abort();
     return false;
+  }
   
   SetParameter_(i, p);
+  printf("c\n");
   return true;
 }
 

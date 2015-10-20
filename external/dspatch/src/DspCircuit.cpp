@@ -350,10 +350,7 @@ void DspCircuit::configure()
   //uhh ohh autotick stuff?!?
   bool old = _configOnly;
   
-  printf("conf gen: %llu circuit gen: %llu\n", _configured_generation, _generation);
-  
   if (_configured_generation < _generation) {
-    printf("tick config!\n");
     _configOnly = true;
     Tick();
     _configOnly = old;
@@ -499,7 +496,6 @@ void DspCircuit::changed()
   
   c->_generation++;
   Reset();
-  printf("circuit gen: %llu\n", c->_generation);
 }
 
 void DspCircuit::_save_comp(FILE *f, int i)
@@ -577,11 +573,7 @@ void print_keys (struct GML_list_elem* list) {
   }
 }
 
-static std::unordered_map<int,int> param2gmlType = {
-    {DspParameter::ParamType::Int,GML_value::GML_INT},
-    {DspParameter::ParamType::Float,GML_value::GML_DOUBLE},
-    {DspParameter::ParamType::String,GML_value::GML_STRING}
-  };
+#define DPPT DspParameter::ParamType
 
 DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentClone)(const std::string &typeName))
 {
@@ -589,17 +581,49 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
   static struct {
     void operator()(DspComponent *comp, GML_pair *node)
     {
+      bool res;
       GML_pair *part;
       
       part = node;
       while(part) {
-        auto found = param2gmlType.find((int)part->kind);
-        
-        if (found == param2gmlType.end())
-          printf("skip setting %s with unknown type\n", part->key);
+        const DspParameter *p = NULL;
+        int p_idx;
+        for(int i=0;i<comp->GetParameterCount();i++)
+          if (!comp->GetParameterName(i).compare(part->key)) {
+            p = comp->GetParameter(i);
+            p_idx = i;
+            break;
+          }
+        if (!p) {
+          printf("skipping unknonw parameter \"%s\" for component \"%s\"\n",
+            part->key, comp->getTypeName().c_str());
+        }
+        else if (part->kind == GML_STRING
+                 && (!strcmp(part->value.string,"(UNKNOWN)")
+                     || !strcmp(part->value.string,"(UNSET)")
+                )) {
+          printf("skipping unset parameter \"%s\" for component \"%s\"\n",
+            part->key, comp->getTypeName().c_str());
+        }
         else {
-          switch (found->first) {
-            
+          switch (p->Type()) {
+            case DPPT::String :
+              assert(part->kind = GML_STRING);
+              printf("set %s of %p to %s\n", part->key, comp, part->value.string);
+              res = comp->SetParameter(p_idx, DspParameter(DPPT::String, std::string(part->value.string)));
+              assert(res);
+              break;
+            case DPPT::Float :
+              assert(part->kind = GML_DOUBLE);
+              comp->SetParameter(p_idx, DspParameter(DPPT::Float, (float)part->value.floating));
+              break;
+            case DPPT::Int :
+              assert(part->kind = GML_INT);
+              comp->SetParameter(p_idx, DspParameter(DPPT::Int, (int)part->value.integer));
+              break;
+            default :
+              printf("skipping parameter \"%s\" with unknown type for component \"%s\"\n",
+                part->key, comp->getTypeName().c_str());
           }
         }
         part = part->next;
@@ -658,7 +682,38 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
     void operator()(DspCircuit *c, GML_pair *node)
     {
       assert(node->kind == GML_LIST);
-      printf("add edge\n");
+      int source = -1, target = -1, source_idx = -1, target_idx = -1;
+      
+      GML_pair *part = node->value.list;
+      while(part) {
+        if (!strcmp(part->key, "source")) {
+          assert(part->kind == GML_INT);
+          source = part->value.integer;
+        }
+        else if (!strcmp(part->key, "target")) {
+          assert(part->kind == GML_INT);
+          target = part->value.integer;
+        }
+        else if (!strcmp(part->key, "source_pad")) {
+          assert(part->kind == GML_INT);
+          source_idx = part->value.integer;
+        }
+        else if (!strcmp(part->key, "target_pad")) {
+          assert(part->kind == GML_INT);
+          target_idx = part->value.integer;
+        }
+        part = part->next;
+      }
+      
+      assert(source != -1);
+      assert(target != -1);
+      assert(source_idx != -1);
+      assert(target_idx != -1);
+      
+      //FIXME check a lot of other stuff (idx and comp max, ...
+      
+      printf("connect edge\n");
+      c->ConnectOutToIn(c->_components[source],source_idx,c->_components[target],target_idx);
     }
   } _gml_parse_add_edge;
   
@@ -742,11 +797,11 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
   printf ("Keys used in %s: \n", filename.c_str());
   print_keys(stat->key_list);
   
-  _gml_parse_circuit(list, getComponentClone);
+  DspCircuit *c = _gml_parse_circuit(list, getComponentClone);
   
   GML_free_list (list, stat->key_list);
   
-  return NULL;
+  return c;
 }
 
 
