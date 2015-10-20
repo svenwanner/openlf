@@ -76,6 +76,7 @@ void QNEMainWindow::loadFile()
 void QNEMainWindow::new_circuit()
 {
 	_circuitViewer = new Circuit_Viewer(mdiArea, this);
+	connect(_circuitViewer, SIGNAL(activated(QWidget*)), this, SLOT(activate(QWidget*)));
 	mdiArea->addSubWindow(_circuitViewer);
 	_circuitViewer->setObjectName("circuitViewer");
 	_circuitViewer->showMaximized();
