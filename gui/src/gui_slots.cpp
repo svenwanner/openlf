@@ -1,12 +1,11 @@
 #include "gui_toolbox.h"
 
-#ifdef _MSC_VER
-#include "ui_gui_windows.h"
-#elif __GNUC__
-#include "ui_gui_linux.h"
-#endif
-
-
+//#ifdef _MSC_VER
+//#include "ui_gui_windows.h"
+//#elif __GNUC__
+//#include "ui_gui_linux.h"
+//#endif
+#include "ui_toolbox_ui.h"
 
 #ifndef __APPLE__
 	#include <omp.h>
