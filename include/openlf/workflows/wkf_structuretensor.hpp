@@ -65,7 +65,8 @@ namespace openlf {
     public:
       WKF_StructureTensor();
 
-      DSPCOMPONENT_TRIVIAL_CLONE(WKF_StructureTensor)
+      //FIXME!
+      //DSPCOMPONENT_TRIVIAL_CLONE(WKF_StructureTensor)
       
     protected:
       //virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
