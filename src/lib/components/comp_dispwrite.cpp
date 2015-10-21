@@ -58,6 +58,8 @@ void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
       if (!std::isnan(disp[p]) && disp[p] > 0) 
         point_count++;
     }
+    
+  printf("write ply: %d valid points\n", point_count);
   
   fprintf(pointfile, "ply\n"
           "format ascii 1.0\n"
@@ -117,6 +119,8 @@ void write_obj(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
       buf1[i] = 0;
       buf2[i] = 0;
   }
+  
+  printf("write obj!\n");
   
   for(p[1]=0;p[1]<h;++p[1]) {
     valid_tmp = valid_last;
@@ -183,6 +187,7 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   Dataset out_set;
   out_set.link(f_out, in->data);
   out_set.writeAttributes();
+  f_out.close();
   
   FlexMAV<4> disp;
   Datastore *disp_store = in->data->getStore("disparity/default/data");
@@ -203,10 +208,11 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   write_ply("debug.ply", centerview, img, subset);
   write_obj("debug.obj", centerview, img, subset);
   
-  ClifFile debugfile;
-  debugfile.create("debug.clif");
-  Dataset *debugset = debugfile.createDataset("default");
+  /*ClifFile *debugfile = new ClifFile();
+  debugfile->create("debug.clif");
+  Dataset *debugset = debugfile->createDataset("default");
   disp.write(debugset, "testimage");
+  delete debugfile;*/
 }
 
 bool COMP_DispWrite::ParameterUpdating_ (int i, DspParameter const &p)

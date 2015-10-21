@@ -65,6 +65,7 @@ namespace openlf {
     public:
       WKF_StructureTensor();
 
+      //FIXME!
       DSPCOMPONENT_TRIVIAL_CLONE(WKF_StructureTensor)
       
     protected:

@@ -69,6 +69,8 @@ public:
     void SetThreadCount(int threadCount);
     int GetThreadCount() const;
     
+    virtual DspComponent *clone();
+    
     bool save(std::string filename);
     static DspCircuit* load(std::string filename, DspComponent *(*getComponentClone)(const std::string &typeName));
 

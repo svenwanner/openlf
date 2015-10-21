@@ -914,5 +914,48 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
   return c;
 }
 
+DspComponent* DspCircuit::clone()
+{
+  DspCircuit *c = new DspCircuit();
+  bool ret;
+  
+  printf("DspCircuit clone()\n");
+  
+  std::unordered_map<DspComponent*,DspComponent*> copies;
+  
+  for(int i=0;i<GetComponentCount();i++) {
+    DspComponent *clone = GetComponent(i)->clone();
+    assert(clone);
+    copies[GetComponent(i)] = clone;
+    c->AddComponent(clone, clone->GetComponentName());
+  }
+  
+  for(auto it=copies.begin();it!=copies.end();++it) {
+    DspWireBus *inputs = &it->first->_inputWires;
+    for(int i=0;i<inputs->GetWireCount();i++) {
+      DspWire *input = inputs->GetWire(i);
+      printf("conn outin\n");
+      ret = c->ConnectOutToIn(copies[input->linkedComponent], input->fromSignalIndex, it->second, input->toSignalIndex);
+      assert(ret);
+    }
+  }
+  
+  for(int i=0;i<_inToInWires.GetWireCount();i++) {
+    DspWire *input = _inToInWires.GetWire(i);
+    c->AddInput(GetInputName(i));
+    ret = c->ConnectInToIn(input->fromSignalIndex, copies[input->linkedComponent], input->toSignalIndex);
+      assert(ret);
+  }
+  
+  for(int i=0;i<_outToOutWires.GetWireCount();i++) {
+    DspWire *output = _outToOutWires.GetWire(i);
+    c->AddOutput(GetOutputName(i));
+    ret = c->ConnectOutToOut(copies[output->linkedComponent], output->fromSignalIndex, output->toSignalIndex);
+      assert(ret);
+  }
+  
+  return c;
+}
+
 
 //=================================================================================================

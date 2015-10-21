@@ -320,12 +320,12 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   printf("%f %f %f\n", disp_start, disp_step, disp_stop);
   
   //FIXME delete!
-  vector<DspComponent*>  epi_circuits(t_count);
-  vector<DspComponent*>  merge_circuits(t_count);
+  vector<DspCircuit*>  epi_circuits(t_count);
+  vector<DspCircuit*>  merge_circuits(t_count);
   vector<DspCircuit>   outer_circuit(t_count);
   for(int i=0;i<t_count;i++) {
-    epi_circuits[i] = epi_circuit->clone();
-    merge_circuits[i] = merge_circuit->clone();
+    epi_circuits[i] = static_cast<DspCircuit*>(epi_circuit->clone());
+    merge_circuits[i] = static_cast<DspCircuit*>(merge_circuit->clone());
     assert(epi_circuits[i]);
     assert(merge_circuits[i]);
     
@@ -362,7 +362,13 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     merge_circuits[omp_get_thread_num()]->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, true));
     
     for(float d=disp_start;d<=disp_stop;d+=disp_step) {
-      epi_circuits[omp_get_thread_num()]->SetParameter(0, DspParameter(DspParameter::ParamType::Float, d));
+      for(int c=0;c<epi_circuits[omp_get_thread_num()]->GetComponentCount();c++) {
+        DspComponent *comp = epi_circuits[omp_get_thread_num()]->GetComponent(c);
+        for(int p=0;p<comp->GetParameterCount();p++)
+          if (!comp->GetParameterName(p).compare("input_disparity")) {
+            comp->SetParameter(p, DspParameter(DspParameter::ParamType::Float, d));
+          }
+      }
       
       #pragma omp critical
       readEPI(&subset, mav_source[omp_get_thread_num()], i, d, ClifUnit::PIXELS, UNDISTORT, Interpolation::LINEAR, scale);
