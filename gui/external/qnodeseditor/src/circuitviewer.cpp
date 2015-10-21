@@ -87,7 +87,7 @@ void Circuit_Viewer::createActions()
 	saveAsAct->setStatusTip(tr("Save the document under a new name"));
 	connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
         
-	loadAct = new QAction(QIcon(":/load.png"), tr("&Save"), this);
+	loadAct = new QAction(QIcon(":/circuit_load.png"), tr("&Save"), this);
 	loadAct->setShortcuts(QKeySequence::Open);
 	loadAct->setStatusTip(tr("Load Circuit from disk"));
 	connect(loadAct, SIGNAL(triggered()), this, SLOT(load()));
