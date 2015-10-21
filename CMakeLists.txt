@@ -21,8 +21,76 @@ endif()
 find_package(HDF5 REQUIRED CXX)
 find_package(Vigra REQUIRED )
 find_package(OpenCV REQUIRED)
-find_package(clif REQUIRED)
 find_package(Boost COMPONENTS filesystem system REQUIRED)
+
+
+include(ExternalProject)
+
+
+# 
+######################################################
+## force build add configure phase                ####
+######################################################
+function(build_external_project target prefix url) #FOLLOWING ARGUMENTS are the CMAKE_ARGS of ExternalProject_Add
+
+    set(trigger_build_dir ${CMAKE_BINARY_DIR}/force_${target})
+
+    #mktemp dir in build tree
+    file(MAKE_DIRECTORY ${trigger_build_dir} ${trigger_build_dir}/build)
+
+    #generate false dependency project
+    set(CMAKE_LIST_CONTENT "
+    cmake_minimum_required(VERSION 2.8)
+
+    include(ExternalProject)
+    ExternalProject_add(${target}
+            PREFIX ${prefix}/${target}
+            GIT_REPOSITORY ${url}
+            CMAKE_ARGS ${ARGN}
+            INSTALL_COMMAND \"\"
+            )
+
+            add_custom_target(trigger_${target})
+            add_dependencies(trigger_${target} ${target})")
+
+    file(WRITE ${trigger_build_dir}/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+
+    execute_process(COMMAND ${CMAKE_COMMAND} ..
+        WORKING_DIRECTORY ${trigger_build_dir}/build
+        )
+    execute_process(COMMAND ${CMAKE_COMMAND} --build .
+        WORKING_DIRECTORY ${trigger_build_dir}/build
+        )
+
+endfunction()
+
+######################################################
+## clif                                             ##
+######################################################
+find_package(clif QUIET)
+if (NOT clif_FOUND)
+  option(OPENLF_INTERNAL_CLIF "internal clif download and build" ON)
+else()
+  option(OPENLF_INTERNAL_CLIF "internal clif download and build" OFF)
+endif()
+
+if (OPENLF_INTERNAL_CLIF)
+  build_external_project(clif
+                      external/clif
+                      https://github.com/hendriksiedelmann/clif.git
+                      )
+list(APPEND CMAKE_PREFIX_PATH force_clif/build/external/clif/clif/src/clif-buil)
+endif()
+find_package(clif REQUIRED)
+
+######################################################
+## add clifview as external project (if required?)  ##
+######################################################
+#ExternalProject_Add(clifview
+#                    PREFIX ${clifview}
+#                    GIT_REPOSITORY https://github.com/hendriksiedelmann/clifview.git
+#                    INSTALL_DIR ${CMAKE_INSTALL_PREFIX})
+
 
 add_definitions(${HDF5_CPPFLAGS})
 
