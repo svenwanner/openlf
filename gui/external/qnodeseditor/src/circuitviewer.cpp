@@ -267,7 +267,8 @@ void Circuit_Viewer::load()
   _input_block = NULL;
   _output_block = NULL;
   _circuit = DspCircuit::load(path.toUtf8().constData(), &OpenLF::getComponentClone);
-  emit newCircuit(_circuit);
+  if (_circuit)
+    emit newCircuit(_circuit);
   
   //FIXME error msg
   if (!_circuit)

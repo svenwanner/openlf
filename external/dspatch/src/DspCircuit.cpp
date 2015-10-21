@@ -914,5 +914,26 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
   return c;
 }
 
+DspCircuit* DspCircuit::clone()
+{
+  return NULL;
+  /*DspCircuit = new DspCircuit();
+  
+  std::unordered_map<DspComponent*,DspComponent*> copies;
+  
+  for(int i=0;i<GetComponentCount();i++) {
+    DspComponent *clone = GetComponent(i)->clone;
+    assert(clone);
+    copies[GetComponent(i)] = clone;
+  }
+  
+  for(auto it=copies.begin();it!=copies.end();++it) {
+    DspWireBus *inputs = (*it)->second->_inputWires;
+    for(int i=0;i<inputs.)
+  }
+
+  return dup;*/
+}
+
 
 //=================================================================================================

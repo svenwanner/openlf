@@ -64,8 +64,10 @@ void QNESettings::attach(DspComponent *comp, std::vector<DspCircuit*> &circuits)
           spinbox->setProperty("idx", i);
           spinbox->setMaximum(INT_MAX);
           const int *val = param->GetInt();
-          if (val)
+          if (val) {
             spinbox->setValue(*val);
+            printf("comb %p %d\n", _component, *val);
+          }
           connect(spinbox, SIGNAL(valueChanged(int)), this, SLOT(intSettingChanged(int)));
 
           break;
@@ -80,6 +82,8 @@ void QNESettings::attach(DspComponent *comp, std::vector<DspCircuit*> &circuits)
           int found = -1;
           param->GetPointer(c);
           
+          printf("circuit currenty set: %p of comp %p\n", c, _component);
+          
           for(int i=0;i<circuits.size();i++) {
             if (comp->GetParentCircuit() == circuits[i])
               continue;
@@ -92,12 +96,13 @@ void QNESettings::attach(DspComponent *comp, std::vector<DspCircuit*> &circuits)
           if (found != -1)
             combox->setCurrentIndex(found);
           else {
-            combox->addItem(c->GetComponentName().c_str(), QVariant::fromValue((void*)c));
+            combox->addItem("default?", QVariant::fromValue((void*)c));
+            //combox->addItem(c->GetComponentName().c_str(), QVariant::fromValue((void*)c));
             combox->setCurrentIndex(combox->count()-1);
           }
           
           
-          connect(combox, SIGNAL(activated(int)), this, SLOT(circuitSelected(int)));
+          connect(combox, SIGNAL(currentIndexChanged(int)), this, SLOT(circuitSelected(int)));
 
           break;
       }
@@ -162,6 +167,8 @@ void QNESettings::intSettingChanged(int val)
   
   comp->SetParameter(idx, DspParameter(DPPT::Int, val));
   
+  printf("set setting %d of %p to %d\n", idx, comp, val);
+  
   DspCircuit *c = comp->GetParentCircuit();
   c->configure();
 }
@@ -200,7 +207,16 @@ void QNESettings::circuitSelected(int idx)
   DspComponent *comp = (DspComponent*)sender()->property("component").value<void*>();
   int set_idx = sender()->property("idx").value<int>();
   
-  comp->SetParameter(set_idx, DspParameter(DPPT::Pointer, (DspCircuit*)((QComboBox*)sender())->itemData(idx).value<void*>()));
+  printf("seting %d of comp %p circuit to %p\n", set_idx, comp,((QComboBox*)sender())->itemData(idx).value<void*>());
+  
+  bool succ = comp->SetParameter(set_idx, DspParameter(DPPT::Pointer, (DspCircuit*)(((QComboBox*)sender())->itemData(idx).value<void*>())));
+  
+  DspCircuit *cc;
+  comp->GetParameter(set_idx)->GetPointer(cc);
+  
+  printf("circuit currenty set: %p\n", cc);
+
+  assert(succ);
   
   DspCircuit *c = comp->GetParentCircuit();
   c->configure();  
