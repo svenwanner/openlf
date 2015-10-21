@@ -139,6 +139,8 @@ public:
     std::string GetInputName(int index);
     std::string GetOutputName(int index);
     std::string GetParameterName(int index);
+    
+    void setTypeName(std::string const& name);
 
     bool GetParameter(int index, DspParameter& param);
     DspParameter const* GetParameter(int index);

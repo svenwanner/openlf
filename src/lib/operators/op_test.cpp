@@ -25,8 +25,8 @@
 #include "operators.hpp"
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
-  AddParameter_("x blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
-  AddParameter_("y blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
+  AddParameter_("x_blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
+  AddParameter_("y_blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
 
 OPENLF_OP_START(OP_Test, 1, 1, 3, 3)
 

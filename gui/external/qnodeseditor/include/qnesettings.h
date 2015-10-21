@@ -35,7 +35,7 @@ class QNESettings : public QWidget
 public:
   QNESettings(QWidget *parent = 0) : QWidget(parent) { setLayout(&_layout); };
   
-  void attach(DspComponent *comp);
+  void attach(DspComponent *comp, std::vector<DspCircuit*> &circuits);
   void attach(QNEBlock *block);
   
 protected:
@@ -52,6 +52,7 @@ private slots:
   void floatSettingChanged(double val);
   void intSettingChanged(int val);
   void portCountChanged(int val);
+  void circuitSelected(int val);
 };
 
 #endif

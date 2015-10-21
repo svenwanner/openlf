@@ -30,6 +30,7 @@ namespace openlf {
     {
       
       // define inputs
+      setTypeName_("WKF_StructureTensor");
       AddInput_("EpiIn");
       AddOutput_("disparity");
       AddOutput_("coherence");

@@ -6,7 +6,7 @@
 
 #define DPPT DspParameter::ParamType
 
-void QNESettings::attach(DspComponent *comp)
+void QNESettings::attach(DspComponent *comp, std::vector<DspCircuit*> &circuits)
 {
   if (_layout_w)
     delete _layout_w;
@@ -67,6 +67,37 @@ void QNESettings::attach(DspComponent *comp)
           if (val)
             spinbox->setValue(*val);
           connect(spinbox, SIGNAL(valueChanged(int)), this, SLOT(intSettingChanged(int)));
+
+          break;
+      }
+      case DPPT::Pointer : {
+          QComboBox *combox = new QComboBox(_layout_w);
+          hbox->addWidget(combox);
+          combox->setProperty("component", QVariant::fromValue((void*)_component));
+          combox->setProperty("idx", i);
+          
+          DspCircuit *c;
+          int found = -1;
+          param->GetPointer(c);
+          
+          for(int i=0;i<circuits.size();i++) {
+            if (comp->GetParentCircuit() == circuits[i])
+              continue;
+            //FIXME typename clash?
+            if (circuits[i] == c)
+              found = i;
+            combox->addItem(circuits[i]->GetComponentName().c_str(), QVariant::fromValue((void*)circuits[i]));
+          }
+          
+          if (found != -1)
+            combox->setCurrentIndex(found);
+          else {
+            combox->addItem(c->GetComponentName().c_str(), QVariant::fromValue((void*)c));
+            combox->setCurrentIndex(combox->count()-1);
+          }
+          
+          
+          connect(combox, SIGNAL(activated(int)), this, SLOT(circuitSelected(int)));
 
           break;
       }
@@ -162,4 +193,15 @@ void QNESettings::portCountChanged(int val)
       block->circuit->AddOutput(buf);
       block->addInputPort(buf);
     }    
+}
+
+void QNESettings::circuitSelected(int idx)
+{
+  DspComponent *comp = (DspComponent*)sender()->property("component").value<void*>();
+  int set_idx = sender()->property("idx").value<int>();
+  
+  comp->SetParameter(set_idx, DspParameter(DPPT::Pointer, (DspCircuit*)((QComboBox*)sender())->itemData(idx).value<void*>()));
+  
+  DspCircuit *c = comp->GetParentCircuit();
+  c->configure();  
 }

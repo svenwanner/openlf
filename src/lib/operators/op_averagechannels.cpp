@@ -67,6 +67,7 @@ namespace {
 
 OP_AverageChannels::OP_AverageChannels()
 {
+  setTypeName_("OP_AverageChannels"); 
   char buf[64]; 
   for(int i=0;i<INCOUNT;i++) { 
     sprintf(buf, "input_%d", i); 
@@ -84,11 +85,7 @@ void OP_AverageChannels::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   FlexMAV<INDIM> *in[INCOUNT];
   
   for(int i=0;i<INCOUNT;i++) { 
-    stat = inputs.GetValue(i, in[i]); 
-    if (!stat) { 
-      printf("OP_AverageChannels : input %d not found - possible type mismatch?\n", i); 
-      abort(); 
-    } 
+    errorCond(inputs.GetValue(i, in[i]), "OP_AverageChannels : input not found - possible type mismatch?\n"); RETURN_ON_ERROR
   } 
   
   FlexMAV<OUTDIM> *out_ptr[OUTCOUNT];

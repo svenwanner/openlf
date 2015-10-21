@@ -106,7 +106,7 @@ void QNEMainWindow::addComponent(QListWidgetItem *it)
 
 void QNEMainWindow::showCompSettings(DspComponent *comp)
 {
-  _settings->attach(comp);
+  _settings->attach(comp, _circuits);
 }
 
 void QNEMainWindow::showCompSettings(QNEBlock *block)

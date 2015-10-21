@@ -83,7 +83,7 @@ void QNEMainWindow::activate(QWidget* wid){
 	
 	_circuitViewer = (Circuit_Viewer*)wid;
         
-        if (_c_name_ed)
+        if (_c_name_ed && _circuitViewer->circuit())
           _c_name_ed->setText(_circuitViewer->circuit()->GetComponentName().c_str());
 };
 
@@ -281,12 +281,15 @@ void Circuit_Viewer::onCompSelected(QNEBlock *block)
   emit compSelected(block);
 }
 
-static int counter = 0;
-
 void Circuit_Viewer::addComponent(DspComponent *comp, bool gui_only)
 {
   char buf[64];
-  sprintf(buf, "component_%d", counter++);
+  for(int i=0;;i++) {
+    sprintf(buf, "%s_%d", comp->getTypeName().c_str(), i);
+    if (!_circuit->GetComponent<DspComponent>(buf))
+      break;
+  }
+  
   if (!gui_only) {
     bool success = _circuit->AddComponent(comp, buf);
     assert(success);

@@ -229,6 +229,16 @@ std::string DspComponent::GetInputName(int index)
     return inputName;
 }
 
+
+//-------------------------------------------------------------------------------------------------
+
+void DspComponent::setTypeName(std::string const& name)
+{
+    PauseAutoTick(); 
+    setTypeName_(name);
+    ResumeAutoTick();
+}
+
 //-------------------------------------------------------------------------------------------------
 
 std::string DspComponent::GetOutputName(int index)

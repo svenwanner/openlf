@@ -8,6 +8,7 @@
 #include "dspatch/DspCircuit.h"
 
 #include "operators/operators.hpp"
+#include "operators/op_loadimage.hpp"
 #include "components/comp_epi.hpp"
 #include "components/comp_lfread.hpp"
 #include "components/comp_lfwrite.hpp"
@@ -25,6 +26,18 @@ public:
       _comp_list.push_back(new openlf::components::COMP_LFRead);
       _comp_list.push_back(new openlf::components::COMP_LFWrite);
       _comp_list.push_back(new openlf::components::COMP_DispWrite);
+      
+      _comp_list.push_back(new openlf::components::OP_VigraGauss);
+      _comp_list.push_back(new openlf::components::OP_VigraGradientMagnitude);
+      _comp_list.push_back(new openlf::components::OP_ScharrX);
+      _comp_list.push_back(new openlf::components::OP_ScharrY);
+      _comp_list.push_back(new openlf::components::OP_Scharr);
+      _comp_list.push_back(new openlf::components::OP_Tensor2x2);
+      _comp_list.push_back(new openlf::components::OP_AverageChannels);
+      _comp_list.push_back(new openlf::components::OP_Tensor2Orientation);
+      _comp_list.push_back(new openlf::components::OP_SaveImage);
+      //_comp_list.push_back(new openlf::components::OP_LoadImage);
+      _comp_list.push_back(new openlf::components::OP_MergeDispByCoherence);
     }
     
     return _comp_list;
