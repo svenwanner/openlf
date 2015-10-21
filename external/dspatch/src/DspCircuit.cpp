@@ -942,7 +942,6 @@ DspComponent* DspCircuit::clone()
   
   for(int i=0;i<_inToInWires.GetWireCount();i++) {
     DspWire *input = _inToInWires.GetWire(i);
-    printf("connect inin\n");
     c->AddInput(GetInputName(i));
     ret = c->ConnectInToIn(input->fromSignalIndex, copies[input->linkedComponent], input->toSignalIndex);
       assert(ret);
@@ -950,7 +949,6 @@ DspComponent* DspCircuit::clone()
   
   for(int i=0;i<_outToOutWires.GetWireCount();i++) {
     DspWire *output = _outToOutWires.GetWire(i);
-    printf("connect outout\n");
     c->AddOutput(GetOutputName(i));
     ret = c->ConnectOutToOut(copies[output->linkedComponent], output->fromSignalIndex, output->toSignalIndex);
       assert(ret);

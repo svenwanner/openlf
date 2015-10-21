@@ -278,12 +278,8 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   SetParameter_((int)P_IDX::DispStep, DspParameter(DPPT::Float, disp_step));
   SetParameter_((int)P_IDX::DispStop, DspParameter(DPPT::Float, disp_stop));
   
-  //FIXME what if input changed?!
-  //distinguish user-set and auto-set?
-  if (!GetParameter_((int)P_IDX::StartLine)->IsSet())
-    SetParameter_((int)P_IDX::StartLine, DspParameter(DPPT::Int, start_line));
-  if (!GetParameter_((int)P_IDX::StopLine)->IsSet())
-    SetParameter_((int)P_IDX::StopLine, DspParameter(DPPT::Int, stop_line));
+  SetParameter_((int)P_IDX::StartLine, DspParameter(DPPT::Int, start_line));
+  SetParameter_((int)P_IDX::StopLine, DspParameter(DPPT::Int, stop_line));
   
   //setup circuit and threading
   
@@ -324,27 +320,27 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   printf("%f %f %f\n", disp_start, disp_step, disp_stop);
   
   //FIXME delete!
-  vector<DspComponent*>  epi_circuits(t_count);
-  vector<DspComponent*>  merge_circuits(t_count);
+  vector<DspCircuit*>  epi_circuits(t_count);
+  vector<DspCircuit*>  merge_circuits(t_count);
   vector<DspCircuit>   outer_circuit(t_count);
-  for(int i=0;i<1;i++) {
-    epi_circuits[i] = epi_circuit->clone();
-    merge_circuits[i] = merge_circuit->clone();
-    //assert(epi_circuits[i]);
-    //assert(merge_circuits[i]);
+  for(int i=0;i<t_count;i++) {
+    epi_circuits[i] = static_cast<DspCircuit*>(epi_circuit->clone());
+    merge_circuits[i] = static_cast<DspCircuit*>(merge_circuit->clone());
+    assert(epi_circuits[i]);
+    assert(merge_circuits[i]);
     
     outer_circuit[i].AddComponent(comp_source[i], "source");
-    outer_circuit[i].AddComponent(epi_circuit, "epi");  
+    outer_circuit[i].AddComponent(epi_circuits[i], "epi");  
     outer_circuit[i].AddComponent(comp_sink[i], "sink");
     //temp
-    outer_circuit[i].AddComponent(merge_circuit, "merge");  
+    outer_circuit[i].AddComponent(merge_circuits[i], "merge");  
     
-    outer_circuit[i].ConnectOutToIn(comp_source[i], 0, epi_circuit, 0);
+    outer_circuit[i].ConnectOutToIn(comp_source[i], 0, epi_circuits[i], 0);
     //temp
     //outer_circuit[i].ConnectOutToIn(epi_circuits[i], 0, comp_sink[i], 0);
-    outer_circuit[i].ConnectOutToIn(epi_circuit, 0, merge_circuit, 0);
-    outer_circuit[i].ConnectOutToIn(epi_circuit, 1, merge_circuit, 1);
-    outer_circuit[i].ConnectOutToIn(merge_circuit, 0, comp_sink[i], 0);
+    outer_circuit[i].ConnectOutToIn(epi_circuits[i], 0, merge_circuits[i], 0);
+    outer_circuit[i].ConnectOutToIn(epi_circuits[i], 1, merge_circuits[i], 1);
+    outer_circuit[i].ConnectOutToIn(merge_circuits[i], 0, comp_sink[i], 0);
     
     comp_source[i].set(&mav_source[i]);
   }
@@ -354,7 +350,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   int progress = 0;
   int done = 0;
   printf("\n");
-  //#pragma omp parallel for private(sink_mav)
+  #pragma omp parallel for private(sink_mav)
   for(int i=start_line;i<stop_line;i++) {
 #pragma omp critical 
     {
@@ -363,14 +359,11 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
       done++;
     }
     
-    //merge_circuits[omp_get_thread_num()]->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, true));
-    merge_circuit->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, true));
+    merge_circuits[omp_get_thread_num()]->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, true));
     
     for(float d=disp_start;d<=disp_stop;d+=disp_step) {
-      //epi_circuits[omp_get_thread_num()]->SetParameter(0, DspParameter(DspParameter::ParamType::Float, d));
-      //epi_circuit->SetParameter(0, DspParameter(DspParameter::ParamType::Float, d));
-      for(int c=0;c<epi_circuit->GetComponentCount();c++) {
-        DspComponent *comp = epi_circuit->GetComponent(c);
+      for(int c=0;c<epi_circuits[omp_get_thread_num()]->GetComponentCount();c++) {
+        DspComponent *comp = epi_circuits[omp_get_thread_num()]->GetComponent(c);
         for(int p=0;p<comp->GetParameterCount();p++)
           if (!comp->GetParameterName(p).compare("input_disparity")) {
             comp->SetParameter(p, DspParameter(DspParameter::ParamType::Float, d));
@@ -384,8 +377,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
       outer_circuit[omp_get_thread_num()].Tick();
       outer_circuit[omp_get_thread_num()].Reset();
       
-      //merge_circuits[omp_get_thread_num()]->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, false));
-      merge_circuit->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, false));
+      merge_circuits[omp_get_thread_num()]->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, false));
     }
     
     sink_mav = comp_sink[omp_get_thread_num()].get();
@@ -410,7 +402,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 bool COMP_Epi::ParameterUpdating_(int index, const DspParameter& param)
 {  
   //just store parameter 
-  return SetParameter_(index, param);    
+  SetParameter_(index, param);
+  
+  return true;      
 }
 
 }} //namespace openlf::components
