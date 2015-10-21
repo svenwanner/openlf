@@ -82,9 +82,12 @@ void QNEMainWindow::new_circuit_viewer()
 	connect(_circuitViewer, SIGNAL(newCircuit(DspCircuit*)), this, SLOT(newCircuit(DspCircuit*)));
 	connect(_circuitViewer, SIGNAL(activated(QWidget*)), this, SLOT(activate(QWidget*)));
 	mdiArea->addSubWindow(_circuitViewer);
+        connect(_circuitViewer, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
+        connect(_circuitViewer, SIGNAL(compSelected(QNEBlock*)), this, SLOT(showCompSettings(QNEBlock*)));
 	_circuitViewer->setObjectName("circuitViewer");
 	_circuitViewer->showMaximized();
 }
+
 void QNEMainWindow::onApplicationFocusChanged(){
 	std::cout << "hello" << std::endl;
 }
