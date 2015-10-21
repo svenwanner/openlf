@@ -36,6 +36,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "qneblock.h"
 #include "qnodeseditor.h"
 
+#include "circuitviewer.h"
+
 template <class T> class QVP
 {
 public:
