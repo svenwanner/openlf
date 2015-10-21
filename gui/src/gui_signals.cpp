@@ -27,10 +27,6 @@ void GUI_Toolbox::createActions(){
     saveAsAct->setToolTip(tr("Save the document under a new name"));
 	connect(saveAsAct, SIGNAL(triggered()), this, SLOT(about()));
 
-    exitAct = new QAction(QIcon(":/exit.png"),tr("E&xit"), this);
-    exitAct->setShortcut(tr("Ctrl+Q"));
-    connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
-
     aboutAct = new QAction(tr("&About"), this);
     connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 
@@ -45,11 +41,11 @@ void GUI_Toolbox::createActions(){
 	showAct_Node = new QAction(QIcon(":/circuit.png"), tr("&ShowNode"), this);
 	showAct_Node->setToolTip(tr("Show workflow"));
 	connect(showAct_Node, SIGNAL(triggered()), this, SLOT(showNode()));
-
-}
-
-void GUI_Toolbox::createUIActions(){
-
-	connect(ui->Button_LFCamConfigurator, SIGNAL(clicked()),this, SLOT(OpenLFCamConfigurator()));
-
+        
+        
+    // connect buttons
+    connect(ui->Button_LFCamConfigurator, SIGNAL(clicked()),this, SLOT(OpenLFCamConfigurator()));
+    connect(ui->Button_LFFlowChartEditor, SIGNAL(clicked()),this, SLOT(showNode()));
+    connect(ui->Button_LFViewer, SIGNAL(clicked()),this, SLOT(showViewer()));
+    connect(ui->Button_LFAnimator, SIGNAL(clicked()),this, SLOT(showAnimator()));
 }
