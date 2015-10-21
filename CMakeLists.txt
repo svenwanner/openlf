@@ -31,7 +31,7 @@ include_directories(${HDF5_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${VIGRA_INCLUDE_DIR})
 include_directories(${CLIF_INCLUDE_DIRS})
-
+message(${CLIF_INCLUDE_DIRS})
 link_directories(${CLIF_LIBRARY_DIRS})
 #FIXME needed for boost under windows - whats the proper way? Boost_LIBRARY_DIR?
 link_directories($ENV{Path})
