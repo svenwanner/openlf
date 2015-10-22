@@ -8,3 +8,9 @@
 - CLIF: on linking memory-only datastore will be lost
 - OPENLF: actually handle config hierarchy
 - OPENLF: DspParameter - store origin (type?) so a _process can only set the settings it has itself modified
+- CLIF: remove temporary files for memory_link!
+- GUI: fix memory leaks!
+- GUI: fix circuit display glitches (list circuits, re-open/show already opened, unnamed entries)
+
+Minor:
+- COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!
