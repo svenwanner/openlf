@@ -19,57 +19,64 @@
 * Author Sven Wanner, Maximilian Diebold, Hendrik Siedelmann 
 *
 */
+#include "comp_tutorial.hpp"
 
-#include "clif/clif_vigra.hpp"
-#include "clif/subset3d.hpp"
-
-#include "comp_lfwrite.hpp"
-#include "openlf.hpp"
+#include "types.hpp"
 
 using namespace clif;
-using namespace vigra;
 
 namespace openlf { namespace components {
-  
-COMP_LFWrite::COMP_LFWrite()
+
+COMP_Tutorial::COMP_Tutorial()
 {
-  setTypeName_("writeCLIF");
+  setTypeName_("tutorial");
   AddInput_("input");
+  AddOutput_("output");
+  
   AddParameter_("filename", DspParameter(DspParameter::ParamType::String));
-  AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
+  AddParameter_("store_path", DspParameter(DspParameter::ParamType::String));
 }
 
-void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
+void COMP_Tutorial::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   LF *in = NULL;
-  const std::string *filename;
-  const std::string *dataset_name = NULL;
+  LF *out = NULL;
+  const std::string *path;
+  const std::string *message;
   
+  //get input and produce error if not available
   errorCond(inputs.GetValue(0, in)); RETURN_ON_ERROR
+
+  //get settings
+  path = GetParameter(0)->GetString();
+  message = GetParameter(1)->GetString();
   
-  filename = GetParameter(0)->GetString();
-  if (GetParameter(1))
-    dataset_name = GetParameter(1)->GetString();
+  //check for errors
+  errorCond(path); RETURN_ON_ERROR
+  errorCond(message); RETURN_ON_ERROR
   
-  errorCond(filename); RETURN_ON_ERROR
+  //create output LF dataset by linking input
+  out = new LF();
+  out->data = new Dataset();
+  out->data->memory_link(in->data);
+  outputs.SetValue(0, out);
   
-  H5::H5File f_out(filename->c_str(), H5F_ACC_TRUNC);
-  Dataset out_set;
-  out_set.link(f_out, in->data);
-  out_set.writeAttributes();
+  //skip actual processing
+  if (configOnly())
+    return;
+  
+  //create attribute for path
+  Attribute attr(*path);
+  //set image
+  attr.set(message->c_str());
+  //append to output dataset
+  out->data->append(attr);
 }
 
-bool COMP_LFWrite::ParameterUpdating_ (int i, DspParameter const &p)
-{
-  //we only have two parameters
-  if (i >= 2)
-    return false;
-  
-  if (p.Type() != DspParameter::ParamType::String)
-    return false;
-  
-  SetParameter_(i, p);
-  return true;
+bool COMP_Tutorial::ParameterUpdating_(int index, const DspParameter& param)
+{  
+  //just store parameter 
+  return SetParameter_(index, param);
 }
 
 }} //namespace openlf::components

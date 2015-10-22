@@ -20,56 +20,23 @@
 *
 */
 
-#include "clif/clif_vigra.hpp"
-#include "clif/subset3d.hpp"
+#ifndef _OPENLF_COMP_TUTORIAL_H
+#define _OPENLF_COMP_TUTORIAL_H
 
-#include "comp_lfwrite.hpp"
-#include "openlf.hpp"
-
-using namespace clif;
-using namespace vigra;
+#include "dspatch/DspComponent.h"
 
 namespace openlf { namespace components {
-  
-COMP_LFWrite::COMP_LFWrite()
-{
-  setTypeName_("writeCLIF");
-  AddInput_("input");
-  AddParameter_("filename", DspParameter(DspParameter::ParamType::String));
-  AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
-}
 
-void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
-{
-  LF *in = NULL;
-  const std::string *filename;
-  const std::string *dataset_name = NULL;
-  
-  errorCond(inputs.GetValue(0, in)); RETURN_ON_ERROR
-  
-  filename = GetParameter(0)->GetString();
-  if (GetParameter(1))
-    dataset_name = GetParameter(1)->GetString();
-  
-  errorCond(filename); RETURN_ON_ERROR
-  
-  H5::H5File f_out(filename->c_str(), H5F_ACC_TRUNC);
-  Dataset out_set;
-  out_set.link(f_out, in->data);
-  out_set.writeAttributes();
-}
-
-bool COMP_LFWrite::ParameterUpdating_ (int i, DspParameter const &p)
-{
-  //we only have two parameters
-  if (i >= 2)
-    return false;
-  
-  if (p.Type() != DspParameter::ParamType::String)
-    return false;
-  
-  SetParameter_(i, p);
-  return true;
-}
+class COMP_Tutorial : public DspComponent {
+public:
+  COMP_Tutorial();
+  DSPCOMPONENT_TRIVIAL_CLONE(COMP_Tutorial);
+protected:
+  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+private:  
+  bool ParameterUpdating_(int index, const DspParameter& param);
+};
 
 }} //namespace openlf::components
+
+#endif

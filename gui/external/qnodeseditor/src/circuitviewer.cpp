@@ -262,17 +262,19 @@ void Circuit_Viewer::load()
 {
   QString path = QFileDialog::getOpenFileName(this, tr("select filename of circuit"));
   
+  DspCircuit *new_circuit = DspCircuit::load(path.toUtf8().constData(), &OpenLF::getComponentClone);
+  if (!new_circuit)
+    //FIXME error msg
+    return;
+
   _scene->clear();
   _blocks.resize(0);
   _input_block = NULL;
   _output_block = NULL;
-  _circuit = DspCircuit::load(path.toUtf8().constData(), &OpenLF::getComponentClone);
-  if (_circuit)
-    emit newCircuit(_circuit);
   
-  //FIXME error msg
-  if (!_circuit)
-    return;
+  _circuit = new_circuit;
+  _circuit->configure();
+  emit newCircuit(_circuit);
   
   for(int i=0;i<_circuit->GetComponentCount();i++)
     addComponent(_circuit->GetComponent(i), true);
