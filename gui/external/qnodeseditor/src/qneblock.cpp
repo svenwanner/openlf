@@ -51,7 +51,7 @@ QNEBlock::QNEBlock(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 QNEBlock::QNEBlock(DspComponent *comp, QGraphicsScene *scene, QGraphicsItem *parent)
 : QNEBlock(parent)
 {
-  if (!isnan(comp->x) && !isnan(comp->y))
+  if (!std::isnan(comp->x) && !std::isnan(comp->y))
     this->setPos(comp->x,comp->y);
   scene->addItem(this);
   
