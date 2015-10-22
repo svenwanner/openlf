@@ -114,6 +114,10 @@ void write_obj(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
   Shape2 p;
   
   FILE *pointfile = fopen(name, "w");
+  if (!pointfile) {
+	  printf("could not open %s for write\n", name);
+	  abort();
+  }
   //fprintf(pointfile, "vn 0 0 -1\n");
   
   for(int i=0;i<w;i++) {
@@ -174,7 +178,7 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   
   obj_filename = GetParameter(0)->GetString();
-  ply_filename = GetParameter(0)->GetString();
+  ply_filename = GetParameter(1)->GetString();
   
   errorCond(obj_filename || ply_filename, "no output specified");
   RETURN_ON_ERROR
