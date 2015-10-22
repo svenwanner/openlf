@@ -565,6 +565,11 @@ bool DspCircuit::save(std::string filename)
     return true;
   
   fprintf(f, "graph [\n");
+  if (GetComponentName().size())
+    fprintf(f, "label \"%s\"\n", GetComponentName().c_str());
+  if (getTypeName().size())
+    fprintf(f, "type \"%s\"\n", getTypeName().c_str());
+    
   for(uint i=0;i<_components.size();i++)
     _save_comp(f, i);
   
@@ -848,6 +853,14 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
           _gml_parse_add_inout_edge(c, part, true);
         else if (!strcmp(part->key, "outputedge"))
           _gml_parse_add_inout_edge(c, part, false);
+        else if (!strcmp(part->key, "label")) {
+          assert(part->kind == GML_STRING);
+          c->SetComponentName(part->value.string);
+        }
+        else if (!strcmp(part->key, "type")) {
+          assert(part->kind == GML_STRING);
+          c->setTypeName(part->value.string);
+        }
         part = part->next;
       }
       
