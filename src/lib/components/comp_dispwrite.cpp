@@ -38,7 +38,8 @@ COMP_DispWrite::COMP_DispWrite()
 {
   setTypeName_("writeMesh");
   AddInput_("input");
-  AddParameter_("filename", DspParameter(DspParameter::ParamType::String));
+  AddParameter_("obj_filename", DspParameter(DspParameter::ParamType::String));
+  AddParameter_("ply_filename", DspParameter(DspParameter::ParamType::String));
   //AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
 }
 
@@ -168,26 +169,30 @@ void write_obj(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
 void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   LF *in = NULL;
-  const std::string *filename;
-  const std::string *dataset_name = NULL;
+  const std::string *obj_filename;
+  const std::string *ply_filename;
+  
+  
+  obj_filename = GetParameter(0)->GetString();
+  ply_filename = GetParameter(0)->GetString();
+  
+  errorCond(obj_filename || ply_filename, "no output specified");
+  RETURN_ON_ERROR
+  
+  inputs.GetValue(0, in);
+  errorCond(in, "no input!"); RETURN_ON_ERROR
   
   if (configOnly())
     return;
   
-  inputs.GetValue(0, in);
-  
-  filename = GetParameter(0)->GetString();
-  if (GetParameter(1))
-    dataset_name = GetParameter(1)->GetString();
-  
-  assert(in);
+  /*assert(in);
   assert(filename->size());
   
   H5::H5File f_out(filename->c_str(), H5F_ACC_TRUNC);
   Dataset out_set;
   out_set.link(f_out, in->data);
   out_set.writeAttributes();
-  f_out.close();
+  f_out.close();*/
   
   FlexMAV<4> disp;
   Datastore *disp_store = in->data->getStore("disparity/default/data");
@@ -205,8 +210,10 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //centerview, channel 0
   MultiArrayView<2,float> centerview = disp.get<float>()->bindAt(3,0).bindAt(2,disp.shape()[2]/2);
   
-  write_ply("debug.ply", centerview, img, subset);
-  write_obj("debug.obj", centerview, img, subset);
+  if (ply_filename)
+    write_ply(ply_filename->c_str(), centerview, img, subset);
+  if (obj_filename)
+    write_obj(obj_filename->c_str(), centerview, img, subset);
   
   /*ClifFile *debugfile = new ClifFile();
   debugfile->create("debug.clif");

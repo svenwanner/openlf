@@ -295,3 +295,11 @@ QVariant QNEBlock::itemChange(GraphicsItemChange change, const QVariant &value)
 	return value;
 }
 
+void QNEBlock::checkError()
+{
+  if (!component)
+    return;
+  
+  //if (component->hasError() && !component->_error_label)
+}
+

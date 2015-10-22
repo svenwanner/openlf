@@ -46,6 +46,7 @@ public:
 	void addOutputPort(const QString &name);
 	void addInputPorts(const QStringList &names);
 	void addOutputPorts(const QStringList &names);
+        void checkError();
 	void save(QDataStream&);
         BlockType blockType();
 	void load(QDataStream&, QMap<quint64, QNEPort*> &portMap);
@@ -69,6 +70,7 @@ private:
 	int width;
 	int height;
         BlockType _blockType = BlockType::Regular;
+        QGraphicsItem *_error_label = NULL;
 };
 
 #endif // QNEBLOCK_H
