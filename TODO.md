@@ -3,6 +3,7 @@
 - GUI: execute tick on first click!
 - GUI: show error messages for components!
 - GUI: use circuit coordinates when creating gui and save them when moving components
+- GUI/DSPatch: forward between settings of circuits components and components settings!
 - DSPatch: save/load circuit positions
 - CLIF: on linking memory-only datastore will be lost
 - OPENLF: actually handle config hierarchy

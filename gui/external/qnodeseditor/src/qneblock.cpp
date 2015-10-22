@@ -41,6 +41,7 @@ QNEBlock::QNEBlock(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 	setBrush(Qt::green);
 	setFlag(QGraphicsItem::ItemIsMovable);
 	setFlag(QGraphicsItem::ItemIsSelectable);
+        setFlag(QGraphicsItem::ItemSendsGeometryChanges);
 	horzMargin = 20;
 	vertMargin = 5;
 	width = horzMargin;
@@ -50,6 +51,8 @@ QNEBlock::QNEBlock(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 QNEBlock::QNEBlock(DspComponent *comp, QGraphicsScene *scene, QGraphicsItem *parent)
 : QNEBlock(parent)
 {
+  if (!isnan(comp->x) && !isnan(comp->y))
+    this->setPos(comp->x,comp->y);
   scene->addItem(this);
   
   component = comp;
@@ -66,6 +69,16 @@ QNEBlock::QNEBlock(DspComponent *comp, QGraphicsScene *scene, QGraphicsItem *par
   }
   
   addPort(comp->GetComponentName().c_str(), 0, QNEPort::NamePort);
+}
+
+QVariant QNEBlock::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+    if (component && change == QGraphicsItem::ItemPositionHasChanged) {
+      component->x = pos().x();
+      component->y = pos().y();
+      printf("pos %f %f\n", component->x,component->y);
+    }
+  return value;
 }
 
 QNEBlock::QNEBlock(DspCircuit *c, QGraphicsScene *scene, BlockType type, QGraphicsItem *parent)
@@ -286,14 +299,14 @@ QVector<QNEPort*> QNEBlock::ports()
 	}
 	return res;
 }
-
+/*
 QVariant QNEBlock::itemChange(GraphicsItemChange change, const QVariant &value)
 {
 
     Q_UNUSED(change);
 
 	return value;
-}
+}*/
 
 void QNEBlock::checkError()
 {

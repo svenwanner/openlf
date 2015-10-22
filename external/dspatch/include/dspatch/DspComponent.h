@@ -32,6 +32,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <dspatch/DspComponentThread.h>
 #include <dspatch/DspParameter.h>
 
+#include <cmath>
+#include <limits>
+
 class DspCircuit;
 
 //=================================================================================================
@@ -162,6 +165,9 @@ public:
     void errorOnFalse(bool cond, const char *msg);
     bool hasError();
     const std::string& getTypeName();
+    
+    double x = std::numeric_limits<double>::quiet_NaN();
+    double y = std::numeric_limits<double>::quiet_NaN();
     
 protected:
     virtual void Process_(DspSignalBus&, DspSignalBus&);

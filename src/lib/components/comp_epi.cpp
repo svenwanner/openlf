@@ -278,8 +278,10 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   SetParameter_((int)P_IDX::DispStep, DspParameter(DPPT::Float, disp_step));
   SetParameter_((int)P_IDX::DispStop, DspParameter(DPPT::Float, disp_stop));
   
-  SetParameter_((int)P_IDX::StartLine, DspParameter(DPPT::Int, start_line));
-  SetParameter_((int)P_IDX::StopLine, DspParameter(DPPT::Int, stop_line));
+  if (!GetParameter((int)P_IDX::StartLine)->GetInt())
+    SetParameter_((int)P_IDX::StartLine, DspParameter(DPPT::Int, start_line));
+  if (!GetParameter((int)P_IDX::StopLine)->GetInt())
+    SetParameter_((int)P_IDX::StopLine, DspParameter(DPPT::Int, stop_line));
   
   //setup circuit and threading
   

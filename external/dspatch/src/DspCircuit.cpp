@@ -530,6 +530,8 @@ void DspCircuit::_save_comp(FILE *f, int i)
   if (!comp->getTypeName().size())
     abort();
   fprintf(f, "type \"%s\"\n", comp->getTypeName().c_str());
+  if (!std::isnan(comp->x) && !std::isnan(comp->y))
+    fprintf(f, "graphics [\nx %f\ny %f\n]\n", comp->x, comp->y);
   if (comp->GetParameterCount()) {
     fprintf(f, "params [\n");
     for(int i=0;i<comp->GetParameterCount();i++) {
@@ -626,6 +628,23 @@ void print_keys (struct GML_list_elem* list) {
 
 DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentClone)(const std::string &typeName))
 {
+  static struct {
+    void operator()(GML_pair *node, double &x, double &y)
+    {
+      GML_pair *part = node;
+      while(part) {
+        if (part->kind == GML_DOUBLE) {
+          if (!strcmp(part->key, "x")) {
+            x = part->value.floating;
+          }
+          else if (!strcmp(part->key, "y")) {
+            y = part->value.floating;
+          }
+        }
+        part = part->next;
+      }
+    }
+  } _gml_parse_comp_graphics;
   
   static struct {
     void operator()(DspComponent *comp, GML_pair *node)
@@ -687,6 +706,8 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
       DspComponent *comp = NULL;
       const char *name = NULL;
       int id = -1;
+      double x = std::numeric_limits<double>::quiet_NaN();
+      double y = std::numeric_limits<double>::quiet_NaN();
       GML_pair *params = NULL;
       
       assert(node->kind == GML_LIST);
@@ -712,6 +733,10 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
           assert(part->kind == GML_LIST);
           params = part->value.list;
         }
+        else if (!strcmp(part->key, "graphics")) {
+          assert(part->kind == GML_LIST);
+          _gml_parse_comp_graphics(part->value.list, x, y);
+        }
         part = part->next;
       }
       
@@ -722,6 +747,9 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
   
       bool suc = c->AddComponent(comp, name);
       assert(suc);
+      
+      comp->x = x;
+      comp->y = y;
       
       if (params)
         _gml_parse_add_params(comp, params);
