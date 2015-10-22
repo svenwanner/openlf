@@ -7,7 +7,7 @@ OpenLF is a graph based library for light field processing with focus on EPIs.
 
 # Documentation {#doc}
 
-doc/tutorial.md
+\ref doc/tutorial.md
 
 # Installation {#install}
 

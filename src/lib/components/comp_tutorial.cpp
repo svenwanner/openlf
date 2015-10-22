@@ -33,8 +33,8 @@ COMP_Tutorial::COMP_Tutorial()
   AddInput_("input");
   AddOutput_("output");
   
-  AddParameter_("filename", DspParameter(DspParameter::ParamType::String));
-  AddParameter_("store_path", DspParameter(DspParameter::ParamType::String));
+  AddParameter_("path", DspParameter(DspParameter::ParamType::String));
+  AddParameter_("message", DspParameter(DspParameter::ParamType::String));
 }
 
 void COMP_Tutorial::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
