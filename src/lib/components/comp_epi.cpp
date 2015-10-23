@@ -394,9 +394,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     
   }
   
-  out->path = std::string("disparity/default/data");
-  Datastore *datastore = out->data->addStore("disparity/default/data");
-  disp_store->write(datastore);
+  disp_store->write(out->data, "disparity/default/data");
   
   delete disp_store;
 }
