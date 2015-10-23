@@ -82,21 +82,29 @@ void QNESettings::attach(DspComponent *comp, std::vector<DspCircuit*> &circuits)
           int found = -1;
           param->GetPointer(c);
           
-          printf("circuit currenty set: %p of comp %p\n", c, _component);
-          
           for(int i=0;i<circuits.size();i++) {
             if (comp->GetParentCircuit() == circuits[i])
               continue;
             //FIXME typename clash?
             if (circuits[i] == c)
               found = i;
-            combox->addItem(circuits[i]->GetComponentName().c_str(), QVariant::fromValue((void*)circuits[i]));
+            const char *name = circuits[i]->GetComponentName().c_str();
+            const char *type = circuits[i]->getTypeName().c_str();
+            char label[128];
+            if (strlen(name)+strlen(type) == 0)
+              continue;
+            if (!strlen(name))
+              name = "<UNNAMED>";
+            if (!strlen(type))
+              type = "<UNKNOWN TYPE>";
+            sprintf(label, "%s (%s)", name, type);
+            combox->addItem(label, QVariant::fromValue((void*)circuits[i]));
           }
           
           if (found != -1)
             combox->setCurrentIndex(found);
           else {
-            combox->addItem("default?", QVariant::fromValue((void*)c));
+            combox->addItem("unknown circuit", QVariant::fromValue((void*)c));
             //combox->addItem(c->GetComponentName().c_str(), QVariant::fromValue((void*)c));
             combox->setCurrentIndex(combox->count()-1);
           }
