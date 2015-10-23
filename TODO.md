@@ -2,10 +2,7 @@
 - GUI: add circuit list and allow adding circuits as components
 - GUI: execute tick on first click!
 - GUI: show error messages for components!
-- GUI: use circuit coordinates when creating gui and save them when moving components
 - GUI/DSPatch: forward between settings of circuits components and components settings!
-- DSPatch: save/load circuit positions
-- CLIF: on linking memory-only datastore will be lost
 - OPENLF: actually handle config hierarchy
 - OPENLF: DspParameter - store origin (type?) so a _process can only set the settings it has itself modified
 - CLIF: remove temporary files for memory_link!
@@ -21,3 +18,9 @@ Minor:
 - fitler/save only GML files
 - use DspParaeter path/filepath (input/output)
   - maybe add dspparameter flags?
+
+
+Done:
+- DSPatch: save/load circuit positions (22.,23.10.15)
+- GUI: use circuit coordinates when creating gui and save them when moving components (22.,23.10.15)
+- CLIF: on linking memory-only datastore will be lost (23.10.15)
