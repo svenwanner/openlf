@@ -31,8 +31,10 @@
 
 #include "operator_macro.hpp"
 
-namespace openlf { 
+namespace openlf {
     namespace components {
+
+
 
   /*! \brief Simple vigra based gaussian smoothing operator
    * 
@@ -42,15 +44,48 @@ namespace openlf {
    * \param y blur <float> blur scale in y dimension
    */
   OPENLF_OP_CLASS_HEADER(OP_VigraGauss, 1, 1, 3, 3)
-  //============================================================================
-          
-          
-   /*! \brief Simple vigra gradient magnitude operator
-   * 
-   * Pre-bluring gradient magnitude operator.
-   * 
-   * \param scale <float> pre-bluring scale
+
+  /*! \brief Disc dilation operator
+   *
+   * Dimension separated vigra based disc dilation operator.
+   *
+   * \param radius <int> Radius of the disc used for dilation
    */
+  OPENLF_OP_CLASS_HEADER(OP_DiscDilation, 1, 1, 3, 3)
+
+  /*! \brief Disc erosion operator
+   *
+   * Dimension separated vigra based disc erosion operator.
+   *
+   * \param radius <int> Radius of the disc used for erosion
+   */
+  OPENLF_OP_CLASS_HEADER(OP_DiscErosion, 1, 1, 3, 3)
+
+  /*! \brief Disc median operator
+   *
+   * Dimension separated vigra based median filter using a disc of given radius.
+   * \param radius <int> Radius of the disc used for the filter.
+   */
+  OPENLF_OP_CLASS_HEADER(OP_DiscMedian, 1, 1, 3, 3)
+
+  /*! \brief Gaussian sharpening operator
+   *
+   * Dimension separated vigra based gaussian sharpening filter.
+   * \param sharpening_factor <double> Sharpening factor.
+   * \param scale <double> Scale
+   */
+  OPENLF_OP_CLASS_HEADER(OP_GaussianSharpening, 1, 1, 3, 3)
+
+
+
+
+
+ /*! \brief Simple vigra gradient magnitude operator
+  *
+  * Pre-bluring gradient magnitude operator.
+  *
+  * \param scale <float> pre-bluring scale
+  */
   OPENLF_OP_SINGLE2D_CLASS_HEADER(OP_VigraGradientMagnitude)
   //============================================================================   
           
@@ -61,6 +96,7 @@ namespace openlf {
    */
   OPENLF_OP_CLASS_HEADER(OP_ScharrX, 1, 1, 3, 3)
   //============================================================================
+
           
           
   /*! \brief Simple vertical scharr gradient operator
