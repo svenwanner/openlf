@@ -92,18 +92,18 @@ void QNEMainWindow::createMenus()
 {
 	fileMenu = new QMenu(tr("&File"), this);
 	fileMenu->addAction(loadAct);
-	fileMenu->addAction(saveAct);
+	//fileMenu->addAction(saveAct);
 	fileMenu->addAction(newAct);
 	fileMenu->addSeparator();
 	fileMenu->addAction(quitAct);
         
 	//helpMenu = new QMenu(tr("&Help"), this);
 
-	viewMenu = new QMenu(tr("&View"), this);
+	//viewMenu = new QMenu(tr("&View"), this);
 
 	menuBar()->addMenu(fileMenu);
 	//menuBar()->addMenu(helpMenu);
-	menuBar()->addMenu(viewMenu);
+	//menuBar()->addMenu(viewMenu);
 }
 
 

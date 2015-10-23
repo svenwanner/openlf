@@ -88,7 +88,7 @@ void Circuit_Viewer::createActions()
 	saveAsAct->setStatusTip(tr("Save the document under a new name"));
 	connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
         
-	loadAct = new QAction(QIcon(":/circuit_load.png"), tr("&Save"), this);
+	loadAct = new QAction(QIcon(":/circuit_load.png"), tr("&Load"), this);
 	loadAct->setShortcuts(QKeySequence::Open);
 	loadAct->setStatusTip(tr("Load Circuit from disk"));
 	connect(loadAct, SIGNAL(triggered()), this, SLOT(load()));
@@ -142,8 +142,8 @@ void Circuit_Viewer::createToolbar()
 {
 	ToolBar = addToolBar(tr("File"));
 	//toolBar->setFixedHeight(ToolBar_Height);
-	ToolBar->addAction(saveAct);
 	ToolBar->addAction(loadAct);
+	ToolBar->addAction(saveAct);
 	ToolBar->addSeparator();
 	ToolBar->addAction(zoomInAct);
 	ToolBar->addAction(zoomOutAct);

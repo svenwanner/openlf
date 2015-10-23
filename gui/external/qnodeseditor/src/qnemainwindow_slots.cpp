@@ -133,7 +133,7 @@ void QNEMainWindow::createDockWindows()
 	List1 = new QListWidget(dock);
 	dock->setWidget(List1);
 	addDockWidget(Qt::RightDockWidgetArea, dock);
-	viewMenu->addAction(dock->toggleViewAction());
+	//viewMenu->addAction(dock->toggleViewAction());
 
         //populate component list
         QListWidgetItem *item;

@@ -42,7 +42,7 @@ SIGNALS
 void QNEMainWindow::createActions()
 {
 
-	loadAct = new QAction(QIcon(":/open.png"), tr("&Load"), this);
+	loadAct = new QAction(QIcon(":/open.png"), tr("&Load Circuit in new Window"), this);
 	loadAct->setShortcuts(QKeySequence::Open);
 	loadAct->setStatusTip(tr("Open a file"));
 	connect(loadAct, SIGNAL(triggered()), this, SLOT(loadFile()));
@@ -52,7 +52,7 @@ void QNEMainWindow::createActions()
 	saveAct->setStatusTip(tr("Save a file"));
 	connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));
 
-	newAct = new QAction(QIcon(":/circuit.png"), tr("&Show"), this);
+	newAct = new QAction(QIcon(":/circuit.png"), tr("&New Circuit in new Window"), this);
 	//saveAct->setShortcuts(QKeySequence::Save);
 	newAct->setStatusTip(tr("New circuit"));
 	connect(newAct, SIGNAL(triggered()), this, SLOT(new_circuit_viewer()));
