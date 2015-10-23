@@ -11,6 +11,11 @@
 - CLIF: remove temporary files for memory_link!
 - GUI: fix memory leaks!
 - GUI: fix circuit display glitches (list circuits, re-open/show already opened, unnamed entries)
+- CLIF: TEMP file handling under windows
 
 Minor:
 - COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!
+- GUI: name load actually with load
+- First load then save button
+- GUI: popOut , popOut
+- fitler/save only GML files
