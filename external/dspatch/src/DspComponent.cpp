@@ -184,6 +184,14 @@ int DspComponent::GetInputCount()
     return inputCount;
 }
 
+void DspComponent::GetInput(int n, DspComponent *&src, int &src_idx, int &sink_idx)
+{
+  DspWire *w = _inputWires.GetWire(n);
+  src = w->linkedComponent;
+  src_idx = w->fromSignalIndex;
+  sink_idx = w->toSignalIndex;
+}
+
 //-------------------------------------------------------------------------------------------------
 
 int DspComponent::GetOutputCount()
@@ -219,6 +227,16 @@ std::string DspComponent::GetInputName(int index)
 
     ResumeAutoTick();
     return inputName;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+
+void DspComponent::setTypeName(std::string const& name)
+{
+    PauseAutoTick(); 
+    setTypeName_(name);
+    ResumeAutoTick();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -492,7 +510,6 @@ bool DspComponent::AddOutput_(std::string const& outputName)
 void DspComponent::setTypeName_(std::string const& name)
 {
     _typeName = name;
-	return;
 }
 
 const std::string& DspComponent::getTypeName()
@@ -611,6 +628,11 @@ void DspComponent::RemoveAllParameters_()
 int DspComponent::GetInputCount_()
 {
     return _inputBus.GetSignalCount();
+}
+
+DspWireBus *DspComponent::GetInputWires()
+{
+  return &_inputWires;
 }
 
 //-------------------------------------------------------------------------------------------------

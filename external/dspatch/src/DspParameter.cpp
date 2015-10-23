@@ -463,6 +463,11 @@ bool DspParameter::SetParam(DspParameter const& param)
             return SetString(*param.GetString());
         }
     }
+    else if (param.Type() == Pointer)
+    {
+        if (param._ptrValue)
+          return SetPointer(param._ptrValue, param._ptrType);
+    }
     else if (param.Type() == Trigger)
     {
         if (_type == Trigger)
@@ -478,6 +483,22 @@ bool DspParameter::SetParam(DspParameter const& param)
         }
     }
 
+    return false;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspParameter::SetPointer(void* value, const std::type_info *ptrType)
+{
+    if (_type == Pointer && *_ptrType == *ptrType)
+    {
+        _ptrValue = static_cast<void*>(value);
+        _isSet = true;
+        printf("pointer set success %p!\n", value);
+        return true;
+    }
+
+    printf("pointer set failed %p!\n", value);
     return false;
 }
 

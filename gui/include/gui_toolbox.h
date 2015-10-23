@@ -41,6 +41,8 @@ private slots:
 
     void about();
 	void showNode();
+        void showViewer();
+        void showAnimator();
 	void OpenLFCamConfigurator();
 
 private:
@@ -49,13 +51,11 @@ private:
     void createActions();
     void createUIActions();
     void createMenus();
-    void createToolBars();
     void createStatusBar();
 
     QAction *openAct;
     QAction *saveAct;
     QAction *saveAsAct;
-    QAction *exitAct;
     QAction *aboutAct;
     QAction *showAct;
 	QAction *showAct_Node;

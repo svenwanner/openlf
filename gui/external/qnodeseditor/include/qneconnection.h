@@ -40,8 +40,8 @@ public:
 
 	void setPos1(const QPointF &p);
 	void setPos2(const QPointF &p);
-	void setPort1(QNEPort *p);
-	void setPort2(QNEPort *p);
+	void setPort1(QNEPort *p, bool gui_only = false);
+	void setPort2(QNEPort *p, bool gui_only = false);
 	void updatePosFromPorts();
 	void updatePath();
 	void updateCircuitConnection();

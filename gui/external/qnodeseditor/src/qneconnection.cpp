@@ -47,8 +47,10 @@ void QNEConnection::updateCircuitConnection()
 {  
   if (m_port1 && m_port2) {
     DspComponent *comp_source, *comp_sink;
-    DspCircuit *circuit;
+    DspCircuit *circ_sink, *circ_source;
+    DspCircuit *circuit = NULL;
     QNEPort *src, *sink;
+    bool success;
     
     if (m_port1->isOutput()) {
       src = m_port1;
@@ -64,15 +66,30 @@ void QNEConnection::updateCircuitConnection()
     
     comp_source = m_port1->block()->component;
     comp_sink = m_port2->block()->component;
-    circuit = comp_sink->GetParentCircuit();
+    circ_source = m_port1->block()->circuit;
+    circ_sink = m_port2->block()->circuit;
+    if (comp_sink)
+      circuit = comp_sink->GetParentCircuit();
     int source_idx = m_port1->block()->getPortIdx(m_port1);
     int sink_idx = m_port2->block()->getPortIdx(m_port2);
     
-    circuit->ConnectOutToIn(comp_source,
-                            source_idx,
-                            comp_sink,
-                            sink_idx
-                           );
+    if (comp_source && comp_sink)
+      circuit->ConnectOutToIn(comp_source,
+                              source_idx,
+                              comp_sink,
+                              sink_idx
+                            );
+    else if (circ_source && comp_sink) {
+      success = circ_source->ConnectInToIn(source_idx, comp_sink, sink_idx);
+      assert(success);
+    }
+    else if (comp_source && circ_sink) {
+      success = circ_sink->ConnectOutToOut(comp_source, source_idx, sink_idx);
+      assert(success);
+    }
+    else 
+      //not yet supported by DSPatch?
+      abort();
   }
 }
 
@@ -94,22 +111,24 @@ void QNEConnection::setPos2(const QPointF &p)
 	pos2 = p;
 }
 
-void QNEConnection::setPort1(QNEPort *p)
+void QNEConnection::setPort1(QNEPort *p, bool gui_only)
 {
 	m_port1 = p;
 
 	m_port1->connections().append(this);
         
-        updateCircuitConnection();
+        if (!gui_only)
+          updateCircuitConnection();
 }
 
-void QNEConnection::setPort2(QNEPort *p)
+void QNEConnection::setPort2(QNEPort *p, bool gui_only)
 {
 	m_port2 = p;
 
 	m_port2->connections().append(this);
         
-        updateCircuitConnection();
+        if (!gui_only)
+          updateCircuitConnection();
 }
 
 void QNEConnection::updatePosFromPorts()

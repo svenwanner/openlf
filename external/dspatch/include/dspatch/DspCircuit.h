@@ -69,6 +69,8 @@ public:
     void SetThreadCount(int threadCount);
     int GetThreadCount() const;
     
+    virtual DspComponent *clone();
+    
     bool save(std::string filename);
     static DspCircuit* load(std::string filename, DspComponent *(*getComponentClone)(const std::string &typeName));
 
@@ -78,9 +80,14 @@ public:
     void RemoveComponent(DspComponent const* component);
     void RemoveComponent(DspComponent const& component);
     void RemoveComponent(std::string const& componentName);
+    
+    DspWireBus *GetInToInWires();
+    DspWireBus *GetOutToOutWires();
 
     void RemoveAllComponents();
-
+    
+    DspComponent *GetComponent(int n);
+    
     template <class ComponentType>
     ComponentType* GetComponent(std::string const& componentName);
 

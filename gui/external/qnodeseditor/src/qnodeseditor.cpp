@@ -85,7 +85,10 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 					selBlock->setSelected(); */
 				// selBlock = (QNEBlock*) item;
 				printf("cemit compsel\n");
-				emit compSelected((dynamic_cast<QNEBlock*>(item))->component);
+                                if ((dynamic_cast<QNEBlock*>(item))->blockType() == QNEBlock::BlockType::Regular)
+                                  emit compSelected((dynamic_cast<QNEBlock*>(item))->component);
+                                else
+                                  emit compSelected((dynamic_cast<QNEBlock*>(item)));
 			}
 			break;
 		}

@@ -27,7 +27,7 @@
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
     AddParameter_("min_coherence", DspParameter(DspParameter::ParamType::Float, 0.8f)); \
-    AddParameter_("input disparity", DspParameter(DspParameter::ParamType::Float, 0.0f));
+    AddParameter_("input_disparity", DspParameter(DspParameter::ParamType::Float, 0.0f));
 
 OPENLF_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
 

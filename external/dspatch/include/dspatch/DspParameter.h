@@ -97,6 +97,8 @@ public:
     bool SetParam(DspParameter const& param);
 
 private:
+    bool SetPointer(void* value, const std::type_info *ptrType);
+  
     ParamType _type;
     bool _isSet;
     bool _isRangeSet;
@@ -149,15 +151,9 @@ template<typename T> DspParameter::DspParameter(ParamType const& type, T *initVa
 
 template<typename T> bool DspParameter::SetPointer(T* value)
 {
-    if (_type == Pointer && *_ptrType == typeid(T))
-    {
-        _ptrValue = static_cast<void*>(value);
-        _isSet = true;
-        return true;
-    }
-
-    return false;
+    return SetPointer((void*)value, &typeid(T));
 }
+
 
 //=================================================================================================
 

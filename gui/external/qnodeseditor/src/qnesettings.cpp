@@ -6,7 +6,7 @@
 
 #define DPPT DspParameter::ParamType
 
-void QNESettings::attach(DspComponent *comp)
+void QNESettings::attach(DspComponent *comp, std::vector<DspCircuit*> &circuits)
 {
   if (_layout_w)
     delete _layout_w;
@@ -64,14 +64,76 @@ void QNESettings::attach(DspComponent *comp)
           spinbox->setProperty("idx", i);
           spinbox->setMaximum(INT_MAX);
           const int *val = param->GetInt();
-          if (val)
+          if (val) {
             spinbox->setValue(*val);
+            printf("comb %p %d\n", _component, *val);
+          }
           connect(spinbox, SIGNAL(valueChanged(int)), this, SLOT(intSettingChanged(int)));
+
+          break;
+      }
+      case DPPT::Pointer : {
+          QComboBox *combox = new QComboBox(_layout_w);
+          hbox->addWidget(combox);
+          combox->setProperty("component", QVariant::fromValue((void*)_component));
+          combox->setProperty("idx", i);
+          
+          DspCircuit *c;
+          int found = -1;
+          param->GetPointer(c);
+          
+          printf("circuit currenty set: %p of comp %p\n", c, _component);
+          
+          for(int i=0;i<circuits.size();i++) {
+            if (comp->GetParentCircuit() == circuits[i])
+              continue;
+            //FIXME typename clash?
+            if (circuits[i] == c)
+              found = i;
+            combox->addItem(circuits[i]->GetComponentName().c_str(), QVariant::fromValue((void*)circuits[i]));
+          }
+          
+          if (found != -1)
+            combox->setCurrentIndex(found);
+          else {
+            combox->addItem("default?", QVariant::fromValue((void*)c));
+            //combox->addItem(c->GetComponentName().c_str(), QVariant::fromValue((void*)c));
+            combox->setCurrentIndex(combox->count()-1);
+          }
+          
+          
+          connect(combox, SIGNAL(currentIndexChanged(int)), this, SLOT(circuitSelected(int)));
 
           break;
       }
     }
   }
+}
+
+
+void QNESettings::attach(QNEBlock *block)
+{
+  assert(block->blockType() != QNEBlock::BlockType::Regular);
+  
+  if (_layout_w)
+    delete _layout_w;
+  
+  _layout_w = new QWidget(this);
+  _layout.addWidget(_layout_w);
+
+   QFormLayout *actual_layout = new QFormLayout(_layout_w);
+  _layout_w->setLayout(actual_layout);
+  
+  QSpinBox *spinbox = new QSpinBox(_layout_w);
+  QHBoxLayout *hbox = new  QHBoxLayout;
+  hbox->addWidget(spinbox);
+  spinbox->setProperty("block", QVariant::fromValue((void*)block));
+  int portcount = block->ports().size();
+  spinbox->setValue(portcount);
+  spinbox->setMinimum(portcount);
+  connect(spinbox, SIGNAL(valueChanged(int)), this, SLOT(portCountChanged(int)));
+  
+  actual_layout->addRow(tr("Pad Count"), hbox);
 }
 
 
@@ -105,6 +167,8 @@ void QNESettings::intSettingChanged(int val)
   
   comp->SetParameter(idx, DspParameter(DPPT::Int, val));
   
+  printf("set setting %d of %p to %d\n", idx, comp, val);
+  
   DspCircuit *c = comp->GetParentCircuit();
   c->configure();
 }
@@ -116,4 +180,44 @@ void QNESettings::selFileClicked()
   QLineEdit *ed = sender()->property("ed").value<QLineEdit*>();
   
   ed->setText(path);
+}
+
+//FIXME change circuit input count on delete input port item!
+void QNESettings::portCountChanged(int val)
+{
+  QNEBlock *block = (QNEBlock*)sender()->property("block").value<void*>();
+  char buf[64];
+  
+  //FIXME update when special ports (name,type) are gone!
+  for(int i=block->ports().size();i<val;i++) 
+    if (block->blockType() == QNEBlock::BlockType::Source) {
+      sprintf(buf, "input_%d", i);
+      block->circuit->AddInput(buf);
+      block->addOutputPort(buf);
+    }
+    else {
+      sprintf(buf, "output_%d", i);
+      block->circuit->AddOutput(buf);
+      block->addInputPort(buf);
+    }    
+}
+
+void QNESettings::circuitSelected(int idx)
+{
+  DspComponent *comp = (DspComponent*)sender()->property("component").value<void*>();
+  int set_idx = sender()->property("idx").value<int>();
+  
+  printf("seting %d of comp %p circuit to %p\n", set_idx, comp,((QComboBox*)sender())->itemData(idx).value<void*>());
+  
+  bool succ = comp->SetParameter(set_idx, DspParameter(DPPT::Pointer, (DspCircuit*)(((QComboBox*)sender())->itemData(idx).value<void*>())));
+  
+  DspCircuit *cc;
+  comp->GetParameter(set_idx)->GetPointer(cc);
+  
+  printf("circuit currenty set: %p\n", cc);
+
+  assert(succ);
+  
+  DspCircuit *c = comp->GetParentCircuit();
+  c->configure();  
 }

@@ -11,7 +11,7 @@ class Circuic_Thread : public QObject
 public:
 	Circuic_Thread(DspCircuit *_circuit) : _circuit(_circuit){};
 
-	public slots:
+public slots:
 
 	void run(){
 		_circuit->Tick();
@@ -20,6 +20,7 @@ public:
 
 private:
 	DspCircuit *_circuit;
+
 };
 
 

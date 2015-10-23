@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "qnemainwindow.h"
 
+#include "circuitviewer.h"
 
 /*
 
@@ -54,8 +55,9 @@ void QNEMainWindow::createActions()
 	newAct = new QAction(QIcon(":/circuit.png"), tr("&Show"), this);
 	//saveAct->setShortcuts(QKeySequence::Save);
 	newAct->setStatusTip(tr("New circuit"));
-	connect(newAct, SIGNAL(triggered()), this, SLOT(new_circuit()));
+	connect(newAct, SIGNAL(triggered()), this, SLOT(new_circuit_viewer()));
   
-    connect(_circuitViewer, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
-	connect(_circuitViewer, SIGNAL(focusChanged()), this, SLOT(onApplicationFocusChanged()));
+        connect(_circuitViewer, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
+        connect(_circuitViewer, SIGNAL(compSelected(QNEBlock*)), this, SLOT(showCompSettings(QNEBlock*)));
+        connect(_circuitViewer, SIGNAL(focusChanged()), this, SLOT(onApplicationFocusChanged()));
 }

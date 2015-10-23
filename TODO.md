@@ -1,0 +1,16 @@
+- GUI: delete components and connections in gui!
+- GUI: add circuit list and allow adding circuits as components
+- GUI: execute tick on first click!
+- GUI: show error messages for components!
+- GUI: use circuit coordinates when creating gui and save them when moving components
+- GUI/DSPatch: forward between settings of circuits components and components settings!
+- DSPatch: save/load circuit positions
+- CLIF: on linking memory-only datastore will be lost
+- OPENLF: actually handle config hierarchy
+- OPENLF: DspParameter - store origin (type?) so a _process can only set the settings it has itself modified
+- CLIF: remove temporary files for memory_link!
+- GUI: fix memory leaks!
+- GUI: fix circuit display glitches (list circuits, re-open/show already opened, unnamed entries)
+
+Minor:
+- COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!

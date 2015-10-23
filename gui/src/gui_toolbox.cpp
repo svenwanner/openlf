@@ -1,10 +1,11 @@
 #include "gui_toolbox.h"
 
-#ifdef _MSC_VER
-#include "ui_gui_windows.h"
-#elif __GNUC__
-#include "ui_gui_linux.h"
-#endif
+//#ifdef _MSC_VER
+//#include "ui_gui_windows.h"
+//#elif __GNUC__
+//#include "ui_gui_linux.h"
+//#endif
+#include "ui_toolbox_ui.h"
 
 #include <iostream>
 #include <vector>
@@ -23,15 +24,9 @@ GUI_Toolbox::GUI_Toolbox(QWidget *parent) : QMainWindow(parent), ui(new Ui::GUI_
 
     createActions();
     createMenus();
-    createToolBars();
+//    createToolBars();
     createStatusBar();
 
-    createUIActions();
-
-    ui->Slider_selectHoropter->setEnabled(false);
-    ui->Button_ApplyHoropter->setEnabled(false);
-    ui->lineEdit_cut_X->setEnabled(false);
-    ui->lineEdit_cut_Y->setEnabled(false);
     this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 }
 /*************************************************************
@@ -49,8 +44,7 @@ void GUI_Toolbox::createMenus(){
     fileMenu->addAction(saveAct);
     fileMenu->addAction(saveAsAct);
     fileMenu->addSeparator();
-    fileMenu->addAction(exitAct);
-
+    
     helpMenu = new QMenu(tr("&Help"), this);
     helpMenu->addAction(aboutAct);
 
@@ -59,23 +53,7 @@ void GUI_Toolbox::createMenus(){
     menuBar()->addMenu(helpMenu);
     menuBar()->setNativeMenuBar(false);
 }
-/*************************************************************
- *                Define Toolbar without UI
- *************************************************************/
-void GUI_Toolbox::createToolBars(){
-//    ToolBar defined in source code
-    fileToolBar = addToolBar(tr("Tools"));
-    fileToolBar->addAction(openAct);
-    fileToolBar->addAction(saveAct);
-    fileToolBar->addAction(saveAsAct);
-    fileToolBar->addAction(exitAct);
-    fileToolBar->addSeparator();
-    fileToolBar->addAction(showMainAct);
-    fileToolBar->addAction(showAct);
-	fileToolBar->addSeparator();
-	fileToolBar->addAction(showAct_Node);
 
-}
 /*************************************************************
  *                Define Statusbar without UI
  *************************************************************/

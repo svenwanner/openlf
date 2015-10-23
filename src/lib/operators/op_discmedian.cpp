@@ -29,11 +29,14 @@
 
 OPENLF_OP_START(OP_DiscMedian, 1, 1, 3, 3)
 
-  int radius = *op->GetParameter(0)->GetInt();
-    for (int i=0; i < in[0]->shape()[2]; ++i){
-        vigra::MultiArrayView<2, T> channel_in = in[0]->bindAt(2, i);
-        vigra::MultiArrayView<2, T> channel_out = out[0]->bindAt(2, i);
-        vigra::discMedian(channel_in,channel_out, radius);
-    }
+// TODO Vigra discMedian() is only compatible with integer data ranging from 0..255. So this is incompatible with the FlexMAV, which supports other data types.
+
+
+//  int radius = *op->GetParameter(0)->GetInt();
+//    for (int i=0; i < in[0]->shape()[2]; ++i){
+//        vigra::MultiArrayView<2, T> channel_in = in[0]->bindAt(2, i);
+//        vigra::MultiArrayView<2, T> channel_out = out[0]->bindAt(2, i);
+//        vigra::discMedian(channel_in,channel_out, radius);
+//    }
 
 OPENLF_OP_END(OP_DiscMedian, 1, 1, 3, 3)

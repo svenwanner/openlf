@@ -36,6 +36,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "qneblock.h"
 #include "qnodeseditor.h"
 
+#include "circuitviewer.h"
+
 template <class T> class QVP
 {
 public:
@@ -73,13 +75,19 @@ void QNEMainWindow::loadFile()
 	nodesEditor->load(ds);
 }
 
-void QNEMainWindow::new_circuit()
+void QNEMainWindow::new_circuit_viewer()
 {
 	_circuitViewer = new Circuit_Viewer(mdiArea, this);
+        newCircuit(_circuitViewer->circuit());
+	connect(_circuitViewer, SIGNAL(newCircuit(DspCircuit*)), this, SLOT(newCircuit(DspCircuit*)));
+	connect(_circuitViewer, SIGNAL(activated(QWidget*)), this, SLOT(activate(QWidget*)));
 	mdiArea->addSubWindow(_circuitViewer);
+        connect(_circuitViewer, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
+        connect(_circuitViewer, SIGNAL(compSelected(QNEBlock*)), this, SLOT(showCompSettings(QNEBlock*)));
 	_circuitViewer->setObjectName("circuitViewer");
 	_circuitViewer->showMaximized();
 }
+
 void QNEMainWindow::onApplicationFocusChanged(){
 	std::cout << "hello" << std::endl;
 }
@@ -88,14 +96,27 @@ void QNEMainWindow::addComponent(QListWidgetItem *it)
 {
   DspComponent *comp = QVP<DspComponent>::asPtr(it->data(Qt::UserRole));
   
-  comp = comp->clone();
+  if (comp) {
+    comp = comp->clone();
 
-  _circuitViewer->addComponent(comp);
+    _circuitViewer->addComponent(comp);
+  }
+  else {
+    if (!it->text().compare("Circuit Input"))
+      _circuitViewer->addInputComponent();
+    else if (!it->text().compare("Circuit Output"))
+      _circuitViewer->addOutputComponent();
+  }
 }
 
 void QNEMainWindow::showCompSettings(DspComponent *comp)
 {
-  _settings->attach(comp);
+  _settings->attach(comp, _circuits);
+}
+
+void QNEMainWindow::showCompSettings(QNEBlock *block)
+{
+  _settings->attach(block);
 }
 
 void QNEMainWindow::createDockWindows()
@@ -116,6 +137,11 @@ void QNEMainWindow::createDockWindows()
 
         //populate component list
         QListWidgetItem *item;
+        item = new QListWidgetItem("Circuit Input");
+        List1->addItem(item);
+        item = new QListWidgetItem("Circuit Output");
+        List1->addItem(item);
+        
         std::vector<DspComponent*> comps = OpenLF::componentList();
         for(auto it=comps.begin();it!=comps.end();++it) {
           item = new QListWidgetItem((*it)->getTypeName().c_str());
@@ -129,9 +155,35 @@ void QNEMainWindow::createDockWindows()
 	// ******************************************************************
         
 
-    QDockWidget *settings_dock = new QDockWidget(tr("Component Settings:"), this);
+        QDockWidget *settings_dock = new QDockWidget(tr("Component Settings:"), this);
 	settings_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	_settings = new QNESettings(settings_dock);
 	settings_dock->setWidget(_settings);
 	addDockWidget(Qt::RightDockWidgetArea, settings_dock);
+        
+        _circuit_dock = new QDockWidget(tr("Circuit Settings:"), this);
+	_circuit_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+        QWidget *box = new QWidget(_circuit_dock);
+        _circuit_dock->setWidget(box);
+	QFormLayout *layout = new QFormLayout(_circuit_dock);
+        box->setLayout(layout);
+        _c_name_ed = new QLineEdit(_circuit_dock);
+        connect(_c_name_ed, SIGNAL(textChanged(QString)), this, SLOT(circuitNameChanged(QString)));
+        _c_name_ed->setText(_circuitViewer->circuit()->GetComponentName().c_str());
+        layout->addRow(tr("&Name"), _c_name_ed);   
+        
+	addDockWidget(Qt::RightDockWidgetArea, _circuit_dock);
+}
+
+
+
+void QNEMainWindow::newCircuit(DspCircuit* c)
+{
+  _circuits.push_back(c);
+}
+
+
+void QNEMainWindow::circuitNameChanged(QString name)
+{
+  _circuitViewer->circuit()->SetComponentName(name.toUtf8().constData());
 }

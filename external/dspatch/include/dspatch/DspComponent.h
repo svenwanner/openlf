@@ -32,6 +32,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <dspatch/DspComponentThread.h>
 #include <dspatch/DspParameter.h>
 
+#include <cmath>
+#include <limits>
+
 class DspCircuit;
 
 //=================================================================================================
@@ -129,13 +132,18 @@ public:
     void DisconnectInput(DspComponent const* inputComponent);
     void DisconnectAllInputs();
 
+    DspWireBus *GetInputWires();
+    
     int GetInputCount();
     int GetOutputCount();
     int GetParameterCount();
+    void GetInput(int n, DspComponent *&src, int &src_idx, int &sink_idx);
 
     std::string GetInputName(int index);
     std::string GetOutputName(int index);
     std::string GetParameterName(int index);
+    
+    void setTypeName(std::string const& name);
 
     bool GetParameter(int index, DspParameter& param);
     DspParameter const* GetParameter(int index);
@@ -157,6 +165,9 @@ public:
     void errorOnFalse(bool cond, const char *msg);
     bool hasError();
     const std::string& getTypeName();
+    
+    double x = std::numeric_limits<double>::quiet_NaN();
+    double y = std::numeric_limits<double>::quiet_NaN();
     
 protected:
     virtual void Process_(DspSignalBus&, DspSignalBus&);

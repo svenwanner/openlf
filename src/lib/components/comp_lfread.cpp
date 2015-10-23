@@ -56,15 +56,12 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   errorCond(filename && filename->size()); RETURN_ON_ERROR
   
-  //FIXME reuse!
-  //outputs.GetValue(0, out);
-  if (!out) {
-    out = new LF;
-    outputs.SetValue(0, out);
-  }
+  //FIXME reuse previous out!
   
   //FIXME move ini/clif handling decision into dataset class!
   if (!strcmp(path(*filename).extension().generic_string().c_str(), ".ini")) {
+    out = new LF;
+    outputs.SetValue(0, out);
     out->data = new Dataset();
     
     out->data->Attributes::open(filename->c_str(), NULL);
@@ -74,16 +71,15 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     //FIXME error handling
     ClifFile f(*filename, H5F_ACC_RDONLY);
     
+    errorCond(f.valid()); RETURN_ON_ERROR
+    
+    out = new LF;
+    outputs.SetValue(0, out);
     //FIXME error handling
     if (dataset_name)
       out->data = f.openDataset(*dataset_name);
     else
       out->data = f.openDataset();
-    
-    assert(out->data->Datastore::valid());
-    
-    //cv::Mat img;
-    //readCvMat(out->data, 0, img);
     
     printf("lfread out data: %p store id %d\n", out->data, out->data->H5DataSet().getId());
     Subset3d *subset = new Subset3d(out->data, 0);
@@ -97,13 +93,18 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 bool COMP_LFRead::ParameterUpdating_ (int i, DspParameter const &p)
 {
   //we only have two parameters
+  printf("a\n");
   if (i >= 2)
     return false;
   
-  if (p.Type() != DspParameter::ParamType::String)
+  printf("b\n");
+  if (p.Type() != DspParameter::ParamType::String) {
+    abort();
     return false;
+  }
   
   SetParameter_(i, p);
+  printf("c\n");
   return true;
 }
 

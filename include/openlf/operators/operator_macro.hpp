@@ -76,8 +76,7 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
   bool stat;\
   FlexMAV<2> *in;\
   \
-  stat = inputs.GetValue(0, in);\
-  assert(stat);\
+  errorCond(inputs.GetValue(0, in)); RETURN_ON_ERROR \
   \
   FlexMAV<2> *out_ptr = &_output_image;\
   \
@@ -153,11 +152,7 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
   FlexMAV<INDIM> *in[INCOUNT];\
 \
   for(int i=0;i<INCOUNT;i++) { \
-    stat = inputs.GetValue(i, in[i]); \
-    if (!stat) { \
-      printf(#NAME ": input %d not found - possible type mismatch?", i); \
-      abort(); \
-    }\
+    errorCond(inputs.GetValue(i, in[i]), #NAME ": input not found - possible type mismatch?"); RETURN_ON_ERROR \
   }\
 \
   FlexMAV<OUTDIM> *out_ptr[OUTCOUNT];\
@@ -229,11 +224,8 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
   FlexMAV<INDIM> *in[INCOUNT];\
   \
   for(int i=0;i<INCOUNT;i++) { \
-    stat = inputs.GetValue(i, in[i]); \
-    if (!stat) { \
-      printf(#NAME ": input %d not found - possible type mismatch?", i); \
-      abort(); \
-    } \
+    errorCond(inputs.GetValue(i, in[i]), #NAME ": input not found - possible type mismatch?"); \
+    RETURN_ON_ERROR \
   } \
   \
   FlexMAV<OUTDIM> *out_ptr[OUTCOUNT];\

@@ -1,0 +1,6 @@
+<map id="include/openlf/workflows/wkf_structuretensor.hpp" name="include/openlf/workflows/wkf_structuretensor.hpp">
+<area shape="rect" id="node2" href="$comp__epi_8hpp.html" title="include/openlf/components\l/comp_epi.hpp" alt="" coords="5,95,183,136"/>
+<area shape="rect" id="node3" href="$openlf_8hpp.html" title="include/openlf.hpp" alt="" coords="31,184,157,211"/>
+<area shape="rect" id="node4" href="$op__loadimage_8hpp.html" title="include/openlf/operators\l/op_loadimage.hpp" alt="" coords="14,259,174,300"/>
+<area shape="rect" id="node5" href="$op__saveimage_8hpp.html" title="include/openlf/operators\l/op_saveimage.hpp" alt="" coords="198,259,358,300"/>
+</map>

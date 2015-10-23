@@ -45,15 +45,13 @@ void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   const std::string *filename;
   const std::string *dataset_name = NULL;
   
-  inputs.GetValue(0, in);
-  
-  errorCond(in); RETURN_ON_ERROR
+  errorCond(inputs.GetValue(0, in)); RETURN_ON_ERROR
   
   filename = GetParameter(0)->GetString();
   if (GetParameter(1))
     dataset_name = GetParameter(1)->GetString();
   
-  errorCond(filename && filename->size()); RETURN_ON_ERROR
+  errorCond(filename); RETURN_ON_ERROR
   
   H5::H5File f_out(filename->c_str(), H5F_ACC_TRUNC);
   Dataset out_set;

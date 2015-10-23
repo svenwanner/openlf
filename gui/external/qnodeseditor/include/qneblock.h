@@ -35,25 +35,31 @@ class QNEBlock : public QGraphicsPathItem
 {
 public:
 	enum { Type = QGraphicsItem::UserType + 3 };
+        enum BlockType { Regular = 0, Source, Sink};
 
     QNEBlock(QGraphicsItem *parent = 0);
     QNEBlock(DspComponent *comp, QGraphicsScene *scene, QGraphicsItem *parent = 0);
+    QNEBlock(DspCircuit *c, QGraphicsScene *scene, BlockType type, QGraphicsItem *parent = 0);
 
 	QNEPort* addPort(const QString &name, bool isOutput, int flags = 0, int ptr = 0);
 	void addInputPort(const QString &name);
 	void addOutputPort(const QString &name);
 	void addInputPorts(const QStringList &names);
 	void addOutputPorts(const QStringList &names);
+        void checkError();
 	void save(QDataStream&);
+        BlockType blockType();
 	void load(QDataStream&, QMap<quint64, QNEPort*> &portMap);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 	QNEBlock* clone();
 	QVector<QNEPort*> ports();
         int getPortIdx(QNEPort *port);
+        QNEPort *getPortByIdx(int idx, bool isOutput);
 
 	int type() const { return Type; }
 	
 	DspComponent *component = NULL;
+	DspCircuit *circuit = NULL;
 
 protected:
 	QVariant itemChange(GraphicsItemChange change, const QVariant &value);
@@ -63,6 +69,8 @@ private:
 	int vertMargin;
 	int width;
 	int height;
+        BlockType _blockType = BlockType::Regular;
+        QGraphicsItem *_error_label = NULL;
 };
 
 #endif // QNEBLOCK_H

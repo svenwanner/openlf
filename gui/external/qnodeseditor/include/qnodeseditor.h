@@ -51,6 +51,7 @@ public:
 
 signals:
 	void compSelected(DspComponent *comp);
+	void compSelected(QNEBlock *block);
 
 private:
 	QGraphicsItem *itemAt(const QPointF&);

@@ -35,6 +35,8 @@ extern "C" {
 #include "gml_parser.h"
 }
 
+typedef unsigned int uint;
+
 //=================================================================================================
 
 DspCircuit::DspCircuit(int threadCount)
@@ -350,10 +352,7 @@ void DspCircuit::configure()
   //uhh ohh autotick stuff?!?
   bool old = _configOnly;
   
-  printf("conf gen: %llu circuit gen: %llu\n", _configured_generation, _generation);
-  
   if (_configured_generation < _generation) {
-    printf("tick config!\n");
     _configOnly = true;
     Tick();
     _configOnly = old;
@@ -472,6 +471,14 @@ void DspCircuit::_DisconnectComponent(int componentIndex)
 
 //-------------------------------------------------------------------------------------------------
 
+DspComponent *DspCircuit::GetComponent(int n)
+{
+  return _components[n];
+}
+    
+//-------------------------------------------------------------------------------------------------
+
+
 void DspCircuit::_RemoveComponent(int componentIndex)
 {
     changed();
@@ -489,6 +496,18 @@ void DspCircuit::_RemoveComponent(int componentIndex)
     }
 }
 
+//-------------------------------------------------------------------------------------------------
+
+DspWireBus *DspCircuit::GetInToInWires()
+{
+  return &_inToInWires;
+}
+
+DspWireBus *DspCircuit::GetOutToOutWires()
+{
+  return &_outToOutWires;
+}
+
 //=================================================================================================
 
 void DspCircuit::changed()
@@ -499,7 +518,6 @@ void DspCircuit::changed()
   
   c->_generation++;
   Reset();
-  printf("circuit gen: %llu\n", c->_generation);
 }
 
 void DspCircuit::_save_comp(FILE *f, int i)
@@ -512,6 +530,8 @@ void DspCircuit::_save_comp(FILE *f, int i)
   if (!comp->getTypeName().size())
     abort();
   fprintf(f, "type \"%s\"\n", comp->getTypeName().c_str());
+  if (!std::isnan(comp->x) && !std::isnan(comp->y))
+    fprintf(f, "graphics [\nx %f\ny %f\n]\n", comp->x, comp->y);
   if (comp->GetParameterCount()) {
     fprintf(f, "params [\n");
     for(int i=0;i<comp->GetParameterCount();i++) {
@@ -547,10 +567,15 @@ bool DspCircuit::save(std::string filename)
     return true;
   
   fprintf(f, "graph [\n");
-  for(int i=0;i<_components.size();i++)
+  if (GetComponentName().size())
+    fprintf(f, "label \"%s\"\n", GetComponentName().c_str());
+  if (getTypeName().size())
+    fprintf(f, "type \"%s\"\n", getTypeName().c_str());
+    
+  for(uint i=0;i<_components.size();i++)
     _save_comp(f, i);
   
-  for(int i=0;i<_components.size();i++)
+  for(uint i=0;i<_components.size();i++)
     for(int j=0;j<_components[i]->_inputWires.GetWireCount();j++) {
       int idx;
       DspWire *wire = _components[i]->_inputWires.GetWire(j);
@@ -558,6 +583,28 @@ bool DspCircuit::save(std::string filename)
       fprintf(f, "edge [\n");
       fprintf(f, "source %d\n", idx);
       fprintf(f, "target %d\n", i);
+      fprintf(f, "source_pad %d\n", wire->fromSignalIndex);
+      fprintf(f, "target_pad %d\n", wire->toSignalIndex);
+      fprintf(f, "]\n");
+    }
+    
+  for(int i=0;i<_outToOutWires.GetWireCount();i++) {
+      int idx;
+      DspWire *wire = _outToOutWires.GetWire(i);
+      _FindComponent(wire->linkedComponent, idx);
+      fprintf(f, "outputedge [\n");
+      fprintf(f, "source %d\n", idx);
+      fprintf(f, "source_pad %d\n", wire->fromSignalIndex);
+      fprintf(f, "target_pad %d\n", wire->toSignalIndex);
+      fprintf(f, "]\n");
+    }
+    
+  for(int i=0;i<_inToInWires.GetWireCount();i++) {
+      int idx;
+      DspWire *wire = _inToInWires.GetWire(i);
+      _FindComponent(wire->linkedComponent, idx);
+      fprintf(f, "inputedge [\n");
+      fprintf(f, "target %d\n", idx);
       fprintf(f, "source_pad %d\n", wire->fromSignalIndex);
       fprintf(f, "target_pad %d\n", wire->toSignalIndex);
       fprintf(f, "]\n");
@@ -577,29 +624,73 @@ void print_keys (struct GML_list_elem* list) {
   }
 }
 
-static std::unordered_map<int,int> param2gmlType = {
-    {DspParameter::ParamType::Int,GML_value::GML_INT},
-    {DspParameter::ParamType::Float,GML_value::GML_DOUBLE},
-    {DspParameter::ParamType::String,GML_value::GML_STRING}
-  };
+#define DPPT DspParameter::ParamType
 
 DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentClone)(const std::string &typeName))
 {
+  static struct {
+    void operator()(GML_pair *node, double &x, double &y)
+    {
+      GML_pair *part = node;
+      while(part) {
+        if (part->kind == GML_DOUBLE) {
+          if (!strcmp(part->key, "x")) {
+            x = part->value.floating;
+          }
+          else if (!strcmp(part->key, "y")) {
+            y = part->value.floating;
+          }
+        }
+        part = part->next;
+      }
+    }
+  } _gml_parse_comp_graphics;
   
   static struct {
     void operator()(DspComponent *comp, GML_pair *node)
     {
+      bool res;
       GML_pair *part;
       
       part = node;
       while(part) {
-        auto found = param2gmlType.find((int)part->kind);
-        
-        if (found == param2gmlType.end())
-          printf("skip setting %s with unknown type\n", part->key);
+        const DspParameter *p = NULL;
+        int p_idx;
+        for(int i=0;i<comp->GetParameterCount();i++)
+          if (!comp->GetParameterName(i).compare(part->key)) {
+            p = comp->GetParameter(i);
+            p_idx = i;
+            break;
+          }
+        if (!p) {
+          printf("skipping unknown parameter \"%s\" for component \"%s\"\n",
+            part->key, comp->getTypeName().c_str());
+        }
+        else if (part->kind == GML_STRING
+                 && (!strcmp(part->value.string,"(UNKNOWN)")
+                     || !strcmp(part->value.string,"(UNSET)")
+                )) {
+          printf("skipping unset parameter \"%s\" for component \"%s\"\n",
+            part->key, comp->getTypeName().c_str());
+        }
         else {
-          switch (found->first) {
-            
+          switch (p->Type()) {
+            case DPPT::String :
+              assert(part->kind = GML_STRING);
+              res = comp->SetParameter(p_idx, DspParameter(DPPT::String, std::string(part->value.string)));
+              assert(res);
+              break;
+            case DPPT::Float :
+              assert(part->kind = GML_DOUBLE);
+              comp->SetParameter(p_idx, DspParameter(DPPT::Float, (float)part->value.floating));
+              break;
+            case DPPT::Int :
+              assert(part->kind = GML_INT);
+              comp->SetParameter(p_idx, DspParameter(DPPT::Int, (int)part->value.integer));
+              break;
+            default :
+              printf("skipping parameter \"%s\" with unknown type for component \"%s\"\n",
+                part->key, comp->getTypeName().c_str());
           }
         }
         part = part->next;
@@ -615,6 +706,8 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
       DspComponent *comp = NULL;
       const char *name = NULL;
       int id = -1;
+      double x = std::numeric_limits<double>::quiet_NaN();
+      double y = std::numeric_limits<double>::quiet_NaN();
       GML_pair *params = NULL;
       
       assert(node->kind == GML_LIST);
@@ -640,6 +733,10 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
           assert(part->kind == GML_LIST);
           params = part->value.list;
         }
+        else if (!strcmp(part->key, "graphics")) {
+          assert(part->kind == GML_LIST);
+          _gml_parse_comp_graphics(part->value.list, x, y);
+        }
         part = part->next;
       }
       
@@ -647,7 +744,12 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
       assert(comp);
       assert(name);
       assert(id == c->GetComponentCount());
-      c->AddComponent(comp, name);
+  
+      bool suc = c->AddComponent(comp, name);
+      assert(suc);
+      
+      comp->x = x;
+      comp->y = y;
       
       if (params)
         _gml_parse_add_params(comp, params);
@@ -658,9 +760,97 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
     void operator()(DspCircuit *c, GML_pair *node)
     {
       assert(node->kind == GML_LIST);
-      printf("add edge\n");
+      int source = -1, target = -1, source_idx = -1, target_idx = -1;
+      
+      GML_pair *part = node->value.list;
+      while(part) {
+        if (!strcmp(part->key, "source")) {
+          assert(part->kind == GML_INT);
+          source = part->value.integer;
+        }
+        else if (!strcmp(part->key, "target")) {
+          assert(part->kind == GML_INT);
+          target = part->value.integer;
+        }
+        else if (!strcmp(part->key, "source_pad")) {
+          assert(part->kind == GML_INT);
+          source_idx = part->value.integer;
+        }
+        else if (!strcmp(part->key, "target_pad")) {
+          assert(part->kind == GML_INT);
+          target_idx = part->value.integer;
+        }
+        part = part->next;
+      }
+      
+      assert(source != -1);
+      assert(target != -1);
+      assert(source_idx != -1);
+      assert(target_idx != -1);
+      
+      //FIXME check a lot of other stuff (idx and comp max, ...
+      assert(source_idx < c->_components.size());
+      assert(target_idx < c->_components.size());
+      assert(source_idx < c->_components[source]->GetOutputCount());
+      assert(target_idx < c->_components[target]->GetInputCount());
+      
+      printf("connect edge\n");
+      c->ConnectOutToIn(c->_components[source],source_idx,c->_components[target],target_idx);
     }
   } _gml_parse_add_edge;
+  
+  static struct {  
+    void operator()(DspCircuit *c, GML_pair *node, bool is_source)
+    {
+      assert(node->kind == GML_LIST);
+      int source = -1, target = -1, source_idx = -1, target_idx = -1;
+      
+      GML_pair *part = node->value.list;
+      while(part) {
+        if (!strcmp(part->key, "source")) {
+          assert(part->kind == GML_INT);
+          source = part->value.integer;
+        }
+        else if (!strcmp(part->key, "target")) {
+          assert(part->kind == GML_INT);
+          target = part->value.integer;
+        }
+        else if (!strcmp(part->key, "source_pad")) {
+          assert(part->kind == GML_INT);
+          source_idx = part->value.integer;
+        }
+        else if (!strcmp(part->key, "target_pad")) {
+          assert(part->kind == GML_INT);
+          target_idx = part->value.integer;
+        }
+        part = part->next;
+      }
+      
+      assert(source != -1 || target != -1);
+      assert(source_idx != -1);
+      assert(target_idx != -1);
+      
+      //FIXME check a lot of other stuff (idx and comp max, ...
+      
+      char buf[64];
+      if (is_source) {
+        while (c->GetInputCount() <= source_idx) {
+          sprintf(buf, "input_%d", c->GetInputCount());
+          c->AddInput(buf);
+        }
+        printf("connect circuit source edge\n");
+        c->ConnectInToIn(source_idx, c->_components[target],target_idx);
+      }
+      else {
+        while (c->GetOutputCount() <= target_idx) {
+          sprintf(buf, "output_%d", c->GetOutputCount());
+          c->AddOutput(buf);
+        }
+        printf("connect circuit sink edge\n");
+        c->ConnectOutToOut(c->_components[source], source_idx, target_idx);
+      }
+    }
+  } _gml_parse_add_inout_edge;
   
   static struct {  
     DspCircuit *operator()(GML_pair *pair, DspComponent *(*getComponentClone)(const std::string &typeName))
@@ -670,6 +860,7 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
       struct GML_pair *part;
       
       assert(pair->kind == GML_LIST);
+      assert(!strcmp(pair->key, "graph"));
       
       start = pair->value.list;
       part = start;
@@ -686,6 +877,18 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
       while (part) {
         if (!strcmp(part->key, "edge"))
           _gml_parse_add_edge(c, part);
+        else if (!strcmp(part->key, "inputedge"))
+          _gml_parse_add_inout_edge(c, part, true);
+        else if (!strcmp(part->key, "outputedge"))
+          _gml_parse_add_inout_edge(c, part, false);
+        else if (!strcmp(part->key, "label")) {
+          assert(part->kind == GML_STRING);
+          c->SetComponentName(part->value.string);
+        }
+        else if (!strcmp(part->key, "type")) {
+          assert(part->kind == GML_STRING);
+          c->setTypeName(part->value.string);
+        }
         part = part->next;
       }
       
@@ -742,11 +945,57 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
   printf ("Keys used in %s: \n", filename.c_str());
   print_keys(stat->key_list);
   
-  _gml_parse_circuit(list, getComponentClone);
+  DspCircuit *c = NULL;
+  
+  if (list)
+   c = _gml_parse_circuit(list, getComponentClone);
   
   GML_free_list (list, stat->key_list);
   
-  return NULL;
+  return c;
+}
+
+DspComponent* DspCircuit::clone()
+{
+  DspCircuit *c = new DspCircuit();
+  bool ret;
+  
+  printf("DspCircuit clone()\n");
+  
+  std::unordered_map<DspComponent*,DspComponent*> copies;
+  
+  for(int i=0;i<GetComponentCount();i++) {
+    DspComponent *clone = GetComponent(i)->clone();
+    assert(clone);
+    copies[GetComponent(i)] = clone;
+    c->AddComponent(clone, clone->GetComponentName());
+  }
+  
+  for(auto it=copies.begin();it!=copies.end();++it) {
+    DspWireBus *inputs = &it->first->_inputWires;
+    for(int i=0;i<inputs->GetWireCount();i++) {
+      DspWire *input = inputs->GetWire(i);
+      printf("conn outin\n");
+      ret = c->ConnectOutToIn(copies[input->linkedComponent], input->fromSignalIndex, it->second, input->toSignalIndex);
+      assert(ret);
+    }
+  }
+  
+  for(int i=0;i<_inToInWires.GetWireCount();i++) {
+    DspWire *input = _inToInWires.GetWire(i);
+    c->AddInput(GetInputName(i));
+    ret = c->ConnectInToIn(input->fromSignalIndex, copies[input->linkedComponent], input->toSignalIndex);
+      assert(ret);
+  }
+  
+  for(int i=0;i<_outToOutWires.GetWireCount();i++) {
+    DspWire *output = _outToOutWires.GetWire(i);
+    c->AddOutput(GetOutputName(i));
+    ret = c->ConnectOutToOut(copies[output->linkedComponent], output->fromSignalIndex, output->toSignalIndex);
+      assert(ret);
+  }
+  
+  return c;
 }
 
 

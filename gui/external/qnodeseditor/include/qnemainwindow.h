@@ -48,16 +48,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <QLabel>
 #include <QToolBar>
 #include <QVBoxLayout>
+#include <QLineEdit>
 #include "qnodesthreads.h"
 
 #include "qnesettings.h"
+#include "qneblock.h"
 
 #include "DspCircuit.h"
-
-
-
-
-
 
 class QNodesEditor;
 class Circuit_Viewer;
@@ -73,11 +70,15 @@ public:
 private slots:
 	void saveFile();
 	void loadFile();
-	void new_circuit();
+	void new_circuit_viewer();
 	void onApplicationFocusChanged();
 	void createDockWindows();
 	void addComponent(QListWidgetItem *it);
 	void showCompSettings(DspComponent *comp);
+	void showCompSettings(QNEBlock *comp);
+	void activate(QWidget* wid);
+        void newCircuit(DspCircuit* c);
+        void circuitNameChanged(QString name);
         
 signals:
 	void itemDoubleClicked();
@@ -113,121 +114,16 @@ private:
 
 	QDockWidget *dock = std::nullptr_t();
 	QDockWidget *dock2 = std::nullptr_t();
+        QDockWidget *_circuit_dock = NULL;
+        
+        QLineEdit *_c_name_ed = NULL;
         
     Circuit_Viewer *_circuitViewer = NULL;
     QNESettings *_settings = NULL;
 
 	std::vector<QThread*> threads;
+        std::vector<DspCircuit*> _circuits;
 };
 
 #endif // QNEMAINWINDOW_H
 
-
-
-
-
-
-
-
-
-
-class Circuit_Viewer : public QMainWindow
-
-{
-	Q_OBJECT
-
-public:
-	Circuit_Viewer(QMdiArea *mdiArea = 0, QMainWindow *parent = 0);
-	~Circuit_Viewer();
-
-     void addComponent(DspComponent *comp);
-        
-        
-	//void open(const QString &title);
-	//void setImage(const QString &title, QPixmap *pxmap);
-	//void enableEPI(bool enable);
-
-	//QString userFriendlyCurrentFile();
-	//QString currentFile()  { return curFile; }
-
-	//QScrollArea *scrollArea;
-
-signals:
-  void compSelected(DspComponent *comp);
-  void focusChanged();
-
-protected:
-	//void mousePressEvent(QMouseEvent * e);
-	//void mouseMoveEvent(QMouseEvent* event);
-
-
-private slots:
-
-	void save();
-	void saveAs();
-        void load();
-	void zoomIn();
-	void zoomOut();
-	void fitToWindow();
-    void onCompSelected(DspComponent *comp);
-	void on_action_Pop_Out_triggered();
-	void on_action_Pop_In_triggered();
-	void tick();
-
-
-private:
-
-	QMdiArea *mdiArea;
-	QWidget *popInpopOutWidget;
-
-	// member variable to store click position
-	QPoint m_lastPoint;
-	// member variable - flag of click beginning
-	bool m_mouseClick;
-
-	void scaleImage(double factor);
-	void adjustScrollBar(QScrollBar *scrollBar, double factor);
-	void createToolbar();
-	void createActions();
-	void createMenus();
-
-	QAction *MousePosition;
-	QAction *saveAct;
-	QAction *saveAsAct;
-	QAction *loadAct;
-	QAction *exitAct;
-	QAction *infoAct;
-	QAction *zoomInAct;
-	QAction *zoomOutAct;
-	QAction *fitToWindowAct;
-	QAction *popInAct;
-	QAction *popOutAct;
-	QAction *tickAct;
-
-	const int ToolBar_Height = 40;
-	QToolBar *ToolBar = std::nullptr_t();
-	QMenu *circuitMenu = std::nullptr_t();
-
-	//QVBoxLayout* vbox;
-
-	//QMenuBar *menuBar;
-	//QMainWindow *inner;
-	//QMenu *viewMenu;
-
-	//QToolBar *fileToolBar;
-
-
-
-	//double scaleFactor;
-
-	//void setCurrentFile(const QString &fileName);
-	//QString strippedName(const QString &fullFileName);
-
-	//QString curFile;
-	//bool isUntitled;
-        
-        DspCircuit *_circuit;
-        QGraphicsScene *_scene;
-        QGraphicsView *_view;
-        QNodesEditor *_editor;
-};

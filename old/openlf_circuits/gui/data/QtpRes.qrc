@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>bringtofront.png</file>
-        <file>delete.png</file>
-        <file>sendtoback.png</file>
-    </qresource>
-</RCC>
