@@ -19,3 +19,5 @@ Minor:
 - First load then save button
 - GUI: popOut , popOut
 - fitler/save only GML files
+- use DspParaeter path/filepath (input/output)
+  - maybe add dspparameter flags?
