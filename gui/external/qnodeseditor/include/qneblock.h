@@ -39,7 +39,7 @@ public:
 
     QNEBlock(QGraphicsItem *parent = 0);
     QNEBlock(DspComponent *comp, QGraphicsScene *scene, QGraphicsItem *parent = 0);
-    QNEBlock(DspCircuit *c, QGraphicsScene *scene, BlockType type, QGraphicsItem *parent = 0);
+    QNEBlock(DspCircuit *c, QGraphicsScene *scene, BlockType type, QPointF *pos = NULL, QGraphicsItem *parent = 0);
 
 	QNEPort* addPort(const QString &name, bool isOutput, int flags = 0, int ptr = 0);
 	void addInputPort(const QString &name);

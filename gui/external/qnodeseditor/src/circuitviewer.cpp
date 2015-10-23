@@ -59,6 +59,7 @@ Circuit_Viewer::Circuit_Viewer(QMdiArea *mdiArea, QMainWindow *parent) : QMainWi
   _view = new QGraphicsView(this);
   _view->setScene(_scene);
   _view->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+  
   //_view->setMinimumSize(600,600);
   
   setCentralWidget(_view);
@@ -216,7 +217,7 @@ void Circuit_Viewer::addComponent(DspComponent *comp, bool gui_only)
 }
 
 //FIXME delete old input comp if already existing!
-void Circuit_Viewer::addInputComponent(int pads)
+void Circuit_Viewer::addInputComponent(int pads, QPointF *pos)
 {   
   char buf[64];
 
@@ -225,11 +226,11 @@ void Circuit_Viewer::addInputComponent(int pads)
     _circuit->AddInput(buf);
   }
   
-  _input_block = new QNEBlock(_circuit, _scene, QNEBlock::BlockType::Source);
+  _input_block = new QNEBlock(_circuit, _scene, QNEBlock::BlockType::Source, pos);
   _blocks.push_back(_input_block);
 }
 
-void Circuit_Viewer::addOutputComponent(int pads)
+void Circuit_Viewer::addOutputComponent(int pads, QPointF *pos)
 {   
   char buf[64];
 
@@ -238,7 +239,7 @@ void Circuit_Viewer::addOutputComponent(int pads)
     _circuit->AddOutput(buf);
   }
   
-  _output_block = new QNEBlock(_circuit, _scene, QNEBlock::BlockType::Sink);
+  _output_block = new QNEBlock(_circuit, _scene, QNEBlock::BlockType::Sink, pos);
   _blocks.push_back(_output_block);
 }
 
@@ -276,11 +277,18 @@ void Circuit_Viewer::load()
   _circuit->configure();
   emit newCircuit(_circuit);
   
+  _rightmost = QPointF(-1000000,0);
+  _leftmost = QPointF(1000000,0);
+  
   for(int i=0;i<_circuit->GetComponentCount();i++)
     addComponent(_circuit->GetComponent(i), true);
   
   for(int i=0;i<_blocks.size();i++) {
     QNEBlock *block = _blocks[i];
+    if (block->component && block->component->x-200 < _leftmost.x() - 200)
+      _leftmost = QPointF(block->component->x-200, block->component->y);
+    if (block->component && block->component->x+200 > _rightmost.x()+200)
+      _rightmost = QPointF(block->component->x+200, block->component->y);
     DspComponent *comp = _blocks[i]->component;
     DspWireBus *inputs = comp->GetInputWires();
     
@@ -313,7 +321,7 @@ void Circuit_Viewer::load()
   
   //FIXME add input output count stuff
   if (_circuit->GetInputCount()) {
-    addInputComponent(_circuit->GetInputCount());
+    addInputComponent(_circuit->GetInputCount(), &_leftmost);
     
     DspWireBus *inputs = _circuit->GetInToInWires();
     for(int i=0;i<inputs->GetWireCount();i++) {
@@ -344,7 +352,7 @@ void Circuit_Viewer::load()
   }
   
   if (_circuit->GetOutputCount()) {
-    addOutputComponent(_circuit->GetOutputCount());    
+    addOutputComponent(_circuit->GetOutputCount(), &_rightmost);    
     
     DspWireBus *outputs = _circuit->GetOutToOutWires();
     for(int i=0;i<outputs->GetWireCount();i++) {

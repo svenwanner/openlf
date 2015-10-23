@@ -81,9 +81,11 @@ QVariant QNEBlock::itemChange(GraphicsItemChange change, const QVariant &value)
   return value;
 }
 
-QNEBlock::QNEBlock(DspCircuit *c, QGraphicsScene *scene, BlockType type, QGraphicsItem *parent)
+QNEBlock::QNEBlock(DspCircuit *c, QGraphicsScene *scene, BlockType type, QPointF *pos, QGraphicsItem *parent)
 : QNEBlock(parent)
 {
+  if (pos)
+    this->setPos(*pos);
   scene->addItem(this);
   
   _blockType = type;

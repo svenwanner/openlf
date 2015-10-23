@@ -69,8 +69,8 @@ public:
 	~Circuit_Viewer();
 
      void addComponent(DspComponent *comp, bool gui_only = false);
-     void addInputComponent(int pads = 1);
-     void addOutputComponent(int pads = 1);
+     void addInputComponent(int pads = 1, QPointF *pos = NULL);
+     void addOutputComponent(int pads = 1, QPointF *pos = NULL);
      DspCircuit *circuit();
         
         
@@ -176,6 +176,7 @@ private:
         QNEBlock *_output_block = NULL;
         
         bool _extra_window = false;
+        QPointF _leftmost, _rightmost;
 };
 
 #endif
