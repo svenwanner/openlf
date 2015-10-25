@@ -4,8 +4,7 @@
 #include "openlf.hpp"
 #include "cliini.h"
 
-using namespace openlf;
-using namespace openlf::components;
+#include "dspatch/DspCircuit.h"
 
 cliini_opt opts[] = {
   {
@@ -46,7 +45,7 @@ int main(const int argc, const char *argv[])
   }
   
   const char *c_name = cliarg_str(circuit_arg);
-  DspCircuit *c = DspCircuit::load(c_name, &OpenLF::getComponentClone);
+  DspCircuit *c = DspCircuit::load(c_name, &OpenLF::getComponent);
   
   if (!c)
     printf("could not load circuit from %s\n", c_name);

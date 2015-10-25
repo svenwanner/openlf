@@ -4,6 +4,8 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 
+#include <assert.h>
+
 #define DPPT DspParameter::ParamType
 
 void QNESettings::attach(DspComponent *comp, std::vector<DspCircuit*> &circuits)

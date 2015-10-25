@@ -54,7 +54,7 @@ public:
     bool IsLoaded() const;
 
     std::map<std::string, DspParameter> GetCreateParams() const;
-    DspComponent* Create(std::map<std::string, DspParameter>& params) const;
+    DspComponent* Create(const std::map<std::string, DspParameter>& params = std::map<std::string, DspParameter>()) const;
 
 private:
     DspPluginLoader();
@@ -62,7 +62,7 @@ private:
 
 private:
     typedef std::map<std::string, DspParameter>(*GetCreateParams_t)();
-    typedef DspComponent* (*Create_t)(std::map<std::string, DspParameter>&);
+    typedef DspComponent* (*Create_t)(const std::map<std::string, DspParameter>&);
 
     std::string _pluginPath;
     void* _handle;

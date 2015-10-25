@@ -25,14 +25,27 @@
 
 #include "clif/clif_cv.hpp"
 
-#include "comp_lfread.hpp"
 #include "openlf.hpp"
+
+#include "DspPlugin.h"
+
+#include "openlf/types.hpp"
 
 
 using namespace clif;
 using namespace vigra;
 
 namespace openlf { namespace components {
+
+class COMP_LFRead : public DspComponent {
+public:
+  COMP_LFRead();
+  DSPCOMPONENT_TRIVIAL_CLONE(COMP_LFRead);
+protected:
+  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+private:
+  virtual bool ParameterUpdating_ (int i, DspParameter const &p);
+};
   
 COMP_LFRead::COMP_LFRead()
 {
@@ -107,5 +120,19 @@ bool COMP_LFRead::ParameterUpdating_ (int i, DspParameter const &p)
   printf("c\n");
   return true;
 }
+
+class Plugin_LFRead : public DspPlugin
+{  
+  virtual DspComponent* Create(const std::map<std::string, DspParameter>&) const
+  {
+    return new COMP_LFRead;
+  }
+  
+  virtual ~Plugin_LFRead() 
+  {
+  }
+};
+
+EXPORT_DSPPLUGIN(Plugin_LFRead);
 
 }} //namespace openlf::components

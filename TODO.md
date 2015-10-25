@@ -10,6 +10,7 @@
 - CLIF: TEMP file handling under windows
 - OpenLF/DSPatch use compiled plugin structure (no headers)
 - GUI: connectouttoin may remove other connections (only single input allowed!), sync this!
+- CLIF: CLIF_LINK_LIBRARIES contains absolute paths! (e.g. hdf5)
 
 Minor:
 - COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!

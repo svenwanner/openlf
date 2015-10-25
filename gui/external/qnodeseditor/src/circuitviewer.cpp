@@ -39,6 +39,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "qneconnection.h"
 
 #include <iostream>
+#include <assert.h>
+
+#include "openlf.hpp"
 
 #include "circuitviewer.h"
 
@@ -263,7 +266,7 @@ void Circuit_Viewer::load()
 {
   QString path = QFileDialog::getOpenFileName(this, tr("select filename of circuit"));
   
-  DspCircuit *new_circuit = DspCircuit::load(path.toUtf8().constData(), &OpenLF::getComponentClone);
+  DspCircuit *new_circuit = DspCircuit::load(path.toUtf8().constData(), &OpenLF::getComponent);
   if (!new_circuit)
     //FIXME error msg
     return;

@@ -26,6 +26,8 @@
 #include "comp_lfwrite.hpp"
 #include "openlf.hpp"
 
+#include "openlf/types.hpp"
+
 using namespace clif;
 using namespace vigra;
 

@@ -6,7 +6,6 @@
 #include "clif/clif.hpp"
 #include "clif/clif_vigra.hpp"
 #include "clif/flexmav.hpp"
-#include "comp_lfread.hpp"
 #include "comp_lfwrite.hpp"
 #include "comp_dispwrite.hpp"
 #include "comp_epi.hpp"
@@ -36,8 +35,8 @@ int main(const int argc, const char *argv[])
   
   DspCircuit graph;
   
-  COMP_LFRead in;
-  COMP_LFRead config;
+  DspComponent *in = OpenLF::getComponent("readCLIF");
+  DspComponent *config = OpenLF::getComponent("readCLIF");
   COMP_DispWrite out;
   COMP_Epi epi;
   
@@ -58,8 +57,8 @@ int main(const int argc, const char *argv[])
   epi.SetParameter(0, DspParameter(DPPT::Pointer, (DspCircuit*)&circuit));
   epi.SetParameter(1, DspParameter(DPPT::String, "st"));
   
-  in.SetParameter(0, DspParameter(DspParameter::ParamType::String, argv[1]));
-  config.SetParameter(0, DspParameter(DspParameter::ParamType::String, "config.ini"));
+  in->SetParameter(0, DspParameter(DspParameter::ParamType::String, argv[1]));
+  config->SetParameter(0, DspParameter(DspParameter::ParamType::String, "config.ini"));
   out.SetParameter(0, DspParameter(DspParameter::ParamType::String, argv[2]));
   
   graph.Tick();

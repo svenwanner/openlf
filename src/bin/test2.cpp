@@ -10,6 +10,8 @@
 #include "comp_mav.hpp"
 #include "operators.hpp"
 
+#include "dspatch/DspCircuit.h"
+
 
 
 using namespace clif;

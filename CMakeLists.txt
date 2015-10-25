@@ -8,6 +8,7 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   # using GCC
   message("use gcc")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -O3 -fopenmp")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O3 -fPIC")
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   # using Visual Studio C++
   message("use msvc")
@@ -82,6 +83,7 @@ if (OPENLF_INTERNAL_CLIF)
 list(APPEND CMAKE_PREFIX_PATH force_clif/build/external/clif/clif/src/clif-buil)
 endif()
 find_package(clif REQUIRED)
+message("clif libs: ${CLIF_LIBRARIES}")
 
 ######################################################
 ## add clifview as external project (if required?)  ##
@@ -104,10 +106,14 @@ link_directories(${CLIF_LIBRARY_DIRS})
 #FIXME needed for boost under windows - whats the proper way? Boost_LIBRARY_DIR?
 link_directories($ENV{Path})
 
+set(OPENLF_LIBRARIES ${CLIF_LIBRARIES})
+
 add_subdirectory(external/gml_parser)
 include_directories(external/gml_parser)
 
 add_subdirectory(external/dspatch)
+list(APPEND OPENLF_LIBRARIES DSPatch)
+
 include_directories(external/dspatch/include)
 include_directories(external/dspatch/include/dspatch)
 
@@ -117,19 +123,24 @@ include_directories(include/openlf/components)
 include_directories(include/openlf/workflows)
 include_directories(include/openlf/operators)
 
-add_subdirectory(src/lib/components)
-add_subdirectory(src/lib/workflows)
 add_subdirectory(src/lib/operators)
+add_subdirectory(src/lib/workflows)
+add_subdirectory(src/lib/components)
+
+add_subdirectory(src/lib)
+
 
 add_subdirectory(gui)
 
-add_executable(openlf src/bin/openlf.cpp)
-target_link_libraries(openlf ${CLIF_LIBRARIES} openlf_workflows openlf_components openlf_operators)
+
+add_executable(openlf-bin src/bin/openlf.cpp)
+set_target_properties(openlf-bin PROPERTIES OUTPUT_NAME openlf)
+target_link_libraries(openlf-bin ${OPENLF_LIBRARIES})
 
 add_executable(teststuff src/bin/test.cpp)
 add_executable(teststuff2 src/bin/test2.cpp)
 add_executable(teststuff3 src/bin/test3.cpp)
 
-target_link_libraries(teststuff  vigraimpex DSPatch ${CLIF_LIBRARIES} ${Boost_LIBRARIES} ${HDF5_CPP_LIBRARY} ${HDF5_LIBRARIES} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY} openlf_workflows  openlf_components  openlf_operators)
-target_link_libraries(teststuff2 vigraimpex DSPatch ${CLIF_LIBRARIES} ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY} openlf_workflows  openlf_components  openlf_operators)
-target_link_libraries(teststuff3 vigraimpex DSPatch ${CLIF_LIBRARIES} ${Boost_LIBRARIES} ${HDF5_LIBRARIES} ${HDF5_CPP_LIBRARY} ${OpenCV_LIBRARIES} ${VIGRA_IMPEX_LIBRARY} openlf_operators openlf_workflows openlf_components)
+target_link_libraries(teststuff  ${OPENLF_LIBRARIES})
+target_link_libraries(teststuff2 ${OPENLF_LIBRARIES})
+target_link_libraries(teststuff3 ${OPENLF_LIBRARIES})

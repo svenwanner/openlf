@@ -38,6 +38,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "circuitviewer.h"
 
+#include <iostream>
+
 template <class T> class QVP
 {
 public:

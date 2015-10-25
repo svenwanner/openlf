@@ -26,6 +26,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //=================================================================================================
 
+std::map<std::string, DspParameter> DspPlugin::GetCreateParams() const
+{
+  return std::map<std::string, DspParameter>();
+}
+
 DspPlugin::~DspPlugin()
 {
 }

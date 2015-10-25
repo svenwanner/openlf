@@ -27,7 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #define QNEBLOCK_H
 
 #include <QGraphicsPathItem>
-#include "openlf.hpp"
+
+#include "DspCircuit.h"
 
 class QNEPort;
 

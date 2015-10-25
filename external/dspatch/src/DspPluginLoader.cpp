@@ -93,7 +93,7 @@ std::map<std::string, DspParameter> DspPluginLoader::GetCreateParams() const
 
 //-------------------------------------------------------------------------------------------------
 
-DspComponent* DspPluginLoader::Create(std::map<std::string, DspParameter>& params) const
+DspComponent* DspPluginLoader::Create(const std::map<std::string, DspParameter>& params) const
 {
     if (_handle)
     {
@@ -119,6 +119,7 @@ void DspPluginLoader::_LoadPlugin(std::string const& pluginPath)
         _handle = dlopen(pluginPath.c_str(), RTLD_NOW);
     #endif
 
+        printf("handle %p\n", _handle);
         if (_handle)
         {
     // load symbols
@@ -130,6 +131,7 @@ void DspPluginLoader::_LoadPlugin(std::string const& pluginPath)
             _create = (Create_t)dlsym(_handle, "Create");
     #endif
 
+            printf("%p - %p\n",_getCreateParams, _create);
             if (!_getCreateParams || !_create)
             {
     #ifdef _WIN32
@@ -141,6 +143,8 @@ void DspPluginLoader::_LoadPlugin(std::string const& pluginPath)
                 _handle = NULL;
             }
         }
+        else
+          printf("loading failed: %s\n", dlerror());
 }
 
 //=================================================================================================

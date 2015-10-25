@@ -29,6 +29,8 @@
 #include "comp_dispwrite.hpp"
 #include "openlf.hpp"
 
+#include "openlf/types.hpp"
+
 using namespace clif;
 using namespace vigra;
 

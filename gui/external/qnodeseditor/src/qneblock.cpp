@@ -30,6 +30,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <QFontMetrics>
 #include <QPainter>
 
+#include <assert.h>
+
 #include "qneport.h"
 
 QNEBlock::QNEBlock(QGraphicsItem *parent) : QGraphicsPathItem(parent)
