@@ -1,4 +1,3 @@
-- GUI: delete components and connections in gui!
 - GUI: add circuit list and allow adding circuits as components
 - GUI: execute tick on first click!
 - GUI: show error messages for components!
@@ -9,6 +8,8 @@
 - GUI: fix memory leaks!
 - GUI: fix circuit display glitches (list circuits, re-open/show already opened, unnamed entries)
 - CLIF: TEMP file handling under windows
+- OpenLF/DSPatch use compiled plugin structure (no headers)
+- GUI: connectouttoin may remove other connections (only single input allowed!), sync this!
 
 Minor:
 - COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!
@@ -24,3 +25,4 @@ Done:
 - DSPatch: save/load circuit positions (22.,23.10.15)
 - GUI: use circuit coordinates when creating gui and save them when moving components (22.,23.10.15)
 - CLIF: on linking memory-only datastore will be lost (23.10.15)
+- GUI: delete components and connections in gui! (24.10.15)

@@ -93,8 +93,59 @@ void QNEConnection::updateCircuitConnection()
   }
 }
 
+
+void QNEConnection::removeCircuitConnection()
+{  
+  if (m_port1 && m_port2) {
+    DspComponent *comp_source, *comp_sink;
+    DspCircuit *circ_sink, *circ_source;
+    DspCircuit *circuit = NULL;
+    QNEPort *src, *sink;
+    bool success;
+    
+    if (m_port1->isOutput()) {
+      src = m_port1;
+      sink = m_port2;
+    }
+    else {
+      sink = m_port2;
+      src = m_port1;
+    }
+    
+    //only one may be 
+    assert((src->isOutput() || sink->isOutput()) && (src->isOutput() != sink->isOutput()));
+    
+    comp_source = m_port1->block()->component;
+    comp_sink = m_port2->block()->component;
+    circ_source = m_port1->block()->circuit;
+    circ_sink = m_port2->block()->circuit;
+    if (comp_sink)
+      circuit = comp_sink->GetParentCircuit();
+    int source_idx = m_port1->block()->getPortIdx(m_port1);
+    int sink_idx = m_port2->block()->getPortIdx(m_port2);
+    
+    if (comp_source && comp_sink)
+      circuit->DisconnectOutToIn(comp_source,
+                              source_idx,
+                              comp_sink,
+                              sink_idx
+                            );
+    else if (circ_source && comp_sink) {
+      circ_source->DisconnectInToIn(source_idx, comp_sink, sink_idx);
+    }
+    else if (comp_source && circ_sink) {
+      circ_sink->DisconnectOutToOut(comp_source, source_idx, sink_idx);
+    }
+    else 
+      //not yet supported by DSPatch?
+      abort();
+  }
+}
+
 QNEConnection::~QNEConnection()
 {
+        removeCircuitConnection();
+        
 	if (m_port1)
 		m_port1->connections().remove(m_port1->connections().indexOf(this));
 	if (m_port2)

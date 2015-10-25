@@ -45,6 +45,7 @@ public:
 	void updatePosFromPorts();
 	void updatePath();
 	void updateCircuitConnection();
+	void removeCircuitConnection();
 	QNEPort* port1() const;
 	QNEPort* port2() const;
 

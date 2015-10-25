@@ -110,6 +110,24 @@ QNEBlock::BlockType QNEBlock::blockType()
   return _blockType;
 }
 
+QNEBlock::~QNEBlock()
+{
+  if (!component) {
+    if (circuit) {
+      if (_blockType == BlockType::Source)
+        circuit->RemoveAllInputs();
+      else if (_blockType == BlockType::Sink)
+        circuit->RemoveAllOutputs();
+    }
+    return;
+  }
+  
+  DspCircuit *c = component->GetParentCircuit();
+  assert(c);
+  
+  c->RemoveComponent(component);
+}
+
 QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int ptr)
 {  
 	QNEPort *port = new QNEPort(this);
