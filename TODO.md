@@ -27,3 +27,4 @@ Done:
 - GUI: delete components and connections in gui! (24.10.15)
 - OpenLF/DSPatch use compiled plugin structure (no headers) (25/26.10.15)
 - CLIF: TEMP file handling under windows (26.10.15)
+- CLIF: clifview: repair and get running on windows (26.10.15)
