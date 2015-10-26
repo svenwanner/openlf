@@ -56,7 +56,8 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")# the short system name, e.g. "Linux",
 #Define output target and link dependencies
 	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHc /EHsc")
 	add_executable( ${PROJECT_NAME} ${srcs} ${hdrs} ${ResourceSources} )
-	target_link_libraries(${PROJECT_NAME} ${Vigra_LIBS} Qt5::Widgets Qt5::Gui Qt5::Core ${OpenCV_LIBS} ${Boost_LIBRARIES} qnodeseditor LFCamconfigurator)
+	message("openlf libs: ${OPENLF_LIBRARIES}")
+	target_link_libraries(${PROJECT_NAME} ${OPENLF_LIBRARIES} Qt5::Widgets Qt5::Gui Qt5::Core qnodeseditor LFCamconfigurator)
 
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
@@ -74,7 +75,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 #Define output target and link dependencies
 	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 	add_executable( ${PROJECT_NAME} ${srcs} ${hdrs} ${ResourceSources})
-	target_link_libraries(${PROJECT_NAME} ${Vigra_LIBS} Qt5::Widgets Qt5::Gui Qt5::Core ${OpenCV_LIBS} ${Boost_LIBRARIES} qnodeseditor LFCamconfigurator)
+	target_link_libraries(${PROJECT_NAME} ${OPENLF_LIBRARIES} Qt5::Widgets Qt5::Gui Qt5::Core qnodeseditor LFCamconfigurator)
 	
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
