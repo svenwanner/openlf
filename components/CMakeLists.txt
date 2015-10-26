@@ -1,6 +1,6 @@
 file(GLOB COMPONENTS "*.cpp")
 foreach(COMP ${COMPONENTS})
-  get_filename_component(COMPONENT_NAME ${COMP} NAME)
+  get_filename_component(COMPONENT_NAME ${COMP} NAME_WE)
   add_library(${COMPONENT_NAME} MODULE ${COMP})
   target_link_libraries(${COMPONENT_NAME} ${OPENLF_LIBRARIES})
 endforeach()
