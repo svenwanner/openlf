@@ -7,7 +7,6 @@
 - CLIF: remove temporary files for memory_link!
 - GUI: fix memory leaks!
 - GUI: fix circuit display glitches (list circuits, re-open/show already opened, unnamed entries)
-- CLIF: TEMP file handling under windows
 - GUI: connectouttoin may remove other connections (only single input allowed!), sync this!
 - CLIF: CLIF_LINK_LIBRARIES contains absolute paths! (e.g. hdf5)
 
@@ -27,3 +26,4 @@ Done:
 - CLIF: on linking memory-only datastore will be lost (23.10.15)
 - GUI: delete components and connections in gui! (24.10.15)
 - OpenLF/DSPatch use compiled plugin structure (no headers) (25/26.10.15)
+- CLIF: TEMP file handling under windows (26.10.15)
