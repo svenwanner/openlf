@@ -26,6 +26,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #ifdef _WIN32
 #include <windows.h>
+#include "dlfcn.h"
 #else
 #include <dlfcn.h>
 #endif

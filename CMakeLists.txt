@@ -17,6 +17,10 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   include_directories(${LIBS_INCLUDE_DIR})
   #set (EXTRA_LIBS ${EXTRA_LIBS} "D:/libs/include")  #see parameter list here https://cmake.org/pipermail/cmake/2006-July/010189.html
   add_definitions(-DOPENLF_COMPILER_MSVC)
+  
+  add_subdirectory(external/dlfcn-wind32)
+  include_directories(external/dlfcn-wind32)
+  
 endif()
 
 find_package(HDF5 REQUIRED CXX)
@@ -127,8 +131,8 @@ add_subdirectory(src/lib/operators)
 add_subdirectory(src/lib/workflows)
 add_subdirectory(src/lib/components)
 
-add_subdirectory(src/lib)
-
+## if this remains dd_subdirectory
+include_directories(src/lib)
 
 add_subdirectory(gui)
 
