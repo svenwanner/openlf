@@ -292,7 +292,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
   
   p = GetParameter((int)P_IDX::Epi_Circuit);
-  errorCond(p, ""); RETURN_ON_ERROR
+  errorCond(p, "no epi circuit parameter!"); RETURN_ON_ERROR
   p->GetPointer(epi_circuit);
   if (!epi_circuit) {
     _default_epi_circuit = dynamic_cast<DspCircuit*>(OpenLF::getComponent("ClassicStructureTensor"));
@@ -302,7 +302,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   }
   
   p = GetParameter((int)P_IDX::Merge_Circuit);
-  errorCond(p, ""); RETURN_ON_ERROR
+  errorCond(p, "no merge circuit parameter!"); RETURN_ON_ERROR
   p->GetPointer(merge_circuit);
   if (!merge_circuit) {
     _default_merge_circuit = OpenLF::getComponent("OP_MergeDispByCoherence");
