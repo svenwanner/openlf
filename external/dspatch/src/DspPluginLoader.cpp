@@ -26,7 +26,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #ifdef _WIN32
 #include <windows.h>
-#include "dlfcn.h"
 #else
 #include <dlfcn.h>
 #endif
@@ -83,22 +82,11 @@ bool DspPluginLoader::IsLoaded() const
 
 //-------------------------------------------------------------------------------------------------
 
-std::map<std::string, DspParameter> DspPluginLoader::GetCreateParams() const
+DspComponent* DspPluginLoader::Create() const
 {
     if (_handle)
     {
-        return _getCreateParams();
-    }
-    return std::map<std::string, DspParameter>();
-}
-
-//-------------------------------------------------------------------------------------------------
-
-DspComponent* DspPluginLoader::Create(const std::map<std::string, DspParameter>& params) const
-{
-    if (_handle)
-    {
-        return _create(params);
+        return _create();
     }
     return NULL;
 }
@@ -115,6 +103,7 @@ void DspPluginLoader::_LoadPlugin(std::string const& pluginPath)
 {
     // open library
     #ifdef _WIN32
+	SetErrorMode(SEM_FAILCRITICALERRORS);
         _handle = LoadLibrary(pluginPath.c_str());
     #else
         _handle = dlopen(pluginPath.c_str(), RTLD_NOW);
@@ -125,15 +114,12 @@ void DspPluginLoader::_LoadPlugin(std::string const& pluginPath)
         {
     // load symbols
     #ifdef _WIN32
-            _getCreateParams = (GetCreateParams_t)GetProcAddress((HMODULE)_handle, "GetCreateParams");
             _create = (Create_t)GetProcAddress((HMODULE)_handle, "Create");
     #else
-            _getCreateParams = (GetCreateParams_t)dlsym(_handle, "GetCreateParams");
             _create = (Create_t)dlsym(_handle, "Create");
     #endif
 
-            printf("%p - %p\n",_getCreateParams, _create);
-            if (!_getCreateParams || !_create)
+            if (!_create)
             {
     #ifdef _WIN32
                 FreeLibrary((HMODULE)_handle);
@@ -143,9 +129,13 @@ void DspPluginLoader::_LoadPlugin(std::string const& pluginPath)
 
                 _handle = NULL;
             }
-        }
+		}
+#ifndef _WIN32
         else
           printf("loading failed: %s\n", dlerror());
+#else
+	SetErrorMode(0);
+#endif
 }
 
 //=================================================================================================

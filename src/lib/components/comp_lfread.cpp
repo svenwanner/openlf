@@ -61,8 +61,6 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   const std::string *filename = NULL;
   const std::string *dataset_name = NULL;
   
-  printf("tick reader!\n");
-  
   filename = GetParameter(0)->GetString();
   if (GetParameter(1))
     dataset_name = GetParameter(1)->GetString();
@@ -94,9 +92,7 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     else
       out->data = f.openDataset();
     
-    printf("lfread out data: %p store id %d\n", out->data, out->data->H5DataSet().getId());
     Subset3d *subset = new Subset3d(out->data, 0);
-    printf("%d\n", subset->EPICount()); 
     
     //TODO dataset name
     out->path = path();
@@ -106,24 +102,21 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 bool COMP_LFRead::ParameterUpdating_ (int i, DspParameter const &p)
 {
   //we only have two parameters
-  printf("a\n");
   if (i >= 2)
     return false;
   
-  printf("b\n");
   if (p.Type() != DspParameter::ParamType::String) {
     abort();
     return false;
   }
   
   SetParameter_(i, p);
-  printf("c\n");
   return true;
 }
 
 class Plugin_LFRead : public DspPlugin
 {  
-  virtual DspComponent* Create(const std::map<std::string, DspParameter>&) const
+  virtual DspComponent* Create() const
   {
     return new COMP_LFRead;
   }
@@ -132,6 +125,7 @@ class Plugin_LFRead : public DspPlugin
   {
   }
 };
+
 
 EXPORT_DSPPLUGIN(Plugin_LFRead);
 

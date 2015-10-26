@@ -82,7 +82,6 @@ const std::vector<DspComponent*> OpenLF::componentList()
     }
 
     DspComponent *comp;
-    std::map<std::string, DspParameter> emptymap;
     for(int i=0;i<comp_paths.size();i++) {
       printf("loading plugin %s\n", comp_paths[i].string().c_str());
       DspPluginLoader *loader = new DspPluginLoader(comp_paths[i].string());
@@ -91,7 +90,7 @@ const std::vector<DspComponent*> OpenLF::componentList()
         printf("error loading %s!\n", comp_paths[i].c_str());
         continue;
       }
-      comp = loader->Create(emptymap);
+      comp = loader->Create();
       if (!comp) {
         //FIXME error msg
         printf("error creating component!\n");

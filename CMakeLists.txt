@@ -9,6 +9,7 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   message("use gcc")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -O3 -fopenmp")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O3 -fPIC")
+   set(OPENLF_LIBRARIES dl)
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   # using Visual Studio C++
   message("use msvc")
@@ -16,11 +17,8 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   #set(CLIF_INCLUDE_DIR "D:/libs/include" CACHE PATH "Include path for external libraries")
   include_directories(${LIBS_INCLUDE_DIR})
   #set (EXTRA_LIBS ${EXTRA_LIBS} "D:/libs/include")  #see parameter list here https://cmake.org/pipermail/cmake/2006-July/010189.html
-  add_definitions(-DOPENLF_COMPILER_MSVC)
-  
-  add_subdirectory(external/dlfcn-wind32)
-  include_directories(external/dlfcn-wind32)
-  
+  add_definitions(-DOPENLF_COMPILER_MSVC)  
+  include_directories(external/dirent)
 endif()
 
 find_package(HDF5 REQUIRED CXX)
@@ -87,7 +85,7 @@ if (OPENLF_INTERNAL_CLIF)
 list(APPEND CMAKE_PREFIX_PATH force_clif/build/external/clif/clif/src/clif-buil)
 endif()
 find_package(clif REQUIRED)
-message("clif libs: ${CLIF_LIBRARIES}")
+message("clif libraries: ${CLIF_LIBRARIES}")
 
 ######################################################
 ## add clifview as external project (if required?)  ##
@@ -110,7 +108,7 @@ link_directories(${CLIF_LIBRARY_DIRS})
 #FIXME needed for boost under windows - whats the proper way? Boost_LIBRARY_DIR?
 link_directories($ENV{Path})
 
-set(OPENLF_LIBRARIES ${CLIF_LIBRARIES})
+list(APPEND OPENLF_LIBRARIES ${CLIF_LIBRARIES})
 
 add_subdirectory(external/gml_parser)
 include_directories(external/gml_parser)
@@ -131,7 +129,6 @@ add_subdirectory(src/lib/operators)
 add_subdirectory(src/lib/workflows)
 add_subdirectory(src/lib/components)
 
-## if this remains add_subdirectory
 add_subdirectory(src/lib)
 
 add_subdirectory(gui)

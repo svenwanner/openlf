@@ -3,5 +3,5 @@ target_link_libraries(openlf_components ${OPENLF_LIBRARIES})
 set(OPENLF_LIBRARIES ${OPENLF_LIBRARIES} openlf_components PARENT_SCOPE)
 
 add_library(lfread MODULE comp_lfread.cpp)
-target_link_libraries(lfread ${OPENLF_LIBRARIES} dl)
+target_link_libraries(lfread ${OPENLF_LIBRARIES})
 

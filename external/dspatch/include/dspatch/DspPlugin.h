@@ -65,8 +65,7 @@ class DLLEXPORT DspPlugin
 {
 public:
     virtual ~DspPlugin();
-    virtual std::map<std::string, DspParameter> GetCreateParams() const;
-    virtual DspComponent* Create(const std::map<std::string, DspParameter>& params) const = 0;
+    virtual DspComponent* Create() const = 0;
 };
 
 //=================================================================================================
@@ -74,17 +73,10 @@ public:
 #define EXPORT_DSPPLUGIN(Plugin)                                                \
 extern "C"                                                                      \
 {                                                                               \
-    DLLEXPORT std::map<std::string, DspParameter> GetCreateParams()             \
+    DLLEXPORT DspComponent* Create()                                            \
     {                                                                           \
         DspPlugin* plugin = new Plugin();                                       \
-        std::map<std::string, DspParameter> params = plugin->GetCreateParams(); \
-        delete plugin;                                                          \
-        return params;                                                          \
-    }                                                                           \
-    DLLEXPORT DspComponent* Create(std::map<std::string, DspParameter>& params) \
-    {                                                                           \
-        DspPlugin* plugin = new Plugin();                                       \
-        DspComponent* component = plugin->Create(params);                       \
+        DspComponent* component = plugin->Create();                             \
         delete plugin;                                                          \
         return component;                                                       \
     }                                                                           \
