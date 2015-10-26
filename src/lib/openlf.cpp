@@ -60,8 +60,11 @@ const std::vector<DspComponent*> OpenLF::componentList()
     }
 
     DspComponent *comp;
+    //first load component dll's
     for(int i=0;i<comp_paths.size();i++) {
-      printf("loading plugin %s\n", comp_paths[i].string().c_str());
+      printf("loading component from file %s\n", comp_paths[i].string().c_str());
+
+      
       DspPluginLoader *loader = new DspPluginLoader(comp_paths[i].string());
       if (!loader->IsLoaded()) {
         //FIXME error msg
@@ -72,6 +75,22 @@ const std::vector<DspComponent*> OpenLF::componentList()
       if (!comp) {
         //FIXME error msg
         printf("error creating component!\n");
+        continue;
+      }
+      _comp_list.push_back(comp);
+    }
+    
+    //then load circuits
+    //FIXME what if circuit requires itself some circuit to be loaded?
+    for(int i=0;i<comp_paths.size();i++) {
+      if (comp_paths[i].extension().string().compare(".gml"))
+        continue;
+      
+      printf("loading circuit file %s\n", comp_paths[i].string().c_str());
+      comp = DspCircuit::load(comp_paths[i].string(), &getComponent);
+      if (!comp) {
+        //FIXME error msg
+        printf("error loading circuit!\n");
         continue;
       }
       _comp_list.push_back(comp);

@@ -50,7 +50,7 @@ public:
 protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 private:  
-  DspComponent *_default_epi_circuit = NULL;
+  DspCircuit *_default_epi_circuit = NULL;
   DspComponent *_default_merge_circuit = NULL;
   
   template<typename T> void openlf_add_param(const char *name, T val, DspParameter::ParamType type, int idx);
@@ -83,15 +83,8 @@ COMP_Epi::COMP_Epi()
   AddInput_("config");
   AddOutput_("output");
   
-  _default_epi_circuit = OpenLF::getComponent("WKF_StructureTensor");
-  //FIXME!
-  //assert(_default_epi_circuit);
-  _default_merge_circuit = OpenLF::getComponent("OP_MergeDispByCoherence");
-  //FIXME!
-  //assert(_default_merge_circuit);
-  
-  openlf_add_param("epiCircuit", (DspCircuit*)&_default_epi_circuit, DPPT::Pointer, (int)P_IDX::Epi_Circuit);
-  openlf_add_param("mergeCircuit", (DspCircuit*)&_default_merge_circuit, DPPT::Pointer, (int)P_IDX::Merge_Circuit);
+  openlf_add_param("epiCircuit", (DspCircuit*)NULL, DPPT::Pointer, (int)P_IDX::Epi_Circuit);
+  openlf_add_param("mergeCircuit", (DspCircuit*)NULL, DPPT::Pointer, (int)P_IDX::Merge_Circuit);
   
   openlf_add_param("DispStart", DPPT::Float, (int)P_IDX::DispStart);
   openlf_add_param("DispStop", DPPT::Float, (int)P_IDX::DispStop);
@@ -295,15 +288,29 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
   const DspParameter *p;
   DspCircuit *epi_circuit;
-  DspCircuit *merge_circuit;
+  DspComponent *merge_circuit;
+
   
   p = GetParameter((int)P_IDX::Epi_Circuit);
   errorCond(p, ""); RETURN_ON_ERROR
   p->GetPointer(epi_circuit);
+  if (!epi_circuit) {
+    _default_epi_circuit = dynamic_cast<DspCircuit*>(OpenLF::getComponent("ClassicStructureTensor"));
+    errorCond(_default_epi_circuit, "could not load default epi circuit: \"ClassicStructureTensor\""); RETURN_ON_ERROR
+    SetParameter((int)P_IDX::Epi_Circuit, DspParameter(DPPT::Pointer, _default_epi_circuit));
+    epi_circuit = _default_epi_circuit;
+  }
   
   p = GetParameter((int)P_IDX::Merge_Circuit);
   errorCond(p, ""); RETURN_ON_ERROR
   p->GetPointer(merge_circuit);
+  if (!merge_circuit) {
+    _default_merge_circuit = OpenLF::getComponent("OP_MergeDispByCoherence");
+    errorCond(_default_merge_circuit, "could not load default merge circuit: \"OP_MergeDispByCoherence\""); RETURN_ON_ERROR
+    SetParameter((int)P_IDX::Merge_Circuit, DspParameter(DPPT::Pointer, _default_merge_circuit));
+    merge_circuit = _default_merge_circuit;
+  }
+  
   
   vector<FlexMAVSource<3>> comp_source(t_count);
   vector<FlexMAVSink<3>>   comp_sink(t_count);
@@ -329,11 +336,11 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   //FIXME delete!
   vector<DspCircuit*>  epi_circuits(t_count);
-  vector<DspCircuit*>  merge_circuits(t_count);
+  vector<DspComponent*>  merge_circuits(t_count);
   vector<DspCircuit>   outer_circuit(t_count);
   for(int i=0;i<t_count;i++) {
-    epi_circuits[i] = static_cast<DspCircuit*>(epi_circuit->clone());
-    merge_circuits[i] = static_cast<DspCircuit*>(merge_circuit->clone());
+    epi_circuits[i] = dynamic_cast<DspCircuit*>(epi_circuit->clone());
+    merge_circuits[i] = merge_circuit->clone();
     assert(epi_circuits[i]);
     assert(merge_circuits[i]);
     

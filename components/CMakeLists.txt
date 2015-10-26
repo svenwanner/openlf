@@ -1,0 +1,12 @@
+file(GLOB COMPONENTS "*.cpp")
+foreach(COMP ${COMPONENTS})
+  get_filename_component(COMPONENT_NAME ${COMP} NAME)
+  add_library(${COMPONENT_NAME} MODULE ${COMP})
+  target_link_libraries(${COMPONENT_NAME} ${OPENLF_LIBRARIES})
+endforeach()
+
+file(GLOB CIRCUITS "*.gml")
+foreach(CIRC ${CIRCUITS})
+  get_filename_component(CIRC_NAME ${CIRC} NAME)
+  configure_file(${CIRC} "${CIRC_NAME}" COPYONLY)
+endforeach()
