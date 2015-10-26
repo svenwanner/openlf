@@ -62,6 +62,9 @@ void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     dataset_name = GetParameter(1)->GetString();
   
   errorCond(filename); RETURN_ON_ERROR
+
+  if (configOnly())
+	return;
   
   H5::H5File f_out(filename->c_str(), H5F_ACC_TRUNC);
   Dataset out_set;

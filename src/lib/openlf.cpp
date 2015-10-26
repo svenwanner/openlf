@@ -1,10 +1,11 @@
 #include "openlf.hpp"
 
+#include "openlf/comp_mav.hpp"
+
 #include <boost/filesystem.hpp>
 #include "dirent.h"
 
 #include "openlf/types.hpp"
-#include "openlf/comp_mav.hpp"
 
 #include "dspatch/DspComponent.h"
 #include "dspatch/DspCircuit.h"
