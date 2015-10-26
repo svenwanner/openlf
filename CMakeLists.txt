@@ -131,7 +131,7 @@ add_subdirectory(src/lib/operators)
 add_subdirectory(src/lib/workflows)
 add_subdirectory(src/lib/components)
 
-## if this remains dd_subdirectory
+## if this remains add_subdirectory
 include_directories(src/lib)
 
 add_subdirectory(gui)
