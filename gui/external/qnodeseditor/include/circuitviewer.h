@@ -109,6 +109,7 @@ private slots:
 	void on_action_Pop_Out_triggered();
 	void on_action_Pop_In_triggered();
 	void tick();
+	void configure();
 
 
 private:

@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <QGraphicsScene>
 #include <QFontMetrics>
 #include <QPainter>
+#include <QLabel>
 
 #include <assert.h>
 
@@ -75,11 +76,10 @@ QNEBlock::QNEBlock(DspComponent *comp, QGraphicsScene *scene, QGraphicsItem *par
 
 QVariant QNEBlock::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    if (component && change == QGraphicsItem::ItemPositionHasChanged) {
-      component->x = pos().x();
-      component->y = pos().y();
-      printf("pos %f %f\n", component->x,component->y);
-    }
+  if (component && change == QGraphicsItem::ItemPositionHasChanged) {
+    component->x = pos().x();
+    component->y = pos().y();
+  }
   return value;
 }
 
@@ -214,57 +214,6 @@ void QNEBlock::addOutputPorts(const QStringList &names)
 		addOutputPort(n);
 }
 
-void QNEBlock::save(QDataStream &ds)
-{
-	ds << pos();
-
-	int count(0);
-
-    foreach(QGraphicsItem *port_, childItems())
-	{
-		if (port_->type() != QNEPort::Type)
-			continue;
-
-		count++;
-	}
-
-	ds << count;
-
-    foreach(QGraphicsItem *port_, childItems())
-	{
-		if (port_->type() != QNEPort::Type)
-			continue;
-
-		QNEPort *port = (QNEPort*) port_;
-		ds << (quint64) port;
-		ds << port->portName();
-		ds << port->isOutput();
-		ds << port->portFlags();
-	}
-}
-
-void QNEBlock::load(QDataStream &ds, QMap<quint64, QNEPort*> &portMap)
-{
-	QPointF p;
-	ds >> p;
-	setPos(p);
-	int count;
-	ds >> count;
-	for (int i = 0; i < count; i++)
-	{
-		QString name;
-		bool output;
-		int flags;
-		quint64 ptr;
-
-		ds >> ptr;
-		ds >> name;
-		ds >> output;
-		ds >> flags;
-		portMap[ptr] = addPort(name, output, flags, ptr);
-	}
-}
-
 #include <QStyleOptionGraphicsItem>
 
 void QNEBlock::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -335,6 +284,9 @@ void QNEBlock::checkError()
   if (!component)
     return;
   
-  //if (component->hasError() && !component->_error_label)
+  if (component->hasError() && !_error_label)
+    _error_label = new QGraphicsTextItem("error", this);
+  else if (!component->hasError() && _error_label)
+    delete _error_label;
 }
 

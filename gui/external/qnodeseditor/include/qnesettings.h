@@ -38,6 +38,9 @@ public:
   void attach(DspComponent *comp, std::vector<DspCircuit*> &circuits);
   void attach(QNEBlock *block);
   
+signals:
+  void settingChanged();
+  
 protected:
   
 private:

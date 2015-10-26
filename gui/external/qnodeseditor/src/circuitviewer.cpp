@@ -425,6 +425,19 @@ void Circuit_Viewer::on_action_Pop_In_triggered()
 	}
 }
 
+void Circuit_Viewer::configure()
+{
+  _circuit->configure();
+  QList<QGraphicsItem*> items = _scene->items();
+  
+  foreach(QGraphicsItem *item, items)
+  { 
+    if (item->type() == QNEBlock::Type)
+      (dynamic_cast<QNEBlock*>(item))->checkError();
+  }
+  
+}
+
 DspCircuit *Circuit_Viewer::circuit()
 {
   return _circuit;

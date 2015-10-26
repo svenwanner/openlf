@@ -68,8 +68,6 @@ public:
 	~QNEMainWindow();
 
 private slots:
-	void saveFile();
-	void loadFile();
 	void new_circuit_viewer();
 	void onApplicationFocusChanged();
 	void createDockWindows();

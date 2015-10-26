@@ -53,30 +53,6 @@ SLOTS
 
 */
 
-void QNEMainWindow::saveFile()
-{
-	QString fname = QFileDialog::getSaveFileName();
-	if (fname.isEmpty())
-		return;
-
-	QFile f(fname);
-	f.open(QFile::WriteOnly);
-	QDataStream ds(&f);
-	nodesEditor->save(ds);
-}
-
-void QNEMainWindow::loadFile()
-{
-	QString fname = QFileDialog::getOpenFileName();
-	if (fname.isEmpty())
-		return;
-
-	QFile f(fname);
-	f.open(QFile::ReadOnly);
-	QDataStream ds(&f);
-	nodesEditor->load(ds);
-}
-
 void QNEMainWindow::new_circuit_viewer()
 {
 	_circuitViewer = new Circuit_Viewer(mdiArea, this);
@@ -114,6 +90,8 @@ void QNEMainWindow::addComponent(QListWidgetItem *it)
 void QNEMainWindow::showCompSettings(DspComponent *comp)
 {
   _settings->attach(comp, _circuits);
+  //FIXME is this the right circuit viewer?
+  connect(_settings, SIGNAL(settingChanged()), _circuitViewer, SLOT(configure()));
 }
 
 void QNEMainWindow::showCompSettings(QNEBlock *block)

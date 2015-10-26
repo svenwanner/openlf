@@ -21,9 +21,6 @@ void QNESettings::attach(DspComponent *comp, std::vector<DspCircuit*> &circuits)
       
   _component = comp;
   
-  DspCircuit *c = comp->GetParentCircuit();
-  c->configure();
-  
   for(int i=0;i<_component->GetParameterCount();i++) {
     const DspParameter *param = _component->GetParameter(i);
     QHBoxLayout *hbox = new QHBoxLayout(_layout_w);
@@ -154,8 +151,7 @@ void QNESettings::textSettingChanged(QString text)
   
   comp->SetParameter(idx, DspParameter(DPPT::String, text.toStdString()));
   
-  DspCircuit *c = comp->GetParentCircuit();
-  c->configure();
+  emit settingChanged();
 }
 
 void QNESettings::floatSettingChanged(double val)
@@ -165,8 +161,7 @@ void QNESettings::floatSettingChanged(double val)
   
   comp->SetParameter(idx, DspParameter(DPPT::Float, (float)val));
   
-  DspCircuit *c = comp->GetParentCircuit();
-  c->configure();
+  emit settingChanged();
 }
 
 
@@ -177,10 +172,7 @@ void QNESettings::intSettingChanged(int val)
   
   comp->SetParameter(idx, DspParameter(DPPT::Int, val));
   
-  printf("set setting %d of %p to %d\n", idx, comp, val);
-  
-  DspCircuit *c = comp->GetParentCircuit();
-  c->configure();
+  emit settingChanged();
 }
 
 void QNESettings::selFileClicked()
@@ -209,7 +201,7 @@ void QNESettings::portCountChanged(int val)
       sprintf(buf, "output_%d", i);
       block->circuit->AddOutput(buf);
       block->addInputPort(buf);
-    }    
+    }
 }
 
 void QNESettings::circuitSelected(int idx)
@@ -228,6 +220,5 @@ void QNESettings::circuitSelected(int idx)
 
   assert(succ);
   
-  DspCircuit *c = comp->GetParentCircuit();
-  c->configure();  
+  emit settingChanged();
 }
