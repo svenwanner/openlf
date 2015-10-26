@@ -22,13 +22,15 @@
 
 #include <vigra/convolution.hxx>
 #include <vigra/multi_convolution.hxx>
-#include "operators.hpp"
 
-#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/imgproc/imgproc.hpp>
+
+#include "openlf/operator_macro.hpp"
+
 
 using namespace cv;
 
-#define OPENLF_OP_CONSTRUCT_PARAMS \
+#define OPENLF_OP_CONSTRUCT_PARAMS
 
 OPENLF_OP_START_T(OP_Scharr, 1, 2, 3, 3, float)
         
@@ -60,3 +62,5 @@ OPENLF_OP_START_T(OP_Scharr, 1, 2, 3, 3, float)
   }
     
 OPENLF_OP_END_T(OP_Scharr, 1, 2, 3, 3, BaseType::FLOAT)
+
+#undef OPENLF_OP_CONSTRUCT_PARAMS

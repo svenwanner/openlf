@@ -23,10 +23,10 @@
 #include "vigra/convolution.hxx"
 #include "vigra/multi_math.hxx"
 #include <vigra/matrix.hxx>
-#include "operators.hpp"
+#include "openlf/operator_macro.hpp"
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
-    AddParameter_("copy", DspParameter(DspParameter::ParamType::Bool, true)); \
+    AddParameter_("copy", DspParameter(DspParameter::ParamType::Bool, true));
 
 OPENLF_OP_START(OP_MergeDispByCoherence, 2, 2, 3, 3)
 
@@ -53,3 +53,5 @@ OPENLF_OP_START(OP_MergeDispByCoherence, 2, 2, 3, 3)
   }
 
 OPENLF_OP_END(OP_MergeDispByCoherence, 2, 2, 3, 3)
+
+#undef OPENLF_OP_CONSTRUCT_PARAMS

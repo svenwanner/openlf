@@ -82,6 +82,14 @@ extern "C"                                                                      
     }                                                                           \
 }
 
+#define EXPORT_DSPCOMPONENT(COMPONENT)                                          \
+class Plugin : public DspPlugin                                                 \
+{                                                                               \
+  virtual DspComponent* Create() const { return new COMPONENT; }                \
+  virtual ~Plugin() {}                                                          \
+};                                                                              \
+EXPORT_DSPPLUGIN(Plugin);
+
 //=================================================================================================
 
 #endif  // DSPPLUGIN_H

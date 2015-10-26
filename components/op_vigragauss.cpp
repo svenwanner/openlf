@@ -21,14 +21,13 @@
 */
 #include <vigra/multi_convolution.hxx>
 #include <vigra/convolution.hxx>
-#include "operators.hpp"
+#include "openlf/operator_macro.hpp"
 
 #include "opencv2/imgproc/imgproc.hpp"
 
-
 #define OPENLF_OP_CONSTRUCT_PARAMS \
     AddParameter_("x_blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
-    AddParameter_("y_blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
+    AddParameter_("y_blur", DspParameter(DspParameter::ParamType::Float, 0.0f));
 
 OPENLF_OP_START(OP_VigraGauss, 1, 1, 3, 3)
 
@@ -49,3 +48,5 @@ OPENLF_OP_START(OP_VigraGauss, 1, 1, 3, 3)
     }
 
 OPENLF_OP_END(OP_VigraGauss, 1, 1, 3, 3)
+
+#undef OPENLF_OP_CONSTRUCT_PARAMS

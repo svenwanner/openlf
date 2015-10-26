@@ -23,16 +23,24 @@
 #include "clif/clif_vigra.hpp"
 #include "clif/subset3d.hpp"
 
-#include "comp_lfwrite.hpp"
-#include "openlf.hpp"
-
 #include "openlf/types.hpp"
+
+#include "dspatch/DspPlugin.h"
 
 using namespace clif;
 using namespace vigra;
+using namespace openlf;
 
-namespace openlf { namespace components {
-  
+class COMP_LFWrite : public DspComponent {
+public:
+  COMP_LFWrite();
+  DSPCOMPONENT_TRIVIAL_CLONE(COMP_LFWrite);
+protected:
+  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+private:
+  virtual bool ParameterUpdating_ (int i, DspParameter const &p);
+};
+
 COMP_LFWrite::COMP_LFWrite()
 {
   setTypeName_("writeCLIF");
@@ -74,4 +82,4 @@ bool COMP_LFWrite::ParameterUpdating_ (int i, DspParameter const &p)
   return true;
 }
 
-}} //namespace openlf::components
+EXPORT_DSPCOMPONENT(COMP_LFWrite)

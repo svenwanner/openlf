@@ -19,49 +19,25 @@
 * Author Sven Wanner, Maximilian Diebold, Hendrik Siedelmann 
 *
 */
+//#include <vigra/flatmorphology.hxx>
+//#include "openlf/operator_macro.hpp"
 
-#include <vigra/convolution.hxx>
+//#define OPENLF_OP_CONSTRUCT_PARAMS \
+//    AddParameter_("radius", DspParameter(DspParameter::ParamType::Int, 0)); \
 
-#include "operators.hpp"
+//OPENLF_OP_START(OP_DiscErosion, 1, 1, 3, 3)
 
-#ifdef OPENLF_COMPILER_MSVC
-#define __restrict__
-#endif
+// TODO Vigra discErosion() is only compatible with integer data ranging from 0..255. So this is incompatible with the FlexMAV, which supports other data types as well.
 
-#define OPENLF_OP_CONSTRUCT_PARAMS
 
-OPENLF_OP_START(OP_Tensor2x2, 2, 3, 3, 3)
-        
-  /**out[0] = *in[0];   // x*x
-  *out[0] *= *out[0];
-  *out[1] = *in[0];   // x*y
-  *out[1] *= *in[1];
-  *out[2] = *in[1];   // y*y
-  *out[2] *= *out[2];*/
+//  int radius = *op->GetParameter(0)->GetInt();
+//    for (int i=0; i < in[0]->shape()[2]; ++i){
+//        vigra::MultiArrayView<2, T> channel_in = in[0]->bindAt(2, i);
+//        vigra::MultiArrayView<2, T> channel_out = out[0]->bindAt(2, i);
+//        vigra::discErosion(channel_in,channel_out, radius);
+//    }
 
-  //assume continuous array
-  __restrict__ T *inx, *iny;
-  __restrict__ T *outxx, *outxy, *outyy;
-  
-  assert(in[0]->isUnstrided());
-  assert(in[1]->isUnstrided());
-  assert(out[0]->isUnstrided());
-  assert(out[1]->isUnstrided());
-  assert(out[2]->isUnstrided());
+//OPENLF_OP_END(OP_DiscErosion, 1, 1, 3, 3)
 
-  inx = in[0]->data();
-  iny = in[1]->data();
-  outxx = out[0]->data();
-  outxy = out[1]->data();
-  outyy = out[2]->data();
-
-  int total = in[0]->size();
-
-  for (int i=0;i<total;++i) {
-    outxx[i] = inx[i]*inx[i];
-    outxy[i] = inx[i]*iny[i];
-    outyy[i] = iny[i]*iny[i];
-  }
-    
-OPENLF_OP_END(OP_Tensor2x2, 2, 3, 3, 3)
-
+//
+//#undef OPENLF_OP_CONSTRUCT_PARAMS

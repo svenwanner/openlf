@@ -7,8 +7,8 @@
 #include "clif/clif.hpp"
 #include "clif/clif_vigra.hpp"
 #include "clif/flexmav.hpp"
-#include "comp_mav.hpp"
-#include "operators.hpp"
+
+#include "openlf/comp_mav.hpp"
 
 #include "dspatch/DspCircuit.h"
 
@@ -42,7 +42,7 @@ int main(const int argc, const char *argv[])
   
   FlexMAVSource<3> comp_source;
   FlexMAVSink  <3> comp_sink;
-  OP_GaussianSharpening comp_gauss;
+  DspComponent *comp_gauss = OpenLF::getComponent("OP_GaussianSharpening");
   
   DspCircuit outer_circuit;
   outer_circuit.AddComponent(comp_source, "source");
@@ -50,8 +50,8 @@ int main(const int argc, const char *argv[])
   outer_circuit.AddComponent(comp_gauss, "sharpen");
 
   //comp_gauss.SetParameter(0,DspParameter(DspParameter::ParamType::Float, 0.0f));
-  comp_gauss.SetParameter(0, DspParameter(DspParameter::ParamType::Float, 7.0f));
-  comp_gauss.SetParameter(1, DspParameter(DspParameter::ParamType::Float, 10.0f));
+  comp_gauss->SetParameter(0, DspParameter(DspParameter::ParamType::Float, 7.0f));
+  comp_gauss->SetParameter(1, DspParameter(DspParameter::ParamType::Float, 10.0f));
 
   //outer_circuit.ConnectOutToIn(comp_source, 0, comp_sink, 0);
   outer_circuit.ConnectOutToIn(comp_source, 0, comp_gauss, 0);

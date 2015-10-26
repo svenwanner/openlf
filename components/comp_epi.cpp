@@ -20,13 +20,16 @@
 *
 */
 #include <vigra/impex.hxx>
-#include "clif/clif_vigra.hpp"
-#include "comp_epi.hpp"
-#include "operators.hpp"
 
+#include "clif/clif_vigra.hpp"
 #include "clif/subset3d.hpp"
 
+#include "dspatch/DspComponent.h"
+#include "dspatch/DspPlugin.h"
+
+#include "openlf.hpp"
 #include "openlf/types.hpp"
+#include "openlf/comp_mav.hpp"
 
 #include <omp.h>
 
@@ -36,20 +39,24 @@
 using namespace clif;
 using namespace vigra;
 using namespace std;
+using namespace openlf;
 
 #define DPPT DspParameter::ParamType
-
-template<typename T> class save_flexmav3 {
+  
+class COMP_Epi : public DspComponent {
 public:
-void operator()(FlexMAV<3> *img, const char *name)
-{    
-  MultiArrayView<3,T> *i = img->get<T>();
-  MultiArrayView<2,T> channel = i->bindAt(2, 1);
-  exportImage(channel, ImageExportInfo(name));
-}
+  COMP_Epi();
+  DSPCOMPONENT_TRIVIAL_CLONE(COMP_Epi);
+protected:
+  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+private:  
+  DspComponent *_default_epi_circuit = NULL;
+  DspComponent *_default_merge_circuit = NULL;
+  
+  template<typename T> void openlf_add_param(const char *name, T val, DspParameter::ParamType type, int idx);
+  void openlf_add_param(const char *name, DspParameter::ParamType type, int idx);
+  bool ParameterUpdating_(int index, const DspParameter& param);
 };
-
-namespace openlf { namespace components {
   
 namespace {
   enum class P_IDX : int {Epi_Circuit,Merge_Circuit,DispStart,DispStop,DispStep,StartLine,StopLine};
@@ -76,6 +83,13 @@ COMP_Epi::COMP_Epi()
   AddInput_("config");
   AddOutput_("output");
   
+  _default_epi_circuit = OpenLF::getComponent("WKF_StructureTensor");
+  //FIXME!
+  //assert(_default_epi_circuit);
+  _default_merge_circuit = OpenLF::getComponent("OP_MergeDispByCoherence");
+  //FIXME!
+  //assert(_default_merge_circuit);
+  
   openlf_add_param("epiCircuit", (DspCircuit*)&_default_epi_circuit, DPPT::Pointer, (int)P_IDX::Epi_Circuit);
   openlf_add_param("mergeCircuit", (DspCircuit*)&_default_merge_circuit, DPPT::Pointer, (int)P_IDX::Merge_Circuit);
   
@@ -86,14 +100,6 @@ COMP_Epi::COMP_Epi()
   openlf_add_param("StartLine", DPPT::Int, (int)P_IDX::StartLine);
   openlf_add_param("StopLine", DPPT::Int, (int)P_IDX::StopLine);
 }
-
-template<typename T> class save_flexmav {
-public:
-void operator()(FlexMAV<2> *img, const char *name)
-{    
-  exportImage(*img->get<T>(), ImageExportInfo(name));
-}
-};
 
 template<typename T> class subarray_copy {
 public:
@@ -407,4 +413,4 @@ bool COMP_Epi::ParameterUpdating_(int index, const DspParameter& param)
   return true;      
 }
 
-}} //namespace openlf::components
+EXPORT_DSPCOMPONENT(COMP_Epi)

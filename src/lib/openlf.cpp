@@ -1,46 +1,24 @@
 #include "openlf.hpp"
 
-#include "components/comp_mav.hpp"
+#include <boost/filesystem.hpp>
+#include "dirent.h"
 
 #include "openlf/types.hpp"
+#include "openlf/comp_mav.hpp"
+
 #include "dspatch/DspComponent.h"
 #include "dspatch/DspCircuit.h"
 #include "dspatch/DspPluginLoader.h"
 
-#include "operators/operators.hpp"
-#include "operators/op_loadimage.hpp"
-#include "components/comp_epi.hpp"
-#include "components/comp_lfwrite.hpp"
-#include "components/comp_dispwrite.hpp"
 
-#include <dirent.h>
 
 const std::vector<DspComponent*> OpenLF::componentList()
 {
   static std::vector<DspComponent*> _comp_list;
   
   if (!_comp_list.size()) {
-    std::vector<path> plugin_paths;
-    std::vector<path> comp_paths;
-    
-    
-    _comp_list.push_back(new openlf::components::COMP_Epi);
-    //_comp_list.push_back(new openlf::components::COMP_LFRead);
-    _comp_list.push_back(new openlf::components::COMP_LFWrite);
-    //_comp_list.push_back(loader.Create(emptymap));
-    _comp_list.push_back(new openlf::components::COMP_DispWrite);
-    
-    _comp_list.push_back(new openlf::components::OP_VigraGauss);
-    _comp_list.push_back(new openlf::components::OP_VigraGradientMagnitude);
-    _comp_list.push_back(new openlf::components::OP_ScharrX);
-    _comp_list.push_back(new openlf::components::OP_ScharrY);
-    _comp_list.push_back(new openlf::components::OP_Scharr);
-    _comp_list.push_back(new openlf::components::OP_Tensor2x2);
-    _comp_list.push_back(new openlf::components::OP_AverageChannels);
-    _comp_list.push_back(new openlf::components::OP_Tensor2Orientation);
-    _comp_list.push_back(new openlf::components::OP_SaveImage);
-    //_comp_list.push_back(new openlf::components::OP_LoadImage);
-    _comp_list.push_back(new openlf::components::OP_MergeDispByCoherence);
+    std::vector<boost::filesystem::path> plugin_paths;
+    std::vector<boost::filesystem::path> comp_paths;
 
     const char *c_path = getenv("OPENLF_COMPONENT_PATH");
     printf("plugin path: %s\n", c_path);

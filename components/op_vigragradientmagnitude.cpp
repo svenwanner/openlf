@@ -20,66 +20,16 @@
 *
 */
 
-#ifndef _OPENLF_COMP_MAV_H
-#define _OPENLF_COMP_MAV_H
-
-#include "clif/flexmav.hpp"
-#include "dspatch/DspComponent.h"
-
-#include "clif/dataset.hpp"
-
-namespace openlf {
-
-namespace components {
-  
-
-
-template<uint DIM> class FlexMAVSource : public DspComponent {
-public:
-  FlexMAVSource()
-  {
-    AddOutput_("output");
-  }
-  void set(clif::FlexMAV<DIM> *mav)
-  {
-    _mav = mav;
-  }
-
-protected:
-  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
-  {
-    bool stat;
-    assert(_mav);
-    stat = outputs.SetValue(0, _mav); 
-    assert(stat);
-  }
-  
-private:
-  clif::FlexMAV<DIM> *_mav = NULL;
-};
-
-template<uint DIM> class FlexMAVSink : public DspComponent {
-public:
-  FlexMAVSink()
-  {
-    AddInput_("input");
-  }
-  clif::FlexMAV<DIM>* get()
-  {
-    return _mav;
-  }
-
-protected:
-  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
-  {
-    inputs.GetValue(0, _mav);
-    assert(_mav);
-  }
-  
-private:
-  clif::FlexMAV<DIM> *_mav = NULL;
-};
-
-}} //namespace openlf::components
-
-#endif
+// #include <vigra/convolution.hxx>
+// #include "openlf/operator_macro.hpp"
+// 
+// #define OPENLF_OP_SINGLE2D_CONSTRUCT_PARAMS \
+//   AddParameter_("scale", DspParameter(DspParameter::ParamType::Float, 0.0f));
+// 
+// OPENLF_OP_SINGLE2D_START(OP_VigraGradientMagnitude)
+//     
+//     //gaussianGradientMagnitude(*in, *out, *op->GetParameter(0)->GetFloat());
+//     
+// OPENLF_OP_SINGLE2D_END(OP_VigraGradientMagnitude)
+// 
+// #undef OPENLF_OP_SINGLE2D_CONSTRUCT_PARAMS

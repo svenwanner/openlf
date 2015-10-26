@@ -1,15 +1,15 @@
 #include <vigra/imageinfo.hxx>
 #include <vigra/impex.hxx>
 
-#include "openlf.hpp"
 
 #include "clif/clif.hpp"
 #include "clif/clif_vigra.hpp"
 #include "clif/flexmav.hpp"
-#include "comp_mav.hpp"
-#include "wkf_structuretensor.hpp"
 
-#include "clif/clif.hpp"
+#include "openlf.hpp"
+#include "openlf/comp_mav.hpp"
+
+#include "dspatch/DspCircuit.h"
 
 #include <H5Cpp.h>
 #include <H5File.h>

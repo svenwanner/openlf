@@ -20,17 +20,36 @@
 *
 */
 
-#include <vigra/convolution.hxx>
+#include "vigra/convolution.hxx"
+#include "vigra/multi_convolution.hxx"
 
-#include "operators.hpp"
+#include "openlf/operator_macro.hpp"
 
-#define OPENLF_OP_CONSTRUCT_PARAMS \
-  AddParameter_("x_blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
-  AddParameter_("y_blur", DspParameter(DspParameter::ParamType::Float, 0.0f)); \
+#define OPENLF_OP_CONSTRUCT_PARAMS
 
-OPENLF_OP_START(OP_Test, 1, 1, 3, 3)
+OPENLF_OP_START_T(OP_Normalize, 1, 1, 3, 3, float)
 
-    *out[0] = *in[0];
-    //gaussianSmoothing(*in[0], *out[0], *op->GetParameter(0)->GetFloat(), *op->GetParameter(1)->GetFloat());
+         
+    float min = std::numeric_limits<float>::max();
+    float max = std::numeric_limits<float>::lowest();
+    for (int i=0; i<in[0]->size(); ++i) {
+        if (max < in[0]->data()[i])
+            max = in[0]->data()[i];
+        if (min > in[0]->data()[i])
+            min = in[0]->data()[i];
+    }
+    float tmp = 0;
+    for (int i=0; i < in[0]->size(); ++i) {
+        tmp = (float)in[0]->data()[i];
+        //std::cout << "map " << tmp << " to ";
+        tmp -= min;
+        tmp /= (max-min);
+        out[0]->data()[i] = tmp;
+        //std::cout << out_im.data()[i] << std::endl;
+    }
+    //std::cout << "mapping range from (" << min << "," << max << ") to (0,1)" << std::endl;
     
-OPENLF_OP_END(OP_Test, 1, 1, 3, 3)
+    
+OPENLF_OP_END_T(OP_Normalize, 1, 1, 3, 3, BaseType::FLOAT)
+
+#undef OPENLF_OP_CONSTRUCT_PARAMS

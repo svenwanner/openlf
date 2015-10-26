@@ -23,10 +23,9 @@
 #ifndef _OPENLF_OP_MACRO_H
 #define _OPENLF_OP_MACRO_H
 
-#ifdef OPENLF_OP_CONSTRUCT_PARAMS
-#undef OPENLF_OP_CONSTRUCT_PARAMS
-#endif
-#define OPENLF_OP_CONSTRUCT_PARAMS
+#include "clif/flexmav.hpp"
+#include "dspatch/DspPlugin.h"
+#include "dspatch/DspComponent.h"
 
 #define OPENLF_OP_SINGLE2D_CLASS_HEADER(NAME) \
     class NAME : public DspComponent { \
@@ -42,7 +41,6 @@
     
 
 #define OPENLF_OP_SINGLE2D_START(NAME) \
-  namespace openlf { namespace components { \
 \
   using namespace vigra;\
   using namespace clif;\
@@ -91,7 +89,7 @@ bool NAME::ParameterUpdating_ (int i, DspParameter const &p) \
   SetParameter_(i, p); \
   return true;\
 }\
-}}
+EXPORT_DSPCOMPONENT(NAME)
 
 #define OPENLF_OP_CLASS_HEADER(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM) \
 class NAME : public DspComponent { \
@@ -106,7 +104,16 @@ class NAME : public DspComponent { \
 };
 
 #define OPENLF_OP_START(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM) \
-  namespace openlf { namespace components { \
+class NAME : public DspComponent { \
+    public: \
+        NAME(); \
+        DSPCOMPONENT_TRIVIAL_CLONE(NAME); \
+    protected: \
+      virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs); \
+      virtual bool ParameterUpdating_ (int i, DspParameter const &p); \
+    private: \
+      clif::FlexMAV<OUTDIM> _output_image[OUTCOUNT]; \
+}; \
 \
   using namespace vigra;\
   using namespace clif;\
@@ -175,11 +182,20 @@ bool NAME::ParameterUpdating_ (int i, DspParameter const &p)\
 {\
   SetParameter_(i, p);\
   return true;\
-}\
-}}
+} \
+EXPORT_DSPCOMPONENT(NAME)
 
 #define OPENLF_OP_START_T(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM,OUTCTYPE) \
-  namespace openlf { namespace components { \
+class NAME : public DspComponent { \
+    public: \
+        NAME(); \
+        DSPCOMPONENT_TRIVIAL_CLONE(NAME); \
+    protected: \
+      virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs); \
+      virtual bool ParameterUpdating_ (int i, DspParameter const &p); \
+    private: \
+      clif::FlexMAV<OUTDIM> _output_image[OUTCOUNT]; \
+}; \
 \
   using namespace vigra;\
   using namespace clif;\
@@ -248,8 +264,8 @@ bool NAME::ParameterUpdating_ (int i, DspParameter const &p) \
 { \
   SetParameter_(i, p); \
   return true;\
-}\
-}}
+} \
+EXPORT_DSPCOMPONENT(NAME)
 
 
 #endif

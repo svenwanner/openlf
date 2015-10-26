@@ -20,33 +20,21 @@
 *
 */
 
-#include "vigra/convolution.hxx"
-#include "vigra/multi_convolution.hxx"
-#include "operators.hpp"
+#include <vigra/separableconvolution.hxx>
+#include <vigra/multi_convolution.hxx>
+#include "openlf/operator_macro.hpp"
 
-#define OPENLF_OP_CONSTRUCT_PARAMS \
+#define OPENLF_OP_CONSTRUCT_PARAMS
 
-OPENLF_OP_START_T(OP_Normalize, 1, 1, 3, 3, float)
-
-         
-    float min = std::numeric_limits<float>::max();
-    float max = std::numeric_limits<float>::lowest();
-    for (int i=0; i<in[0]->size(); ++i) {
-        if (max < in[0]->data()[i])
-            max = in[0]->data()[i];
-        if (min > in[0]->data()[i])
-            min = in[0]->data()[i];
-    }
-    float tmp = 0;
-    for (int i=0; i < in[0]->size(); ++i) {
-        tmp = (float)in[0]->data()[i];
-        //std::cout << "map " << tmp << " to ";
-        tmp -= min;
-        tmp /= (max-min);
-        out[0]->data()[i] = tmp;
-        //std::cout << out_im.data()[i] << std::endl;
-    }
-    //std::cout << "mapping range from (" << min << "," << max << ") to (0,1)" << std::endl;
+OPENLF_OP_START_T(OP_ScharrX, 1, 1, 3, 3, float)
+        
+    Kernel1D<float> scharr;
+    scharr.initExplicitly(-1,1) = -1.0/2.0, 0.0, 1.0/2.0;
+    scharr.setBorderTreatment(BORDER_TREATMENT_REFLECT);
+    convolveMultiArrayOneDimension(*in[0], *out[0], 1, scharr);
+    scharr.initExplicitly(-1,1) = 3.0/16.0, 10.0/16.0, 3.0/16.0;
+    convolveMultiArrayOneDimension(*out[0], *out[0], 0, scharr);
     
-    
-OPENLF_OP_END_T(OP_Normalize, 1, 1, 3, 3, BaseType::FLOAT)
+OPENLF_OP_END_T(OP_ScharrX, 1, 1, 3, 3, BaseType::FLOAT)
+
+#undef OPENLF_OP_CONSTRUCT_PARAMS

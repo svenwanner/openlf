@@ -19,23 +19,17 @@
 * Author Sven Wanner, Maximilian Diebold, Hendrik Siedelmann 
 *
 */
-#include <vigra/flatmorphology.hxx>
-#include "operators.hpp"
 
+#include <vigra/convolution.hxx>
 
+#include "openlf/operator_macro.hpp"
 
-#define OPENLF_OP_CONSTRUCT_PARAMS \
-    AddParameter_("radius", DspParameter(DspParameter::ParamType::Int, 0)); \
+#define OPENLF_OP_CONSTRUCT_PARAMS
 
-OPENLF_OP_START(OP_DiscDilation, 1, 1, 3, 3)
+OPENLF_OP_START(OP_Passthrough, 1, 1, 3, 3)
 
-// TODO Vigra discDilation() is only compatible with integer data ranging from 0..255. So this is incompatible with the FlexMAV, which supports other data types as well.
+    *out[0] = *in[0];
+    
+OPENLF_OP_END(OP_Passthrough, 1, 1, 3, 3)
 
-//  int radius = *op->GetParameter(0)->GetInt();
-//    for (int i=0; i < in[0]->shape()[2]; ++i){
-//        vigra::MultiArrayView<2, T> channel_in = in[0]->bindAt(2, i);
-//        vigra::MultiArrayView<2, T> channel_out = out[0]->bindAt(2, i);
-//        vigra::discDilation(channel_in,channel_out, radius);
-//    }
-
-OPENLF_OP_END(OP_DiscDilation, 1, 1, 3, 3)
+#undef OPENLF_OP_CONSTRUCT_PARAMS

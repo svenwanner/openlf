@@ -20,17 +20,20 @@
 *
 */
 
-#include "operators.hpp"
+#include "clif/clif_vigra.hpp"
+#include "clif/flexmav.hpp"
+
+#include "openlf/operator_macro.hpp"
 
 #define INCOUNT 1
 #define OUTCOUNT 1
 #define INDIM 3
 #define OUTDIM 3
 
-namespace openlf { namespace components { 
-  
-using namespace vigra;
 using namespace clif;
+using namespace vigra;
+
+OPENLF_OP_CLASS_HEADER(OP_AverageChannels, 1, 1, 3, 3)
 
 namespace { 
   
@@ -110,6 +113,4 @@ bool OP_AverageChannels::ParameterUpdating_ (int i, DspParameter const &p)
   return true;
 }
 
-}} // namespace openlf::components
-  
-  
+EXPORT_DSPCOMPONENT(OP_AverageChannels)

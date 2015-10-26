@@ -20,20 +20,49 @@
 *
 */
 
-#include <vigra/separableconvolution.hxx>
-#include <vigra/multi_convolution.hxx>
-#include "operators.hpp"
+#include <vigra/convolution.hxx>
 
-#define OPENLF_OP_CONSTRUCT_PARAMS \
+#include "openlf/operator_macro.hpp"
 
-OPENLF_OP_START_T(OP_ScharrX, 1, 1, 3, 3, float)
+#ifdef OPENLF_COMPILER_MSVC
+#define __restrict__
+#endif
+
+#define OPENLF_OP_CONSTRUCT_PARAMS
+
+OPENLF_OP_START(OP_Tensor2x2, 2, 3, 3, 3)
         
-    Kernel1D<float> scharr;
-    scharr.initExplicitly(-1,1) = -1.0/2.0, 0.0, 1.0/2.0;
-    scharr.setBorderTreatment(BORDER_TREATMENT_REFLECT);
-    convolveMultiArrayOneDimension(*in[0], *out[0], 1, scharr);
-    scharr.initExplicitly(-1,1) = 3.0/16.0, 10.0/16.0, 3.0/16.0;
-    convolveMultiArrayOneDimension(*out[0], *out[0], 0, scharr);
-    
-OPENLF_OP_END_T(OP_ScharrX, 1, 1, 3, 3, BaseType::FLOAT)
+  /**out[0] = *in[0];   // x*x
+  *out[0] *= *out[0];
+  *out[1] = *in[0];   // x*y
+  *out[1] *= *in[1];
+  *out[2] = *in[1];   // y*y
+  *out[2] *= *out[2];*/
 
+  //assume continuous array
+  __restrict__ T *inx, *iny;
+  __restrict__ T *outxx, *outxy, *outyy;
+  
+  assert(in[0]->isUnstrided());
+  assert(in[1]->isUnstrided());
+  assert(out[0]->isUnstrided());
+  assert(out[1]->isUnstrided());
+  assert(out[2]->isUnstrided());
+
+  inx = in[0]->data();
+  iny = in[1]->data();
+  outxx = out[0]->data();
+  outxy = out[1]->data();
+  outyy = out[2]->data();
+
+  int total = in[0]->size();
+
+  for (int i=0;i<total;++i) {
+    outxx[i] = inx[i]*inx[i];
+    outxy[i] = inx[i]*iny[i];
+    outyy[i] = iny[i]*iny[i];
+  }
+    
+OPENLF_OP_END(OP_Tensor2x2, 2, 3, 3, 3)
+
+#undef OPENLF_OP_CONSTRUCT_PARAMS

@@ -23,7 +23,7 @@
 #include "vigra/convolution.hxx"
 #include "vigra/multi_math.hxx"
 #include <vigra/matrix.hxx>
-#include "operators.hpp"
+#include "openlf/operator_macro.hpp"
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
     AddParameter_("min_coherence", DspParameter(DspParameter::ParamType::Float, 0.8f)); \
@@ -108,3 +108,5 @@ OPENLF_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
   }
 
 OPENLF_OP_END(OP_Tensor2Orientation, 3, 2, 3, 3)
+
+#undef OPENLF_OP_CONSTRUCT_PARAMS

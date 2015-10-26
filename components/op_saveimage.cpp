@@ -22,12 +22,14 @@
 
 #include <vigra/transformimage.hxx>
 #include <vigra/copyimage.hxx>
-#include "vigra/multi_array.hxx"
-#include "operators.hpp"
+#include <vigra/multi_array.hxx>
+
 #include <limits>
 
+#include "openlf/operator_macro.hpp"
+
 #define OPENLF_OP_CONSTRUCT_PARAMS \
-    AddParameter_("filename", DspParameter(DspParameter::ParamType::String, "")); \
+    AddParameter_("filename", DspParameter(DspParameter::ParamType::String, ""));
 
 OPENLF_OP_START(OP_SaveImage, 1, 1, 3, 3)   
         
@@ -97,3 +99,5 @@ OPENLF_OP_START(OP_SaveImage, 1, 1, 3, 3)
     }
     
 OPENLF_OP_END(OP_SaveImage, 1, 1, 3, 3)
+
+#undef OPENLF_OP_CONSTRUCT_PARAMS

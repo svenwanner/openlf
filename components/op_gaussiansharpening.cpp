@@ -19,21 +19,27 @@
 * Author Sven Wanner, Maximilian Diebold, Hendrik Siedelmann 
 *
 */
+#include <vigra/convolution.hxx>
+#include "openlf/operator_macro.hpp"
 
-#include <vigra/separableconvolution.hxx>
-#include <vigra/multi_convolution.hxx>
-#include "operators.hpp"
+
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
+    AddParameter_("sharpening_factor", DspParameter(DspParameter::ParamType::Float, 0)); \
+    AddParameter_("scale", DspParameter(DspParameter::ParamType::Float, 0));
 
-OPENLF_OP_START_T(OP_ScharrY, 1, 1, 3, 3, float)
-        
-    Kernel1D<float> scharr;
-    scharr.initExplicitly(-1,1) = -1.0/2.0, 0.0, 1.0/2.0;
-    scharr.setBorderTreatment(BORDER_TREATMENT_REFLECT);
-    convolveMultiArrayOneDimension(*in[0], *out[0], 0, scharr);
-    scharr.initExplicitly(-1,1) = 3.0/16.0, 10.0/16.0, 3.0/16.0;
-    convolveMultiArrayOneDimension(*out[0], *out[0], 1, scharr);
-    
-OPENLF_OP_END_T(OP_ScharrY, 1, 1, 3, 3, BaseType::FLOAT)
+OPENLF_OP_START(OP_GaussianSharpening, 1, 1, 3, 3)
 
+  //TODO vigra requires double values, but DSPatch has only the parameter type Float.
+  double sharpening_factor = (double)*op->GetParameter(0)->GetFloat();
+  double scale = (double)*op->GetParameter(1)->GetFloat();
+
+    for (int i=0; i < in[0]->shape()[2]; ++i){
+        vigra::MultiArrayView<2, T> channel_in = in[0]->bindAt(2, i);
+        vigra::MultiArrayView<2, T> channel_out = out[0]->bindAt(2, i);
+        vigra::gaussianSharpening(channel_in,channel_out, sharpening_factor, scale);
+    }
+
+OPENLF_OP_END(OP_GaussianSharpening, 1, 1, 3, 3)
+
+#undef OPENLF_OP_CONSTRUCT_PARAMS

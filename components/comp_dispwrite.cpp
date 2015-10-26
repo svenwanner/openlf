@@ -26,15 +26,23 @@
 
 #include "opencv2/core/core.hpp"
 
-#include "comp_dispwrite.hpp"
-#include "openlf.hpp"
-
 #include "openlf/types.hpp"
+
+#include "dspatch/DspPlugin.h"
 
 using namespace clif;
 using namespace vigra;
+using namespace openlf;
 
-namespace openlf { namespace components {
+class COMP_DispWrite : public DspComponent {
+public:
+  COMP_DispWrite();
+  DSPCOMPONENT_TRIVIAL_CLONE(COMP_DispWrite);
+protected:
+  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+private:
+  virtual bool ParameterUpdating_ (int i, DspParameter const &p);
+};
   
 COMP_DispWrite::COMP_DispWrite()
 {
@@ -241,4 +249,9 @@ bool COMP_DispWrite::ParameterUpdating_ (int i, DspParameter const &p)
   return true;
 }
 
-}} //namespace openlf::components
+class Plugin : public DspPlugin
+{
+  virtual DspComponent* Create() const { return new COMP_DispWrite; }
+  virtual ~Plugin() {}
+};
+EXPORT_DSPPLUGIN(Plugin);

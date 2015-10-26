@@ -22,20 +22,16 @@
 
 #include "clif/clif_vigra.hpp"
 #include "clif/subset3d.hpp"
-
 #include "clif/clif_cv.hpp"
 
 #include "openlf.hpp"
-
-#include "DspPlugin.h"
-
 #include "openlf/types.hpp"
 
+#include "dspatch/DspPlugin.h"
 
 using namespace clif;
 using namespace vigra;
-
-namespace openlf { namespace components {
+using namespace openlf;
 
 class COMP_LFRead : public DspComponent {
 public:
@@ -114,19 +110,4 @@ bool COMP_LFRead::ParameterUpdating_ (int i, DspParameter const &p)
   return true;
 }
 
-class Plugin_LFRead : public DspPlugin
-{  
-  virtual DspComponent* Create() const
-  {
-    return new COMP_LFRead;
-  }
-  
-  virtual ~Plugin_LFRead() 
-  {
-  }
-};
-
-
-EXPORT_DSPPLUGIN(Plugin_LFRead);
-
-}} //namespace openlf::components
+EXPORT_DSPCOMPONENT(COMP_LFRead)

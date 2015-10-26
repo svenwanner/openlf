@@ -7,7 +7,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   # using GCC
   message("use gcc")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -O3 -fopenmp")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC -g -O3 -fopenmp")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O3 -fPIC")
    set(OPENLF_LIBRARIES dl)
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
@@ -121,15 +121,17 @@ include_directories(external/dspatch/include/dspatch)
 
 include_directories(include)
 include_directories(include/openlf)
-include_directories(include/openlf/components)
-include_directories(include/openlf/workflows)
-include_directories(include/openlf/operators)
+#include_directories(include/openlf/components)
+#include_directories(include/openlf/workflows)
+#include_directories(include/openlf/operators)
 
-add_subdirectory(src/lib/operators)
-add_subdirectory(src/lib/workflows)
-add_subdirectory(src/lib/components)
+#add_subdirectory(src/lib/operators)
+#add_subdirectory(src/lib/workflows)
+#add_subdirectory(src/lib/components)
 
 add_subdirectory(src/lib)
+
+add_subdirectory(components)
 
 add_subdirectory(gui)
 
@@ -138,10 +140,10 @@ add_executable(openlf-bin src/bin/openlf.cpp)
 set_target_properties(openlf-bin PROPERTIES OUTPUT_NAME openlf)
 target_link_libraries(openlf-bin ${OPENLF_LIBRARIES})
 
-add_executable(teststuff src/bin/test.cpp)
-add_executable(teststuff2 src/bin/test2.cpp)
+#add_executable(teststuff src/bin/test.cpp)
+#add_executable(teststuff2 src/bin/test2.cpp)
 add_executable(teststuff3 src/bin/test3.cpp)
 
-target_link_libraries(teststuff  ${OPENLF_LIBRARIES})
-target_link_libraries(teststuff2 ${OPENLF_LIBRARIES})
+#target_link_libraries(teststuff  ${OPENLF_LIBRARIES})
+#target_link_libraries(teststuff2 ${OPENLF_LIBRARIES})
 target_link_libraries(teststuff3 ${OPENLF_LIBRARIES})
