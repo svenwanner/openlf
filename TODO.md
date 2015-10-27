@@ -21,7 +21,8 @@ Minor:
 
 Build:
 - autouic not correctly called for at least ubuntu 14.04
-- cannot load any more object with static TLS (ARGHH)
+    uic lfcamconfigurator_linux.ui > ui_lfcamconfigurator_linux.h
+    uic toolbox_ui.ui > ui_toolbox_ui.h
 
 Done:
 - DSPatch: save/load circuit positions (22.,23.10.15)
@@ -31,3 +32,5 @@ Done:
 - OpenLF/DSPatch use compiled plugin structure (no headers) (25/26.10.15)
 - CLIF: TEMP file handling under windows (26.10.15)
 - CLIF: clifview: repair and get running on windows (26.10.15)
+- build shared libs on linux (27.10.15)
+- cannot load any more object with static TLS (ARGHH) (27.10.15 - fixed by changing Linux build to dlls)

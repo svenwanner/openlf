@@ -34,7 +34,7 @@ include_directories(include)
 
 # Build shared (LGPL)
 add_library(
-    ${PROJECT_NAME} SHARED
+    ${PROJECT_NAME} ${OPENLF_BUILD_TYPE}
     ${srcs}
     ${hdrs}
     ${in_hdrs}

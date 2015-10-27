@@ -9,7 +9,8 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   message("use gcc")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC -g -O3 -fopenmp -ftls-model=global-dynamic")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O3 -fPIC  -ftls-model=global-dynamic")
-   set(OPENLF_LIBRARIES dl)
+  set(OPENLF_LIBRARIES dl)
+  set(OPENLF_BUILD_TYPE "SHARED")
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   # using Visual Studio C++
   message("use msvc")
@@ -20,6 +21,7 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   #set (EXTRA_LIBS ${EXTRA_LIBS} "D:/libs/include")  #see parameter list here https://cmake.org/pipermail/cmake/2006-July/010189.html
   add_definitions(-DOPENLF_COMPILER_MSVC)  
   include_directories(external/dirent)
+  set(OPENLF_BUILD_TYPE)
 endif()
 
 find_package(HDF5 REQUIRED CXX)
