@@ -124,6 +124,7 @@ void DspPluginLoader::_LoadPlugin(std::string const& pluginPath)
     #ifdef _WIN32
                 FreeLibrary((HMODULE)_handle);
     #else
+		printf("loading failed: %s\n", dlerror());
                 dlclose(_handle);
     #endif
 

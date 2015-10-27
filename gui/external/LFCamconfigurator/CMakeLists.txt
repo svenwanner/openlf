@@ -23,7 +23,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
-add_library (${PROJECT_NAME} ${srcs} ${hdrs})
+add_library (${PROJECT_NAME} SHARED ${srcs} ${hdrs})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 install(

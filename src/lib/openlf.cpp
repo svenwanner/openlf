@@ -15,9 +15,11 @@
 
 const std::vector<DspComponent*> OpenLF::componentList()
 {
+  static bool _loaded = false;
   static std::vector<DspComponent*> _comp_list;
   
-  if (!_comp_list.size()) {
+  if (!_loaded) {
+    _loaded = true;
     std::vector<boost::filesystem::path> plugin_paths;
     std::vector<boost::filesystem::path> comp_paths;
 
