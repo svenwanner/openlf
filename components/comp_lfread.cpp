@@ -61,7 +61,7 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   if (GetParameter(1))
     dataset_name = GetParameter(1)->GetString();
   
-  errorCond(filename && filename->size()); RETURN_ON_ERROR
+  errorCond(filename && filename->size(), "missing file name"); RETURN_ON_ERROR
   
   //FIXME reuse previous out!
   
@@ -78,7 +78,7 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     //FIXME error handling
     ClifFile f(*filename, H5F_ACC_RDONLY);
     
-    errorCond(f.valid()); RETURN_ON_ERROR
+    errorCond(f.valid(), "invalid file \"%s\"", filename->c_str()); RETURN_ON_ERROR
     
     out = new LF;
     outputs.SetValue(0, out);

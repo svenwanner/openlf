@@ -281,12 +281,30 @@ QVariant QNEBlock::itemChange(GraphicsItemChange change, const QVariant &value)
 
 void QNEBlock::checkError()
 {
+  int text_w;
   if (!component)
     return;
   
-  if (component->hasError() && !_error_label)
-    _error_label = new QGraphicsTextItem("error", this);
-  else if (!component->hasError() && _error_label)
+  if (component->hasError() && !_error_label) {
+    std::string msg = component->errorMsg();
+    if (msg.size())
+      _error_label = new QGraphicsTextItem(msg.c_str(), this);
+    else
+      _error_label = new QGraphicsTextItem("<UNKNOWN ERROR>", this);
+    text_w = _error_label->boundingRect().width();
+    _error_label->setTextWidth(2*boundingRect().width());
+    if (text_w <= 2*boundingRect().width())
+      _error_label->setPos(-text_w/2, height/2);
+    else 
+      _error_label->setPos(-width, height/2);
+    scene()->addItem(_error_label);
+    update(boundingRect());
+  }
+  else if (!component->hasError() && _error_label) {
+    scene()->removeItem(_error_label);
     delete _error_label;
+    _error_label = NULL;
+    update(boundingRect());
+  }
 }
 

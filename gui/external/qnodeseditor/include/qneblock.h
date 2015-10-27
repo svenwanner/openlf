@@ -72,7 +72,7 @@ private:
 	int width;
 	int height;
         BlockType _blockType = BlockType::Regular;
-        QGraphicsItem *_error_label = NULL;
+        QGraphicsTextItem *_error_label = NULL;
 };
 
 #endif // QNEBLOCK_H

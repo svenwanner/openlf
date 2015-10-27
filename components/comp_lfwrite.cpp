@@ -55,13 +55,13 @@ void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   const std::string *filename;
   const std::string *dataset_name = NULL;
   
-  errorCond(inputs.GetValue(0, in)); RETURN_ON_ERROR
+  errorCond(inputs.GetValue(0, in), "missing input"); RETURN_ON_ERROR
   
   filename = GetParameter(0)->GetString();
   if (GetParameter(1))
     dataset_name = GetParameter(1)->GetString();
   
-  errorCond(filename); RETURN_ON_ERROR
+  errorCond(filename, "missing filename"); RETURN_ON_ERROR
 
   if (configOnly())
 	return;

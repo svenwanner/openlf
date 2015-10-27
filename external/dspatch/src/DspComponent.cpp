@@ -29,6 +29,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <dspatch/DspComponentThread.h>
 #include <dspatch/DspWire.h>
 
+#include <cstdarg>
+
 //=================================================================================================
 
 DspComponent::DspComponent()
@@ -953,31 +955,51 @@ DspComponent* DspComponent::clone()
   return NULL;
 }
 
-void DspComponent::errorCond(bool cond, const char *msg)
+void DspComponent::errorCond(bool cond, const char *msg, ...)
 {
+  char *buf = NULL;
   _errorCond = false;
   
   if (!cond) {
+    if (msg) {
+      buf = (char*)malloc(4096);
+      va_list arglist;
+      va_start(arglist, msg);
+      vsprintf(buf, msg, arglist);
+      va_end(arglist);
+    }
+    
     if (configOnly()) {
-      if (msg) 
-        printf("ERROR: %s\n", msg); 
-      else
+      if (buf) {
+        printf("ERROR: %s\n", buf); 
+        
+    
+        _errorMsg = std::string(buf);
+      }
+      else {
         printf("config error!\n");
+        _errorMsg = std::string();
+      }
       _errorCond = true;
-      _errorMsg = msg;
       return; 
     } 
     else { 
-      if (msg) 
-        printf("ERROR: %s\n", msg); 
+      if (buf) 
+        printf("ERROR: %s\n", buf); 
       abort(); 
     }
+    free(buf);
   }
 }
 
 bool DspComponent::hasError()
 {
   return _errorCond;
+}
+
+std::string DspComponent::errorMsg() const
+{
+  return _errorMsg;
 }
 
 //=================================================================================================

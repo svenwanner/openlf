@@ -244,7 +244,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   printf("tick epi!\n");
   
-  errorCond(inputs.GetValue(0, in)); RETURN_ON_ERROR
+  errorCond(inputs.GetValue(0, in) && in, "missing input"); RETURN_ON_ERROR
   
   inputs.GetValue(1, config);
   
@@ -254,8 +254,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   outputs.SetValue(0, out);
   
-  errorCond(in); RETURN_ON_ERROR
-  errorCond(out); RETURN_ON_ERROR
+  errorCond(out, "output creation failed"); RETURN_ON_ERROR
   
   int subset_idx = 0; //we could also loop over all subsets or specify subset using string name
   

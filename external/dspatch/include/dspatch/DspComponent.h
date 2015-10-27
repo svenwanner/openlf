@@ -161,8 +161,8 @@ public:
     void ResumeAutoTick();
     
     bool configOnly();
+    std::string errorMsg() const;
     void setConfigOnly(bool val);
-    void errorOnFalse(bool cond, const char *msg);
     bool hasError();
     const std::string& getTypeName();
     
@@ -191,7 +191,7 @@ protected:
 
     DspParameter const* GetParameter_(int index) const;
     bool SetParameter_(int index, DspParameter const& param);
-    void errorCond(bool cond, const char *msg = NULL);
+    void errorCond(bool cond, const char *msg = NULL, ...);
     void setTypeName_(std::string const& name);
 
 private:
@@ -259,7 +259,7 @@ private:
     Callback_t _callback;
     void* _userData;
     bool _errorCond = true;
-    const char *_errorMsg = NULL;
+    std::string _errorMsg;
     std::string _typeName;
 };
 
