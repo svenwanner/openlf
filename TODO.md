@@ -19,6 +19,9 @@ Minor:
 - use DspParaeter path/filepath (input/output)
   - maybe add dspparameter flags?
 
+Build:
+- autouic not correctly called for at least ubuntu 14.04
+- cannot load any more object with static TLS (ARGHH)
 
 Done:
 - DSPatch: save/load circuit positions (22.,23.10.15)
