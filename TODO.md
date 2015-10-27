@@ -11,7 +11,6 @@
 
 Minor:
 - COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!
-- First load then save button
 - GUI: popOut , popOut
 - fitler/save only GML files
 - use DspParaeter path/filepath (input/output)
@@ -25,6 +24,7 @@ Build:
 Done:
 - DSPatch: save/load circuit positions (22.,23.10.15)
 - GUI: name load actually with load (23.10.15)
+- First load then save button (23.10.15)
 - GUI: use circuit coordinates when creating gui and save them when moving components (22.,23.10.15)
 - CLIF: on linking memory-only datastore will be lost (23.10.15)
 - GUI: delete components and connections in gui! (24.10.15)
