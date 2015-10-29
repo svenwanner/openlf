@@ -385,7 +385,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
       }
       
       #pragma omp critical
-      readEPI(&subset, mav_source[omp_get_thread_num()], i, d, ClifUnit::PIXELS, UNDISTORT, Interpolation::LINEAR, scale);
+      readEPI(&subset, mav_source[omp_get_thread_num()], i, d, Unit::PIXELS, UNDISTORT, Interpolation::LINEAR, scale);
       
       //tick the circuit to fill _sink_mav using _source_mav and the circuit
       outer_circuit[omp_get_thread_num()].Tick();

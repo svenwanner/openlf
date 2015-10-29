@@ -66,7 +66,8 @@ void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   if (configOnly())
 	return;
   
-  H5::H5File f_out(filename->c_str(), H5F_ACC_TRUNC);
+  ClifFile f_out;
+  f_out.create(filename->c_str());
   Dataset out_set;
   out_set.link(f_out, in->data);
   out_set.writeAttributes();
