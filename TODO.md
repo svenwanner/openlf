@@ -8,6 +8,9 @@
 - GUI: fix circuit display glitches (list circuits, re-open/show already opened, unnamed entries)
 - GUI: connectouttoin may remove other connections (only single input allowed!), sync this!
 - CLIF: CLIF_LINK_LIBRARIES contains absolute paths! (e.g. hdf5)
+- CLIF: bin/clif: combine clif and ini import (atm clif attributes are lost?)
+- GUI: fix component deletion (segfaults in conn. delete (circuit already deleted?))
+- CLIF: datastore::link uses file name, not file path (which is unavailable for hdf5?!?)
 
 Minor:
 - COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!

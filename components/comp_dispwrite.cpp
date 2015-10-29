@@ -219,7 +219,9 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   float scale = 1.0;
   
   cv::Mat img;
-  readCvMat(in->data, disp.shape()[2]/2, img, UNDISTORT | CVT_8U);
+  //FIXME readimage
+  abort();
+  //readCvMat(in->data, disp.shape()[2]/2, img, UNDISTORT | CVT_8U);
   
   //centerview, channel 0
   MultiArrayView<2,float> centerview = disp.get<float>()->bindAt(3,0).bindAt(2,disp.shape()[2]/2);

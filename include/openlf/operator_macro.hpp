@@ -74,7 +74,7 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
   bool stat;\
   FlexMAV<2> *in;\
   \
-  errorCond(inputs.GetValue(0, in)); RETURN_ON_ERROR \
+  errorCond(inputs.GetValue(0, in), #NAME ":missing input 0"); RETURN_ON_ERROR \
   \
   FlexMAV<2> *out_ptr = &_output_image;\
   \
@@ -160,6 +160,7 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
 \
   for(int i=0;i<INCOUNT;i++) { \
     errorCond(inputs.GetValue(i, in[i]), #NAME ": input not found - possible type mismatch?"); RETURN_ON_ERROR \
+    errorCond(in[i]->type() > BaseType::INVALID, #NAME ": input %d no valid type!", i); \
   }\
 \
   FlexMAV<OUTDIM> *out_ptr[OUTCOUNT];\
@@ -173,9 +174,10 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
   for(int i=0;i<OUTCOUNT;i++) { \
     stat = outputs.SetValue(i, out_ptr[i]);\
     if (!stat) { \
-      printf(#NAME ": output %d set failed", i); \
+      printf(#NAME ": output %d set failed\n", i); \
       abort(); \
     }\
+    errorCond(_output_image[i].type() > BaseType::INVALID, #NAME ": output %d no valid type!", i); \
   }\
 }\
 bool NAME::ParameterUpdating_ (int i, DspParameter const &p)\
@@ -241,6 +243,7 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
   \
   for(int i=0;i<INCOUNT;i++) { \
     errorCond(inputs.GetValue(i, in[i]), #NAME ": input not found - possible type mismatch?"); \
+    errorCond(in[i]->type() > BaseType::INVALID, #NAME ": input %d no valid type!", i); \
     RETURN_ON_ERROR \
   } \
   \
@@ -255,7 +258,7 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
   for(int i=0;i<OUTCOUNT;i++) { \
     stat = outputs.SetValue(i, out_ptr[i]);\
     if (!stat) { \
-      printf(#NAME ": output %d set failed", i); \
+      printf(#NAME ": output %d set failed\n", i); \
       abort(); \
     } \
   } \

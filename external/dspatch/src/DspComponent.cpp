@@ -983,9 +983,12 @@ void DspComponent::errorCond(bool cond, const char *msg, ...)
       _errorCond = true;
       return; 
     } 
-    else { 
+    else {
       if (buf) 
-        printf("ERROR: %s\n", buf); 
+        printf("ERROR: %s\n", buf);
+      else
+        printf("ERROR: component error - no msg received!\n");
+      printf("do abort\n");
       abort(); 
     }
     free(buf);

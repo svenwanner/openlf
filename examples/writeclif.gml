@@ -4,51 +4,53 @@ id 0
 label "readCLIF_0"
 type "readCLIF"
 graphics [
-x -232,000000
-y 26,000000
+x -171.000000
+y 14.000000
 ]
 params [
-filename "/home/hendrik/projects/clif/examples/demo.clif"
+filename "/home/hendrik/projects/clif/examples/alldata_calib.clif"
 dataset "(UNSET)"
 ]
 ]
 node [
 id 1
-label "procEPI2D_0"
-type "procEPI2D"
+label "writeCLIF_0"
+type "writeCLIF"
 graphics [
-x -61,000000
-y 25,000000
+x 133.000000
+y 51.000000
 ]
 params [
-epiCircuit "(UNKNOWN)"
-mergeCircuit "(UNKNOWN)"
-DispStart 3,000000
-DispStop 7,000000
-DispStep 1,000000
+filename "/home/hendrik/projects/openlf/examples/disparity.clif"
+dataset "(UNSET)"
 ]
 ]
 node [
 id 2
-label "writeCLIF_0"
-type "writeCLIF"
+label "procEPI2D_0"
+type "procEPI2D"
 graphics [
-x 104,000000
-y 44,000000
+x -24.000000
+y 39.000000
 ]
 params [
-filename "/home/hendrik/projects/openlf/examples/linked.clif"
-dataset "(UNSET)"
+epiCircuit "(UNKNOWN)"
+mergeCircuit "(UNKNOWN)"
+DispStart 3.000000
+DispStop 7.000000
+DispStep 1.000000
+StartLine 500
+StopLine 600
 ]
 ]
 edge [
-source 0
+source 2
 target 1
 source_pad 0
 target_pad 0
 ]
 edge [
-source 1
+source 0
 target 2
 source_pad 0
 target_pad 0
