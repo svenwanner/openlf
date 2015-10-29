@@ -152,7 +152,7 @@ void write_obj(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
         
         if (view.type() == CV_8UC3) {
           cv::Vec3b col = view.at<cv::Vec3b>(p[1],p[0]);
-          fprintf(pointfile, "v %.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth,col[2],col[1],col[0]);
+          fprintf(pointfile, "v %.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f[0], depth*(p[1]-h/2)/subset.f[1], depth,col[0],col[1],col[2]);
         }
         else if (view.type() == CV_8UC1) {
           uchar col = view.at<uchar>(p[1],p[0]);
@@ -218,10 +218,12 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   float scale = 1.0;
   
-  cv::Mat img;
-  //FIXME readimage
-  abort();
-  //readCvMat(in->data, disp.shape()[2]/2, img, UNDISTORT | CVT_8U);
+  cv::Mat img3d, img;
+  //FIXME should add a readimage to subset3d!
+  std::vector<int> idx(in->data->dims(), 0);
+  idx[3] = disp.shape()[2]/2;
+  in->data->readImage(idx, &img3d, UNDISTORT | CVT_8U);
+  clifMat2cv(&img3d,&img);
   
   //centerview, channel 0
   MultiArrayView<2,float> centerview = disp.get<float>()->bindAt(3,0).bindAt(2,disp.shape()[2]/2);
