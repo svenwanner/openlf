@@ -32,6 +32,8 @@ include_directories(
 	${Boost_INCLUDE_DIRS}
 	)
 
+link_directories(${Boost_LIBRARY_DIRS})
+
 # We need add -DQT_WIDGETS_LIB when using QtWidgets in Qt 5.
 add_definitions(${Qt5Widgets_DEFINITIONS})
 
