@@ -13,6 +13,7 @@
 - CLIF: datastore::link uses file name, not file path (which is unavailable for hdf5?!?)
 - CLIF: rewrite core to provide transparent multidimensional data handling throught clif::Datastore
 - OPENLF: operators macro: we get problems if output dim != input dim (on output[].create...)
+- CLIF: keep roughly track of large data allocations (datastores) and flush to disk on some threshold
 
 Minor:
 - COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!
