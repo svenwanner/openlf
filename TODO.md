@@ -14,6 +14,9 @@
 - CLIF: rewrite core to provide transparent multidimensional data handling throught clif::Datastore
 - OPENLF: operators macro: we get problems if output dim != input dim (on output[].create...)
 - CLIF: keep roughly track of large data allocations (datastores) and flush to disk on some threshold
+- CLIF: reimplement disk cache
+- CLIF: clifview - more generic datastore display (make it a widget?)
+- CLIF: clifview - windows - automatically show/select on dataset click! (double click atm!)
 
 Minor:
 - COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!
