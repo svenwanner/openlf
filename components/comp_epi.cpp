@@ -41,6 +41,8 @@ using namespace vigra;
 using namespace std;
 using namespace openlf;
 
+//typedef unsigned int _uint;
+
 #define DPPT DspParameter::ParamType
   
 class COMP_Epi : public DspComponent {
@@ -130,20 +132,20 @@ void component_apply_config_path(DspComponent *comp, LF *config, path config_pat
             float fval;
             attr->convert(&fval);
             comp->SetParameter(i, DspParameter(param->Type(), fval));
-            printf("DEBUG: set param %s to %f\n", param_path.c_str(), fval);
+            printf("DEBUG: set param %s to %f\n", param_path.string().c_str(), fval);
             break;
           case DPPT::Int : 
             int ival;
             attr->convert(&ival);
             comp->SetParameter(i, DspParameter(param->Type(), ival));
-            printf("DEBUG: set param %s to %d\n", param_path.c_str(), ival);
+			printf("DEBUG: set param %s to %d\n", param_path.string().c_str(), ival);
             break;
           default:
             printf("FIXME: unhandled parameter type! (comp_epi)\n");
         }
       }
       else
-        printf("no match for %s\n", param_path.c_str());
+		  printf("no match for %s\n", param_path.string().c_str());
     }
   }
 }
@@ -364,6 +366,8 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   int progress = 0;
   int done = 0;
   printf("\n");
+  //cv::setNumThreads(0);
+  //cv::ipp::setUseIPP(false);
   #pragma omp parallel for private(sink_mav)
   for(int i=start_line;i<stop_line;i++) {
 #pragma omp critical 
@@ -405,9 +409,11 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     disp_store->call<subarray_copy>(i,epi_w,epi_h,sink_mav,disp_store,scale);
     
   }
+  //cv::setNumThreads(-1);
   
+  assert(disp_store);
+
   disp_store->write(out->data, "disparity/default/data");
-  
   delete disp_store;
 }
 

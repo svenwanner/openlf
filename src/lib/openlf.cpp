@@ -53,6 +53,7 @@ const std::vector<DspComponent*> OpenLF::componentList()
     DIR *dir;
     struct dirent *d_it;
     for(int i=0;i<plugin_paths.size();i++) {
+		printf("plugin path: %s\n", plugin_paths[i].string().c_str());
       dir = opendir(plugin_paths[i].string().c_str());
       if (!dir)
         continue;

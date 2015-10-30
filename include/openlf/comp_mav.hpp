@@ -30,6 +30,8 @@
 
 namespace openlf {
 
+typedef unsigned int uint;
+
 template<uint DIM> class FlexMAVSource : public DspComponent {
 public:
   FlexMAVSource()

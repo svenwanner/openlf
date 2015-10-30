@@ -210,7 +210,7 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   FlexMAV<4> disp;
   Datastore *disp_store = in->data->getStore("disparity/default/data");
-  
+
   disp.read(disp_store);
   
   //FIXME read/pass actual datastore!
