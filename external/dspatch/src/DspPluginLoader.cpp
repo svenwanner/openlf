@@ -103,8 +103,9 @@ void DspPluginLoader::_LoadPlugin(std::string const& pluginPath)
 {
     // open library
     #ifdef _WIN32
-	SetErrorMode(SEM_FAILCRITICALERRORS);
-        _handle = LoadLibrary(pluginPath.c_str());
+        const char *tmp = strdup(pluginPath.c_str());
+				SetErrorMode(SEM_FAILCRITICALERRORS);
+        _handle = LoadLibrary(tmp);
     #else
         _handle = dlopen(pluginPath.c_str(), RTLD_NOW);
     #endif
@@ -135,6 +136,8 @@ void DspPluginLoader::_LoadPlugin(std::string const& pluginPath)
         else
           printf("loading failed: %s\n", dlerror());
 #else
+	if (!_handle)
+		printf("ERROR: %d\n", GetLastError());
 	SetErrorMode(0);
 #endif
 }

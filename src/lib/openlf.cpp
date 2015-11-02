@@ -86,7 +86,7 @@ const std::vector<DspComponent*> OpenLF::componentList()
     
     //then load circuits
     //FIXME what if circuit requires itself some circuit to be loaded?
-    for(int i=0;i<comp_paths.size();i++) {
+   for(int i=0;i<comp_paths.size();i++) {
       if (comp_paths[i].extension().string().compare(".gml"))
         continue;
       

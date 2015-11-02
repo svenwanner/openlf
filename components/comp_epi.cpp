@@ -119,7 +119,7 @@ void component_apply_config_path(DspComponent *comp, LF *config, path config_pat
 {
   if (config && config->data) {
     
-    for(uint i=0;i<comp->GetParameterCount();i++) {
+    for(int i=0;i<comp->GetParameterCount();i++) {
       Attribute *attr;
       const DspParameter *param = comp->GetParameter(i);
       path param_path = config_path / comp->GetParameterName(i);
