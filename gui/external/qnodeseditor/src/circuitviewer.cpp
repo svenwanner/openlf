@@ -81,49 +81,51 @@ Circuit_Viewer::~Circuit_Viewer(){
 
 void Circuit_Viewer::createActions()
 {
-	saveAct = new QAction(QIcon(":/circuit_save.png"), tr("&Save"), this);
-	saveAct->setShortcuts(QKeySequence::Save);
-	saveAct->setStatusTip(tr("Save Circuit to disk"));
-	connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
-
-	saveAsAct = new QAction(QIcon(":/circuit_save.png"), tr("Save &As..."), this);
-	saveAsAct->setShortcuts(QKeySequence::SaveAs);
-	saveAsAct->setStatusTip(tr("Save the document under a new name"));
-	connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
-        
-	loadAct = new QAction(QIcon(":/circuit_load.png"), tr("&Load"), this);
-	loadAct->setShortcuts(QKeySequence::Open);
-	loadAct->setStatusTip(tr("Load Circuit from disk"));
-	connect(loadAct, SIGNAL(triggered()), this, SLOT(load()));
-
-	zoomInAct = new QAction(QIcon(":/Zoom-In.png"), tr("Zoom &In (25%)"), this);
-	zoomInAct->setShortcut(tr("Ctrl++"));
-	connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
-
-	zoomOutAct = new QAction(QIcon(":/Zoom-Out.png"), tr("Zoom &Out (25%)"), this);
-	zoomOutAct->setShortcut(tr("Ctrl+-"));
-	connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
-
-	fitToWindowAct = new QAction(QIcon(":/fittowindow.png"), tr("&Fit to Window"), this);
-	fitToWindowAct->setCheckable(true);
-	fitToWindowAct->setShortcut(tr("Ctrl+F"));
-	connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
-
-	popInAct = new QAction(QIcon(":/arrow_down.png"), tr("popOut"), this);
-	popInAct->setStatusTip(tr("Pop Out Subwindow as own Window."));
-	connect(popInAct, SIGNAL(triggered()), this, SLOT(on_action_Pop_In_triggered()));
-
-	popOutAct = new QAction(QIcon(":/arrow_up.png"), tr("popOut"), this);
-	popOutAct->setStatusTip(tr("Pop Out Subwindow as own Window."));
-	connect(popOutAct, SIGNAL(triggered()), this, SLOT(on_action_Pop_Out_triggered()));
-
-	tickAct = new QAction(QIcon(":/clock.png"), tr("Tick"), this);
-	tickAct->setStatusTip(tr("Tick Circuit."));
-	connect(tickAct, SIGNAL(triggered()), this, SLOT(tick()));
-        
-    connect(_editor, SIGNAL(compSelected(DspComponent*)), this, SLOT(onCompSelected(DspComponent*)));
-    connect(_editor, SIGNAL(compSelected(QNEBlock*)), this, SLOT(onCompSelected(QNEBlock*)));
-	
+  saveAct = new QAction(QIcon(":/circuit_save.png"), tr("&Save"), this);
+  saveAct->setShortcuts(QKeySequence::Save);
+  saveAct->setStatusTip(tr("Save Circuit to disk"));
+  connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
+  
+  saveAsAct = new QAction(QIcon(":/circuit_save.png"), tr("Save &As..."), this);
+  saveAsAct->setShortcuts(QKeySequence::SaveAs);
+  saveAsAct->setStatusTip(tr("Save the document under a new name"));
+  connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
+  
+  loadAct = new QAction(QIcon(":/circuit_load.png"), tr("&Load"), this);
+  loadAct->setShortcuts(QKeySequence::Open);
+  loadAct->setStatusTip(tr("Load Circuit from disk"));
+  connect(loadAct, SIGNAL(triggered()), this, SLOT(load()));
+  
+  zoomInAct = new QAction(QIcon(":/Zoom-In.png"), tr("Zoom &In (25%)"), this);
+  zoomInAct->setShortcut(tr("Ctrl++"));
+  connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
+  
+  zoomOutAct = new QAction(QIcon(":/Zoom-Out.png"), tr("Zoom &Out (25%)"), this);
+  zoomOutAct->setShortcut(tr("Ctrl+-"));
+  connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
+  
+  fitToWindowAct = new QAction(QIcon(":/fittowindow.png"), tr("&Fit to Window"), this);
+  fitToWindowAct->setCheckable(true);
+  fitToWindowAct->setShortcut(tr("Ctrl+F"));
+  connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
+  
+  popInAct = new QAction(QIcon(":/arrow_down.png"), tr("Rettach"), this);
+  popInAct->setStatusTip(tr("reattach subwindow to main window."));
+  popInAct->setDisabled(true);
+  connect(popInAct, SIGNAL(triggered()), this, SLOT(on_action_Pop_In_triggered()));
+  
+  popOutAct = new QAction(QIcon(":/arrow_up.png"), tr("Pop Out"), this);
+  popOutAct->setStatusTip(tr("pop out subwindow as extra window."));
+  connect(popOutAct, SIGNAL(triggered()), this, SLOT(on_action_Pop_Out_triggered()));
+  
+  tickAct = new QAction(QIcon(":/clock.png"), tr("Tick"), this);
+  tickAct->setStatusTip(tr("Tick Circuit."));
+  if (_circuit->hasError())
+    tickAct->setDisabled(true);
+  connect(tickAct, SIGNAL(triggered()), this, SLOT(tick()));
+  
+  connect(_editor, SIGNAL(compSelected(DspComponent*)), this, SLOT(onCompSelected(DspComponent*)));
+  connect(_editor, SIGNAL(compSelected(QNEBlock*)), this, SLOT(onCompSelected(QNEBlock*)));
 }
 
 bool Circuit_Viewer::event(QEvent* e)
@@ -278,6 +280,12 @@ void Circuit_Viewer::load()
   
   _circuit = new_circuit;
   _circuit->configure();
+  
+  if (_circuit->hasError())
+    tickAct->setDisabled(true);
+  else
+    tickAct->setDisabled(false);
+  
   emit newCircuit(_circuit);
   
   _rightmost = QPointF(-1000000,0);
@@ -402,27 +410,31 @@ void Circuit_Viewer::tick()
 
 void Circuit_Viewer::on_action_Pop_Out_triggered()
 {
-	if (mdiArea->activeSubWindow()){
-		QMdiSubWindow *sub = mdiArea->activeSubWindow();
-		popInpopOutWidget = sub->widget();
-		popInpopOutWidget->adjustSize();
-		popInpopOutWidget->move(QApplication::desktop()->screen()->rect().center() - popInpopOutWidget->rect().center());
-		popInpopOutWidget->hide();
-		mdiArea->removeSubWindow(popInpopOutWidget);
-		sub->close();
-		popInpopOutWidget->show();
-                _extra_window = true;
-	}
+  if (mdiArea->activeSubWindow()){
+    QMdiSubWindow *sub = mdiArea->activeSubWindow();
+    popInpopOutWidget = sub->widget();
+    popInpopOutWidget->adjustSize();
+    popInpopOutWidget->move(QApplication::desktop()->screen()->rect().center() - popInpopOutWidget->rect().center());
+    popInpopOutWidget->hide();
+    mdiArea->removeSubWindow(popInpopOutWidget);
+    sub->close();
+    popInpopOutWidget->show();
+    _extra_window = true;
+    popInAct->setDisabled(false);
+    popOutAct->setDisabled(true);
+  }
 }
 
 void Circuit_Viewer::on_action_Pop_In_triggered()
 {
-	if (! mdiArea->activeSubWindow()){
-		mdiArea->addSubWindow(popInpopOutWidget);
-		popInpopOutWidget->showMaximized();
-		mdiArea->update();
-                _extra_window = false;
-	}
+  if (! mdiArea->activeSubWindow()){
+    mdiArea->addSubWindow(popInpopOutWidget);
+    popInpopOutWidget->showMaximized();
+    mdiArea->update();
+    _extra_window = false;
+    popInAct->setDisabled(true);
+    popOutAct->setDisabled(false);
+  }
 }
 
 void Circuit_Viewer::configure()
@@ -435,6 +447,11 @@ void Circuit_Viewer::configure()
     if (item->type() == QNEBlock::Type)
       (dynamic_cast<QNEBlock*>(item))->checkError();
   }
+  
+  if (_circuit->hasError())
+    tickAct->setDisabled(true);
+  else
+    tickAct->setDisabled(false);
   
 }
 
