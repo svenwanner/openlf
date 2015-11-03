@@ -8,15 +8,11 @@
 - GUI: fix circuit display glitches (list circuits, re-open/show already opened, unnamed entries)
 - GUI: connectouttoin may remove other connections (only single input allowed!), sync this!
 - CLIF: CLIF_LINK_LIBRARIES contains absolute paths! (e.g. hdf5)
-- CLIF: bin/clif: combine clif and ini import (atm clif attributes are lost?)
 - GUI: fix component deletion (segfaults in conn. delete (circuit already deleted?))
-- CLIF: datastore::link uses file name, not file path (which is unavailable for hdf5?!?)
-- CLIF: rewrite core to provide transparent multidimensional data handling throught clif::Datastore
 - OPENLF: operators macro: we get problems if output dim != input dim (on output[].create...)
 - CLIF: keep roughly track of large data allocations (datastores) and flush to disk on some threshold
 - CLIF: reimplement disk cache
-- CLIF: clifview - more generic datastore display (make it a widget?)
-- CLIF: clifview - windows - automatically show/select on dataset click! (double click atm!)
+- CLIF: clifview - more generic datastore display (make it a widget?) (partly done)
 
 Minor:
 - COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!
@@ -44,3 +40,9 @@ Done:
 - cannot load any more object with static TLS (ARGHH) (27.10.15 - fixed by changing Linux build to dlls)
 - GUI: show error messages for components! (27.10.15)
 - GUI: add circuit list and allow adding circuits as components (circuits loaded at startup show already up, 17.10.15)
+- CLIF: datastore::link uses file name, not file path (which is unavailable for hdf5?!?) - move to ClifFile (28.10.15)
+- CLIF: rewrite core to provide transparent multidimensional data handling throught clif::Datastore (28/29.19.15)
+- CLIF: bin/clif: combine clif and ini import (atm clif attributes are lost?) 30.11.15
+- fix windows build (30.11.15-2.11.15)
+- CLIF: clifview - more generic datastore display (make it a widget?) (partly done 3.11.15)
+- CLIF: clifview - windows - automatically show/select on dataset click! (fixed different - 3.11.15)
