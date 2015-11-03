@@ -83,6 +83,7 @@ private slots:
         void newCircuit(DspCircuit* c);
         void viewer_circuit_changed(DspCircuit* new_c, DspCircuit* old);
         void circuitNameChanged(QString name);
+        void view_mode_changed(bool tabbed);
         
 signals:
 	void itemDoubleClicked();
@@ -112,6 +113,7 @@ private:
 	QAction *loadAct = std::nullptr_t();
 	QAction *saveAct = std::nullptr_t();
 	QAction *newAct = std::nullptr_t();
+        QAction *tabViewAct = NULL;
 
 	QListWidget *List1 = std::nullptr_t();
 	QListWidget *List2 = std::nullptr_t();

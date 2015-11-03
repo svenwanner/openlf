@@ -56,6 +56,11 @@ void QNEMainWindow::createActions()
 	//saveAct->setShortcuts(QKeySequence::Save);
 	newAct->setStatusTip(tr("New circuit"));
 	connect(newAct, SIGNAL(triggered()), this, SLOT(new_circuit_viewer()));
+        
+	tabViewAct = new QAction(tr("&Use Tabs"), this);
+        tabViewAct->setCheckable(true);
+        tabViewAct->setChecked(false);
+        connect(tabViewAct, SIGNAL(toggled(bool)), this, SLOT(view_mode_changed(bool)));
   
         connect(_circuitViewer, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
         connect(_circuitViewer, SIGNAL(compSelected(QNEBlock*)), this, SLOT(showCompSettings(QNEBlock*)));

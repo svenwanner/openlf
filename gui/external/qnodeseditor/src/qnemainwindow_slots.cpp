@@ -196,6 +196,14 @@ void QNEMainWindow::circuitNameChanged(QString name)
   viewer_circuit_changed(_circuitViewer->circuit(), NULL);
 }
 
+void QNEMainWindow::view_mode_changed(bool tabbed)
+{
+  if (tabbed)
+    mdiArea->setViewMode(QMdiArea::TabbedView);
+  else
+    mdiArea->setViewMode(QMdiArea::SubWindowView);
+}
+
 void QNEMainWindow::viewer_circuit_changed(DspCircuit* new_c, DspCircuit* old)
 {
   if (old)

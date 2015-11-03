@@ -101,11 +101,13 @@ void QNEMainWindow::createMenus()
 	fileMenu->addSeparator();
 	fileMenu->addAction(quitAct);
         
+        viewMenu = new QMenu(tr("&View"), this);
+	viewMenu->addAction(tabViewAct);
+        
 	//helpMenu = new QMenu(tr("&Help"), this);
 
-	//viewMenu = new QMenu(tr("&View"), this);
-
 	menuBar()->addMenu(fileMenu);
+	menuBar()->addMenu(viewMenu);
 	//menuBar()->addMenu(helpMenu);
 	//menuBar()->addMenu(viewMenu);
 }
