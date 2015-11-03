@@ -223,7 +223,7 @@ void Circuit_Viewer::addComponent(DspComponent *comp, bool gui_only)
 
 //FIXME delete old input comp if already existing!
 void Circuit_Viewer::addInputComponent(int pads, QPointF *pos)
-{   
+{
   char buf[64];
 
   for(int i=0;i<pads;i++) {
@@ -233,6 +233,7 @@ void Circuit_Viewer::addInputComponent(int pads, QPointF *pos)
   
   _input_block = new QNEBlock(_circuit, _scene, QNEBlock::BlockType::Source, pos);
   _blocks.push_back(_input_block);
+  emit circuitChanged(_circuit, NULL);
 }
 
 void Circuit_Viewer::addOutputComponent(int pads, QPointF *pos)
@@ -246,6 +247,7 @@ void Circuit_Viewer::addOutputComponent(int pads, QPointF *pos)
   
   _output_block = new QNEBlock(_circuit, _scene, QNEBlock::BlockType::Sink, pos);
   _blocks.push_back(_output_block);
+  emit circuitChanged(_circuit, NULL);
 }
 
 void Circuit_Viewer::adjustScrollBar(QScrollBar *scrollBar, double factor)
@@ -272,21 +274,30 @@ void Circuit_Viewer::load()
   if (!new_circuit)
     //FIXME error msg
     return;
+  
+  emit newCircuit(new_circuit);
+  
+  show(new_circuit);
+}
 
+
+void Circuit_Viewer::show(DspCircuit *c)
+{
+  DspCircuit *old = _circuit;
+  _circuit = c;
+  _circuit->configure();
+  
+  emit circuitChanged(_circuit, old);
+  
   _scene->clear();
   _blocks.resize(0);
   _input_block = NULL;
   _output_block = NULL;
   
-  _circuit = new_circuit;
-  _circuit->configure();
-  
   if (_circuit->hasError())
     tickAct->setDisabled(true);
   else
     tickAct->setDisabled(false);
-  
-  emit newCircuit(_circuit);
   
   _rightmost = QPointF(-1000000,0);
   _leftmost = QPointF(1000000,0);
@@ -393,7 +404,6 @@ void Circuit_Viewer::load()
     }
   }
 }
-// 
 
 
 void Circuit_Viewer::tick()

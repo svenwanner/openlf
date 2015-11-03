@@ -26,6 +26,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #ifndef QNEMAINWINDOW_H
 #define QNEMAINWINDOW_H
 
+#include <tuple>
+
 #include <QMainWindow>
 #include <QtWidgets>
 #include <QMdiArea>
@@ -49,6 +51,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <QToolBar>
 #include <QVBoxLayout>
 #include <QLineEdit>
+
+#include <unordered_map>
+
 #include "qnodesthreads.h"
 
 #include "qnesettings.h"
@@ -76,6 +81,7 @@ private slots:
 	void showCompSettings(QNEBlock *comp);
 	void activate(QWidget* wid);
         void newCircuit(DspCircuit* c);
+        void viewer_circuit_changed(DspCircuit* new_c, DspCircuit* old);
         void circuitNameChanged(QString name);
         
 signals:
@@ -113,14 +119,17 @@ private:
 	QDockWidget *dock = std::nullptr_t();
 	QDockWidget *dock2 = std::nullptr_t();
         QDockWidget *_circuit_dock = NULL;
+        QDockWidget *_circuit_list_dock = NULL;
         
         QLineEdit *_c_name_ed = NULL;
         
     Circuit_Viewer *_circuitViewer = NULL;
     QNESettings *_settings = NULL;
+    QListWidget *_circuit_list_w = NULL;
 
 	std::vector<QThread*> threads;
         std::vector<DspCircuit*> _circuits;
+  std::unordered_map<DspCircuit*,std::tuple<Circuit_Viewer*,QListWidgetItem*>> _viewers;
 };
 
 #endif // QNEMAINWINDOW_H

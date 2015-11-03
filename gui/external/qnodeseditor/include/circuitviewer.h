@@ -91,6 +91,7 @@ signals:
 
   void activated(QWidget* w);
   void newCircuit(DspCircuit* c);
+  void circuitChanged(DspCircuit* new_c, DspCircuit* old);
 
 protected:
 	bool event(QEvent* e);
@@ -98,18 +99,19 @@ protected:
 
 private slots:
 	
-	void save();
-	void saveAs();
-    void load();
-	void zoomIn();
-	void zoomOut();
-	void fitToWindow();
-        void onCompSelected(DspComponent *comp);
-        void onCompSelected(QNEBlock *block);
-	void on_action_Pop_Out_triggered();
-	void on_action_Pop_In_triggered();
-	void tick();
-	void configure();
+  void save();
+  void saveAs();
+  void load();
+  void show(DspCircuit *c);
+  void zoomIn();
+  void zoomOut();
+  void fitToWindow();
+  void onCompSelected(DspComponent *comp);
+  void onCompSelected(QNEBlock *block);
+  void on_action_Pop_Out_triggered();
+  void on_action_Pop_In_triggered();
+  void tick();
+  void configure();
 
 
 private:
@@ -178,6 +180,8 @@ private:
         
         bool _extra_window = false;
         QPointF _leftmost, _rightmost;
+        
+        bool processing = false;
 };
 
 #endif
