@@ -960,39 +960,42 @@ void DspComponent::errorCond(bool cond, const char *msg, ...)
   char *buf = NULL;
   _errorCond = false;
   
-  if (!cond) {
-    if (msg) {
-      buf = (char*)malloc(4096);
-      va_list arglist;
-      va_start(arglist, msg);
-      vsprintf(buf, msg, arglist);
-      va_end(arglist);
-    }
-    
-    if (configOnly()) {
-      if (buf) {
-        printf("ERROR: %s\n", buf); 
-        
-    
-        _errorMsg = std::string(buf);
-      }
-      else {
-        printf("config error!\n");
-        _errorMsg = std::string();
-      }
-      _errorCond = true;
-      return; 
-    } 
-    else {
-      if (buf) 
-        printf("ERROR: %s\n", buf);
-      else
-        printf("ERROR: component error - no msg received!\n");
-      printf("do abort\n");
-      abort(); 
-    }
-    free(buf);
+  if (cond)
+    return;
+  
+  _parentCircuit->_errorCond = true;
+  
+  if (msg) {
+    buf = (char*)malloc(4096);
+    va_list arglist;
+    va_start(arglist, msg);
+    vsprintf(buf, msg, arglist);
+    va_end(arglist);
   }
+  
+  if (configOnly()) {
+    if (buf) {
+      printf("ERROR: %s\n", buf); 
+      
+      
+      _errorMsg = std::string(buf);
+    }
+    else {
+      printf("config error!\n");
+      _errorMsg = std::string();
+    }
+    _errorCond = true;
+    return; 
+  } 
+  else {
+    if (buf) 
+      printf("ERROR: %s\n", buf);
+    else
+      printf("ERROR: component error - no msg received!\n");
+    printf("do abort\n");
+    abort(); 
+  }
+  free(buf);
 }
 
 bool DspComponent::hasError()

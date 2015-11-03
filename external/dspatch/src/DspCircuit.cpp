@@ -354,6 +354,7 @@ void DspCircuit::configure()
   
   if (_configured_generation < _generation) {
     _configOnly = true;
+    _errorCond = false;
     Tick();
     _configOnly = old;
     _configured_generation = _generation;
