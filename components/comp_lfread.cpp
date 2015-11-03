@@ -65,10 +65,7 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   //FIXME reuse previous out!
   
-  //FIXME move ini/clif handling decision into dataset class!
-  path extension = path(*filename).extension();
-  std::string ext_s = extension.generic_string();
-  if (!strcmp(ext_s.c_str(), ".ini")) {
+  if (!strcmp(path(*filename).extension().generic_string().c_str(), ".ini")) {
     out = new LF;
     outputs.SetValue(0, out);
     out->data = new Dataset();

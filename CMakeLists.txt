@@ -22,11 +22,6 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   add_definitions(-DOPENLF_COMPILER_MSVC)  
   include_directories(external/dirent)
   set(OPENLF_BUILD_TYPE)
-  
-  #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-  #set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
-  #set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT")
-  #set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd")
 endif()
 
 find_package(HDF5 REQUIRED CXX)
