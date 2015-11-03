@@ -188,12 +188,27 @@ void QNEMainWindow::createDockWindows()
 void QNEMainWindow::newCircuit(DspCircuit* c)
 {
   _circuits.push_back(c);
+
+  std::string name = c->GetComponentName();
+  if (!name.size())
+    name = "<UNNAMED CIRCUIT>";
+  QListWidgetItem *item = new QListWidgetItem(name.c_str());
+  item->setData(Qt::UserRole, QVP<DspCircuit>::asQVariant(c));
+  _circuit_list_w->addItem(item);
+  std::get<1>(_viewers[c]) = item;
 }
 
 void QNEMainWindow::circuitNameChanged(QString name)
 {
   _circuitViewer->circuit()->SetComponentName(name.toUtf8().constData());
   viewer_circuit_changed(_circuitViewer->circuit(), NULL);
+  
+  
+  std::string std_name = _circuitViewer->circuit()->GetComponentName();
+  if (!std_name.size())
+    std_name = "<UNNAMED CIRCUIT>";
+
+  _circuitViewer->setWindowTitle(std_name.c_str());
 }
 
 void QNEMainWindow::view_mode_changed(bool tabbed)

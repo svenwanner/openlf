@@ -280,7 +280,6 @@ void Circuit_Viewer::load()
   show(new_circuit);
 }
 
-
 void Circuit_Viewer::show(DspCircuit *c)
 {
   DspCircuit *old = _circuit;
