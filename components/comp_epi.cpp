@@ -102,7 +102,7 @@ void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4>
 {
   for(int c=0;c<sink_mav->shape()[2];c++) {
     MultiArrayView<2,T> sink = sink_mav->get<T>()->bindAt(2, c);
-    MultiArrayView<3,T> store = disp_store->get<T>()->bindAt(3, c);
+    MultiArrayView<3,T> store = disp_store->get<T>()->bindAt(2, c);
     
     for(int i=0;i<epi_h;i++) {
       //bind store y to epi line
@@ -404,7 +404,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     //TODO this should not be necessary
     #pragma omp critical
     if (!disp_store)
-      disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), subset.EPIHeight(), sink_mav->shape()[2]), sink_mav->type());
+      disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), sink_mav->shape()[2], subset.EPIHeight()), sink_mav->type());
     
     disp_store->call<subarray_copy>(i,epi_w,epi_h,sink_mav,disp_store,scale);
     

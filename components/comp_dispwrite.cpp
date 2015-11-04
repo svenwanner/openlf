@@ -226,7 +226,7 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   clifMat2cv(&img3d,&img);
   
   //centerview, channel 0
-  MultiArrayView<2,float> centerview = disp.get<float>()->bindAt(3,0).bindAt(2,disp.shape()[2]/2);
+  MultiArrayView<2,float> centerview = disp.get<float>()->bindAt(3,disp.shape()[3]/2).bindAt(2,0);
   
   if (ply_filename)
     write_ply(ply_filename->c_str(), centerview, img, subset);
