@@ -238,6 +238,33 @@ static void printprogress(int curr, int max, int &last, const char *fmt = NULL, 
   fflush(NULL);
 }
 
+FlexMAV<3> *proc_epi(Subset3d *subset, float disp_start, float disp_stop, float disp_step, int i, float scale, DspComponent *merge, DspCircuit *epi, clif::FlexMAV<3> &mav_source, FlexMAVSink<3> *sink, DspCircuit *parent)
+{
+  merge->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, true));
+  
+  for(float d=disp_start;d<=disp_stop;d+=disp_step) {
+    for(int c=0;c<epi->GetComponentCount();c++) {
+      DspComponent *comp = epi->GetComponent(c);
+      for(int p=0;p<comp->GetParameterCount();p++)
+        if (!comp->GetParameterName(p).compare("input_disparity")) {
+          comp->SetParameter(p, DspParameter(DspParameter::ParamType::Float, d));
+        }
+    }
+    
+    #pragma omp critical
+    readEPI(subset, mav_source, i, d, Unit::PIXELS, UNDISTORT, Interpolation::LINEAR, scale);
+    
+    //tick the circuit to fill _sink_mav using _source_mav and the circuit
+    parent->Reset();
+    parent->Tick();
+    //don't reset the last one, so we can read it out later!
+    
+    merge->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, false));
+  }
+  
+  return sink->get();
+}
+
 void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   LF *in = NULL;
@@ -313,9 +340,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   }
   
   
-  vector<FlexMAVSource<3>> comp_source(t_count);
-  vector<FlexMAVSink<3>>   comp_sink(t_count);
-  vector<clif::FlexMAV<3>> mav_source(t_count);
+  vector<FlexMAVSource<3>> comps_source(t_count);
+  vector<FlexMAVSink<3>>   comps_sink(t_count);
+  vector<clif::FlexMAV<3>> mavs_source(t_count);
   
   component_child_apply_config(epi_circuit, config, GetComponentName());
   component_child_apply_config(merge_circuit, config, GetComponentName());
@@ -338,28 +365,42 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //FIXME delete!
   vector<DspCircuit*>  epi_circuits(t_count);
   vector<DspComponent*>  merge_circuits(t_count);
-  vector<DspCircuit>   outer_circuit(t_count);
+  vector<DspCircuit>   outer_circuits(t_count);
   for(int i=0;i<t_count;i++) {
     epi_circuits[i] = dynamic_cast<DspCircuit*>(epi_circuit->clone());
     merge_circuits[i] = merge_circuit->clone();
     assert(epi_circuits[i]);
     assert(merge_circuits[i]);
     
-    outer_circuit[i].AddComponent(comp_source[i], "source");
-    outer_circuit[i].AddComponent(epi_circuits[i], "epi");  
-    outer_circuit[i].AddComponent(comp_sink[i], "sink");
-    //temp
-    outer_circuit[i].AddComponent(merge_circuits[i], "merge");  
+    outer_circuits[i].AddComponent(comps_source[i], "source");
+    outer_circuits[i].AddComponent(epi_circuits[i], "epi");  
+    outer_circuits[i].AddComponent(comps_sink[i], "sink");
+    outer_circuits[i].AddComponent(merge_circuits[i], "merge");  
     
-    outer_circuit[i].ConnectOutToIn(comp_source[i], 0, epi_circuits[i], 0);
-    //temp
-    //outer_circuit[i].ConnectOutToIn(epi_circuits[i], 0, comp_sink[i], 0);
-    outer_circuit[i].ConnectOutToIn(epi_circuits[i], 0, merge_circuits[i], 0);
-    outer_circuit[i].ConnectOutToIn(epi_circuits[i], 1, merge_circuits[i], 1);
-    outer_circuit[i].ConnectOutToIn(merge_circuits[i], 0, comp_sink[i], 0);
+    outer_circuits[i].ConnectOutToIn(comps_source[i], 0, epi_circuits[i], 0);
+    outer_circuits[i].ConnectOutToIn(epi_circuits[i], 0, merge_circuits[i], 0);
+    outer_circuits[i].ConnectOutToIn(epi_circuits[i], 1, merge_circuits[i], 1);
+    outer_circuits[i].ConnectOutToIn(merge_circuits[i], 0, comps_sink[i], 0);
     
-    comp_source[i].set(&mav_source[i]);
+    comps_source[i].set(&mavs_source[i]);
   }
+  
+  DspCircuit outer_circuit;
+  FlexMAVSource<3> comp_source;
+  FlexMAVSink<3>   comp_sink;
+  clif::FlexMAV<3> mav_source;
+  
+  outer_circuit.AddComponent(comp_source, "source");
+  outer_circuit.AddComponent(epi_circuit, "epi");  
+  outer_circuit.AddComponent(comp_sink, "sink");
+  outer_circuit.AddComponent(merge_circuit, "merge");  
+  
+  outer_circuit.ConnectOutToIn(comp_source, 0, epi_circuit, 0);
+  outer_circuit.ConnectOutToIn(epi_circuit, 0, merge_circuit, 0);
+  outer_circuit.ConnectOutToIn(epi_circuit, 1, merge_circuit, 1);
+  outer_circuit.ConnectOutToIn(merge_circuit, 0, comp_sink, 0);
+  
+  comp_source.set(&mav_source);
   
   FlexMAV<3> *sink_mav;
       
@@ -377,29 +418,29 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
       done++;
     }
     
-    merge_circuits[omp_get_thread_num()]->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, true));
+    int t = omp_get_thread_num();
     
-    for(float d=disp_start;d<=disp_stop;d+=disp_step) {
-      for(int c=0;c<epi_circuits[omp_get_thread_num()]->GetComponentCount();c++) {
-        DspComponent *comp = epi_circuits[omp_get_thread_num()]->GetComponent(c);
-        for(int p=0;p<comp->GetParameterCount();p++)
-          if (!comp->GetParameterName(p).compare("input_disparity")) {
-            comp->SetParameter(p, DspParameter(DspParameter::ParamType::Float, d));
-          }
-      }
+    if (i != stop_line-1)
+      sink_mav = proc_epi(
+        &subset, disp_start, disp_stop, disp_step, i, scale,
+        merge_circuits[t],
+        epi_circuits[t],
+        mavs_source[t],
+        &comps_sink[t],
+        &outer_circuits[t]                  
+      );
+    else
+      //store last processed line in input circuit!
+      sink_mav = proc_epi(
+        &subset, disp_start, disp_stop, disp_step, i, scale,
+        merge_circuit,
+        epi_circuit,
+        mav_source,
+        &comp_sink,
+        &outer_circuit               
+      );
       
-      #pragma omp critical
-      readEPI(&subset, mav_source[omp_get_thread_num()], i, d, Unit::PIXELS, UNDISTORT, Interpolation::LINEAR, scale);
-      
-      //tick the circuit to fill _sink_mav using _source_mav and the circuit
-      outer_circuit[omp_get_thread_num()].Reset();
-      outer_circuit[omp_get_thread_num()].Tick();
-      //don't reset the last one, so we can read it out later!
-      
-      merge_circuits[omp_get_thread_num()]->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, false));
-    }
     
-    sink_mav = comp_sink[omp_get_thread_num()].get();
     assert(sink_mav->type() == BaseType::FLOAT);
     
     //TODO this should not be necessary
@@ -408,7 +449,6 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
       disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), sink_mav->shape()[2], subset.EPIHeight()), sink_mav->type());
     
     disp_store->call<subarray_copy>(i,epi_w,epi_h,sink_mav,disp_store,scale);
-    
   }
   //cv::setNumThreads(-1);
   
