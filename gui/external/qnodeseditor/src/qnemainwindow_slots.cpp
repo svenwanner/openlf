@@ -72,6 +72,7 @@ void QNEMainWindow::new_circuit_viewer(DspCircuit *c)
   connect(v, SIGNAL(circuitChanged(DspCircuit*,DspCircuit*)), this, SLOT(viewer_circuit_changed(DspCircuit*,DspCircuit*)));
   connect(v, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
   connect(v, SIGNAL(compSelected(QNEBlock*)), this, SLOT(showCompSettings(QNEBlock*)));
+  connect(v, SIGNAL(state_changed(Circuit_Viewer*)), this, SLOT(check_viewer_state(Circuit_Viewer*)));
   
   if (!_viewers.count(v->circuit()))
     newCircuit(v->circuit(), v);
@@ -131,18 +132,13 @@ void QNEMainWindow::showCompSettings(QNEBlock *block)
 
 void QNEMainWindow::createDockWindows()
 {
-  mdiArea->closeAllSubWindows();
+  mdiArea->closeAllSubWindows();  
   
-  if (dock != NULL){
-    delete dock;
-  }
-  
-  
-  dock = new QDockWidget(tr("Component list:"), this);
-  dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  List1 = new QListWidget(dock);
-  dock->setWidget(List1);
-  addDockWidget(Qt::RightDockWidgetArea, dock);
+  _comp_list_dock = new QDockWidget(tr("Component list:"), this);
+  _comp_list_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+  List1 = new QListWidget(_comp_list_dock);
+  _comp_list_dock->setWidget(List1);
+  addDockWidget(Qt::RightDockWidgetArea, _comp_list_dock);
   //viewMenu->addAction(dock->toggleViewAction());
   
   //populate component list
@@ -161,15 +157,14 @@ void QNEMainWindow::createDockWindows()
   
   connect(List1, SIGNAL(itemDoubleClicked(QListWidgetItem*)),this, SLOT(addComponent(QListWidgetItem*)));
   
-  docks.push_back(dock);
   // ******************************************************************
   
   
-  QDockWidget *settings_dock = new QDockWidget(tr("Component Settings:"), this);
-  settings_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  _settings = new QNESettings(settings_dock);
-  settings_dock->setWidget(_settings);
-  addDockWidget(Qt::RightDockWidgetArea, settings_dock);
+  _settings_dock = new QDockWidget(tr("Component Settings:"), this);
+  _settings_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+  _settings = new QNESettings(_settings_dock);
+  _settings_dock->setWidget(_settings);
+  addDockWidget(Qt::RightDockWidgetArea, _settings_dock);
   
   _circuit_dock = new QDockWidget(tr("Circuit Settings:"), this);
   _circuit_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -269,5 +264,19 @@ void QNEMainWindow::viewer_circuit_changed(DspCircuit* new_c, DspCircuit* old)
       item->setSelected(true);
       item->listWidget()->blockSignals(false);
     }
+  }
+}
+
+void QNEMainWindow::check_viewer_state(Circuit_Viewer *v)
+{
+  if (v->processing()) {
+    _comp_list_dock->setDisabled(true);
+    _settings_dock->setDisabled(true);
+    _circuit_dock->setDisabled(true);
+  }
+  else {
+    _comp_list_dock->setDisabled(false);
+    _settings_dock->setDisabled(false);
+    _circuit_dock->setDisabled(false);
   }
 }

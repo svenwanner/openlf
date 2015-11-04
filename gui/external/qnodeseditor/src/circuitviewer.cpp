@@ -37,6 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "qneport.h"
 #include "qneconnection.h"
+#include "qnodesthreads.h"
 
 #include <iostream>
 #include <assert.h>
@@ -418,15 +419,36 @@ void Circuit_Viewer::show(DspCircuit *c)
 
 void Circuit_Viewer::tick()
 {
+  assert(!_circuitThread && !_processing);
+  
+  tickAct->setDisabled(true);
+  _processing = true;
+  emit state_changed(this);
+  
   Circuic_Thread  *_circuitThread = new Circuic_Thread(_circuit);
-  QThread *Thread = new QThread;
-  _circuitThread->moveToThread(Thread);
-  connect(Thread, SIGNAL(started()), _circuitThread, SLOT(run()));
-  Thread->start();
-  //threads.push_back(Thread);
+  QThread *_thread = new QThread;
+  _circuitThread->moveToThread(_thread);
+  connect(_thread, SIGNAL(started()), _circuitThread, SLOT(run()));
+  connect(_circuitThread, SIGNAL(done()), this, SLOT(thread_finished()));
+  _thread->start();
+  
 }
 
-
+void Circuit_Viewer::thread_finished()
+{
+  printf("finished!\n");
+  
+  _processing = false;
+  emit state_changed(this);
+  
+  tickAct->setDisabled(false);
+  
+  delete _thread;
+  delete _circuitThread;
+  
+  _thread = NULL;
+  _circuitThread = NULL;
+}
 
 void Circuit_Viewer::on_action_Pop_Out_triggered()
 {
@@ -455,6 +477,12 @@ void Circuit_Viewer::on_action_Pop_In_triggered()
     popInAct->setDisabled(true);
     popOutAct->setDisabled(false);
   }
+}
+
+
+bool Circuit_Viewer::processing()
+{
+  return _processing;
 }
 
 void Circuit_Viewer::configure()

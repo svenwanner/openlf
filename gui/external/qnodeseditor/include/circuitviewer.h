@@ -49,7 +49,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <QToolBar>
 #include <QVBoxLayout>
 #include <QLineEdit>
-#include "qnodesthreads.h"
 
 #include "qnesettings.h"
 #include "qneblock.h"
@@ -58,6 +57,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 class QNodesEditor;
 class Circuit_Viewer;
+class Circuit_Thread;
 
 class Circuit_Viewer : public QMainWindow
 
@@ -72,6 +72,7 @@ public:
   void addInputComponent(int pads = 1, QPointF *pos = NULL);
   void addOutputComponent(int pads = 1, QPointF *pos = NULL);
   DspCircuit *circuit();
+  bool processing();
   
   
   //void open(const QString &title);
@@ -92,6 +93,7 @@ signals:
   void activated(QWidget* w);
   void newCircuit(DspCircuit* c);
   void circuitChanged(DspCircuit* new_c, DspCircuit* old);
+  void state_changed(Circuit_Viewer *v);
   
 protected:
   virtual bool event(QEvent* e);
@@ -112,6 +114,7 @@ private slots:
   void on_action_Pop_In_triggered();
   void tick();
   void configure();
+  void thread_finished();
   
   
 private:
@@ -181,7 +184,10 @@ private:
   bool _extra_window = false;
   QPointF _leftmost, _rightmost;
   
-  bool processing = false;
+  bool _processing = false;
+  
+  Circuit_Thread  *_circuitThread = NULL;
+  QThread *_thread = NULL;
 };
 
 #endif

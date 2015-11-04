@@ -7,20 +7,26 @@
 
 class Circuic_Thread : public QObject
 {
-	Q_OBJECT
+  Q_OBJECT
 public:
-	Circuic_Thread(DspCircuit *_circuit) : _circuit(_circuit){};
-
+  Circuic_Thread(DspCircuit *_circuit) : _circuit(_circuit){};
+  
+signals:
+    
+    void done();
+    
 public slots:
-
-	void run(){
-		_circuit->Tick();
-		_circuit->Reset();
-	};
-
+  
+  void run(){
+    _circuit->Reset();
+    _circuit->Tick();
+    emit done();
+    printf("done!\n");
+  };
+  
 private:
-	DspCircuit *_circuit;
-
+  DspCircuit *_circuit;
+  
 };
 
 

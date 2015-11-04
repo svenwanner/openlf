@@ -86,6 +86,7 @@ private slots:
   void circuitNameChanged(QString name);
   void view_mode_changed(bool tabbed);
   void show_circuit(QListWidgetItem *it);
+  void check_viewer_state(Circuit_Viewer *v);
   
 signals:
   void itemDoubleClicked();
@@ -105,8 +106,6 @@ private:
   void createToolBars();
   void createStatusBar();
   
-  std::vector<QDockWidget*> docks;
-  
   QNodesEditor *nodesEditor = std::nullptr_t();
   QGraphicsView *view = std::nullptr_t();
   QGraphicsScene *scene = std::nullptr_t();
@@ -120,8 +119,8 @@ private:
   QListWidget *List1 = std::nullptr_t();
   QListWidget *List2 = std::nullptr_t();
   
-  QDockWidget *dock = std::nullptr_t();
-  QDockWidget *dock2 = std::nullptr_t();
+  QDockWidget *_comp_list_dock = NULL;
+  QDockWidget *_settings_dock = NULL;
   QDockWidget *_circuit_dock = NULL;
   QDockWidget *_circuit_list_dock = NULL;
   
