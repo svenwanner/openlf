@@ -41,10 +41,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "circuitviewer.h"
 
-#include "openlf/types.hpp"
-
-#include "clif/clif.hpp"
-
 #include <iostream>
 
 using namespace clif;
@@ -232,7 +228,7 @@ void QNEMainWindow::createDockWindows()
   QVBoxLayout *vbox = new QVBoxLayout(this);
   _port_dock->setWidget(w);
   w->setLayout(vbox);
-  _open_clif_btn = new QPushButton("open clif dataset", this);
+  _open_clif_btn = new QPushButton("open in clifview", this);
   _open_clif_btn->setDisabled(true);
   vbox->addWidget(_open_clif_btn);
   addDockWidget(Qt::LeftDockWidgetArea, _port_dock);
@@ -282,33 +278,12 @@ void QNEMainWindow::circuitNameChanged(QString name)
 
 void QNEMainWindow::open_clif_viewer()
 {
-  ClifFile f_out;
-    
   assert(_lf_selected || _flexmav3_selected);
   
   if (_lf_selected)
-  {
-    printf("store dataset!\n");
-    //FIXME get tmp file name?
-    f_out.create("viewer_export_tmp.clif");
-    Dataset out_set;
-    out_set.link(f_out, _lf_selected->data);
-    out_set.writeAttributes();
-  }
-  else if (_flexmav3_selected) {
-    //FIXME get tmp file name?
-    f_out.create("viewer_export_tmp.clif");
-    Dataset *dataset = f_out.createDataset();
-    _flexmav3_selected->write(dataset, "data");
-    delete dataset;
-  }
-  
-  f_out.close();
-  
-  QProcess *process = new QProcess();
-  QString file = "/home/hendrik/projects/clif/build/src/clifview/clifview";
-  printf("start process!\n");
-  process->start(file, QStringList({"-i", "viewer_export_tmp.clif"}));
+    show_in_clifview(_lf_selected);
+  else
+    show_in_clifview(_flexmav3_selected);
 }
 
 void QNEMainWindow::view_mode_changed(bool tabbed)

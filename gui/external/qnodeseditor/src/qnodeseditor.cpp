@@ -28,10 +28,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <QGraphicsScene>
 #include <QEvent>
 #include <QGraphicsSceneMouseEvent>
+#include <QProcess>
 
 #include "qneport.h"
 #include "qneconnection.h"
 #include "qneblock.h"
+
+#include "openlf.hpp"
+#include "openlf/types.hpp"
+#include "clif/clif.hpp"
+#include "clif/flexmav.hpp"
+
+using namespace clif;
+using namespace openlf;
 
 QNodesEditor::QNodesEditor(QObject *parent) :
     QObject(parent)
@@ -144,6 +153,71 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 		}
 		break;
 	}
+        case QEvent::GraphicsSceneMouseDoubleClick:
+        {
+          QGraphicsItem *item = itemAt(me->scenePos());
+          if (item && item->type() == QNEPort::Type && ((QNEPort*)item)->isOutput()) {
+            show_in_clifview((QNEPort*)item);
+          }
+        }
+        break;
 	}
 	return QObject::eventFilter(o, e);
+}
+
+
+void show_in_clifview(LF *lf)
+{
+  ClifFile f_out;
+
+  //FIXME get tmp file name?
+  f_out.create("viewer_export_tmp.clif");
+  Dataset out_set;
+  out_set.link(f_out, lf->data);
+  out_set.writeAttributes();
+  
+  f_out.close();
+  
+  QProcess *process = new QProcess();
+  QString file = "/home/hendrik/projects/clif/build/src/clifview/clifview";
+  printf("start process!\n");
+  process->start(file, QStringList({"-i", "viewer_export_tmp.clif"}));
+}
+
+void show_in_clifview(FlexMAV<3> *mav)
+{
+  ClifFile f_out;
+
+  //FIXME get tmp file name?
+  f_out.create("viewer_export_tmp.clif");
+  Dataset *dataset = f_out.createDataset();
+  mav->write(dataset, "data");
+  delete dataset;
+  
+  f_out.close();
+  
+  QProcess *process = new QProcess();
+  QString file = "/home/hendrik/projects/clif/build/src/clifview/clifview";
+  printf("start process!\n");
+  process->start(file, QStringList({"-i", "viewer_export_tmp.clif"}));
+}
+
+void show_in_clifview(QNEPort *port)
+{
+  LF *lf = NULL;
+  FlexMAV<3> *mav = NULL;
+  assert(port->isOutput());
+  
+  int idx = port->block()->getPortIdx(port);
+  DspSignal* signal = port->block()->component->GetOutputSignal(idx);
+  
+  if (signal) {
+    signal->GetValue(lf);
+    signal->GetValue(mav);
+
+    if (lf)
+      show_in_clifview(lf);
+    else if (mav)
+      show_in_clifview(mav);
+  }
 }

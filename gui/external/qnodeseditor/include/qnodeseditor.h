@@ -65,4 +65,12 @@ private:
         QNEPort *_sel_port = NULL;
 };
 
+
+namespace clif { template<unsigned int DIM> class FlexMAV; }
+namespace openlf { class LF; }
+
+void show_in_clifview(openlf::LF *lf);
+void show_in_clifview(clif::FlexMAV<3> *mav);
+void show_in_clifview(QNEPort *port);
+
 #endif // QNODESEDITOR_H
