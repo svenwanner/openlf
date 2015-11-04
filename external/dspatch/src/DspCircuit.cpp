@@ -286,6 +286,12 @@ void DspCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     // =========================================================
     if (_circuitThreads.size() == 0)
     {
+        // reset all internal components
+        for (size_t i = 0; i < _components.size(); i++)
+        {
+            _components[i]->Reset();
+        }
+      
         // set all internal component inputs from connected circuit inputs
         for (int i = 0; i < _inToInWires.GetWireCount(); i++)
         {
@@ -299,12 +305,6 @@ void DspCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         {
             _components[i]->Tick();
         }
-
-        // reset all internal components
-        /*for (size_t i = 0; i < _components.size(); i++)
-        {
-            _components[i]->Reset();
-        }*/
 
         // set all circuit outputs from connected internal component outputs
         for (int i = 0; i < _outToOutWires.GetWireCount(); i++)
