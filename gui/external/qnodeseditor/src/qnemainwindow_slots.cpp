@@ -199,9 +199,7 @@ void QNEMainWindow::createDockWindows()
 
 void QNEMainWindow::newCircuit(DspCircuit* c)
 {
-  Circuit_Viewer *v = dynamic_cast<Circuit_Viewer*>(sender());
-  
-  newCircuit(c, v);
+  newCircuit(c, NULL);
 }
 
 void QNEMainWindow::newCircuit(DspCircuit* c, Circuit_Viewer *v)
@@ -218,8 +216,9 @@ void QNEMainWindow::newCircuit(DspCircuit* c, Circuit_Viewer *v)
   if (v) {
     assert(v->circuit() == c);
     v->setWindowTitle(name.c_str());
-    _viewers[c] = std::make_tuple(v,item);
   }
+  
+  _viewers[c] = std::make_tuple(v,item);
 }
 
 void QNEMainWindow::circuitNameChanged(QString name)
