@@ -152,6 +152,8 @@ public:
     std::string const* GetParameterString(int index);
     DspCircuit* GetParentCircuit() { return _GetParentCircuit(); };
     
+    DspSignal* GetOutputSignal(int outputIndex);
+    
     void Tick();
     void Reset();
 

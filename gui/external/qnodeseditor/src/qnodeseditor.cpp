@@ -70,21 +70,26 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 		{
 			QGraphicsItem *item = itemAt(me->scenePos());
 			if (item && item->type() == QNEPort::Type)
-			{
-                conn = new QNEConnection(0);
-                scene->addItem(conn);
-				conn->setPort1((QNEPort*) item);
-				conn->setPos1(item->scenePos());
-				conn->setPos2(me->scenePos());
-				conn->updatePath();
+                        {
+                          conn = new QNEConnection(0);
+                          scene->addItem(conn);
+                          conn->setPort1((QNEPort*) item);
+                          conn->setPos1(item->scenePos());
+                          conn->setPos2(me->scenePos());
+                          conn->updatePath();
+                          
+                          if (((QNEPort*)item)->isOutput()) {
+                            if (_sel_port)
+                              _sel_port->setSelected(false);
 
+                            item->setSelected(true);
+                            _sel_port = (QNEPort*)item;
+                            emit portSelected((QNEPort*)item);
+                          }
+                          
 				return true;
 			} else if (item && item->type() == QNEBlock::Type)
 			{
-				/* if (selBlock)
-					selBlock->setSelected(); */
-				// selBlock = (QNEBlock*) item;
-				printf("cemit compsel\n");
                                 if ((dynamic_cast<QNEBlock*>(item))->blockType() == QNEBlock::BlockType::Regular)
                                   emit compSelected((dynamic_cast<QNEBlock*>(item))->component);
                                 else

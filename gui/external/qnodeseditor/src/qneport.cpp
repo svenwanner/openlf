@@ -27,6 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #include <QGraphicsScene>
 #include <QFontMetrics>
+#include <QStyleOptionGraphicsItem>
 
 #include <QPen>
 
@@ -36,6 +37,7 @@ QNEPort::QNEPort(QGraphicsItem *parent):
     QGraphicsPathItem(parent)
 {
 	label = new QGraphicsTextItem(this);
+        
 
 	radius_ = 5;
 	margin = 2;
@@ -48,8 +50,16 @@ QNEPort::QNEPort(QGraphicsItem *parent):
 	setBrush(Qt::red);
 
 	setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
+	setFlag(QGraphicsItem::ItemIsSelectable);
 
 	m_portFlags = 0;
+}
+
+void QNEPort::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+  QStyleOptionGraphicsItem unselected = (*option);
+  unselected.state &= !QStyle::State_Selected;
+  QGraphicsPathItem::paint(painter, &unselected, widget);
 }
 
 QNEPort::~QNEPort()
@@ -142,13 +152,23 @@ bool QNEPort::isConnected(QNEPort *other)
 
 QVariant QNEPort::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-	if (change == ItemScenePositionHasChanged)
-	{
-		foreach(QNEConnection *conn, m_connections)
-		{
-			conn->updatePosFromPorts();
-			conn->updatePath();
-		}
-	}
-	return value;
+  if (change == ItemScenePositionHasChanged)
+  {
+    foreach(QNEConnection *conn, m_connections)
+    {
+      conn->updatePosFromPorts();
+      conn->updatePath();
+    }
+  }
+  else if (change == QGraphicsItem::ItemSelectedChange) {
+    if (value == true) {
+      setPen(QPen(Qt::darkRed));
+      setBrush(Qt::yellow);
+    }
+    else {
+      setPen(QPen(Qt::darkRed));
+      setBrush(Qt::red);
+    }
+  }
+  return value;
 }

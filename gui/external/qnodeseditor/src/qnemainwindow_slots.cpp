@@ -35,12 +35,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "qnemainwindow.h"
 #include "userinterface_qnemainwindow.h"
 
+#include "qneport.h"
 #include "qneblock.h"
 #include "qnodeseditor.h"
 
 #include "circuitviewer.h"
 
+#include "openlf/types.hpp"
+
+#include "clif/clif.hpp"
+
 #include <iostream>
+
+using namespace clif;
 
 template <class T> class QVP
 {
@@ -72,6 +79,7 @@ void QNEMainWindow::new_circuit_viewer(DspCircuit *c)
   connect(v, SIGNAL(circuitChanged(DspCircuit*,DspCircuit*)), this, SLOT(viewer_circuit_changed(DspCircuit*,DspCircuit*)));
   connect(v, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
   connect(v, SIGNAL(compSelected(QNEBlock*)), this, SLOT(showCompSettings(QNEBlock*)));
+  connect(v, SIGNAL(portSelected(QNEPort*)), this, SLOT(showPortProps(QNEPort*)));
   connect(v, SIGNAL(state_changed(Circuit_Viewer*)), this, SLOT(check_viewer_state(Circuit_Viewer*)));
   
   if (!_viewers.count(v->circuit()))
@@ -128,6 +136,39 @@ void QNEMainWindow::showCompSettings(DspComponent *comp)
 void QNEMainWindow::showCompSettings(QNEBlock *block)
 {
   _settings->attach(block);
+}
+
+void QNEMainWindow::showPortProps(QNEPort *port)
+{
+  openlf::LF *lf = NULL;
+  
+  assert(port->isOutput());
+  
+  int idx = port->block()->getPortIdx(port);
+  DspSignal* signal = port->block()->component->GetOutputSignal(idx);
+  
+  if (signal) {
+    printf("got output signal!\n");
+    
+    signal->GetValue(lf);
+
+    if (lf) {
+      printf("got lf signal!\n");
+      _open_clif_btn->setDisabled(false);
+      _lf_selected = lf;
+    }
+    else {
+      _open_clif_btn->setDisabled(true);
+      _lf_selected = NULL;
+    }
+      
+  }
+  
+  
+  /*DspWire* wire = _inputWires.GetWire(i);
+            wire->linkedComponent->Tick();
+
+            DspSignal* signal = wire->linkedComponent->_outputBus.GetSignal(wire->fromSignalIndex);*/
 }
 
 void QNEMainWindow::createDockWindows()
@@ -190,6 +231,19 @@ void QNEMainWindow::createDockWindows()
   addDockWidget(Qt::LeftDockWidgetArea, _circuit_list_dock);
   
   connect(_circuit_list_w, SIGNAL(itemActivated(QListWidgetItem*)), this, SLOT(show_circuit(QListWidgetItem*)));
+  
+  _port_dock = new QDockWidget(tr("Component Output:"), this);
+  _port_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+  QWidget *w = new QWidget(this);
+  QVBoxLayout *vbox = new QVBoxLayout(this);
+  _port_dock->setWidget(w);
+  w->setLayout(vbox);
+  _open_clif_btn = new QPushButton("open clif dataset", this);
+  _open_clif_btn->setDisabled(true);
+  vbox->addWidget(_open_clif_btn);
+  addDockWidget(Qt::LeftDockWidgetArea, _port_dock);
+  
+  connect(_open_clif_btn, SIGNAL(clicked()), this, SLOT(open_clif_viewer()));
 }
 
 void QNEMainWindow::newCircuit(DspCircuit* c)
@@ -230,6 +284,27 @@ void QNEMainWindow::circuitNameChanged(QString name)
     std_name = "(unnamed)";
   
   _circuitViewer->setWindowTitle(std_name.c_str());
+}
+
+void QNEMainWindow::open_clif_viewer()
+{
+  
+  assert(_lf_selected);
+  
+  {
+    printf("store dataset!\n");
+    ClifFile f_out;
+    //FIXME get tmp file name?
+    f_out.create("viewer_export_tmp.clif");
+    Dataset out_set;
+    out_set.link(f_out, _lf_selected->data);
+    out_set.writeAttributes();
+  }
+  
+  QProcess *process = new QProcess();
+  QString file = "/home/hendrik/projects/clif/build/src/clifview/clifview";
+  printf("start process!\n");
+  process->start(file, QStringList({"-i", "viewer_export_tmp.clif"}));
 }
 
 void QNEMainWindow::view_mode_changed(bool tabbed)

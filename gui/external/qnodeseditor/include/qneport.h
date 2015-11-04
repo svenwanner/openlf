@@ -73,6 +73,8 @@ private:
 	QVector<QNEConnection*> m_connections;
 	int m_portFlags;
 	quint64 m_ptr;
+        
+        virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 };
 
 #endif // QNEPORT_H

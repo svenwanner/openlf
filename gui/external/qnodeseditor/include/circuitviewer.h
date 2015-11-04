@@ -87,6 +87,7 @@ public:
 signals:
   void compSelected(DspComponent *comp);
   void compSelected(QNEBlock *block);
+  void portSelected(QNEPort *port);
   
   void focusChanged();
   
@@ -110,6 +111,7 @@ private slots:
   void fitToWindow();
   void onCompSelected(DspComponent *comp);
   void onCompSelected(QNEBlock *block);
+  void onPortSelected(QNEPort *port);
   void on_action_Pop_Out_triggered();
   void on_action_Pop_In_triggered();
   void tick();

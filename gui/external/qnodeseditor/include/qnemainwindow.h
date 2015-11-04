@@ -54,10 +54,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #include <unordered_map>
 
-#include "qnodesthreads.h"
-
 #include "qnesettings.h"
 #include "qneblock.h"
+
+#include "openlf/types.hpp"
 
 #include "DspCircuit.h"
 
@@ -87,6 +87,8 @@ private slots:
   void view_mode_changed(bool tabbed);
   void show_circuit(QListWidgetItem *it);
   void check_viewer_state(Circuit_Viewer *v);
+  void showPortProps(QNEPort *port);
+  void open_clif_viewer();
   
 signals:
   void itemDoubleClicked();
@@ -123,12 +125,17 @@ private:
   QDockWidget *_settings_dock = NULL;
   QDockWidget *_circuit_dock = NULL;
   QDockWidget *_circuit_list_dock = NULL;
+  QDockWidget *_port_dock = NULL;
+  
+  QPushButton *_open_clif_btn = NULL;
   
   QLineEdit *_c_name_ed = NULL;
   
   Circuit_Viewer *_circuitViewer = NULL;
   QNESettings *_settings = NULL;
   QListWidget *_circuit_list_w = NULL;
+  
+  openlf::LF *_lf_selected;
   
   std::vector<QThread*> threads;
   std::vector<DspCircuit*> _circuits;

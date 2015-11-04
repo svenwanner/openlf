@@ -35,6 +35,7 @@ class QNEConnection;
 class QGraphicsItem;
 class QPointF;
 class QNEBlock;
+class QNEPort;
 
 class QNodesEditor : public QObject
 {
@@ -52,6 +53,7 @@ public:
 signals:
 	void compSelected(DspComponent *comp);
 	void compSelected(QNEBlock *block);
+	void portSelected(QNEPort *port);
 
 private:
 	QGraphicsItem *itemAt(const QPointF&);
@@ -60,6 +62,7 @@ private:
 	QGraphicsScene *scene;
 	QNEConnection *conn;
 	// QNEBlock *selBlock;
+        QNEPort *_sel_port = NULL;
 };
 
 #endif // QNODESEDITOR_H

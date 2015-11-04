@@ -908,6 +908,11 @@ bool DspComponent::_SetInputSignal(int inputIndex, int threadIndex, DspSignal co
 
 //-------------------------------------------------------------------------------------------------
 
+DspSignal* DspComponent::GetOutputSignal(int outputIndex)
+{
+    return _GetOutputSignal(outputIndex);
+}
+
 DspSignal* DspComponent::_GetOutputSignal(int outputIndex)
 {
     return _outputBus.GetSignal(outputIndex);

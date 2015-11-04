@@ -131,6 +131,7 @@ void Circuit_Viewer::createActions()
   
   connect(_editor, SIGNAL(compSelected(DspComponent*)), this, SLOT(onCompSelected(DspComponent*)));
   connect(_editor, SIGNAL(compSelected(QNEBlock*)), this, SLOT(onCompSelected(QNEBlock*)));
+  connect(_editor, SIGNAL(portSelected(QNEPort*)), this, SLOT(onPortSelected(QNEPort*)));
 }
 
 bool Circuit_Viewer::event(QEvent* e)
@@ -215,6 +216,12 @@ void Circuit_Viewer::onCompSelected(QNEBlock *block)
 {
   emit compSelected(block);
 }
+
+void Circuit_Viewer::onPortSelected(QNEPort *port)
+{
+  emit portSelected(port);
+}
+
 
 void Circuit_Viewer::addComponent(DspComponent *comp, bool gui_only)
 {
