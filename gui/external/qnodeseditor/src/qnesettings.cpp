@@ -93,9 +93,9 @@ void QNESettings::attach(DspComponent *comp, std::vector<DspCircuit*> &circuits)
             if (strlen(name)+strlen(type) == 0)
               continue;
             if (!strlen(name))
-              name = "<UNNAMED>";
+              name = "(unnamed)";
             if (!strlen(type))
-              type = "<UNKNOWN TYPE>";
+              type = "(no type)";
             sprintf(label, "%s (%s)", name, type);
             combox->addItem(label, QVariant::fromValue((void*)circuits[i]));
           }
@@ -208,16 +208,12 @@ void QNESettings::circuitSelected(int idx)
 {
   DspComponent *comp = (DspComponent*)sender()->property("component").value<void*>();
   int set_idx = sender()->property("idx").value<int>();
-  
-  printf("seting %d of comp %p circuit to %p\n", set_idx, comp,((QComboBox*)sender())->itemData(idx).value<void*>());
-  
+    
   bool succ = comp->SetParameter(set_idx, DspParameter(DPPT::Pointer, (DspCircuit*)(((QComboBox*)sender())->itemData(idx).value<void*>())));
   
   DspCircuit *cc;
   comp->GetParameter(set_idx)->GetPointer(cc);
   
-  printf("circuit currenty set: %p\n", cc);
-
   assert(succ);
   
   emit settingChanged();

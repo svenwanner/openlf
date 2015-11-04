@@ -45,7 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "circuitviewer.h"
 
-Circuit_Viewer::Circuit_Viewer(QMdiArea *mdiArea, QMainWindow *parent) : QMainWindow(parent), mdiArea(mdiArea)
+Circuit_Viewer::Circuit_Viewer(QMdiArea *mdiArea, QMainWindow *parent, DspCircuit *circuit) : QMainWindow(parent), mdiArea(mdiArea)
 {
   this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
@@ -57,7 +57,10 @@ Circuit_Viewer::Circuit_Viewer(QMdiArea *mdiArea, QMainWindow *parent) : QMainWi
   
   _scene = new QGraphicsScene();
   
-  _circuit = new DspCircuit();
+  if (circuit)
+    _circuit = circuit;
+  else
+    _circuit = new DspCircuit();
   
   _view = new QGraphicsView(this);
   _view->setScene(_scene);
@@ -76,6 +79,7 @@ Circuit_Viewer::Circuit_Viewer(QMdiArea *mdiArea, QMainWindow *parent) : QMainWi
   createToolbar();
   createMenus();
 }
+
 Circuit_Viewer::~Circuit_Viewer(){
 }
 
@@ -141,6 +145,13 @@ bool Circuit_Viewer::event(QEvent* e)
       emit this->activated(this);
   }
   return res;
+}
+
+void Circuit_Viewer::closeEvent(QCloseEvent *event)
+{
+  emit circuitChanged(NULL, circuit());
+  
+  QMainWindow::closeEvent(event);
 }
 
 void Circuit_Viewer::createToolbar()

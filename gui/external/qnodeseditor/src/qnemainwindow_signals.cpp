@@ -59,10 +59,6 @@ void QNEMainWindow::createActions()
         
 	tabViewAct = new QAction(tr("&Use Tabs"), this);
         tabViewAct->setCheckable(true);
-        tabViewAct->setChecked(false);
+        tabViewAct->setChecked(true);
         connect(tabViewAct, SIGNAL(toggled(bool)), this, SLOT(view_mode_changed(bool)));
-  
-        connect(_circuitViewer, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
-        connect(_circuitViewer, SIGNAL(compSelected(QNEBlock*)), this, SLOT(showCompSettings(QNEBlock*)));
-        connect(_circuitViewer, SIGNAL(focusChanged()), this, SLOT(onApplicationFocusChanged()));
 }

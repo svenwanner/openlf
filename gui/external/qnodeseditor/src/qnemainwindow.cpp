@@ -54,27 +54,16 @@ QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
 	mdiArea = new QMdiArea;
 	mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        mdiArea->setViewMode(QMdiArea::TabbedView);
+        mdiArea->setTabsClosable(true);
 	setCentralWidget(mdiArea);
 
-
-	_circuitViewer = new Circuit_Viewer(mdiArea, this);
-        _circuits.push_back(_circuitViewer->circuit());
-        _viewers[_circuitViewer->circuit()] = std::make_tuple(_circuitViewer, (QListWidgetItem*)NULL);
-	connect(_circuitViewer, SIGNAL(newCircuit(DspCircuit*)), this, SLOT(newCircuit(DspCircuit*)));
-	connect(_circuitViewer, SIGNAL(activated(QWidget*)), this, SLOT(activate(QWidget*)));
-	connect(_circuitViewer, SIGNAL(circuitChanged(DspCircuit*,DspCircuit)), this, SLOT(viewer_circuit_changed(DspCircuit*,DspCircuit)));
-        connect(_circuitViewer, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
-        connect(_circuitViewer, SIGNAL(compSelected(QNEBlock*)), this, SLOT(showCompSettings(QNEBlock*)));
-        
 	createActions();
 	createMenus();
 	createDockWindows();
 	createToolBars();  
-        
-        mdiArea->addSubWindow(_circuitViewer);
-	_circuitViewer->setObjectName("circuitViewer");
-	_circuitViewer->showMaximized();
-              
+
+        new_circuit_viewer();
         
 	this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 

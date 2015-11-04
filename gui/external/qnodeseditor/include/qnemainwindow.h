@@ -73,7 +73,7 @@ public:
 	~QNEMainWindow();
 
 private slots:
-	void new_circuit_viewer();
+	void new_circuit_viewer(DspCircuit *c = NULL);
 	void onApplicationFocusChanged();
 	void createDockWindows();
 	void addComponent(QListWidgetItem *it);
@@ -81,9 +81,11 @@ private slots:
 	void showCompSettings(QNEBlock *comp);
 	void activate(QWidget* wid);
         void newCircuit(DspCircuit* c);
+        void newCircuit(DspCircuit* c, Circuit_Viewer *v);
         void viewer_circuit_changed(DspCircuit* new_c, DspCircuit* old);
         void circuitNameChanged(QString name);
         void view_mode_changed(bool tabbed);
+        void show_circuit(QListWidgetItem *it);
         
 signals:
 	void itemDoubleClicked();

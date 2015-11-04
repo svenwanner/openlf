@@ -55,29 +55,28 @@ SLOTS
 
 */
 
-void QNEMainWindow::new_circuit_viewer()
+void QNEMainWindow::new_circuit_viewer(DspCircuit *c)
 {
-	_circuitViewer = new Circuit_Viewer(mdiArea, this);
-	connect(_circuitViewer, SIGNAL(newCircuit(DspCircuit*)), this, SLOT(newCircuit(DspCircuit*)));
-	connect(_circuitViewer, SIGNAL(activated(QWidget*)), this, SLOT(activate(QWidget*)));
-	connect(_circuitViewer, SIGNAL(circuitChanged(DspCircuit*,DspCircuit)), this, SLOT(viewer_circuit_changed(DspCircuit*,DspCircuit)));
-        connect(_circuitViewer, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
-        connect(_circuitViewer, SIGNAL(compSelected(QNEBlock*)), this, SLOT(showCompSettings(QNEBlock*)));
-        
-	mdiArea->addSubWindow(_circuitViewer);
-	_circuitViewer->setObjectName("circuitViewer");
-	_circuitViewer->showMaximized();
-        
-        
-        std::string name = _circuitViewer->circuit()->GetComponentName();
-        if (!name.size())
-          name = "<UNNAMED CIRCUIT>";
-        QListWidgetItem *item = new QListWidgetItem(name.c_str());
-        item->setData(Qt::UserRole, QVP<DspCircuit>::asQVariant(_circuitViewer->circuit()));
-        _circuit_list_w->addItem(item);
+  Circuit_Viewer *v;
   
-        _circuits.push_back(_circuitViewer->circuit());
-        _viewers[_circuitViewer->circuit()] = std::make_tuple(_circuitViewer,item);
+  v = new Circuit_Viewer(mdiArea, this, c);
+  
+  mdiArea->addSubWindow(v);
+  v->setObjectName("circuitViewer");
+  //WARNING this causes activate events from last active Circuit_Viewer, therfore set _circuitViewer only afterwards
+  v->showMaximized();
+  _circuitViewer = v;
+  
+  connect(v, SIGNAL(newCircuit(DspCircuit*)), this, SLOT(newCircuit(DspCircuit*)));
+  connect(v, SIGNAL(activated(QWidget*)), this, SLOT(activate(QWidget*)));
+  connect(v, SIGNAL(circuitChanged(DspCircuit*,DspCircuit*)), this, SLOT(viewer_circuit_changed(DspCircuit*,DspCircuit*)));
+  connect(v, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
+  connect(v, SIGNAL(compSelected(QNEBlock*)), this, SLOT(showCompSettings(QNEBlock*)));
+    
+  if (!_viewers.count(v->circuit()))
+    newCircuit(v->circuit(), v);
+  else
+    viewer_circuit_changed(v->circuit(), NULL);
 }
 
 void QNEMainWindow::onApplicationFocusChanged(){
@@ -99,6 +98,23 @@ void QNEMainWindow::addComponent(QListWidgetItem *it)
     else if (!it->text().compare("Circuit Output"))
       _circuitViewer->addOutputComponent();
   }
+}
+
+void QNEMainWindow::show_circuit(QListWidgetItem *it)
+{
+  
+  DspCircuit *c = QVP<DspCircuit>::asPtr(it->data(Qt::UserRole));
+  
+  assert(_viewers.count(c));
+  
+  Circuit_Viewer *v = std::get<0>(_viewers[c]);
+  
+  if (v) {
+    v->hide();
+    v->QWidget::show();
+  }
+  else
+    new_circuit_viewer(c);
 }
 
 void QNEMainWindow::showCompSettings(DspComponent *comp)
@@ -163,10 +179,14 @@ void QNEMainWindow::createDockWindows()
         box->setLayout(layout);
         _c_name_ed = new QLineEdit(_circuit_dock);
         connect(_c_name_ed, SIGNAL(textChanged(QString)), this, SLOT(circuitNameChanged(QString)));
-        _c_name_ed->setText(_circuitViewer->circuit()->GetComponentName().c_str());
+        if (_circuitViewer)
+          _c_name_ed->setText(_circuitViewer->circuit()->GetComponentName().c_str());
         layout->addRow(tr("&Name"), _c_name_ed);   
         
 	addDockWidget(Qt::RightDockWidgetArea, _circuit_dock);
+        
+        
+  assert(_viewers.size() == 0);
         
   _circuit_list_dock = new QDockWidget(tr("Circuit list:"), this);
   _circuit_list_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -174,39 +194,46 @@ void QNEMainWindow::createDockWindows()
   _circuit_list_dock->setWidget(_circuit_list_w);
   addDockWidget(Qt::LeftDockWidgetArea, _circuit_list_dock);
 
-  for(auto it=_viewers.begin();it!=_viewers.end();++it) {
-    std::string name = it->first->GetComponentName();
-    if (!name.size())
-      name = "<UNNAMED CIRCUIT>";
-    item = new QListWidgetItem(name.c_str());
-    item->setData(Qt::UserRole, QVP<DspCircuit>::asQVariant(it->first));
-    _circuit_list_w->addItem(item);
-    std::get<1>(_viewers[it->first]) = item;
-  }
+  connect(_circuit_list_w, SIGNAL(itemActivated(QListWidgetItem*)), this, SLOT(show_circuit(QListWidgetItem*)));
 }
 
 void QNEMainWindow::newCircuit(DspCircuit* c)
 {
-  _circuits.push_back(c);
+  Circuit_Viewer *v = dynamic_cast<Circuit_Viewer*>(sender());
+  
+  newCircuit(c, v);
+}
 
+void QNEMainWindow::newCircuit(DspCircuit* c, Circuit_Viewer *v)
+{
+  _circuits.push_back(c);
+  
   std::string name = c->GetComponentName();
   if (!name.size())
-    name = "<UNNAMED CIRCUIT>";
+    name = "(unnamed)";
   QListWidgetItem *item = new QListWidgetItem(name.c_str());
   item->setData(Qt::UserRole, QVP<DspCircuit>::asQVariant(c));
   _circuit_list_w->addItem(item);
-  std::get<1>(_viewers[c]) = item;
+  
+  if (v) {
+    assert(v->circuit() == c);
+    v->setWindowTitle(name.c_str());
+    _viewers[c] = std::make_tuple(v,item);
+  }
 }
 
 void QNEMainWindow::circuitNameChanged(QString name)
 {
+  if (!_circuitViewer)
+    return;
+  
   _circuitViewer->circuit()->SetComponentName(name.toUtf8().constData());
   viewer_circuit_changed(_circuitViewer->circuit(), NULL);
   
   
   std::string std_name = _circuitViewer->circuit()->GetComponentName();
   if (!std_name.size())
-    std_name = "<UNNAMED CIRCUIT>";
+    std_name = "(unnamed)";
 
   _circuitViewer->setWindowTitle(std_name.c_str());
 }
@@ -226,15 +253,22 @@ void QNEMainWindow::viewer_circuit_changed(DspCircuit* new_c, DspCircuit* old)
   
   Circuit_Viewer *v = dynamic_cast<Circuit_Viewer*>(sender());
   
-  if (v)
-    std::get<0>(_viewers[new_c]) = v;
-  
-  QListWidgetItem *item = std::get<1>(_viewers[new_c]);
-  
-  if (item) {
+  if (new_c) {
     std::string name = new_c->GetComponentName();
     if (!name.size())
-      name = "<UNNAMED CIRCUIT>";
-    item->setText(name.c_str());
+      name = "(unnamed)";
+    
+    if (v) {
+      std::get<0>(_viewers[new_c]) = v;
+      v->setWindowTitle(name.c_str());
+    }
+    
+    QListWidgetItem *item = std::get<1>(_viewers[new_c]);
+    if (item) {
+      item->listWidget()->blockSignals(true);
+      item->setText(name.c_str());
+      item->setSelected(true);
+      item->listWidget()->blockSignals(false);
+    }
   }
 }

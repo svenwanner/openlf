@@ -65,7 +65,7 @@ class Circuit_Viewer : public QMainWindow
 	Q_OBJECT
 
 public:
-	Circuit_Viewer(QMdiArea *mdiArea = 0, QMainWindow *parent = 0);
+	Circuit_Viewer(QMdiArea *mdiArea = 0, QMainWindow *parent = 0, DspCircuit *circuit = 0);
 	~Circuit_Viewer();
 
      void addComponent(DspComponent *comp, bool gui_only = false);
@@ -94,8 +94,8 @@ signals:
   void circuitChanged(DspCircuit* new_c, DspCircuit* old);
 
 protected:
-	bool event(QEvent* e);
-
+  virtual bool event(QEvent* e);
+  virtual void closeEvent(QCloseEvent *event);
 
 private slots:
 	
