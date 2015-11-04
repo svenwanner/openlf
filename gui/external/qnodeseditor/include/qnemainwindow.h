@@ -58,6 +58,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include "qneblock.h"
 
 #include "openlf/types.hpp"
+#include "clif/flexmav.hpp"
 
 #include "DspCircuit.h"
 
@@ -135,7 +136,8 @@ private:
   QNESettings *_settings = NULL;
   QListWidget *_circuit_list_w = NULL;
   
-  openlf::LF *_lf_selected;
+  openlf::LF *_lf_selected = NULL;
+  clif::FlexMAV<3> *_flexmav3_selected = NULL;
   
   std::vector<QThread*> threads;
   std::vector<DspCircuit*> _circuits;

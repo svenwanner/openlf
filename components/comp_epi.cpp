@@ -392,8 +392,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
       readEPI(&subset, mav_source[omp_get_thread_num()], i, d, Unit::PIXELS, UNDISTORT, Interpolation::LINEAR, scale);
       
       //tick the circuit to fill _sink_mav using _source_mav and the circuit
-      outer_circuit[omp_get_thread_num()].Tick();
       outer_circuit[omp_get_thread_num()].Reset();
+      outer_circuit[omp_get_thread_num()].Tick();
+      //don't reset the last one, so we can read it out later!
       
       merge_circuits[omp_get_thread_num()]->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, false));
     }

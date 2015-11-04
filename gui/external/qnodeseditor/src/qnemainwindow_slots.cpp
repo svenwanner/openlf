@@ -140,7 +140,8 @@ void QNEMainWindow::showCompSettings(QNEBlock *block)
 
 void QNEMainWindow::showPortProps(QNEPort *port)
 {
-  openlf::LF *lf = NULL;
+  _lf_selected = NULL;
+  _flexmav3_selected = NULL;
   
   assert(port->isOutput());
   
@@ -150,25 +151,18 @@ void QNEMainWindow::showPortProps(QNEPort *port)
   if (signal) {
     printf("got output signal!\n");
     
-    signal->GetValue(lf);
+    signal->GetValue(_lf_selected);
+    signal->GetValue(_flexmav3_selected);
 
-    if (lf) {
+    if (_lf_selected) {
       printf("got lf signal!\n");
       _open_clif_btn->setDisabled(false);
-      _lf_selected = lf;
     }
-    else {
-      _open_clif_btn->setDisabled(true);
-      _lf_selected = NULL;
+    else if (_flexmav3_selected) {
+      printf("got flexmav<3> signal!\n");
+      _open_clif_btn->setDisabled(false);
     }
-      
   }
-  
-  
-  /*DspWire* wire = _inputWires.GetWire(i);
-            wire->linkedComponent->Tick();
-
-            DspSignal* signal = wire->linkedComponent->_outputBus.GetSignal(wire->fromSignalIndex);*/
 }
 
 void QNEMainWindow::createDockWindows()
@@ -288,18 +282,28 @@ void QNEMainWindow::circuitNameChanged(QString name)
 
 void QNEMainWindow::open_clif_viewer()
 {
+  ClifFile f_out;
+    
+  assert(_lf_selected || _flexmav3_selected);
   
-  assert(_lf_selected);
-  
+  if (_lf_selected)
   {
     printf("store dataset!\n");
-    ClifFile f_out;
     //FIXME get tmp file name?
     f_out.create("viewer_export_tmp.clif");
     Dataset out_set;
     out_set.link(f_out, _lf_selected->data);
     out_set.writeAttributes();
   }
+  else if (_flexmav3_selected) {
+    //FIXME get tmp file name?
+    f_out.create("viewer_export_tmp.clif");
+    Dataset *dataset = f_out.createDataset();
+    _flexmav3_selected->write(dataset, "data");
+    delete dataset;
+  }
+  
+  f_out.close();
   
   QProcess *process = new QProcess();
   QString file = "/home/hendrik/projects/clif/build/src/clifview/clifview";
