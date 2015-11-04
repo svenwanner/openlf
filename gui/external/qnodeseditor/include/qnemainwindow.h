@@ -66,73 +66,73 @@ class Circuit_Viewer;
 
 class QNEMainWindow : public QMainWindow
 {
-	Q_OBJECT
-
+  Q_OBJECT
+  
 public:
-	explicit QNEMainWindow(QWidget *parent = 0);
-	~QNEMainWindow();
-
+  explicit QNEMainWindow(QWidget *parent = 0);
+  ~QNEMainWindow();
+  
 private slots:
-	void new_circuit_viewer(DspCircuit *c = NULL);
-	void onApplicationFocusChanged();
-	void createDockWindows();
-	void addComponent(QListWidgetItem *it);
-	void showCompSettings(DspComponent *comp);
-	void showCompSettings(QNEBlock *comp);
-	void activate(QWidget* wid);
-        void newCircuit(DspCircuit* c);
-        void newCircuit(DspCircuit* c, Circuit_Viewer *v);
-        void viewer_circuit_changed(DspCircuit* new_c, DspCircuit* old);
-        void circuitNameChanged(QString name);
-        void view_mode_changed(bool tabbed);
-        void show_circuit(QListWidgetItem *it);
-        
+  void new_circuit_viewer(DspCircuit *c = NULL);
+  void onApplicationFocusChanged();
+  void createDockWindows();
+  void addComponent(QListWidgetItem *it);
+  void showCompSettings(DspComponent *comp);
+  void showCompSettings(QNEBlock *comp);
+  void activate(QWidget* wid);
+  void newCircuit(DspCircuit* c);
+  void newCircuit(DspCircuit* c, Circuit_Viewer *v);
+  void viewer_circuit_changed(DspCircuit* new_c, DspCircuit* old);
+  void circuitNameChanged(QString name);
+  void view_mode_changed(bool tabbed);
+  void show_circuit(QListWidgetItem *it);
+  
 signals:
-	void itemDoubleClicked();
-
+  void itemDoubleClicked();
+  
 private:
-
-	QMdiArea *mdiArea = std::nullptr_t();
-
-	QMenu *fileMenu = std::nullptr_t();
-	QMenu *helpMenu = std::nullptr_t();
-	QMenu *viewMenu = std::nullptr_t();
-
-	QToolBar *fileToolBar = std::nullptr_t();
-
-	void createActions();
-	void createMenus();
-	void createToolBars();
-	void createStatusBar();
-	
-	std::vector<QDockWidget*> docks;
-
-	QNodesEditor *nodesEditor = std::nullptr_t();
-	QGraphicsView *view = std::nullptr_t();
-	QGraphicsScene *scene = std::nullptr_t();
-
-	QAction *quitAct = std::nullptr_t();
-	QAction *loadAct = std::nullptr_t();
-	QAction *saveAct = std::nullptr_t();
-	QAction *newAct = std::nullptr_t();
-        QAction *tabViewAct = NULL;
-
-	QListWidget *List1 = std::nullptr_t();
-	QListWidget *List2 = std::nullptr_t();
-
-	QDockWidget *dock = std::nullptr_t();
-	QDockWidget *dock2 = std::nullptr_t();
-        QDockWidget *_circuit_dock = NULL;
-        QDockWidget *_circuit_list_dock = NULL;
-        
-        QLineEdit *_c_name_ed = NULL;
-        
-    Circuit_Viewer *_circuitViewer = NULL;
-    QNESettings *_settings = NULL;
-    QListWidget *_circuit_list_w = NULL;
-
-	std::vector<QThread*> threads;
-        std::vector<DspCircuit*> _circuits;
+  
+  QMdiArea *mdiArea = std::nullptr_t();
+  
+  QMenu *fileMenu = std::nullptr_t();
+  QMenu *helpMenu = std::nullptr_t();
+  QMenu *viewMenu = std::nullptr_t();
+  
+  QToolBar *fileToolBar = std::nullptr_t();
+  
+  void createActions();
+  void createMenus();
+  void createToolBars();
+  void createStatusBar();
+  
+  std::vector<QDockWidget*> docks;
+  
+  QNodesEditor *nodesEditor = std::nullptr_t();
+  QGraphicsView *view = std::nullptr_t();
+  QGraphicsScene *scene = std::nullptr_t();
+  
+  QAction *quitAct = std::nullptr_t();
+  QAction *loadAct = std::nullptr_t();
+  QAction *saveAct = std::nullptr_t();
+  QAction *newAct = std::nullptr_t();
+  QAction *tabViewAct = NULL;
+  
+  QListWidget *List1 = std::nullptr_t();
+  QListWidget *List2 = std::nullptr_t();
+  
+  QDockWidget *dock = std::nullptr_t();
+  QDockWidget *dock2 = std::nullptr_t();
+  QDockWidget *_circuit_dock = NULL;
+  QDockWidget *_circuit_list_dock = NULL;
+  
+  QLineEdit *_c_name_ed = NULL;
+  
+  Circuit_Viewer *_circuitViewer = NULL;
+  QNESettings *_settings = NULL;
+  QListWidget *_circuit_list_w = NULL;
+  
+  std::vector<QThread*> threads;
+  std::vector<DspCircuit*> _circuits;
   std::unordered_map<DspCircuit*,std::tuple<Circuit_Viewer*,QListWidgetItem*>> _viewers;
 };
 

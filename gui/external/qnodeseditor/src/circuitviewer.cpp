@@ -48,7 +48,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Circuit_Viewer::Circuit_Viewer(QMdiArea *mdiArea, QMainWindow *parent, DspCircuit *circuit) : QMainWindow(parent), mdiArea(mdiArea)
 {
   this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-
+  
   //setAttribute(Qt::WA_DeleteOnClose);
   setMouseTracking(true);
   
@@ -74,7 +74,7 @@ Circuit_Viewer::Circuit_Viewer(QMdiArea *mdiArea, QMainWindow *parent, DspCircui
   
   _editor = new QNodesEditor(this);
   _editor->install(_scene);  
-
+  
   createActions();
   createToolbar();
   createMenus();
@@ -156,53 +156,53 @@ void Circuit_Viewer::closeEvent(QCloseEvent *event)
 
 void Circuit_Viewer::createToolbar()
 {
-	ToolBar = addToolBar(tr("File"));
-	//toolBar->setFixedHeight(ToolBar_Height);
-	ToolBar->addAction(loadAct);
-	ToolBar->addAction(saveAct);
-	ToolBar->addSeparator();
-	ToolBar->addAction(zoomInAct);
-	ToolBar->addAction(zoomOutAct);
-	ToolBar->addAction(fitToWindowAct);
-	ToolBar->addSeparator();
-	ToolBar->addAction(popInAct);
-	ToolBar->addAction(popOutAct);
-	ToolBar->addSeparator();
-	ToolBar->addAction(tickAct);
-	//ToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-
+  ToolBar = addToolBar(tr("File"));
+  //toolBar->setFixedHeight(ToolBar_Height);
+  ToolBar->addAction(loadAct);
+  ToolBar->addAction(saveAct);
+  ToolBar->addSeparator();
+  ToolBar->addAction(zoomInAct);
+  ToolBar->addAction(zoomOutAct);
+  ToolBar->addAction(fitToWindowAct);
+  ToolBar->addSeparator();
+  ToolBar->addAction(popInAct);
+  ToolBar->addAction(popOutAct);
+  ToolBar->addSeparator();
+  ToolBar->addAction(tickAct);
+  //ToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+  
 }
 
 void Circuit_Viewer::createMenus()
 {
-
-	circuitMenu = new QMenu(tr("&Circuit"), this);
-	circuitMenu->addAction(tickAct);
-	circuitMenu->addAction(saveAct);
-	circuitMenu->addAction(zoomInAct);
-	circuitMenu->addAction(zoomOutAct);
-	circuitMenu->addAction(fitToWindowAct);
-	circuitMenu->addAction(popInAct);
-	circuitMenu->addAction(popOutAct);
-
-	menuBar()->addMenu(circuitMenu);
-
+  
+  circuitMenu = new QMenu(tr("&Circuit"), this);
+  circuitMenu->addAction(tickAct);
+  circuitMenu->addAction(saveAct);
+  circuitMenu->addAction(zoomInAct);
+  circuitMenu->addAction(zoomOutAct);
+  circuitMenu->addAction(fitToWindowAct);
+  circuitMenu->addAction(popInAct);
+  circuitMenu->addAction(popOutAct);
+  
+  menuBar()->addMenu(circuitMenu);
+  
 }
 
 void Circuit_Viewer::zoomIn(){
-	scaleImage(1.25); 
+  scaleImage(1.25); 
 }
 void Circuit_Viewer::zoomOut(){ 
-	scaleImage(0.8); 
+  scaleImage(0.8); 
 }
 void Circuit_Viewer::scaleImage(double factor){
-	_view->scale(factor, factor);
+  _view->scale(factor, factor);
 }
 
 void Circuit_Viewer::fitToWindow()
 {
-    _view->fitInView(_scene->sceneRect(), Qt::KeepAspectRatio);
-	fitToWindowAct->setChecked(false);
+  _view->fitInView(_scene->sceneRect(), Qt::KeepAspectRatio);
+  fitToWindowAct->setChecked(false);
 }
 
 void Circuit_Viewer::onCompSelected(DspComponent *comp)
@@ -228,7 +228,7 @@ void Circuit_Viewer::addComponent(DspComponent *comp, bool gui_only)
     bool success = _circuit->AddComponent(comp, buf);
     assert(success);
   }
-    
+  
   _blocks.push_back(new QNEBlock(comp, _scene));
 }
 
@@ -236,7 +236,7 @@ void Circuit_Viewer::addComponent(DspComponent *comp, bool gui_only)
 void Circuit_Viewer::addInputComponent(int pads, QPointF *pos)
 {
   char buf[64];
-
+  
   for(int i=0;i<pads;i++) {
     sprintf(buf, "input_%d", i);
     _circuit->AddInput(buf);
@@ -250,7 +250,7 @@ void Circuit_Viewer::addInputComponent(int pads, QPointF *pos)
 void Circuit_Viewer::addOutputComponent(int pads, QPointF *pos)
 {   
   char buf[64];
-
+  
   for(int i=0;i<pads;i++) {
     sprintf(buf, "output_%d", i);
     _circuit->AddOutput(buf);
@@ -263,7 +263,7 @@ void Circuit_Viewer::addOutputComponent(int pads, QPointF *pos)
 
 void Circuit_Viewer::adjustScrollBar(QScrollBar *scrollBar, double factor)
 {
-	/*scrollBar->setValue(int(factor * scrollBar->value()	+ ((factor - 1) * scrollBar->pageStep() / 2)));*/
+  /*scrollBar->setValue(int(factor * scrollBar->value()	+ ((factor - 1) * scrollBar->pageStep() / 2)));*/
 }
 void Circuit_Viewer::save()
 {
@@ -368,7 +368,7 @@ void Circuit_Viewer::show(DspCircuit *c)
           target_block = _blocks[n];
           break;
         }
-      assert(target_block);
+        assert(target_block);
       
       QNEPort *p1 = _input_block->getPortByIdx(src_idx, true);
       QNEPort *p2 = target_block->getPortByIdx(sink_idx, false);
@@ -399,7 +399,7 @@ void Circuit_Viewer::show(DspCircuit *c)
           source_block = _blocks[n];
           break;
         }
-      assert(source_block);
+        assert(source_block);
       
       QNEPort *p1 = source_block->getPortByIdx(src_idx, true);
       QNEPort *p2 = _output_block->getPortByIdx(sink_idx, false);
@@ -418,12 +418,12 @@ void Circuit_Viewer::show(DspCircuit *c)
 
 void Circuit_Viewer::tick()
 {
-	Circuic_Thread  *_circuitThread = new Circuic_Thread(_circuit);
-	QThread *Thread = new QThread;
-	_circuitThread->moveToThread(Thread);
-	connect(Thread, SIGNAL(started()), _circuitThread, SLOT(run()));
-	Thread->start();
-	//threads.push_back(Thread);
+  Circuic_Thread  *_circuitThread = new Circuic_Thread(_circuit);
+  QThread *Thread = new QThread;
+  _circuitThread->moveToThread(Thread);
+  connect(Thread, SIGNAL(started()), _circuitThread, SLOT(run()));
+  Thread->start();
+  //threads.push_back(Thread);
 }
 
 

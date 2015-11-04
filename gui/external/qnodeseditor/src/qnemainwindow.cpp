@@ -47,69 +47,69 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
 {
-	setAttribute(Qt::WA_DeleteOnClose);
-	setWindowTitle(tr("Circuit Toolbox"));
-
-
-	mdiArea = new QMdiArea;
-	mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-	mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        mdiArea->setViewMode(QMdiArea::TabbedView);
-        mdiArea->setTabsClosable(true);
-	setCentralWidget(mdiArea);
-
-	createActions();
-	createMenus();
-	createDockWindows();
-	createToolBars();  
-
-        new_circuit_viewer();
-        
-	this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-
+  setAttribute(Qt::WA_DeleteOnClose);
+  setWindowTitle(tr("Circuit Toolbox"));
+  
+  
+  mdiArea = new QMdiArea;
+  mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+  mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+  mdiArea->setViewMode(QMdiArea::TabbedView);
+  mdiArea->setTabsClosable(true);
+  setCentralWidget(mdiArea);
+  
+  createActions();
+  createMenus();
+  createDockWindows();
+  createToolBars();  
+  
+  new_circuit_viewer();
+  
+  this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+  
 }
 QNEMainWindow::~QNEMainWindow()
 {
-	mdiArea->closeAllSubWindows();
+  mdiArea->closeAllSubWindows();
 }
 
 void QNEMainWindow::activate(QWidget* wid){
-	
-	_circuitViewer = (Circuit_Viewer*)wid;
-        
-        if (_c_name_ed && _circuitViewer->circuit())
-          _c_name_ed->setText(_circuitViewer->circuit()->GetComponentName().c_str());
+  
+  _circuitViewer = (Circuit_Viewer*)wid;
+  
+  if (_c_name_ed && _circuitViewer->circuit())
+    _c_name_ed->setText(_circuitViewer->circuit()->GetComponentName().c_str());
 };
 
 void QNEMainWindow::createMenus()
 {
-	fileMenu = new QMenu(tr("&File"), this);
-	fileMenu->addAction(loadAct);
-	//fileMenu->addAction(saveAct);
-	fileMenu->addAction(newAct);
-	fileMenu->addSeparator();
-	fileMenu->addAction(quitAct);
-        
-        viewMenu = new QMenu(tr("&View"), this);
-	viewMenu->addAction(tabViewAct);
-        
-	//helpMenu = new QMenu(tr("&Help"), this);
-
-	menuBar()->addMenu(fileMenu);
-	menuBar()->addMenu(viewMenu);
-	//menuBar()->addMenu(helpMenu);
-	//menuBar()->addMenu(viewMenu);
+  fileMenu = new QMenu(tr("&File"), this);
+  fileMenu->addAction(loadAct);
+  //fileMenu->addAction(saveAct);
+  fileMenu->addAction(newAct);
+  fileMenu->addSeparator();
+  fileMenu->addAction(quitAct);
+  
+  viewMenu = new QMenu(tr("&View"), this);
+  viewMenu->addAction(tabViewAct);
+  
+  //helpMenu = new QMenu(tr("&Help"), this);
+  
+  menuBar()->addMenu(fileMenu);
+  menuBar()->addMenu(viewMenu);
+  //menuBar()->addMenu(helpMenu);
+  //menuBar()->addMenu(viewMenu);
 }
 
 
 void QNEMainWindow::createToolBars()
 {
-	//ToolBar defined in source code
-	fileToolBar = addToolBar(tr("File"));
-	fileToolBar->addAction(loadAct);
-	fileToolBar->addAction(saveAct);
-	fileToolBar->addAction(newAct);
-	fileToolBar->addSeparator();
-	fileToolBar->addAction(quitAct);
-	//fileToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+  //ToolBar defined in source code
+  fileToolBar = addToolBar(tr("File"));
+  fileToolBar->addAction(loadAct);
+  fileToolBar->addAction(saveAct);
+  fileToolBar->addAction(newAct);
+  fileToolBar->addSeparator();
+  fileToolBar->addAction(quitAct);
+  //fileToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 }

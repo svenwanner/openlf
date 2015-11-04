@@ -34,31 +34,31 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "circuitviewer.h"
 
 /*
-
-SIGNALS
-
-*/
+ * 
+ * SIGNALS
+ * 
+ */
 
 void QNEMainWindow::createActions()
 {
-
-	loadAct = new QAction(QIcon(":/open.png"), tr("&Load Circuit in new Window"), this);
-	loadAct->setShortcuts(QKeySequence::Open);
-	loadAct->setStatusTip(tr("Open a file"));
-	connect(loadAct, SIGNAL(triggered()), this, SLOT(loadFile()));
-
-	saveAct = new QAction(QIcon(":/save.png"), tr("&Save"), this);
-	saveAct->setShortcuts(QKeySequence::Save);
-	saveAct->setStatusTip(tr("Save a file"));
-	connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));
-
-	newAct = new QAction(QIcon(":/circuit.png"), tr("&New Circuit in new Window"), this);
-	//saveAct->setShortcuts(QKeySequence::Save);
-	newAct->setStatusTip(tr("New circuit"));
-	connect(newAct, SIGNAL(triggered()), this, SLOT(new_circuit_viewer()));
-        
-	tabViewAct = new QAction(tr("&Use Tabs"), this);
-        tabViewAct->setCheckable(true);
-        tabViewAct->setChecked(true);
-        connect(tabViewAct, SIGNAL(toggled(bool)), this, SLOT(view_mode_changed(bool)));
+  
+  loadAct = new QAction(QIcon(":/open.png"), tr("&Load Circuit in new Window"), this);
+  loadAct->setShortcuts(QKeySequence::Open);
+  loadAct->setStatusTip(tr("Open a file"));
+  connect(loadAct, SIGNAL(triggered()), this, SLOT(loadFile()));
+  
+  saveAct = new QAction(QIcon(":/save.png"), tr("&Save"), this);
+  saveAct->setShortcuts(QKeySequence::Save);
+  saveAct->setStatusTip(tr("Save a file"));
+  connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));
+  
+  newAct = new QAction(QIcon(":/circuit.png"), tr("&New Circuit in new Window"), this);
+  //saveAct->setShortcuts(QKeySequence::Save);
+  newAct->setStatusTip(tr("New circuit"));
+  connect(newAct, SIGNAL(triggered()), this, SLOT(new_circuit_viewer()));
+  
+  tabViewAct = new QAction(tr("&Use Tabs"), this);
+  tabViewAct->setCheckable(true);
+  tabViewAct->setChecked(true);
+  connect(tabViewAct, SIGNAL(toggled(bool)), this, SLOT(view_mode_changed(bool)));
 }

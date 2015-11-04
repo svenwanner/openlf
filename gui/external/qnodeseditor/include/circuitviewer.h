@@ -62,43 +62,43 @@ class Circuit_Viewer;
 class Circuit_Viewer : public QMainWindow
 
 {
-	Q_OBJECT
-
+  Q_OBJECT
+  
 public:
-	Circuit_Viewer(QMdiArea *mdiArea = 0, QMainWindow *parent = 0, DspCircuit *circuit = 0);
-	~Circuit_Viewer();
-
-     void addComponent(DspComponent *comp, bool gui_only = false);
-     void addInputComponent(int pads = 1, QPointF *pos = NULL);
-     void addOutputComponent(int pads = 1, QPointF *pos = NULL);
-     DspCircuit *circuit();
-        
-        
-	//void open(const QString &title);
-	//void setImage(const QString &title, QPixmap *pxmap);
-	//void enableEPI(bool enable);
-
-	//QString userFriendlyCurrentFile();
-	//QString currentFile()  { return curFile; }
-
-	//QScrollArea *scrollArea;
-
+  Circuit_Viewer(QMdiArea *mdiArea = 0, QMainWindow *parent = 0, DspCircuit *circuit = 0);
+  ~Circuit_Viewer();
+  
+  void addComponent(DspComponent *comp, bool gui_only = false);
+  void addInputComponent(int pads = 1, QPointF *pos = NULL);
+  void addOutputComponent(int pads = 1, QPointF *pos = NULL);
+  DspCircuit *circuit();
+  
+  
+  //void open(const QString &title);
+  //void setImage(const QString &title, QPixmap *pxmap);
+  //void enableEPI(bool enable);
+  
+  //QString userFriendlyCurrentFile();
+  //QString currentFile()  { return curFile; }
+  
+  //QScrollArea *scrollArea;
+  
 signals:
   void compSelected(DspComponent *comp);
   void compSelected(QNEBlock *block);
-
+  
   void focusChanged();
-
+  
   void activated(QWidget* w);
   void newCircuit(DspCircuit* c);
   void circuitChanged(DspCircuit* new_c, DspCircuit* old);
-
+  
 protected:
   virtual bool event(QEvent* e);
   virtual void closeEvent(QCloseEvent *event);
-
+  
 private slots:
-	
+  
   void save();
   void saveAs();
   void load();
@@ -112,76 +112,76 @@ private slots:
   void on_action_Pop_In_triggered();
   void tick();
   void configure();
-
-
+  
+  
 private:
-	int event_memory;
-
-	QMdiArea *mdiArea;
-	QWidget *popInpopOutWidget;
-
-	// member variable to store click position
-	QPoint m_lastPoint;
-	// member variable - flag of click beginning
-	bool m_mouseClick;
-
-	void scaleImage(double factor);
-	void adjustScrollBar(QScrollBar *scrollBar, double factor);
-	void createToolbar();
-	void createActions();
-	void createMenus();
-        void check_add_circuit();
-
-	QAction *MousePosition;
-	QAction *saveAct;
-	QAction *saveAsAct;
-	QAction *loadAct;
-	QAction *exitAct;
-	QAction *infoAct;
-	QAction *zoomInAct;
-	QAction *zoomOutAct;
-	QAction *fitToWindowAct;
-	QAction *popInAct;
-	QAction *popOutAct;
-	QAction *tickAct;
-
-	const int ToolBar_Height = 40;
-	QToolBar *ToolBar = std::nullptr_t();
-	QMenu *circuitMenu = std::nullptr_t();
-
-
-	
-	//QVBoxLayout* vbox;
-
-	//QMenuBar *menuBar;
-	//QMainWindow *inner;
-	//QMenu *viewMenu;
-
-	//QToolBar *fileToolBar;
-
-
-
-	//double scaleFactor;
-
-	//void setCurrentFile(const QString &fileName);
-	//QString strippedName(const QString &fullFileName);
-
-	//QString curFile;
-	//bool isUntitled;
-        
-        DspCircuit *_circuit;
-        QGraphicsScene *_scene;
-        QGraphicsView *_view;
-        QNodesEditor *_editor;
-        std::vector<QNEBlock*> _blocks;
-        
-        QNEBlock *_input_block = NULL;
-        QNEBlock *_output_block = NULL;
-        
-        bool _extra_window = false;
-        QPointF _leftmost, _rightmost;
-        
-        bool processing = false;
+  int event_memory;
+  
+  QMdiArea *mdiArea;
+  QWidget *popInpopOutWidget;
+  
+  // member variable to store click position
+  QPoint m_lastPoint;
+  // member variable - flag of click beginning
+  bool m_mouseClick;
+  
+  void scaleImage(double factor);
+  void adjustScrollBar(QScrollBar *scrollBar, double factor);
+  void createToolbar();
+  void createActions();
+  void createMenus();
+  void check_add_circuit();
+  
+  QAction *MousePosition;
+  QAction *saveAct;
+  QAction *saveAsAct;
+  QAction *loadAct;
+  QAction *exitAct;
+  QAction *infoAct;
+  QAction *zoomInAct;
+  QAction *zoomOutAct;
+  QAction *fitToWindowAct;
+  QAction *popInAct;
+  QAction *popOutAct;
+  QAction *tickAct;
+  
+  const int ToolBar_Height = 40;
+  QToolBar *ToolBar = std::nullptr_t();
+  QMenu *circuitMenu = std::nullptr_t();
+  
+  
+  
+  //QVBoxLayout* vbox;
+  
+  //QMenuBar *menuBar;
+  //QMainWindow *inner;
+  //QMenu *viewMenu;
+  
+  //QToolBar *fileToolBar;
+  
+  
+  
+  //double scaleFactor;
+  
+  //void setCurrentFile(const QString &fileName);
+  //QString strippedName(const QString &fullFileName);
+  
+  //QString curFile;
+  //bool isUntitled;
+  
+  DspCircuit *_circuit;
+  QGraphicsScene *_scene;
+  QGraphicsView *_view;
+  QNodesEditor *_editor;
+  std::vector<QNEBlock*> _blocks;
+  
+  QNEBlock *_input_block = NULL;
+  QNEBlock *_output_block = NULL;
+  
+  bool _extra_window = false;
+  QPointF _leftmost, _rightmost;
+  
+  bool processing = false;
 };
 
 #endif
