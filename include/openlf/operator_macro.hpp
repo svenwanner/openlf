@@ -80,7 +80,8 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
   \
   _output_image.create(in->shape(), in->type());\
 \
-  in->call<NAME##dispatcher>(this, in, out_ptr, &inputs, &outputs);\
+  if (!configOnly()) \
+    in->call<NAME##dispatcher>(this, in, out_ptr, &inputs, &outputs);\
   \
   stat = outputs.SetValue(0, out_ptr);\
 }\
@@ -160,7 +161,7 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
 \
   for(int i=0;i<INCOUNT;i++) { \
     errorCond(inputs.GetValue(i, in[i]), #NAME ": input not found - possible type mismatch?"); RETURN_ON_ERROR \
-    errorCond(in[i]->type() > BaseType::INVALID, #NAME ": input %d no valid type!", i); \
+    errorCond(in[i]->type() > BaseType::INVALID, #NAME ": input %d no valid type!", i); RETURN_ON_ERROR \
   }\
 \
   FlexMAV<OUTDIM> *out_ptr[OUTCOUNT];\
@@ -169,7 +170,8 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
     _output_image[i].create(in[0]->shape(), in[0]->type());\
   } \
 \
-  in[0]->call<NAME##dispatcher>(this, in, out_ptr, &inputs, &outputs);\
+  if (!configOnly()) \
+    in[0]->call<NAME##dispatcher>(this, in, out_ptr, &inputs, &outputs);\
 \
   for(int i=0;i<OUTCOUNT;i++) { \
     stat = outputs.SetValue(i, out_ptr[i]);\
@@ -243,6 +245,7 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
   \
   for(int i=0;i<INCOUNT;i++) { \
     errorCond(inputs.GetValue(i, in[i]), #NAME ": input not found - possible type mismatch?"); \
+    RETURN_ON_ERROR \
     errorCond(in[i]->type() > BaseType::INVALID, #NAME ": input %d no valid type!", i); \
     RETURN_ON_ERROR \
   } \
@@ -253,7 +256,8 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
     _output_image[i].create(in[0]->shape(), OUTBASETYPE);\
   } \
 \
-  in[0]->call<NAME##dispatcher>(this, in, out_ptr, &inputs, &outputs);\
+  if (!configOnly()) \
+    in[0]->call<NAME##dispatcher>(this, in, out_ptr, &inputs, &outputs);\
   \
   for(int i=0;i<OUTCOUNT;i++) { \
     stat = outputs.SetValue(i, out_ptr[i]);\

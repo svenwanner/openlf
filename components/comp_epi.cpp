@@ -455,6 +455,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   assert(disp_store);
 
   disp_store->write(out->data, "disparity/default/data");
+  out->path = "disparity/default/data";
   delete disp_store;
 }
 

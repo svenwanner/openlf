@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <QEvent>
 #include <QGraphicsSceneMouseEvent>
 #include <QProcess>
+#include <QTemporaryFile>
 
 #include "qneport.h"
 #include "qneconnection.h"
@@ -38,6 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include "openlf/types.hpp"
 #include "clif/clif.hpp"
 #include "clif/flexmav.hpp"
+#include "clif/clifviewcaller.hpp"
 
 using namespace clif;
 using namespace openlf;
@@ -165,41 +167,51 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 	return QObject::eventFilter(o, e);
 }
 
-
 void show_in_clifview(LF *lf)
 {
-  ClifFile f_out;
-
-  //FIXME get tmp file name?
-  f_out.create("viewer_export_tmp.clif");
-  Dataset out_set;
-  out_set.link(f_out, lf->data);
-  out_set.writeAttributes();
+  QTemporaryFile tmpfile;
+  tmpfile.setAutoRemove(false);
+  bool succ = tmpfile.open();
+  char *filename = strdup(tmpfile.fileName().toUtf8().constData());
   
-  f_out.close();
+  if (!succ)
+    abort();
   
-  QProcess *process = new QProcess();
-  QString file = "/home/hendrik/projects/clif/build/src/clifview/clifview";
-  printf("start process!\n");
-  process->start(file, QStringList({"-i", "viewer_export_tmp.clif"}));
+  {
+    ClifFile f_out;
+    f_out.create(filename);
+    Dataset out_set;
+    out_set.link(f_out, lf->data);
+    out_set.writeAttributes();
+  }
+  
+  new ExternalClifViewer(filename, "default", lf->path.generic_string().c_str());
+  
+  //free(filename);
 }
 
 void show_in_clifview(FlexMAV<3> *mav)
 {
-  ClifFile f_out;
-
-  //FIXME get tmp file name?
-  f_out.create("viewer_export_tmp.clif");
-  Dataset *dataset = f_out.createDataset();
-  mav->write(dataset, "data");
-  delete dataset;
+  QTemporaryFile tmpfile;
+  tmpfile.setAutoRemove(false);
+  bool succ = tmpfile.open();
+  char *filename = strdup(tmpfile.fileName().toUtf8().constData());
   
-  f_out.close();
+  if (!succ)
+    abort();
   
-  QProcess *process = new QProcess();
-  QString file = "/home/hendrik/projects/clif/build/src/clifview/clifview";
-  printf("start process!\n");
-  process->start(file, QStringList({"-i", "viewer_export_tmp.clif"}));
+  {
+    ClifFile f_out;
+    f_out.create(filename);
+    Dataset *dataset = f_out.createDataset();
+    
+    mav->write(dataset, "data");
+    delete dataset;
+  }
+  
+  new ExternalClifViewer(filename,"default","data");
+  
+  free(filename);
 }
 
 void show_in_clifview(QNEPort *port)

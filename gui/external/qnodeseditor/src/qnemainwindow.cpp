@@ -113,3 +113,12 @@ void QNEMainWindow::createToolBars()
   fileToolBar->addAction(quitAct);
   //fileToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 }
+
+/*void QNEMainWindow::createToolBars()
+printf("start client\n");
+      _client_socket = new QLocalSocket(this);
+      
+      connect(_client_socket, SIGNAL(connected()), this, SLOT(showFileClientConnected()));
+      connect(_client_socket, SIGNAL(error(QLocalSocket::LocalSocketError)), this, SLOT(showFileClientError(QLocalSocket::LocalSocketError)));
+      
+      _client_socket->connectToServer("clifview_showfile", QIODevice::ReadWrite);*/

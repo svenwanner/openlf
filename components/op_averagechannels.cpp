@@ -97,7 +97,8 @@ void OP_AverageChannels::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     _output_image[i].create(Shape3(in[0]->shape()[0], in[0]->shape()[1], 1), in[0]->type());
   }
   
-  in[0]->call<OP_AverageChannels_dispatcher>(this, in, out_ptr, &inputs, &outputs);
+  if (!configOnly())
+    in[0]->call<OP_AverageChannels_dispatcher>(this, in, out_ptr, &inputs, &outputs);
   
   for(int i=0;i<OUTCOUNT;i++) { 
     stat = outputs.SetValue(i, out_ptr[i]);
