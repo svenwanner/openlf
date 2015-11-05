@@ -57,13 +57,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include "qnesettings.h"
 #include "qneblock.h"
 
-#include "openlf/types.hpp"
-#include "clif/flexmav.hpp"
-
 #include "DspCircuit.h"
 
 class QNodesEditor;
 class Circuit_Viewer;
+
+namespace openlf { class LF; }
+namespace clif { template<unsigned int DIM> class FlexMAV; }
 
 class QNEMainWindow : public QMainWindow
 {
