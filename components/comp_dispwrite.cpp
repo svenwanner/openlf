@@ -221,7 +221,7 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   cv::Mat img3d, img;
   //FIXME should add a readimage to subset3d!
   std::vector<int> idx(in->data->dims(), 0);
-  idx[3] = disp.shape()[2]/2;
+  idx[3] = disp.shape()[3]/2;
   in->data->readImage(idx, &img3d, UNDISTORT | CVT_8U);
   clifMat2cv(&img3d,&img);
   

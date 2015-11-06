@@ -54,6 +54,8 @@ protected:
 private:  
   DspCircuit *_default_epi_circuit = NULL;
   DspComponent *_default_merge_circuit = NULL;
+  LF _out;
+  clif::Dataset _out_set;
   
   template<typename T> void openlf_add_param(const char *name, T val, DspParameter::ParamType type, int idx);
   void openlf_add_param(const char *name, DspParameter::ParamType type, int idx);
@@ -277,8 +279,8 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   inputs.GetValue(1, config);
   
-  out = new LF();
-  out->data = new Dataset();
+  out = &_out;
+  out->data = &_out_set;
   out->data->memory_link(in->data);
   
   outputs.SetValue(0, out);

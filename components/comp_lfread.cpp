@@ -40,6 +40,9 @@ public:
 protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 private:
+  LF _out;
+  clif::Dataset _out_set;
+  
   virtual bool ParameterUpdating_ (int i, DspParameter const &p);
 };
   
@@ -63,13 +66,12 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   errorCond(filename && filename->size(), "missing file name"); RETURN_ON_ERROR
   
-  //FIXME reuse previous out!
+  out = &_out;
+  outputs.SetValue(0, out);
+  out->data = &_out_set;
+  _out_set.reset();
   
   if (!strcmp(path(*filename).extension().generic_string().c_str(), ".ini")) {
-    out = new LF;
-    outputs.SetValue(0, out);
-    out->data = new Dataset();
-    
     out->data->Attributes::open(filename->c_str(), NULL);
     out->path = std::string();
   }
@@ -79,19 +81,17 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     
     errorCond(f.valid(), "invalid file \"%s\"", filename->c_str()); RETURN_ON_ERROR
     
-    out = new LF;
-    outputs.SetValue(0, out);
     //FIXME error handling
     if (dataset_name)
-      out->data = f.openDataset(*dataset_name);
+      out->data->open(f, *dataset_name);
     else
-      out->data = f.openDataset();
-    
-    Subset3d *subset = new Subset3d(out->data, 0);
+      out->data->open(f, f.datasetList()[0]);
     
     //TODO dataset name
-    out->path = path();
+    //out->path = path();
   }
+  
+  outputs.SetValue(0, out);
 }
 
 bool COMP_LFRead::ParameterUpdating_ (int i, DspParameter const &p)
