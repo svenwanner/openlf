@@ -83,7 +83,7 @@ private slots:
   void activate(QWidget* wid);
   void newCircuit(DspCircuit* c);
   void newCircuit(DspCircuit* c, Circuit_Viewer *v);
-  void viewer_circuit_changed(DspCircuit* new_c, DspCircuit* old);
+  void viewer_circuit_changed(DspCircuit* new_c = NULL, DspCircuit* old = NULL, Circuit_Viewer *v = NULL);
   void circuitNameChanged(QString name);
   void view_mode_changed(bool tabbed);
   void show_circuit(QListWidgetItem *it);

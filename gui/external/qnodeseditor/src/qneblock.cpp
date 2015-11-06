@@ -114,7 +114,8 @@ QNEBlock::BlockType QNEBlock::blockType()
 
 QNEBlock::~QNEBlock()
 {
-  if (!component) {
+  //FIXME add remove function
+  /*if (!component) {
     if (circuit) {
       if (_blockType == BlockType::Source)
         circuit->RemoveAllInputs();
@@ -127,7 +128,7 @@ QNEBlock::~QNEBlock()
   DspCircuit *c = component->GetParentCircuit();
   assert(c);
   
-  c->RemoveComponent(component);
+  c->RemoveComponent(component);*/
 }
 
 QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int ptr)

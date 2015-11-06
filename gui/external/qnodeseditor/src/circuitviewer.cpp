@@ -79,6 +79,8 @@ Circuit_Viewer::Circuit_Viewer(QMdiArea *mdiArea, QMainWindow *parent, DspCircui
   createActions();
   createToolbar();
   createMenus();
+  
+  show(_circuit);
 }
 
 Circuit_Viewer::~Circuit_Viewer(){
@@ -151,7 +153,7 @@ bool Circuit_Viewer::event(QEvent* e)
 
 void Circuit_Viewer::closeEvent(QCloseEvent *event)
 {
-  emit circuitChanged(NULL, circuit());
+  emit circuitChanged(NULL, circuit(),this);
   
   QMainWindow::closeEvent(event);
 }
@@ -252,7 +254,7 @@ void Circuit_Viewer::addInputComponent(int pads, QPointF *pos)
   
   _input_block = new QNEBlock(_circuit, _scene, QNEBlock::BlockType::Source, pos);
   _blocks.push_back(_input_block);
-  emit circuitChanged(_circuit, NULL);
+  emit circuitChanged(_circuit, NULL, this);
 }
 
 void Circuit_Viewer::addOutputComponent(int pads, QPointF *pos)
@@ -266,7 +268,7 @@ void Circuit_Viewer::addOutputComponent(int pads, QPointF *pos)
   
   _output_block = new QNEBlock(_circuit, _scene, QNEBlock::BlockType::Sink, pos);
   _blocks.push_back(_output_block);
-  emit circuitChanged(_circuit, NULL);
+  emit circuitChanged(_circuit, NULL, this);
 }
 
 void Circuit_Viewer::adjustScrollBar(QScrollBar *scrollBar, double factor)
@@ -305,7 +307,7 @@ void Circuit_Viewer::show(DspCircuit *c)
   _circuit = c;
   _circuit->configure();
   
-  emit circuitChanged(_circuit, old);
+  emit circuitChanged(_circuit, old, this);
   emit activated(this);
   
   _scene->clear();
@@ -444,8 +446,6 @@ void Circuit_Viewer::tick()
 
 void Circuit_Viewer::thread_finished()
 {
-  printf("finished!\n");
-  
   _processing = false;
   emit state_changed(this);
   

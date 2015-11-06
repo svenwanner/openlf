@@ -93,7 +93,7 @@ signals:
   
   void activated(QWidget* w);
   void newCircuit(DspCircuit* c);
-  void circuitChanged(DspCircuit* new_c, DspCircuit* old);
+  void circuitChanged(DspCircuit* new_c, DspCircuit* old, Circuit_Viewer *v);
   void state_changed(Circuit_Viewer *v);
   
 protected:

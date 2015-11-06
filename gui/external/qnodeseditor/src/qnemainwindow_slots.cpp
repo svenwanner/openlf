@@ -60,6 +60,8 @@ public:
 
 void QNEMainWindow::new_circuit_viewer(DspCircuit *c)
 {
+  printf("show new viewer from %p\n", c);
+  
   Circuit_Viewer *v;
   
   v = new Circuit_Viewer(mdiArea, this, c);
@@ -72,7 +74,7 @@ void QNEMainWindow::new_circuit_viewer(DspCircuit *c)
   
   connect(v, SIGNAL(newCircuit(DspCircuit*)), this, SLOT(newCircuit(DspCircuit*)));
   connect(v, SIGNAL(activated(QWidget*)), this, SLOT(activate(QWidget*)));
-  connect(v, SIGNAL(circuitChanged(DspCircuit*,DspCircuit*)), this, SLOT(viewer_circuit_changed(DspCircuit*,DspCircuit*)));
+  connect(v, SIGNAL(circuitChanged(DspCircuit*,DspCircuit*,Circuit_Viewer*)), this, SLOT(viewer_circuit_changed(DspCircuit*,DspCircuit*,Circuit_Viewer*)));
   connect(v, SIGNAL(compSelected(DspComponent*)), this, SLOT(showCompSettings(DspComponent*)));
   connect(v, SIGNAL(compSelected(QNEBlock*)), this, SLOT(showCompSettings(QNEBlock*)));
   connect(v, SIGNAL(portSelected(QNEPort*)), this, SLOT(showPortProps(QNEPort*)));
@@ -81,7 +83,7 @@ void QNEMainWindow::new_circuit_viewer(DspCircuit *c)
   if (!_viewers.count(v->circuit()))
     newCircuit(v->circuit(), v);
   else
-    viewer_circuit_changed(v->circuit(), NULL);
+    viewer_circuit_changed(v->circuit(), NULL, v);
 }
 
 void QNEMainWindow::activate(QWidget* wid){
@@ -115,7 +117,6 @@ void QNEMainWindow::addComponent(QListWidgetItem *it)
 
 void QNEMainWindow::show_circuit(QListWidgetItem *it)
 {
-  
   DspCircuit *c = QVP<DspCircuit>::asPtr(it->data(Qt::UserRole));
   
   assert(_viewers.count(c));
@@ -274,7 +275,7 @@ void QNEMainWindow::circuitNameChanged(QString name)
     return;
   
   _circuitViewer->circuit()->SetComponentName(name.toUtf8().constData());
-  viewer_circuit_changed(_circuitViewer->circuit(), NULL);
+  viewer_circuit_changed(_circuitViewer->circuit(), NULL, _circuitViewer);
   
   
   std::string std_name = _circuitViewer->circuit()->GetComponentName();
@@ -302,17 +303,17 @@ void QNEMainWindow::view_mode_changed(bool tabbed)
     mdiArea->setViewMode(QMdiArea::SubWindowView);
 }
 
-void QNEMainWindow::viewer_circuit_changed(DspCircuit* new_c, DspCircuit* old)
+void QNEMainWindow::viewer_circuit_changed(DspCircuit* new_c, DspCircuit* old, Circuit_Viewer *v)
 {
   if (old)
     std::get<0>(_viewers[old]) = NULL;
-  
-  Circuit_Viewer *v = dynamic_cast<Circuit_Viewer*>(sender());
   
   if (new_c) {
     std::string name = new_c->GetComponentName();
     if (!name.size())
       name = "(unnamed)";
+    
+    std::get<0>(_viewers[new_c]) = v;
     
     if (v) {
       std::get<0>(_viewers[new_c]) = v;

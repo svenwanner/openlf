@@ -146,7 +146,8 @@ void QNEConnection::removeCircuitConnection()
 
 QNEConnection::~QNEConnection()
 {
-        removeCircuitConnection();
+        //FIXME add clear function?!
+        //removeCircuitConnection();
         
 	if (m_port1)
 		m_port1->connections().remove(m_port1->connections().indexOf(this));
