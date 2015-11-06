@@ -23,6 +23,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
+//vigra wants to be first...
+#include "clif/flexmav.hpp"
+
 #include "qnodeseditor.h"
 
 #include <QGraphicsScene>
@@ -38,7 +41,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include "openlf.hpp"
 #include "openlf/types.hpp"
 #include "clif/clif.hpp"
-#include "clif/flexmav.hpp"
 #include "clif/clifviewcaller.hpp"
 
 using namespace clif;
@@ -180,7 +182,8 @@ void show_in_clifview(LF *lf)
   tmpfile.setAutoRemove(false);
   bool succ = tmpfile.open();
   char *filename = strdup(tmpfile.fileName().toUtf8().constData());
-  
+  tmpfile.close();
+
   if (!succ)
     abort();
   
@@ -191,10 +194,13 @@ void show_in_clifview(LF *lf)
     out_set.link(f_out, lf->data);
     out_set.writeAttributes();
   }
+
+  char* path = strdup(lf->path.generic_string().c_str());
   
-  new ExternalClifViewer(filename, "default", lf->path.generic_string().c_str());
+  new ExternalClifViewer(filename, "default", path);
   
-  //free(filename);
+  free(filename);
+  free(path);
 }
 
 void show_in_clifview(FlexMAV<3> *mav)
@@ -203,6 +209,7 @@ void show_in_clifview(FlexMAV<3> *mav)
   tmpfile.setAutoRemove(false);
   bool succ = tmpfile.open();
   char *filename = strdup(tmpfile.fileName().toUtf8().constData());
+  tmpfile.close();
   
   if (!succ)
     abort();
