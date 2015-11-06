@@ -272,8 +272,6 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   LF *config = NULL;
   LF *out = NULL;
   
-  printf("tick epi!\n");
-  
   errorCond(inputs.GetValue(0, in) && in, "missing input"); RETURN_ON_ERROR
   
   inputs.GetValue(1, config);

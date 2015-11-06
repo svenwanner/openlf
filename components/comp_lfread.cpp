@@ -67,7 +67,6 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   errorCond(filename && filename->size(), "missing file name"); RETURN_ON_ERROR
   
   out = &_out;
-  outputs.SetValue(0, out);
   out->data = &_out_set;
   _out_set.reset();
   

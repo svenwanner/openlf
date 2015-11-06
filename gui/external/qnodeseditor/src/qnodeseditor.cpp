@@ -197,7 +197,7 @@ void show_in_clifview(LF *lf)
 
   char* path = strdup(lf->path.generic_string().c_str());
   
-  new ExternalClifViewer(filename, "default", path);
+  new ExternalClifViewer(filename, "default", path, true);
   
   free(filename);
   free(path);
@@ -223,7 +223,7 @@ void show_in_clifview(FlexMAV<3> *mav)
     delete dataset;
   }
   
-  new ExternalClifViewer(filename,"default","data");
+  new ExternalClifViewer(filename,"default","data", true);
   
   free(filename);
 }
