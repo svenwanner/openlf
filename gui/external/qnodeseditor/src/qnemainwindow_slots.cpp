@@ -84,6 +84,14 @@ void QNEMainWindow::new_circuit_viewer(DspCircuit *c)
     viewer_circuit_changed(v->circuit(), NULL);
 }
 
+void QNEMainWindow::activate(QWidget* wid){
+  
+  _circuitViewer = (Circuit_Viewer*)wid;
+  
+  if (_c_name_ed && _circuitViewer->circuit())
+    _c_name_ed->setText(_circuitViewer->circuit()->GetComponentName().c_str());
+};
+
 void QNEMainWindow::onApplicationFocusChanged(){
   std::cout << "hello" << std::endl;
 }
@@ -242,7 +250,7 @@ void QNEMainWindow::newCircuit(DspCircuit* c)
 }
 
 void QNEMainWindow::newCircuit(DspCircuit* c, Circuit_Viewer *v)
-{
+{  
   _circuits.push_back(c);
   
   std::string name = c->GetComponentName();

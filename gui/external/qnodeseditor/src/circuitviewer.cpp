@@ -139,12 +139,12 @@ bool Circuit_Viewer::event(QEvent* e)
   bool res = QMainWindow::event(e);
   if (_extra_window) {
     if (isActiveWindow())
-      emit this->activated(this);
+      emit activated(this);
   }
   else {
     QMdiSubWindow *subwin = mdiArea->activeSubWindow();
     if (subwin && subwin->widget() == this)
-      emit this->activated(this);
+      emit activated(this);
   }
   return res;
 }
@@ -306,6 +306,7 @@ void Circuit_Viewer::show(DspCircuit *c)
   _circuit->configure();
   
   emit circuitChanged(_circuit, old);
+  emit activated(this);
   
   _scene->clear();
   _blocks.resize(0);

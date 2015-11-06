@@ -73,14 +73,6 @@ QNEMainWindow::~QNEMainWindow()
   mdiArea->closeAllSubWindows();
 }
 
-void QNEMainWindow::activate(QWidget* wid){
-  
-  _circuitViewer = (Circuit_Viewer*)wid;
-  
-  if (_c_name_ed && _circuitViewer->circuit())
-    _c_name_ed->setText(_circuitViewer->circuit()->GetComponentName().c_str());
-};
-
 void QNEMainWindow::createMenus()
 {
   fileMenu = new QMenu(tr("&File"), this);
