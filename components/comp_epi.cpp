@@ -253,7 +253,6 @@ FlexMAV<3> *proc_epi(Subset3d *subset, float disp_start, float disp_stop, float 
         }
     }
     
-    #pragma omp critical
     readEPI(subset, mav_source, i, d, Unit::PIXELS, UNDISTORT, Interpolation::LINEAR, scale);
     
     //tick the circuit to fill _sink_mav using _source_mav and the circuit
@@ -411,8 +410,22 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   printf("\n");
   //cv::setNumThreads(0);
   //cv::ipp::setUseIPP(false);
-  #pragma omp parallel for private(sink_mav)
-  for(int i=start_line;i<stop_line;i++) {
+  
+  //create output for viewer + prefetch dataset images in parallel (read_epi is threaded)
+  sink_mav = proc_epi(
+    &subset, disp_start, disp_stop, disp_step, stop_line-1, scale,
+    merge_circuit,
+    epi_circuit,
+    mav_source,
+    &comp_sink,
+    &outer_circuit               
+  );
+  
+  disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), sink_mav->shape()[2], subset.EPIHeight()), sink_mav->type());  
+  disp_store->call<subarray_copy>(stop_line-1,epi_w,epi_h,sink_mav,disp_store,scale);
+  
+#pragma omp parallel for private(sink_mav)
+  for(int i=start_line;i<stop_line-1;i++) {
 #pragma omp critical 
     {
       if (done % 10 == 0)
@@ -422,33 +435,16 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     
     int t = omp_get_thread_num();
     
-    if (i != stop_line-1)
-      sink_mav = proc_epi(
-        &subset, disp_start, disp_stop, disp_step, i, scale,
-        merge_circuits[t],
-        epi_circuits[t],
-        mavs_source[t],
-        &comps_sink[t],
-        &outer_circuits[t]                  
-      );
-    else
-      //store last processed line in input circuit!
-      sink_mav = proc_epi(
-        &subset, disp_start, disp_stop, disp_step, i, scale,
-        merge_circuit,
-        epi_circuit,
-        mav_source,
-        &comp_sink,
-        &outer_circuit               
-      );
+    sink_mav = proc_epi(
+      &subset, disp_start, disp_stop, disp_step, i, scale,
+      merge_circuits[t],
+      epi_circuits[t],
+      mavs_source[t],
+      &comps_sink[t],
+      &outer_circuits[t]                  
+    );
       
-    
     assert(sink_mav->type() == BaseType::FLOAT);
-    
-    //TODO this should not be necessary
-    #pragma omp critical
-    if (!disp_store)
-      disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), sink_mav->shape()[2], subset.EPIHeight()), sink_mav->type());
     
     disp_store->call<subarray_copy>(i,epi_w,epi_h,sink_mav,disp_store,scale);
   }
