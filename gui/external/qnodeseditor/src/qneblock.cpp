@@ -51,6 +51,11 @@ QNEBlock::QNEBlock(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 	height = vertMargin;
 }
 
+void _progress_f(DspComponent *c, float progress, void *data)
+{
+  printf("somehow enqueue progress update %f\n", progress);
+}
+
 QNEBlock::QNEBlock(DspComponent *comp, QGraphicsScene *scene, QGraphicsItem *parent)
 : QNEBlock(parent)
 {
@@ -59,6 +64,11 @@ QNEBlock::QNEBlock(DspComponent *comp, QGraphicsScene *scene, QGraphicsItem *par
   scene->addItem(this);
   
   component = comp;
+  if (component) {
+    //FIXME set progress
+    if (component)
+      component->setProgressCallback(&_progress_f, this);
+  }
   
   //input and output ports MUST come first! (for getPortIdx!)
   for(int i=0;i<comp->GetInputCount();i++) {
@@ -81,6 +91,12 @@ QVariant QNEBlock::itemChange(GraphicsItemChange change, const QVariant &value)
     component->y = pos().y();
   }
   return value;
+}
+
+QNEBlock::~QNEBlock()
+{
+  if (component)
+    component->setProgressCallback(NULL, NULL);
 }
 
 QNEBlock::QNEBlock(DspCircuit *c, QGraphicsScene *scene, BlockType type, QPointF *pos, QGraphicsItem *parent)
@@ -130,6 +146,9 @@ void QNEBlock::removeFromCircuit()
     assert(c);
     
     c->RemoveComponent(component);
+    
+    //component = NULL;
+    //delete component;
   }
 }
 

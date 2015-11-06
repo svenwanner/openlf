@@ -131,6 +131,7 @@ public:
     void DisconnectInput(std::string const& inputName);
     void DisconnectInput(DspComponent const* inputComponent);
     void DisconnectAllInputs();
+    void setProgressCallback(void (*progress)(DspComponent *c, float progress, void *data), void *userdata);
 
     DspWireBus *GetInputWires();
     
@@ -179,6 +180,8 @@ protected:
     bool AddOutput_(std::string const& outputName = "");
     int AddParameter_(std::string const& paramName, DspParameter const& param);
 
+    void progress_(float p);
+    
     bool RemoveInput_();
     bool RemoveOutput_();
     bool RemoveParameter_();
@@ -206,7 +209,7 @@ private:
     bool _FindInput(int signalIndex, int& returnIndex) const;
     bool _FindOutput(std::string const& signalName, int& returnIndex) const;
     bool _FindOutput(int signalIndex, int& returnIndex) const;
-
+    
     void _SetBufferCount(int bufferCount);
     int _GetBufferCount() const;
 
@@ -224,6 +227,9 @@ private:
     bool _configOnly = false;
   
     virtual void changed();
+    
+    void (*_prog_callback)(DspComponent*, float, void*) = NULL;
+    void *_prog_data = NULL;
     
 private:
     friend class DspCircuit;

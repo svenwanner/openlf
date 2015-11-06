@@ -955,6 +955,19 @@ void DspComponent::_ReleaseThread(int threadNo)
     _releaseMutexes[nextThread].Unlock();
 }
 
+void DspComponent::setProgressCallback(void (*progress)(DspComponent *c, float progress, void *data), void *userdata)
+{
+  _prog_callback = progress;
+  _prog_data = userdata;
+}
+
+void DspComponent::progress_(float p)
+{
+  if (_prog_callback)
+    _prog_callback(this, p, _prog_data);
+  else printf("progress %f\n", p);
+}
+
 DspComponent* DspComponent::clone()
 {
   return NULL;

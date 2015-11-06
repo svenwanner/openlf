@@ -403,7 +403,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   FlexMAV<3> *sink_mav;
       
-  int progress = 0;
+  //int progress = 0;
   int done = 0;
   printf("\n");
   //cv::setNumThreads(0);
@@ -427,7 +427,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 #pragma omp critical 
     {
       if (done % 10 == 0)
-        printprogress(done, stop_line-start_line, progress);
+        progress_((float)done/(stop_line-start_line));
       done++;
     }
     

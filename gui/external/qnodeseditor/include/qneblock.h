@@ -39,6 +39,7 @@ public:
   enum BlockType { Regular = 0, Source, Sink};
   
   QNEBlock(QGraphicsItem *parent = 0);
+  ~QNEBlock();
   QNEBlock(DspComponent *comp, QGraphicsScene *scene, QGraphicsItem *parent = 0);
   QNEBlock(DspCircuit *c, QGraphicsScene *scene, BlockType type, QPointF *pos = NULL, QGraphicsItem *parent = 0);
   
