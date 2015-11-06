@@ -5,11 +5,11 @@
 #include "qnesettings.h"
 #include "DspCircuit.h"
 
-class Circuic_Thread : public QObject
+class Circuit_Thread : public QObject
 {
   Q_OBJECT
 public:
-  Circuic_Thread(DspCircuit *_circuit) : _circuit(_circuit){};
+  Circuit_Thread(DspCircuit *_circuit) : _circuit(_circuit){};
   
 signals:
     

@@ -26,6 +26,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 */
 
+#include "circuitviewer.h"
+
 #include "qnemainwindow.h"
 #include "userinterface_qnemainwindow.h"
 
@@ -44,7 +46,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "openlf.hpp"
 
-#include "circuitviewer.h"
 
 Circuit_Viewer::Circuit_Viewer(QMdiArea *mdiArea, QMainWindow *parent, DspCircuit *circuit) : QMainWindow(parent), mdiArea(mdiArea)
 {
@@ -435,7 +436,7 @@ void Circuit_Viewer::tick()
   _processing = true;
   emit state_changed(this);
   
-  Circuic_Thread  *_circuitThread = new Circuic_Thread(_circuit);
+  Circuit_Thread  *_circuitThread = new Circuit_Thread(_circuit);
   QThread *_thread = new QThread;
   _circuitThread->moveToThread(_thread);
   connect(_thread, SIGNAL(started()), _circuitThread, SLOT(run()));
