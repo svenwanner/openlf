@@ -59,9 +59,7 @@ public:
  */
 
 void QNEMainWindow::new_circuit_viewer(DspCircuit *c)
-{
-  printf("show new viewer from %p\n", c);
-  
+{  
   Circuit_Viewer *v;
   
   v = new Circuit_Viewer(mdiArea, this, c);
@@ -154,19 +152,13 @@ void QNEMainWindow::showPortProps(QNEPort *port)
   DspSignal* signal = port->block()->component->GetOutputSignal(idx);
   
   if (signal) {
-    printf("got output signal!\n");
-    
     signal->GetValue(_lf_selected);
     signal->GetValue(_flexmav3_selected);
 
-    if (_lf_selected) {
-      printf("got lf signal!\n");
+    if (_lf_selected)
       _open_clif_btn->setDisabled(false);
-    }
-    else if (_flexmav3_selected) {
-      printf("got flexmav<3> signal!\n");
+    else if (_flexmav3_selected)
       _open_clif_btn->setDisabled(false);
-    }
   }
 }
 

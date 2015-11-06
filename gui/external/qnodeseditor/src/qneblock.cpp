@@ -112,10 +112,10 @@ QNEBlock::BlockType QNEBlock::blockType()
   return _blockType;
 }
 
-QNEBlock::~QNEBlock()
+void QNEBlock::removeFromCircuit()
 {
-  //FIXME add remove function
-  /*if (!component) {
+  //FIXME how are connections handled?
+  if (!component) {
     if (circuit) {
       if (_blockType == BlockType::Source)
         circuit->RemoveAllInputs();
@@ -125,10 +125,12 @@ QNEBlock::~QNEBlock()
     return;
   }
   
-  DspCircuit *c = component->GetParentCircuit();
-  assert(c);
-  
-  c->RemoveComponent(component);*/
+  if (component) {
+    DspCircuit *c = component->GetParentCircuit();
+    assert(c);
+    
+    c->RemoveComponent(component);
+  }
 }
 
 QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int ptr)

@@ -111,10 +111,17 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 		case Qt::RightButton:
 		{
 			QGraphicsItem *item = itemAt(me->scenePos());
-			if (item && (item->type() == QNEConnection::Type || item->type() == QNEBlock::Type))
-				delete item;
-			// if (selBlock == (QNEBlock*) item)
-				// selBlock = 0;
+                        if (item) {
+                          if (item->type() == QNEConnection::Type) {
+                            ((QNEConnection*)item)->removeCircuitConnection();
+                            delete item;
+                          }
+                          else if (item->type() == QNEBlock::Type) {
+                            ((QNEBlock*)item)->removeFromCircuit();
+                            delete item;
+                          }
+                        }
+
 			break;
 		}
 		}
