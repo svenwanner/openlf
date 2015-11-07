@@ -290,6 +290,8 @@ void DspCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         for (size_t i = 0; i < _components.size(); i++)
         {
             _components[i]->Reset();
+            if (_components[i]->_prog_callback)
+              _components[i]->_prog_callback(_components[i], 0.0, _components[i]->_prog_data);
         }
       
         // set all internal component inputs from connected circuit inputs
@@ -304,6 +306,8 @@ void DspCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         for (size_t i = 0; i < _components.size(); i++)
         {
             _components[i]->Tick();
+            if (_components[i]->_prog_callback)
+              _components[i]->_prog_callback(_components[i], 1.0, _components[i]->_prog_data);
         }
 
         // set all circuit outputs from connected internal component outputs

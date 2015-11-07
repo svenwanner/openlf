@@ -426,8 +426,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   for(int i=start_line;i<stop_line-1;i++) {
 #pragma omp critical 
     {
-      if (done % 10 == 0)
-        progress_((float)done/(stop_line-start_line));
+      progress_((float)done/(stop_line-start_line));
       done++;
     }
     

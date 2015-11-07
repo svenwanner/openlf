@@ -64,6 +64,8 @@ public:
   DspComponent *component = NULL;
   DspCircuit *circuit = NULL;
   
+  float _progress = 1.0;
+  
 protected:
   QVariant itemChange(GraphicsItemChange change, const QVariant &value);
   

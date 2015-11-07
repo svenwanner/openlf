@@ -54,6 +54,10 @@ QNEBlock::QNEBlock(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 void _progress_f(DspComponent *c, float progress, void *data)
 {
   printf("somehow enqueue progress update %f\n", progress);
+  QNEBlock *block = (QNEBlock*)data;
+  block->_progress = progress;
+  
+  QMetaObject::invokeMethod(block->scene(), "update", Qt::QueuedConnection);
 }
 
 QNEBlock::QNEBlock(DspComponent *comp, QGraphicsScene *scene, QGraphicsItem *parent)
@@ -253,12 +257,14 @@ void QNEBlock::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
       }
   }
   else {
+      float p = _progress;
+      float pi = 1.0 - _progress;
       if (isSelected()) {
         painter->setPen(QPen(Qt::darkYellow));
-        painter->setBrush(Qt::yellow);
+        painter->setBrush(QColor(127*pi,127+128*p,127+128*p));
       } else {
         painter->setPen(QPen(Qt::darkGreen));
-        painter->setBrush(Qt::green);
+        painter->setBrush(QColor(127*pi,127+128*p,127*pi));
       }
     }
     
