@@ -13,6 +13,7 @@
 - CLIF: keep roughly track of large data allocations (datastores) and flush to disk on some threshold
 - CLIF: reimplement disk cache
 - CLIF: clifview - more generic datastore display (make it a widget?) (partly done)
+- CLIF: generic dimension handling (for attribute & datastore, hdf5 handling)
 
 Minor:
 - COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!
@@ -46,3 +47,5 @@ Done:
 - fix windows build (30.11.15-2.11.15)
 - CLIF: clifview - more generic datastore display (make it a widget?) (partly done 3.11.15)
 - CLIF: clifview - windows - automatically show/select on dataset click! (fixed different - 3.11.15)
+
+- HDMarker: deterministic threading results (10.11.15)

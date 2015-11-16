@@ -196,6 +196,7 @@ protected:
 
     DspParameter const* GetParameter_(int index) const;
     bool SetParameter_(int index, DspParameter const& param);
+    void UnsetParameter_(int index);
     void errorCond(bool cond, const char *msg = NULL, ...);
     void setTypeName_(std::string const& name);
 

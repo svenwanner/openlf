@@ -262,6 +262,13 @@ std::vector<std::string> const* DspParameter::GetList() const
 
 //-------------------------------------------------------------------------------------------------
 
+void DspParameter::Unset()
+{
+  _isSet = false;
+}
+
+//-------------------------------------------------------------------------------------------------
+
 bool DspParameter::SetBool(bool const& value)
 {
     if (_type == Bool)

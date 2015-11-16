@@ -85,6 +85,7 @@ public:
     template<typename T> T* GetPointer() const;
     template<typename T> void GetPointer(T* &value) const;
 
+    void Unset();
     bool SetBool(bool const& value);
     bool SetInt(int const& value);
     bool SetIntRange(std::pair<int, int> const& intRange);

@@ -681,6 +681,22 @@ bool DspComponent::SetParameter_(int index, DspParameter const& param)
     return false;
 }
 
+//-------------------------------------------------------------------------------------------------
+
+void DspComponent::UnsetParameter_(int index)
+{
+    if ((size_t)index < _parameters.size())
+    {
+        _parameters[index].second.Unset();
+        
+        if (_callback)
+        {
+            _callback(this, ParameterUpdated, index, _userData);
+        }
+    }
+}
+
+
 //=================================================================================================
 
 void DspComponent::_PauseAutoTick()

@@ -89,6 +89,7 @@ list(APPEND CMAKE_PREFIX_PATH force_clif/build/external/clif/clif/src/clif-buil)
 endif()
 find_package(clif REQUIRED)
 message("clif libraries: ${CLIF_LIBRARIES}")
+message("clif lib dirs: ${CLIF_LIBRARY_DIRS}")
 
 ######################################################
 ## add clifview as external project (if required?)  ##
