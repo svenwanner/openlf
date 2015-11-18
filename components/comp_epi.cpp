@@ -117,6 +117,15 @@ void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4>
 }
 };
 
+template<typename T> class subarray_copy<std::vector<T>> {
+public:
+void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4> *disp_store, float disp_scale)
+{
+  abort();
+}
+};
+
+
 void component_apply_config_path(DspComponent *comp, LF *config, path config_path)
 {
   if (config && config->data) {

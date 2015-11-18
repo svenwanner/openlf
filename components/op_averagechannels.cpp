@@ -37,7 +37,7 @@ OPENLF_OP_CLASS_HEADER(OP_AverageChannels, 1, 1, 3, 3)
 
 namespace { 
   
-  template<typename T> class OP_AverageChannels_dispatcher {
+  template<typename T> class OP_AverageChannelsdispatcher {
   public:
     void operator()(OP_AverageChannels *op, FlexMAV<INDIM> **in_mav, FlexMAV<OUTDIM> **out_mav, DspSignalBus *inputs, DspSignalBus *outputs)
     {
@@ -82,6 +82,8 @@ OP_AverageChannels::OP_AverageChannels()
   }
 }
 
+OPENLF_OP_IGNORE_VECTOR_TYPES(OP_AverageChannels, 1, 1, 3, 3)
+
 void OP_AverageChannels::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   bool stat;
@@ -98,7 +100,7 @@ void OP_AverageChannels::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   }
   
   if (!configOnly())
-    in[0]->call<OP_AverageChannels_dispatcher>(this, in, out_ptr, &inputs, &outputs);
+    in[0]->call<OP_AverageChannelsdispatcher>(this, in, out_ptr, &inputs, &outputs);
   
   for(int i=0;i<OUTCOUNT;i++) { 
     stat = outputs.SetValue(i, out_ptr[i]);
