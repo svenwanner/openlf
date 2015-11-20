@@ -270,6 +270,10 @@ Mat *proc_epi(Subset3d *subset, float disp_start, float disp_stop, float disp_st
 
 template<class FROM> struct _is_convertible_to_float : public std::is_convertible<FROM,float> {};
 
+//different example:
+//template <class FROM> struct _is_valid : public std::integral_constant<bool, std::is_convertible<FROM,float>::value && !std::is_same<unsigned char,FROM>::value> {};
+
+
 void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   LF *in = NULL;

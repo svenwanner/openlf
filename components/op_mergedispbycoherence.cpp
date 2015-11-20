@@ -40,8 +40,8 @@ OPENLF_VIGRA_OP_START(OP_MergeDispByCoherence, 2, 2, 3, 3)
   bool copy = *op->GetParameter(0)->GetBool();
   
   if (copy) {
-    *out[0] = *in[0];
-    *out[1] = *in[1];
+    out[0] = in[0];
+    out[1] = in[1];
   }
   else {
     for (int i=0; i < total; ++i) {

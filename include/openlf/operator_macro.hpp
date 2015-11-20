@@ -221,7 +221,7 @@ NAME::NAME()\
 }\
 \
 namespace { \
-template<class FROM> struct _is_convertible_to_float : public std::is_convertible<FROM,float> {}; \
+template <class FROM> struct _is_valid : public std::integral_constant<bool, std::is_convertible<FROM,float>::value> {}; \
 } \
 \
 void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
@@ -241,7 +241,7 @@ void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
   } \
 \
   if (!configOnly()) \
-    in[0]->callIf<NAME##dispatcher,_is_convertible_to_float>(this, in, out_ptr, &inputs, &outputs);\
+    in[0]->callIf<NAME##dispatcher,_is_valid>(this, in, out_ptr, &inputs, &outputs);\
 \
   for(int i=0;i<OUTCOUNT;i++) { \
     stat = outputs.SetValue(i, out_ptr[i]);\
