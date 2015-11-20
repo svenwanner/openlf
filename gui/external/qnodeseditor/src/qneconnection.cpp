@@ -82,10 +82,14 @@ void QNEConnection::updateCircuitConnection()
                               sink_idx
                             );
     else if (circ_source && comp_sink) {
+      //FIXME detect whats input and whats output!
+      printf("connect input\n");
       success = circ_source->ConnectInToIn(source_idx, comp_sink, sink_idx);
       assert(success);
     }
     else if (comp_source && circ_sink) {
+      //FIXME detect whats input and whats output!
+      printf("connect output\n");
       success = circ_sink->ConnectOutToOut(comp_source, source_idx, sink_idx);
       assert(success);
     }

@@ -148,17 +148,22 @@ void QNEMainWindow::showPortProps(QNEPort *port)
   
   assert(port->isOutput());
   
-  int idx = port->block()->getPortIdx(port);
-  DspSignal* signal = port->block()->component->GetOutputSignal(idx);
-  
-  if (signal) {
-    signal->GetValue(_lf_selected);
-    signal->GetValue(_flexmav3_selected);
+  if (port->block()->component) {
+    int idx = port->block()->getPortIdx(port);
+    DspSignal* signal = port->block()->component->GetOutputSignal(idx);
+    
+    if (signal) {
+      signal->GetValue(_lf_selected);
+      signal->GetValue(_flexmav3_selected);
 
-    if (_lf_selected)
-      _open_clif_btn->setDisabled(false);
-    else if (_flexmav3_selected)
-      _open_clif_btn->setDisabled(false);
+      if (_lf_selected)
+        _open_clif_btn->setDisabled(false);
+      else if (_flexmav3_selected)
+        _open_clif_btn->setDisabled(false);
+    }
+  }
+  else {
+    printf("FIXME disable button!\n");
   }
 }
 
