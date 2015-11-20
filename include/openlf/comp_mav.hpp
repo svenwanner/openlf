@@ -31,7 +31,7 @@
 namespace openlf {
 
 typedef unsigned int uint;
-
+  
 template<uint DIM> class FlexMAVSource : public DspComponent {
 public:
   FlexMAVSource()
@@ -76,6 +76,53 @@ protected:
   
 private:
   clif::FlexMAV<DIM> *_mav = NULL;
+};
+
+
+class MatSource : public DspComponent {
+public:
+  MatSource()
+  {
+    AddOutput_("output");
+  }
+  void set(clif::Mat *m)
+  {
+    _m = m;
+  }
+
+protected:
+  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
+  {
+    bool stat;
+    assert(_m);
+    stat = outputs.SetValue(0, _m); 
+    assert(stat);
+  }
+  
+private:
+  clif::Mat *_m = NULL;
+};
+
+class MatSink : public DspComponent {
+public:
+  MatSink()
+  {
+    AddInput_("input");
+  }
+  clif::Mat* get()
+  {
+    return _m;
+  }
+
+protected:
+  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
+  {
+    inputs.GetValue(0, _m);
+    assert(_m);
+  }
+  
+private:
+  clif::Mat *_m = NULL;
 };
 
 } //namespace openlf
