@@ -33,40 +33,50 @@
 using namespace clif;
 using namespace vigra;
 
-OPENLF_OLDAPI_OP_CLASS_HEADER(OP_AverageChannels, 1, 1, 3, 3)
+template<class FROM> struct _is_convertible_to_float : public std::is_convertible<FROM,float> {};
 
-namespace { 
-  
-  template<typename T> class OP_AverageChannelsdispatcher {
-  public:
-    void operator()(OP_AverageChannels *op, FlexMAV<INDIM> **in_mav, FlexMAV<OUTDIM> **out_mav, DspSignalBus *inputs, DspSignalBus *outputs)
-    {
-      MultiArrayView<INDIM, T> *in[INCOUNT]; 
-      MultiArrayView<OUTDIM, T> *out[OUTCOUNT]; 
-      for(int i=0;i<INCOUNT;i++) 
-        in[i] = in_mav[i]->template get<T>();  
-      for(int i=0;i<OUTCOUNT;i++) 
-        out[i] = out_mav[i]->template get<T>(); 
+class OP_AverageChannels : public DspComponent {
+public:
+  OP_AverageChannels();
+  DSPCOMPONENT_TRIVIAL_CLONE(OP_AverageChannels);
+protected:
+  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+  virtual bool ParameterUpdating_ (int i, DspParameter const &p);
+private:
+  clif::Mat _output_image[OUTCOUNT]; \
+};
+
+template<typename T> class OP_AverageChannelsdispatcher {
+public:
+  void operator()(OP_AverageChannels *op, Mat **in_mat, Mat **out_mat, DspSignalBus *inputs, DspSignalBus *outputs)
+  {
+    MultiArrayView<INDIM, T> in[INCOUNT]; 
+    MultiArrayView<OUTDIM, T> out[OUTCOUNT]; 
+    for(int i=0;i<INCOUNT;i++) 
+      in[i] = vigraMAV<INDIM, T>(in_mat[i]);  
+    for(int i=0;i<OUTCOUNT;i++) {
+      out_mat[i]->create(toBaseType<T>(), *(Idx*)in_mat[0]);
+      out[i] = vigraMAV<OUTDIM, T>(out_mat[i]);
+    }
+    
+    
+    if (in[0].shape()[2] != 3)
+      out[0] = in[0];
+    else {
+      vigra::MultiArrayView<2, T> r_in;
+      r_in = in[0].bindAt(2, 0);
+      vigra::MultiArrayView<2, T> g_in;
+      g_in = in[0].bindAt(2, 1);
+      vigra::MultiArrayView<2, T> b_in;
+      b_in = in[0].bindAt(2, 2);
       
-      
-      if (in[0]->shape()[2] != 3)
-        *out[0] = *in[0];
-      else {
-        vigra::MultiArrayView<2, T> r_in;
-        r_in = in[0]->bindAt(2, 0);
-        vigra::MultiArrayView<2, T> g_in;
-        g_in = in[0]->bindAt(2, 1);
-        vigra::MultiArrayView<2, T> b_in;
-        b_in = in[0]->bindAt(2, 2);
-        
-        for (int i=0; i<in[0]->shape()[0]*in[0]->shape()[1]; i++)
-          out[0]->data()[i] = (r_in.data()[i]+g_in.data()[i]+b_in.data()[i])/3.0f;
-      }
-      
-    };
+      for (int i=0; i<in[0].shape()[0]*in[0].shape()[1]; i++)
+        out[0].data()[i] = (r_in.data()[i]+g_in.data()[i]+b_in.data()[i])/3.0f;
+    }
     
   };
-}
+  
+};
 
 OP_AverageChannels::OP_AverageChannels()
 {
@@ -82,26 +92,21 @@ OP_AverageChannels::OP_AverageChannels()
   }
 }
 
-OPENLF_OLDAPI_OP_IGNORE_VECTOR_TYPES(OP_AverageChannels, 1, 1, 3, 3)
-OPENLF_OLDAPI_OP_IGNORE_T(OP_AverageChannels, cv::Point2f, 1, 1, 3, 3)
-
 void OP_AverageChannels::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   bool stat;
-  FlexMAV<INDIM> *in[INCOUNT];
+  Mat *in[INCOUNT];
   
   for(int i=0;i<INCOUNT;i++) { 
     errorCond(inputs.GetValue(i, in[i]), "OP_AverageChannels : input not found - possible type mismatch?\n"); RETURN_ON_ERROR
   } 
   
-  FlexMAV<OUTDIM> *out_ptr[OUTCOUNT];
-  for(int i=0;i<OUTCOUNT;i++) { 
+  Mat *out_ptr[OUTCOUNT];
+  for(int i=0;i<OUTCOUNT;i++)
     out_ptr[i] = &_output_image[i]; 
-    _output_image[i].create(Shape3(in[0]->shape()[0], in[0]->shape()[1], 1), in[0]->type());
-  }
   
   if (!configOnly())
-    in[0]->call<OP_AverageChannelsdispatcher>(this, in, out_ptr, &inputs, &outputs);
+    in[0]->callIf<OP_AverageChannelsdispatcher,_is_convertible_to_float>(this, in, out_ptr, &inputs, &outputs);
   
   for(int i=0;i<OUTCOUNT;i++) { 
     stat = outputs.SetValue(i, out_ptr[i]);

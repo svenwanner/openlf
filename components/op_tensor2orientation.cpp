@@ -29,7 +29,7 @@
     AddParameter_("min_coherence", DspParameter(DspParameter::ParamType::Float, 0.8f)); \
     AddParameter_("input_disparity", DspParameter(DspParameter::ParamType::Float, 0.0f));
 
-OPENLF_OLDAPI_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
+OPENLF_VIGRA_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
 
   float threshold = *op->GetParameter(0)->GetFloat();
   
@@ -63,13 +63,13 @@ OPENLF_OLDAPI_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
   T *in0, *in1, *in2;
   float *out0, *out1;
   
-  in0 = in[0]->data();
-  in1 = in[1]->data();
-  in2 = in[2]->data();
-  out0 = (float*)out[0]->data();
-  out1 = (float*)out[1]->data();
+  in0 = in[0].data();
+  in1 = in[1].data();
+  in2 = in[2].data();
+  out0 = (float*)out[0].data();
+  out1 = (float*)out[1].data();
   
-  int total = in[0]->shape()[0]*in[0]->shape()[1];
+  int total = in[0].shape()[0]*in[0].shape()[1];
 
   for (int i=0; i < total; ++i) {
     y = 2*in1[i];
@@ -107,6 +107,6 @@ OPENLF_OLDAPI_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
     }
   }
 
-OPENLF_OLDAPI_OP_END(OP_Tensor2Orientation, 3, 2, 3, 3)
+OPENLF_OP_END
 
 #undef OPENLF_OP_CONSTRUCT_PARAMS

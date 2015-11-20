@@ -31,22 +31,22 @@
 #define OPENLF_OP_CONSTRUCT_PARAMS \
     AddParameter_("filename", DspParameter(DspParameter::ParamType::String, ""));
     
-OPENLF_OLDAPI_OP_START(OP_SaveImage, 1, 1, 3, 3)
+OPENLF_VIGRA_OP_START(OP_SaveImage, 1, 1, 3, 3)
         
     
-    if (in[0]->shape()[2] == 1) {
-        vigra::MultiArray<2,vigra::UInt8> out_im(in[0]->shape()[0], in[0]->shape()[1]);
-        vigra::MultiArrayView<2, T> channel_in = in[0]->bindAt(2, 0);
+    if (in[0].shape()[2] == 1) {
+        vigra::MultiArray<2,vigra::UInt8> out_im(in[0].shape()[0], in[0].shape()[1]);
+        vigra::MultiArrayView<2, T> channel_in = in[0].bindAt(2, 0);
         float min = std::numeric_limits<float>::max();
         float max = std::numeric_limits<float>::lowest();
-        for (int i=0; i < in[0]->size(); ++i){
-            if (max < in[0]->data()[i])
-                max = in[0]->data()[i];
-            if (min > in[0]->data()[i])
-                min = in[0]->data()[i];
+        for (int i=0; i < in[0].size(); ++i){
+            if (max < in[0].data()[i])
+                max = in[0].data()[i];
+            if (min > in[0].data()[i])
+                min = in[0].data()[i];
         }
         float tmp = 0;
-        for (int i=0; i < in[0]->size()/3; ++i){
+        for (int i=0; i < in[0].size()/3; ++i){
             for (int c=0; c<3; c++) {
                 tmp = (float)channel_in.data()[i];
                 tmp /= (max-min);
@@ -57,20 +57,20 @@ OPENLF_OLDAPI_OP_START(OP_SaveImage, 1, 1, 3, 3)
         std::cout << "save imagemapping range from (" << min << "," << max << ") to (0,255)" << std::endl;
         exportImage(out_im, *op->GetParameter(0)->GetString());
     }
-    else if (in[0]->shape()[2] == 3 || in[0]->shape()[2] == 4){
-        vigra::MultiArray<2, vigra::RGBValue<T> > channel_in(in[0]->shape()[0], in[0]->shape()[1]);
-        vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > out_im(in[0]->shape()[0], in[0]->shape()[1]);
+    else if (in[0].shape()[2] == 3 || in[0].shape()[2] == 4){
+        vigra::MultiArray<2, vigra::RGBValue<T> > channel_in(in[0].shape()[0], in[0].shape()[1]);
+        vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > out_im(in[0].shape()[0], in[0].shape()[1]);
   
         vigra::MultiArrayView<2, T> r(channel_in.bindElementChannel(0));
         vigra::MultiArrayView<2, T> g(channel_in.bindElementChannel(1));
         vigra::MultiArrayView<2, T> b(channel_in.bindElementChannel(2));
         
         vigra::MultiArrayView<2, T> r_in;
-        r_in = in[0]->bindAt(2, 0);
+        r_in = in[0].bindAt(2, 0);
         vigra::MultiArrayView<2, T> g_in;
-        g_in = in[0]->bindAt(2, 1);
+        g_in = in[0].bindAt(2, 1);
         vigra::MultiArrayView<2, T> b_in;
-        b_in = in[0]->bindAt(2, 2);
+        b_in = in[0].bindAt(2, 2);
         
         r = r_in;
         g = g_in;
@@ -78,15 +78,15 @@ OPENLF_OLDAPI_OP_START(OP_SaveImage, 1, 1, 3, 3)
         
         float min = std::numeric_limits<float>::max();
         float max = std::numeric_limits<float>::lowest();
-        for (int i=0; i < in[0]->size(); ++i){
-            if (max < in[0]->data()[i])
-                max = in[0]->data()[i];
-            if (min > in[0]->data()[i])
-                min = in[0]->data()[i];
+        for (int i=0; i < in[0].size(); ++i){
+            if (max < in[0].data()[i])
+                max = in[0].data()[i];
+            if (min > in[0].data()[i])
+                min = in[0].data()[i];
         }
         
         float tmp = 0;
-        for (int i=0; i < in[0]->size()/3; ++i) {
+        for (int i=0; i < in[0].size()/3; ++i) {
             for (int c=0; c<3; c++) {
                 tmp = (float)channel_in.data()[i][c];
                 tmp /= (max-min);
@@ -98,6 +98,6 @@ OPENLF_OLDAPI_OP_START(OP_SaveImage, 1, 1, 3, 3)
         exportImage(out_im, *op->GetParameter(0)->GetString());
     }
     
-OPENLF_OLDAPI_OP_END(OP_SaveImage, 1, 1, 3, 3)
+OPENLF_OP_END
 
 #undef OPENLF_OP_CONSTRUCT_PARAMS

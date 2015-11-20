@@ -30,7 +30,7 @@
 
 #define OPENLF_OP_CONSTRUCT_PARAMS
 
-OPENLF_OLDAPI_OP_START(OP_Tensor2x2, 2, 3, 3, 3)
+OPENLF_VIGRA_OP_START(OP_Tensor2x2, 2, 3, 3, 3)
         
   /**out[0] = *in[0];   // x*x
   *out[0] *= *out[0];
@@ -43,19 +43,19 @@ OPENLF_OLDAPI_OP_START(OP_Tensor2x2, 2, 3, 3, 3)
   __restrict__ T *inx, *iny;
   __restrict__ T *outxx, *outxy, *outyy;
   
-  assert(in[0]->isUnstrided());
-  assert(in[1]->isUnstrided());
-  assert(out[0]->isUnstrided());
-  assert(out[1]->isUnstrided());
-  assert(out[2]->isUnstrided());
+  assert(in[0].isUnstrided());
+  assert(in[1].isUnstrided());
+  assert(out[0].isUnstrided());
+  assert(out[1].isUnstrided());
+  assert(out[2].isUnstrided());
 
-  inx = in[0]->data();
-  iny = in[1]->data();
-  outxx = out[0]->data();
-  outxy = out[1]->data();
-  outyy = out[2]->data();
+  inx = in[0].data();
+  iny = in[1].data();
+  outxx = out[0].data();
+  outxy = out[1].data();
+  outyy = out[2].data();
 
-  int total = in[0]->size();
+  int total = in[0].size();
 
   for (int i=0;i<total;++i) {
     outxx[i] = inx[i]*inx[i];
@@ -63,6 +63,6 @@ OPENLF_OLDAPI_OP_START(OP_Tensor2x2, 2, 3, 3, 3)
     outyy[i] = iny[i]*iny[i];
   }
     
-OPENLF_OLDAPI_OP_END(OP_Tensor2x2, 2, 3, 3, 3)
+OPENLF_OP_END
 
 #undef OPENLF_OP_CONSTRUCT_PARAMS

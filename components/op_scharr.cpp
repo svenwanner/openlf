@@ -29,10 +29,11 @@
 
 
 using namespace cv;
+using namespace vigra;
 
 #define OPENLF_OP_CONSTRUCT_PARAMS
 
-OPENLF_OLDAPI_OP_START_T(OP_Scharr, 1, 2, 3, 3, float)
+OPENLF_VIGRA_OP_START_OUTTYPE(OP_Scharr, 1, 2, 3, 3, float)
         
   /*Kernel1D<float> D;
   D.initExplicitly(-1,1) = -1.0/2.0, 0.0, 1.0/2.0;
@@ -48,19 +49,19 @@ OPENLF_OLDAPI_OP_START_T(OP_Scharr, 1, 2, 3, 3, float)
   convolveMultiArrayOneDimension(*out[1], *out[1], 1, S);*/
     
   //this is 21x times faster than above vigra code
-  for (int i=0; i < in[0]->shape()[2]; ++i) {
-    vigra::MultiArrayView<2,T> ch_in = in[0]->bindAt(2, i);
+  for (int i=0; i < in[0].shape()[2]; ++i) {
+    vigra::MultiArrayView<2,T> ch_in = in[0].bindAt(2, i);
     //FIXME X should come first!
-    vigra::MultiArrayView<2,float> ch_out_x = out[1]->bindAt(2, i);
-    vigra::MultiArrayView<2,float> ch_out_y = out[0]->bindAt(2, i);
-    cv::Mat cv_in(Size(ch_in.shape(0), ch_in.shape(1)), BaseType2CvDepth(in_mav[0]->type()), ch_in.data());
-    cv::Mat cv_out_x(Size(ch_out_x.shape(0), ch_out_x.shape(1)), BaseType2CvDepth(out_mav[0]->type()), ch_out_x.data());
-    cv::Mat cv_out_y(Size(ch_out_y.shape(0), ch_out_y.shape(1)), BaseType2CvDepth(out_mav[0]->type()), ch_out_y.data());
+    vigra::MultiArrayView<2,float> ch_out_x = out[1].bindAt(2, i);
+    vigra::MultiArrayView<2,float> ch_out_y = out[0].bindAt(2, i);
+    cv::Mat cv_in(Size(ch_in.shape(0), ch_in.shape(1)), BaseType2CvDepth(in_mat[0]->type()), ch_in.data());
+    cv::Mat cv_out_x(Size(ch_out_x.shape(0), ch_out_x.shape(1)), BaseType2CvDepth(out_mat[0]->type()), ch_out_x.data());
+    cv::Mat cv_out_y(Size(ch_out_y.shape(0), ch_out_y.shape(1)), BaseType2CvDepth(out_mat[0]->type()), ch_out_y.data());
     
     Scharr(cv_in, cv_out_x, CV_32F, 1, 0);
     Scharr(cv_in, cv_out_y, CV_32F, 0, 1);
   }
     
-OPENLF_OLDAPI_OP_END_T(OP_Scharr, 1, 2, 3, 3, BaseType::FLOAT)
+OPENLF_OP_END
 
 #undef OPENLF_OP_CONSTRUCT_PARAMS
