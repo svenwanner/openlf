@@ -25,7 +25,7 @@
 //#define OPENLF_OP_CONSTRUCT_PARAMS \
 //    AddParameter_("radius", DspParameter(DspParameter::ParamType::Int, 0)); \
 
-//OPENLF_OP_START(OP_DiscErosion, 1, 1, 3, 3)
+//OPENLF_OLDAPI_OP_START(OP_DiscErosion, 1, 1, 3, 3)
 
 // TODO Vigra discErosion() is only compatible with integer data ranging from 0..255. So this is incompatible with the FlexMAV, which supports other data types as well.
 
@@ -37,7 +37,7 @@
 //        vigra::discErosion(channel_in,channel_out, radius);
 //    }
 
-//OPENLF_OP_END(OP_DiscErosion, 1, 1, 3, 3)
+//OPENLF_OLDAPI_OP_END(OP_DiscErosion, 1, 1, 3, 3)
 
 //
 //#undef OPENLF_OP_CONSTRUCT_PARAMS

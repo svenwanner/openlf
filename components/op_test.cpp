@@ -26,10 +26,10 @@
 
 #define OPENLF_OP_CONSTRUCT_PARAMS
 
-OPENLF_OP_START(OP_Passthrough, 1, 1, 3, 3)
+OPENLF_OLDAPI_OP_START(OP_Passthrough, 1, 1, 3, 3)
 
     *out[0] = *in[0];
     
-OPENLF_OP_END(OP_Passthrough, 1, 1, 3, 3)
+OPENLF_OLDAPI_OP_END(OP_Passthrough, 1, 1, 3, 3)
 
 #undef OPENLF_OP_CONSTRUCT_PARAMS

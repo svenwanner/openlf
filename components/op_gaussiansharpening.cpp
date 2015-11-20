@@ -28,7 +28,7 @@
     AddParameter_("sharpening_factor", DspParameter(DspParameter::ParamType::Float, 0)); \
     AddParameter_("scale", DspParameter(DspParameter::ParamType::Float, 0));
 
-OPENLF_OP_START(OP_GaussianSharpening, 1, 1, 3, 3)
+OPENLF_OLDAPI_OP_START(OP_GaussianSharpening, 1, 1, 3, 3)
 
   //TODO vigra requires double values, but DSPatch has only the parameter type Float.
   double sharpening_factor = (double)*op->GetParameter(0)->GetFloat();
@@ -40,6 +40,6 @@ OPENLF_OP_START(OP_GaussianSharpening, 1, 1, 3, 3)
         vigra::gaussianSharpening(channel_in,channel_out, sharpening_factor, scale);
     }
 
-OPENLF_OP_END(OP_GaussianSharpening, 1, 1, 3, 3)
+OPENLF_OLDAPI_OP_END(OP_GaussianSharpening, 1, 1, 3, 3)
 
 #undef OPENLF_OP_CONSTRUCT_PARAMS

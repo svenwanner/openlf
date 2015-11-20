@@ -27,7 +27,7 @@
 
 #define OPENLF_OP_CONSTRUCT_PARAMS
 
-OPENLF_OP_START_T(OP_Normalize, 1, 1, 3, 3, float)
+OPENLF_OLDAPI_OP_START_T(OP_Normalize, 1, 1, 3, 3, float)
 
          
     float min = std::numeric_limits<float>::max();
@@ -50,6 +50,6 @@ OPENLF_OP_START_T(OP_Normalize, 1, 1, 3, 3, float)
     //std::cout << "mapping range from (" << min << "," << max << ") to (0,1)" << std::endl;
     
     
-OPENLF_OP_END_T(OP_Normalize, 1, 1, 3, 3, BaseType::FLOAT)
+OPENLF_OLDAPI_OP_END_T(OP_Normalize, 1, 1, 3, 3, BaseType::FLOAT)
 
 #undef OPENLF_OP_CONSTRUCT_PARAMS

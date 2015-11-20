@@ -32,7 +32,7 @@ using namespace cv;
 
 #define OPENLF_OP_CONSTRUCT_PARAMS
 
-OPENLF_OP_START_T(OP_Scharr, 1, 2, 3, 3, float)
+OPENLF_OLDAPI_OP_START_T(OP_Scharr, 1, 2, 3, 3, float)
         
   /*Kernel1D<float> D;
   D.initExplicitly(-1,1) = -1.0/2.0, 0.0, 1.0/2.0;
@@ -61,6 +61,6 @@ OPENLF_OP_START_T(OP_Scharr, 1, 2, 3, 3, float)
     Scharr(cv_in, cv_out_y, CV_32F, 0, 1);
   }
     
-OPENLF_OP_END_T(OP_Scharr, 1, 2, 3, 3, BaseType::FLOAT)
+OPENLF_OLDAPI_OP_END_T(OP_Scharr, 1, 2, 3, 3, BaseType::FLOAT)
 
 #undef OPENLF_OP_CONSTRUCT_PARAMS

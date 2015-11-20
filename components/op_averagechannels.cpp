@@ -33,7 +33,7 @@
 using namespace clif;
 using namespace vigra;
 
-OPENLF_OP_CLASS_HEADER(OP_AverageChannels, 1, 1, 3, 3)
+OPENLF_OLDAPI_OP_CLASS_HEADER(OP_AverageChannels, 1, 1, 3, 3)
 
 namespace { 
   
@@ -82,8 +82,8 @@ OP_AverageChannels::OP_AverageChannels()
   }
 }
 
-OPENLF_OP_IGNORE_VECTOR_TYPES(OP_AverageChannels, 1, 1, 3, 3)
-OPENLF_OP_IGNORE_T(OP_AverageChannels, cv::Point2f, 1, 1, 3, 3)
+OPENLF_OLDAPI_OP_IGNORE_VECTOR_TYPES(OP_AverageChannels, 1, 1, 3, 3)
+OPENLF_OLDAPI_OP_IGNORE_T(OP_AverageChannels, cv::Point2f, 1, 1, 3, 3)
 
 void OP_AverageChannels::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {

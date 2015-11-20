@@ -23,13 +23,13 @@
 // #include <vigra/convolution.hxx>
 // #include "openlf/operator_macro.hpp"
 // 
-// #define OPENLF_OP_SINGLE2D_CONSTRUCT_PARAMS \
+// #define OPENLF_OLDAPI_OP_SINGLE2D_CONSTRUCT_PARAMS \
 //   AddParameter_("scale", DspParameter(DspParameter::ParamType::Float, 0.0f));
 // 
-// OPENLF_OP_SINGLE2D_START(OP_VigraGradientMagnitude)
+// OPENLF_OLDAPI_OP_SINGLE2D_START(OP_VigraGradientMagnitude)
 //     
 //     //gaussianGradientMagnitude(*in, *out, *op->GetParameter(0)->GetFloat());
 //     
-// OPENLF_OP_SINGLE2D_END(OP_VigraGradientMagnitude)
+// OPENLF_OLDAPI_OP_SINGLE2D_END(OP_VigraGradientMagnitude)
 // 
-// #undef OPENLF_OP_SINGLE2D_CONSTRUCT_PARAMS
+// #undef OPENLF_OLDAPI_OP_SINGLE2D_CONSTRUCT_PARAMS

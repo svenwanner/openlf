@@ -26,8 +26,8 @@
 #include "openlf/operator_macro.hpp"
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
-    AddParameter_("copy", DspParameter(DspParameter::ParamType::Bool, true));
-
+  AddParameter_("copy", DspParameter(DspParameter::ParamType::Bool, true));
+    
 OPENLF_VIGRA_OP_START(OP_MergeDispByCoherence, 2, 2, 3, 3)
 
   T *in0 = in[0].data();
@@ -52,6 +52,6 @@ OPENLF_VIGRA_OP_START(OP_MergeDispByCoherence, 2, 2, 3, 3)
     }
   }
 
-OPENLF_VIGRA_OP_END(OP_MergeDispByCoherence, 2, 2, 3, 3)
+OPENLF_OP_END
 
 #undef OPENLF_OP_CONSTRUCT_PARAMS
