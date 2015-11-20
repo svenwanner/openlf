@@ -20,7 +20,6 @@
 *
 */
 
-#include "clif/clif_vigra.hpp"
 #include "clif/subset3d.hpp"
 #include "clif/clif_cv.hpp"
 

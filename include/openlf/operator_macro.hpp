@@ -23,9 +23,12 @@
 #ifndef _OPENLF_OP_MACRO_H
 #define _OPENLF_OP_MACRO_H
 
-#include "clif/flexmav.hpp"
+#include <vigra/multi_array.hxx>
+
 #include "dspatch/DspPlugin.h"
 #include "dspatch/DspComponent.h"
+
+#include "clif/dataset.hpp"
 
 #define STRINGIFY(STR) #STR
 

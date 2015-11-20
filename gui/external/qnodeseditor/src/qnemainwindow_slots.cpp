@@ -286,10 +286,11 @@ void QNEMainWindow::open_clif_viewer()
 {
   assert(_lf_selected || _flexmav3_selected);
   
-  if (_lf_selected)
+  //FIXME flexmav
+  /*if (_lf_selected)
     show_in_clifview(_lf_selected);
   else
-    show_in_clifview(_flexmav3_selected);
+    show_in_clifview(_flexmav3_selected);*/
 }
 
 void QNEMainWindow::view_mode_changed(bool tabbed)

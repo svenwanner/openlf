@@ -21,7 +21,6 @@
 */
 #include <vigra/impex.hxx>
 
-#include "clif/clif_vigra.hpp"
 #include "clif/subset3d.hpp"
 
 #include "dspatch/DspComponent.h"

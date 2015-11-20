@@ -19,8 +19,8 @@
 * Author Sven Wanner, Maximilian Diebold, Hendrik Siedelmann 
 *
 */
-
 #include <vigra/imageinfo.hxx>
+#include <vigra/impex.hxx>
 #include "openlf/operator_macro.hpp"
 
 class OP_LoadImage : public DspComponent {

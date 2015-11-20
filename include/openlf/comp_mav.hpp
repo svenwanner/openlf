@@ -23,61 +23,11 @@
 #ifndef _OPENLF_COMP_MAV_H
 #define _OPENLF_COMP_MAV_H
 
-#include "clif/flexmav.hpp"
 #include "dspatch/DspComponent.h"
 
 #include "clif/dataset.hpp"
 
 namespace openlf {
-
-typedef unsigned int uint;
-  
-template<uint DIM> class FlexMAVSource : public DspComponent {
-public:
-  FlexMAVSource()
-  {
-    AddOutput_("output");
-  }
-  void set(clif::FlexMAV<DIM> *mav)
-  {
-    _mav = mav;
-  }
-
-protected:
-  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
-  {
-    bool stat;
-    assert(_mav);
-    stat = outputs.SetValue(0, _mav); 
-    assert(stat);
-  }
-  
-private:
-  clif::FlexMAV<DIM> *_mav = NULL;
-};
-
-template<uint DIM> class FlexMAVSink : public DspComponent {
-public:
-  FlexMAVSink()
-  {
-    AddInput_("input");
-  }
-  clif::FlexMAV<DIM>* get()
-  {
-    return _mav;
-  }
-
-protected:
-  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
-  {
-    inputs.GetValue(0, _mav);
-    assert(_mav);
-  }
-  
-private:
-  clif::FlexMAV<DIM> *_mav = NULL;
-};
-
 
 class MatSource : public DspComponent {
 public:

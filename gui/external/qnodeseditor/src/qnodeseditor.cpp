@@ -24,7 +24,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 //vigra wants to be first...
-#include "clif/flexmav.hpp"
+#include "clif/dataset.hpp"
 
 #include "qnodeseditor.h"
 
@@ -203,7 +203,8 @@ void show_in_clifview(LF *lf)
   free(path);
 }
 
-void show_in_clifview(FlexMAV<3> *mav)
+//FIXME flexmav
+/*void show_in_clifview(FlexMAV<3> *mav)
 {
   QTemporaryFile tmpfile;
   tmpfile.setAutoRemove(false);
@@ -226,12 +227,13 @@ void show_in_clifview(FlexMAV<3> *mav)
   new ExternalClifViewer(filename,"default","data", true);
   
   free(filename);
-}
+}*/
 
 void show_in_clifview(QNEPort *port)
 {
   LF *lf = NULL;
-  FlexMAV<3> *mav = NULL;
+  //FIXME flexmav
+  //FlexMAV<3> *mav = NULL;
   assert(port->isOutput());
   
   int idx = port->block()->getPortIdx(port);
@@ -239,11 +241,12 @@ void show_in_clifview(QNEPort *port)
   
   if (signal) {
     signal->GetValue(lf);
+    /*FIXME flexmav
     signal->GetValue(mav);
 
     if (lf)
       show_in_clifview(lf);
     else if (mav)
-      show_in_clifview(mav);
+      show_in_clifview(mav);*/
   }
 }

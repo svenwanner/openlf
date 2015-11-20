@@ -20,7 +20,6 @@
 *
 */
 
-#include "clif/clif_vigra.hpp"
 #include "clif/subset3d.hpp"
 #include "clif/clif_cv.hpp"
 
@@ -208,10 +207,12 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   out_set.writeAttributes();
   f_out.close();*/
   
-  FlexMAV<4> disp;
-  Datastore *disp_store = in->data->getStore("disparity/default/data");
+  Mat disp;
+  //FIXME flexmav!
+  //Datastore *disp_store = in->data->getStore("disparity/default/data");
 
-  disp.read(disp_store);
+  //FIXME flexmav!
+  //disp.read(disp_store);
   
   //FIXME read/pass actual datastore!
   Subset3d subset(in->data, 0);
@@ -221,17 +222,19 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   cv::Mat img3d, img;
   //FIXME should add a readimage to subset3d!
   std::vector<int> idx(in->data->dims(), 0);
-  idx[3] = disp.shape()[3]/2;
+  //FIXME flexmav!
+  //idx[3] = disp.shape()[3]/2;
   in->data->readImage(idx, &img3d, UNDISTORT | CVT_8U);
   clifMat2cv(&img3d,&img);
   
   //centerview, channel 0
+  /*FIXME flexmav!
   MultiArrayView<2,float> centerview = disp.get<float>()->bindAt(3,disp.shape()[3]/2).bindAt(2,0);
   
   if (ply_filename)
     write_ply(ply_filename->c_str(), centerview, img, subset);
   if (obj_filename)
-    write_obj(obj_filename->c_str(), centerview, img, subset);
+    write_obj(obj_filename->c_str(), centerview, img, subset);*/
   
   /*ClifFile *debugfile = new ClifFile();
   debugfile->create("debug.clif");

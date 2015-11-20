@@ -20,9 +20,6 @@
 *
 */
 
-#include "clif/clif_vigra.hpp"
-#include "clif/flexmav.hpp"
-
 #include "openlf/operator_macro.hpp"
 
 #define INCOUNT 1

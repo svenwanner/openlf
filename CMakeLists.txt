@@ -146,8 +146,8 @@ target_link_libraries(openlf-bin ${OPENLF_LIBRARIES})
 
 #add_executable(teststuff src/bin/test.cpp)
 #add_executable(teststuff2 src/bin/test2.cpp)
-add_executable(teststuff3 src/bin/test3.cpp)
+#add_executable(teststuff3 src/bin/test3.cpp)
 
 #target_link_libraries(teststuff  ${OPENLF_LIBRARIES})
 #target_link_libraries(teststuff2 ${OPENLF_LIBRARIES})
-target_link_libraries(teststuff3 ${OPENLF_LIBRARIES})
+#target_link_libraries(teststuff3 ${OPENLF_LIBRARIES})

@@ -19,7 +19,8 @@
 * Author Sven Wanner, Maximilian Diebold, Hendrik Siedelmann 
 *
 */
-
+#include <vigra/imageinfo.hxx>
+#include <vigra/impex.hxx>
 #include <vigra/transformimage.hxx>
 #include <vigra/copyimage.hxx>
 #include <vigra/multi_array.hxx>
