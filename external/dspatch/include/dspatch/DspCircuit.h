@@ -244,6 +244,7 @@ bool DspCircuit::ConnectOutToOut(FromComponentType& fromComponent,
         !_components[fromComponentIndex]->_FindOutput(fromOutput, fromOutputIndex) ||
         !_FindOutput(toOutput, toOutputIndex))
     {
+      printf("WARNING component not part of circuit!\n");
         return false;
     }
 

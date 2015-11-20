@@ -28,14 +28,14 @@
 #define OPENLF_OP_CONSTRUCT_PARAMS \
     AddParameter_("copy", DspParameter(DspParameter::ParamType::Bool, true));
 
-OPENLF_OP_START(OP_MergeDispByCoherence, 2, 2, 3, 3)
+OPENLF_VIGRA_OP_START(OP_MergeDispByCoherence, 2, 2, 3, 3)
 
-  T *in0 = in[0]->data();
-  T *in1 = in[1]->data();
-  T *out0 = out[0]->data();
-  T *out1 = out[1]->data();
+  T *in0 = in[0].data();
+  T *in1 = in[1].data();
+  T *out0 = out[0].data();
+  T *out1 = out[1].data();
   
-  int total = in[0]->size();
+  int total = in[0].size();
 
   bool copy = *op->GetParameter(0)->GetBool();
   
@@ -52,6 +52,6 @@ OPENLF_OP_START(OP_MergeDispByCoherence, 2, 2, 3, 3)
     }
   }
 
-OPENLF_OP_END(OP_MergeDispByCoherence, 2, 2, 3, 3)
+OPENLF_VIGRA_OP_END(OP_MergeDispByCoherence, 2, 2, 3, 3)
 
 #undef OPENLF_OP_CONSTRUCT_PARAMS

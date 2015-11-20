@@ -100,11 +100,11 @@ COMP_Epi::COMP_Epi()
 
 template<typename T> class subarray_copy {
 public:
-void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4> *disp_store, float disp_scale)
+void operator()(int line, int epi_w, int epi_h, Mat *sink_mat, Mat *disp_store, float disp_scale)
 {
-  for(int c=0;c<sink_mav->shape()[2];c++) {
-    MultiArrayView<2,T> sink = sink_mav->get<T>()->bindAt(2, c);
-    MultiArrayView<3,T> store = disp_store->get<T>()->bindAt(2, c);
+  for(int c=0;c<(*sink_mat)[2];c++) {
+    MultiArrayView<2,T> sink = vigraMAV<3,T>(*sink_mat).bindAt(2, c);
+    MultiArrayView<3,T> store = vigraMAV<4,T>(*disp_store).bindAt(2, c);
     
     for(int i=0;i<epi_h;i++) {
       //bind store y to epi line
@@ -116,23 +116,6 @@ void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4>
   }
 }
 };
-
-template<typename T> class subarray_copy<std::vector<T>> {
-public:
-void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4> *disp_store, float disp_scale)
-{
-  abort();
-}
-};
-
-/*template<> class subarray_copy<cv::Point2f> {
-public:
-void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4> *disp_store, float disp_scale)
-{
-  abort();
-}
-};*/
-
 
 void component_apply_config_path(DspComponent *comp, LF *config, path config_path)
 {
@@ -257,7 +240,7 @@ static void printprogress(int curr, int max, int &last, const char *fmt = NULL, 
   fflush(NULL);
 }
 
-FlexMAV<3> *proc_epi(Subset3d *subset, float disp_start, float disp_stop, float disp_step, int i, float scale, DspComponent *merge, DspCircuit *epi, clif::FlexMAV<3> &mav_source, FlexMAVSink<3> *sink, DspCircuit *parent)
+Mat *proc_epi(Subset3d *subset, float disp_start, float disp_stop, float disp_step, int i, float scale, DspComponent *merge, DspCircuit *epi, Mat &source, MatSink *sink, DspCircuit *parent)
 {
   merge->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, true));
   
@@ -270,7 +253,9 @@ FlexMAV<3> *proc_epi(Subset3d *subset, float disp_start, float disp_stop, float 
         }
     }
     
-    readEPI(subset, mav_source, i, d, Unit::PIXELS, UNDISTORT, Interpolation::LINEAR, scale);
+    cv::Mat cv_source;
+    subset->readEPI(&cv_source, i, d, Unit::PIXELS, UNDISTORT, Interpolation::LINEAR, scale);
+    source = Mat(cv_source);
     
     //tick the circuit to fill _sink_mav using _source_mav and the circuit
     parent->Reset();
@@ -308,7 +293,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //subset_idx -- extrinsics path
   Subset3d subset(in->data, subset_idx);
   
-  FlexMAV<4> *disp_store = NULL;
+  Mat *disp_store = NULL;
   
   int epi_w = subset.EPIWidth();
   int epi_h = subset.EPIHeight();
@@ -358,9 +343,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   }
   
   
-  vector<FlexMAVSource<3>> comps_source(t_count);
-  vector<FlexMAVSink<3>>   comps_sink(t_count);
-  vector<clif::FlexMAV<3>> mavs_source(t_count);
+  vector<MatSource> comps_source(t_count);
+  vector<MatSink>   comps_sink(t_count);
+  vector<Mat> mats_source(t_count);
   
   component_child_apply_config(epi_circuit, config, GetComponentName());
   component_child_apply_config(merge_circuit, config, GetComponentName());
@@ -400,13 +385,13 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     outer_circuits[i].ConnectOutToIn(epi_circuits[i], 1, merge_circuits[i], 1);
     outer_circuits[i].ConnectOutToIn(merge_circuits[i], 0, comps_sink[i], 0);
     
-    comps_source[i].set(&mavs_source[i]);
+    comps_source[i].set(&mats_source[i]);
   }
   
   DspCircuit outer_circuit;
-  FlexMAVSource<3> comp_source;
-  FlexMAVSink<3>   comp_sink;
-  clif::FlexMAV<3> mav_source;
+  MatSource comp_source;
+  MatSink   comp_sink;
+  Mat source;
   
   outer_circuit.AddComponent(comp_source, "source");
   outer_circuit.AddComponent(epi_circuit, "epi");  
@@ -418,9 +403,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   outer_circuit.ConnectOutToIn(epi_circuit, 1, merge_circuit, 1);
   outer_circuit.ConnectOutToIn(merge_circuit, 0, comp_sink, 0);
   
-  comp_source.set(&mav_source);
+  comp_source.set(&source);
   
-  FlexMAV<3> *sink_mav;
+  Mat *sink;
       
   //int progress = 0;
   int done = 0;
@@ -429,19 +414,22 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //cv::ipp::setUseIPP(false);
   
   //create output for viewer + prefetch dataset images in parallel (read_epi is threaded)
-  sink_mav = proc_epi(
+  sink = proc_epi(
     &subset, disp_start, disp_stop, disp_step, stop_line-1, scale,
     merge_circuit,
     epi_circuit,
-    mav_source,
+    source,
     &comp_sink,
     &outer_circuit               
   );
   
-  disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), sink_mav->shape()[2], subset.EPIHeight()), sink_mav->type());  
-  disp_store->callIf<subarray_copy,_is_convertible_to_float>(stop_line-1,epi_w,epi_h,sink_mav,disp_store,scale);
+  //disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), sink->shape()[2], subset.EPIHeight()), sink->type());  
+  //disp_store->callIf<subarray_copy,_is_convertible_to_float>(stop_line-1,epi_w,epi_h,sink,disp_store,scale);
   
-#pragma omp parallel for private(sink_mav)
+  Idx size = {subset.EPIWidth(), subset.EPICount(), (*sink)[2], subset.EPIHeight()};
+  disp_store = new Mat(sink->type(), size);
+  
+#pragma omp parallel for private(sink)
   for(int i=start_line;i<stop_line-1;i++) {
 #pragma omp critical 
     {
@@ -451,30 +439,31 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     
     int t = omp_get_thread_num();
     
-    sink_mav = proc_epi(
+    sink = proc_epi(
       &subset, disp_start, disp_stop, disp_step, i, scale,
       merge_circuits[t],
       epi_circuits[t],
-      mavs_source[t],
+      mats_source[t],
       &comps_sink[t],
       &outer_circuits[t]                  
     );
       
-    assert(sink_mav->type() == BaseType::FLOAT);
+    assert(sink->type() == BaseType::FLOAT);
     
-    disp_store->callIf<subarray_copy,_is_convertible_to_float>(i,epi_w,epi_h,sink_mav,disp_store,scale);
+    disp_store->callIf<subarray_copy,_is_convertible_to_float>(i,epi_w,epi_h,sink,disp_store,scale);
   }
   //cv::setNumThreads(-1);
   
   assert(disp_store);
 
-  disp_store->write(out->data, "disparity/default/data");
-  out->path = "disparity/default/data";
+  //FIXME write!
+  //disp_store->write(out->data, "disparity/default/data");
+  //out->path = "disparity/default/data";
   delete disp_store;
 }
 
 bool COMP_Epi::ParameterUpdating_(int index, const DspParameter& param)
-{  
+{
   //just store parameter 
   SetParameter_(index, param);
   

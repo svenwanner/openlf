@@ -104,6 +104,34 @@ class NAME : public DspComponent { \
       clif::FlexMAV<OUTDIM> _output_image[OUTCOUNT]; \
 };
 
+#define OPENLF_VIGRA_OP_START(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM) \
+class NAME : public DspComponent { \
+    public: \
+        NAME(); \
+        DSPCOMPONENT_TRIVIAL_CLONE(NAME); \
+    protected: \
+      virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs); \
+      virtual bool ParameterUpdating_ (int i, DspParameter const &p); \
+    private: \
+      clif::Mat _output_image[OUTCOUNT]; \
+}; \
+\
+  using namespace vigra;\
+  using namespace clif;\
+\
+  namespace { \
+\
+  template<typename T> class NAME##dispatcher {\
+  public:\
+    void operator()(NAME *op, Mat **in_mat, Mat **out_mat, DspSignalBus *inputs, DspSignalBus *outputs)\
+    {\
+      MultiArrayView<INDIM, T> in[INCOUNT]; \
+      MultiArrayView<OUTDIM, T> out[OUTCOUNT]; \
+      for(int i=0;i<INCOUNT;i++) \
+        in[i] = vigraMAV<INDIM,T>(*in_mat[i]);  \
+      for(int i=0;i<OUTCOUNT;i++) \
+        out[i] = vigraMAV<OUTDIM,T>(*out_mat[i]); 
+      
 #define OPENLF_OP_START(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM) \
 class NAME : public DspComponent { \
     public: \
@@ -169,7 +197,70 @@ class NAME : public DspComponent { \
     }\
   };\
 }
-      
+   
+
+#define OPENLF_VIGRA_OP_END(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM) \
+}\
+};\
+\
+}\
+\
+NAME::NAME()\
+{\
+  setTypeName_(#NAME); \
+  char buf[64]; \
+  for(int i=0;i<INCOUNT;i++) { \
+    sprintf(buf, "input_%d", i); \
+    AddInput_(buf); \
+  }\
+  for(int i=0;i<OUTCOUNT;i++) { \
+    sprintf(buf, "output_%d", i); \
+    AddOutput_(buf); \
+  }\
+  OPENLF_OP_CONSTRUCT_PARAMS \
+}\
+\
+namespace { \
+template<class FROM> struct _is_convertible_to_float : public std::is_convertible<FROM,float> {}; \
+} \
+\
+void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
+{\
+  bool stat;\
+  Mat *in[INCOUNT];\
+\
+  for(int i=0;i<INCOUNT;i++) { \
+    errorCond(inputs.GetValue(i, in[i]), #NAME ": input not found - possible type mismatch?"); RETURN_ON_ERROR \
+    errorCond(in[i]->type() > BaseType::INVALID, #NAME ": input %d no valid type!", i); RETURN_ON_ERROR \
+  }\
+\
+  Mat *out_ptr[OUTCOUNT];\
+  for(int i=0;i<OUTCOUNT;i++) { \
+    out_ptr[i] = &_output_image[i]; \
+    _output_image[i].create(in[0]->type(), *(Idx*)in[0]);\
+  } \
+\
+  if (!configOnly()) \
+    in[0]->callIf<NAME##dispatcher,_is_convertible_to_float>(this, in, out_ptr, &inputs, &outputs);\
+\
+  for(int i=0;i<OUTCOUNT;i++) { \
+    stat = outputs.SetValue(i, out_ptr[i]);\
+    if (!stat) { \
+      printf(#NAME ": output %d set failed\n", i); \
+      abort(); \
+    }\
+    errorCond(_output_image[i].type() > BaseType::INVALID, #NAME ": output %d no valid type!", i); \
+  }\
+}\
+bool NAME::ParameterUpdating_ (int i, DspParameter const &p)\
+{\
+  SetParameter_(i, p);\
+  return true;\
+} \
+EXPORT_DSPCOMPONENT(NAME)
+
+
+
       
 #define OPENLF_OP_END(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM) \
 }\
