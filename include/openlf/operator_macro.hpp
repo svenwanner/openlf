@@ -157,6 +157,18 @@ class NAME : public DspComponent { \
     }\
   };\
 }
+#define OPENLF_OP_IGNORE_T(NAME,T,INCOUNT,OUTCOUNT,INDIM,OUTDIM) \
+  namespace { \
+\
+  template<> class NAME##dispatcher<T>{\
+  public:\
+    void operator()(NAME *op, FlexMAV<INDIM> **in_mav, FlexMAV<OUTDIM> **out_mav, DspSignalBus *inputs, DspSignalBus *outputs)\
+    {\
+      printf("char type not supported by this component\n");\
+      abort(); \
+    }\
+  };\
+}
       
       
 #define OPENLF_OP_END(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM) \
@@ -182,6 +194,7 @@ NAME::NAME()\
 \
 OPENLF_OP_IGNORE_VECTOR_TYPES(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM)\
 OPENLF_OP_IGNORE_STRING(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM)\
+OPENLF_OP_IGNORE_T(NAME,cv::Point2f, INCOUNT,OUTCOUNT,INDIM,OUTDIM)\
 \
 void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
 {\
@@ -269,6 +282,7 @@ NAME::NAME()\
 \
 OPENLF_OP_IGNORE_VECTOR_TYPES(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM)\
 OPENLF_OP_IGNORE_STRING(NAME,INCOUNT,OUTCOUNT,INDIM,OUTDIM)\
+OPENLF_OP_IGNORE_T(NAME,cv::Point2f, INCOUNT,OUTCOUNT,INDIM,OUTDIM)\
 \
 void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\
 {\

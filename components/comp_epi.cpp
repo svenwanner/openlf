@@ -125,6 +125,14 @@ void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4>
 }
 };
 
+template<> class subarray_copy<cv::Point2f> {
+public:
+void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4> *disp_store, float disp_scale)
+{
+  abort();
+}
+};
+
 
 void component_apply_config_path(DspComponent *comp, LF *config, path config_path)
 {
