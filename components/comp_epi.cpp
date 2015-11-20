@@ -125,13 +125,13 @@ void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4>
 }
 };
 
-template<> class subarray_copy<cv::Point2f> {
+/*template<> class subarray_copy<cv::Point2f> {
 public:
 void operator()(int line, int epi_w, int epi_h, FlexMAV<3> *sink_mav, FlexMAV<4> *disp_store, float disp_scale)
 {
   abort();
 }
-};
+};*/
 
 
 void component_apply_config_path(DspComponent *comp, LF *config, path config_path)
@@ -282,6 +282,8 @@ FlexMAV<3> *proc_epi(Subset3d *subset, float disp_start, float disp_stop, float 
   
   return sink->get();
 }
+
+template<class FROM> struct _is_convertible_to_float : public std::is_convertible<FROM,float> {};
 
 void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
@@ -437,7 +439,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   );
   
   disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), sink_mav->shape()[2], subset.EPIHeight()), sink_mav->type());  
-  disp_store->call<subarray_copy>(stop_line-1,epi_w,epi_h,sink_mav,disp_store,scale);
+  disp_store->callIf<subarray_copy,_is_convertible_to_float>(stop_line-1,epi_w,epi_h,sink_mav,disp_store,scale);
   
 #pragma omp parallel for private(sink_mav)
   for(int i=start_line;i<stop_line-1;i++) {
@@ -460,7 +462,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
       
     assert(sink_mav->type() == BaseType::FLOAT);
     
-    disp_store->call<subarray_copy>(i,epi_w,epi_h,sink_mav,disp_store,scale);
+    disp_store->callIf<subarray_copy,_is_convertible_to_float>(i,epi_w,epi_h,sink_mav,disp_store,scale);
   }
   //cv::setNumThreads(-1);
   
