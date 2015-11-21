@@ -109,8 +109,8 @@ void operator()(int line, int epi_w, int epi_h, Mat *sink_mat, Mat *disp_store, 
       //bind store y to epi line
       MultiArrayView<2,T> epi = store.bindAt(1, line);
       epi = sink;
-      if (disp_scale != 1.0)
-        epi *= 1.0/disp_scale;
+      //if (disp_scale != 1.0)
+        //epi *= 1.0/disp_scale;
     }
   }
 }
@@ -296,7 +296,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //subset_idx -- extrinsics path
   Subset3d subset(in->data, subset_idx);
   
-  Mat *disp_store = NULL;
+  Mat *disp_mat = NULL;
   
   int epi_w = subset.EPIWidth();
   int epi_h = subset.EPIHeight();
@@ -410,7 +410,6 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   Mat *sink;
       
-  //int progress = 0;
   int done = 0;
   printf("\n");
   //cv::setNumThreads(0);
@@ -426,11 +425,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     &outer_circuit               
   );
   
-  //disp_store = new FlexMAV<4>(Shape4(subset.EPIWidth(), subset.EPICount(), sink->shape()[2], subset.EPIHeight()), sink->type());  
-  //disp_store->callIf<subarray_copy,_is_convertible_to_float>(stop_line-1,epi_w,epi_h,sink,disp_store,scale);
-  
   Idx size = {subset.EPIWidth(), subset.EPICount(), (*sink)[2], subset.EPIHeight()};
-  disp_store = new Mat(sink->type(), size);
+  disp_mat = new Mat(sink->type(), size);
+  disp_mat->callIf<subarray_copy,_is_convertible_to_float>(stop_line-1,epi_w,epi_h,sink,disp_mat,scale);
   
 #pragma omp parallel for private(sink)
   for(int i=start_line;i<stop_line-1;i++) {
@@ -453,16 +450,18 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
       
     assert(sink->type() == BaseType::FLOAT);
     
-    disp_store->callIf<subarray_copy,_is_convertible_to_float>(i,epi_w,epi_h,sink,disp_store,scale);
+    disp_mat->callIf<subarray_copy,_is_convertible_to_float>(i,epi_w,epi_h,sink,disp_mat,scale);
   }
   //cv::setNumThreads(-1);
   
-  assert(disp_store);
+  assert(disp_mat);
 
+  
   //FIXME write!
-  //disp_store->write(out->data, "disparity/default/data");
-  //out->path = "disparity/default/data";
-  delete disp_store;
+  Datastore *disp_store = out->data->addStore("disparity/default/data");
+  disp_store->write(disp_mat);
+  out->path = "disparity/default/data";
+  delete disp_mat;
 }
 
 bool COMP_Epi::ParameterUpdating_(int index, const DspParameter& param)

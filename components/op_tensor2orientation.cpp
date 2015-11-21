@@ -35,25 +35,24 @@ OPENLF_VIGRA_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
   
   float add = *op->GetParameter(1)->GetFloat();
 
-  /*for (int i=0; i < in[0]->shape()[0]*in[0]->shape()[1]; ++i) {
+  /*for (int i=0; i < in[0].shape()[0]*in[0].shape()[1]; ++i) {
     
     // orientation
-    out[0]->data()[i] = std::tan(std::atan2(2*in[1]->data()[i], in[2]->data()[i]-in[0]->data()[i] + 1e-25) / 2.0);
+    out[0].data()[i] = std::tan(std::atan2(2*in[1].data()[i], in[2].data()[i]-in[0].data()[i] + 1e-25) / 2.0);
     
     // coherence
-    float up = std::sqrt(std::pow(in[2]->data()[i] - in[0]->data()[i], 2) + 4 * std::pow(in[1]->data()[i], 2));
-    float down = in[0]->data()[i] + in[2]->data()[i] + 1e-25;
-    out[1]->data()[i] = up / down;
+    float up = std::sqrt(std::pow(in[2].data()[i] - in[0].data()[i], 2) + 4 * std::pow(in[1].data()[i], 2));
+    float down = in[0].data()[i] + in[2].data()[i] + 1e-25;
+    out[1].data()[i] = up / down;
     
     // threshold orientation and check invalid coherence
-    if (out[0]->data()[i] > 1 || out[0]->data()[i] < -1 || out[1]->data()[i] < threshold) {
-      out[0]->data()[i] = -1;
-      out[1]->data()[i] = 0;
+    if (out[0].data()[i] > 1 || out[0].data()[i] < -1 || out[1].data()[i] < threshold) {
+      out[0].data()[i] = -1;
+      out[1].data()[i] = 0;
     }
     else
-      out[0]->data()[i] += add;
+      out[0].data()[i] += add;
   }*/
-
 
   threshold *= threshold;
   
@@ -97,7 +96,7 @@ OPENLF_VIGRA_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
         }
         else {
           out0[i] = add + (sqrt(yx*yx+1)-1)/yx;
-          out1[i] = coherence;
+          out1[i] = 1.0;//coherence;
         }
       }
       else {

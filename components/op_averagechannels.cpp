@@ -50,11 +50,13 @@ public:
     MultiArrayView<INDIM, T> in[INCOUNT]; 
     MultiArrayView<OUTDIM, T> out[OUTCOUNT]; 
     for(int i=0;i<INCOUNT;i++) 
-      in[i] = vigraMAV<INDIM, T>(in_mat[i]);  
-    for(int i=0;i<OUTCOUNT;i++) {
-      out_mat[i]->create(toBaseType<T>(), *(Idx*)in_mat[0]);
-      out[i] = vigraMAV<OUTDIM, T>(out_mat[i]);
-    }
+      in[i] = vigraMAV<INDIM, T>(in_mat[i]);
+    Idx outsize(3);
+    outsize[0] = (*in_mat[0])[0];
+    outsize[1] = (*in_mat[0])[1];
+    outsize[2] = 1;
+    out_mat[0]->create(toBaseType<T>(), outsize);
+    out[0] = vigraMAV<OUTDIM, T>(out_mat[0]);
     
     
     if (in[0].shape()[2] != 3)

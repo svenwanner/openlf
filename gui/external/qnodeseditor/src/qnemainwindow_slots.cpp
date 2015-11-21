@@ -144,7 +144,7 @@ void QNEMainWindow::showCompSettings(QNEBlock *block)
 void QNEMainWindow::showPortProps(QNEPort *port)
 {
   _lf_selected = NULL;
-  _flexmav3_selected = NULL;
+  _mat_selected = NULL;
   
   assert(port->isOutput());
   
@@ -154,11 +154,11 @@ void QNEMainWindow::showPortProps(QNEPort *port)
     
     if (signal) {
       signal->GetValue(_lf_selected);
-      signal->GetValue(_flexmav3_selected);
+      signal->GetValue(_mat_selected);
 
       if (_lf_selected)
         _open_clif_btn->setDisabled(false);
-      else if (_flexmav3_selected)
+      else if (_mat_selected)
         _open_clif_btn->setDisabled(false);
     }
   }
@@ -284,13 +284,12 @@ void QNEMainWindow::circuitNameChanged(QString name)
 
 void QNEMainWindow::open_clif_viewer()
 {
-  assert(_lf_selected || _flexmav3_selected);
+  assert(_lf_selected || _mat_selected);
   
-  //FIXME flexmav
-  /*if (_lf_selected)
+  if (_lf_selected)
     show_in_clifview(_lf_selected);
   else
-    show_in_clifview(_flexmav3_selected);*/
+    show_in_clifview(_mat_selected);
 }
 
 void QNEMainWindow::view_mode_changed(bool tabbed)

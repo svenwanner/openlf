@@ -204,7 +204,7 @@ void show_in_clifview(LF *lf)
 }
 
 //FIXME flexmav
-/*void show_in_clifview(FlexMAV<3> *mav)
+void show_in_clifview(clif::Mat *m)
 {
   QTemporaryFile tmpfile;
   tmpfile.setAutoRemove(false);
@@ -219,21 +219,20 @@ void show_in_clifview(LF *lf)
     ClifFile f_out;
     f_out.create(filename);
     Dataset *dataset = f_out.createDataset();
-    
-    mav->write(dataset, "data");
+    Datastore *store = dataset->addStore("data");
+    store->write(m);
     delete dataset;
   }
   
   new ExternalClifViewer(filename,"default","data", true);
   
   free(filename);
-}*/
+}
 
 void show_in_clifview(QNEPort *port)
 {
   LF *lf = NULL;
-  //FIXME flexmav
-  //FlexMAV<3> *mav = NULL;
+  clif::Mat *mat = NULL;
   assert(port->isOutput());
   
   int idx = port->block()->getPortIdx(port);
@@ -241,12 +240,12 @@ void show_in_clifview(QNEPort *port)
   
   if (signal) {
     signal->GetValue(lf);
-    /*FIXME flexmav
-    signal->GetValue(mav);
+
+    signal->GetValue(mat);
 
     if (lf)
       show_in_clifview(lf);
-    else if (mav)
-      show_in_clifview(mav);*/
+    else if (mat)
+      show_in_clifview(mat);
   }
 }

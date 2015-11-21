@@ -2,8 +2,8 @@ graph [
 label "ST_Anisotrop"
 node [
 id 0
-label "OP_VigraGauss_0"
-type "OP_VigraGauss"
+label "OP_Gauss_0"
+type "OP_Gauss"
 graphics [
 x -304.000000
 y -72.000000
@@ -60,8 +60,8 @@ y 130.000000
 ]
 node [
 id 6
-label "OP_VigraGauss_1"
-type "OP_VigraGauss"
+label "OP_Gauss_1"
+type "OP_Gauss"
 graphics [
 x 450.000000
 y -18.000000
@@ -73,8 +73,8 @@ y_blur 30.000000
 ]
 node [
 id 7
-label "OP_VigraGauss_2"
-type "OP_VigraGauss"
+label "OP_Gauss_2"
+type "OP_Gauss"
 graphics [
 x 455.000000
 y 74.000000
@@ -86,8 +86,8 @@ y_blur 30.000000
 ]
 node [
 id 8
-label "OP_VigraGauss_3"
-type "OP_VigraGauss"
+label "OP_Gauss_3"
+type "OP_Gauss"
 graphics [
 x 452.000000
 y 172.000000

@@ -63,7 +63,7 @@ class QNodesEditor;
 class Circuit_Viewer;
 
 namespace openlf { class LF; }
-namespace clif { template<unsigned int DIM> class FlexMAV; }
+namespace clif { class Mat; }
 
 class QNEMainWindow : public QMainWindow
 {
@@ -137,7 +137,7 @@ private:
   QListWidget *_circuit_list_w = NULL;
   
   openlf::LF *_lf_selected = NULL;
-  clif::FlexMAV<3> *_flexmav3_selected = NULL;
+  clif::Mat *_mat_selected = NULL;
   
   std::vector<QThread*> threads;
   std::vector<DspCircuit*> _circuits;

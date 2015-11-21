@@ -30,15 +30,15 @@
     
 OPENLF_VIGRA_OP_START(OP_MergeDispByCoherence, 2, 2, 3, 3)
 
-  T *in0 = in[0].data();
-  T *in1 = in[1].data();
-  T *out0 = out[0].data();
-  T *out1 = out[1].data();
+  T *in0 = (T*)in_mat[0]->data();
+  T *in1 = (T*)in_mat[1]->data();
+  T *out0 = (T*)out_mat[0]->data();
+  T *out1 = (T*)out_mat[1]->data();
   
-  int total = in[0].size();
+  int total = in_mat[0]->total();
 
   bool copy = *op->GetParameter(0)->GetBool();
-  
+    
   if (copy) {
     out[0] = in[0];
     out[1] = in[1];
