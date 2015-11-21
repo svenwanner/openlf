@@ -96,7 +96,7 @@ OPENLF_VIGRA_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
         }
         else {
           out0[i] = add + (sqrt(yx*yx+1)-1)/yx;
-          out1[i] = 1.0;//coherence;
+          out1[i] = coherence;
         }
       }
       else {

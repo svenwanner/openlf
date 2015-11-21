@@ -1,5 +1,5 @@
 graph [
-label "ST_Anisotrop"
+label "ST_Default"
 node [
 id 0
 label "OP_Gauss_0"
@@ -9,8 +9,8 @@ x -304.000000
 y -72.000000
 ]
 params [
-x_blur 3.000000
-y_blur 3.000000
+x_blur 1.000000
+y_blur 1.000000
 ]
 ]
 node [
@@ -67,8 +67,8 @@ x 450.000000
 y -18.000000
 ]
 params [
-x_blur 3.000000
-y_blur 30.000000
+x_blur 5.000000
+y_blur 5.000000
 ]
 ]
 node [
@@ -80,8 +80,8 @@ x 455.000000
 y 74.000000
 ]
 params [
-x_blur 3.000000
-y_blur 30.000000
+x_blur 5.000000
+y_blur 5.000000
 ]
 ]
 node [
@@ -93,8 +93,8 @@ x 452.000000
 y 172.000000
 ]
 params [
-x_blur 3.000000
-y_blur 30.000000
+x_blur 5.000000
+y_blur 5.000000
 ]
 ]
 node [
@@ -106,7 +106,7 @@ x 658.000000
 y -13.000000
 ]
 params [
-min_coherence 0.500000
+min_coherence 0.8
 input_disparity 0.000000
 ]
 ]

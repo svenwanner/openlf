@@ -23,11 +23,11 @@ y 31.000000
 params [
 epiCircuit "(UNKNOWN)"
 mergeCircuit "(UNKNOWN)"
-DispStart 6.000000
+DispStart 3.000000
 DispStop 7.000000
 DispStep 1.000000
-StartLine 750
-StopLine 800
+StartLine 400
+StopLine 500
 ]
 ]
 node [
@@ -40,7 +40,7 @@ y 8.000000
 ]
 params [
 obj_filename "/home/hendrik/projects/openlf/examples/demo.obj"
-ply_filename "(UNSET)"
+ply_filename "/home/hendrik/projects/openlf/examples/demo.ply"
 ]
 ]
 node [
