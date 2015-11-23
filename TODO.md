@@ -14,6 +14,7 @@
 - CLIF: reimplement disk cache
 - CLIF: clifview - more generic datastore display (make it a widget?) (partly done)
 - CLIF: generic dimension handling (for attribute & datastore, hdf5 handling)
+- CLIF: fix exposure/brightness scaling if no conversion happens
 
 Minor:
 - COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!
@@ -43,9 +44,19 @@ Done:
 - GUI: add circuit list and allow adding circuits as components (circuits loaded at startup show already up, 17.10.15)
 - CLIF: datastore::link uses file name, not file path (which is unavailable for hdf5?!?) - move to ClifFile (28.10.15)
 - CLIF: rewrite core to provide transparent multidimensional data handling throught clif::Datastore (28/29.19.15)
-- CLIF: bin/clif: combine clif and ini import (atm clif attributes are lost?) 30.11.15
-- fix windows build (30.11.15-2.11.15)
+- CLIF: bin/clif: combine clif and ini import (atm clif attributes are lost?) 30.10.15
+- fix windows build (30.10.15-2.11.15)
 - CLIF: clifview - more generic datastore display (make it a widget?) (partly done 3.11.15)
 - CLIF: clifview - windows - automatically show/select on dataset click! (fixed different - 3.11.15)
-
+- CLIF: clifview - open store from cli (3.11.15)
+- CLIF: scale range (4.11.15)
+- CLIF: clifview - ipc file loading - use existing instance to show new clif files! (5.11.15)
+- CLIF: remove temporary files after use! (6.11.15)
 - HDMarker: deterministic threading results (10.11.15)
+- CLIF: move attributes to dense storage (10.11.15)
+- UCALIB: move calibration into dedicated library (13.11.15)
+- HDMARKER: bayer pattern marker detection (18.11.15)
+- CLIF/OPENLF: new Mat type (18-21.11.15)
+- CLIF: use mmap for Mat read (18-21.11.15)
+- CLIF: fix hdmarker storage (23.11.15)
+- CLIF: fix vigra includes (once again) (23.11.15)
