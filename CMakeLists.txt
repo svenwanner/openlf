@@ -142,7 +142,7 @@ add_subdirectory(gui)
 
 add_executable(openlf-bin src/bin/openlf.cpp)
 set_target_properties(openlf-bin PROPERTIES OUTPUT_NAME openlf)
-target_link_libraries(openlf-bin ${OPENLF_LIBRARIES} profiler)
+target_link_libraries(openlf-bin ${OPENLF_LIBRARIES})
 
 #add_executable(teststuff src/bin/test.cpp)
 #add_executable(teststuff2 src/bin/test2.cpp)
