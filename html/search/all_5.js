@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['openlf_20tutorial',['OpenLF Tutorial',['../md_doc_tutorial.html',1,'']]],
   ['openlf',['OpenLF',['../classOpenLF.html',1,'OpenLF'],['../namespaceopenlf.html',1,'openlf']]],
   ['openlf_2ehpp',['openlf.hpp',['../openlf_8hpp.html',1,'']]],
   ['openlf_5fop_5fend',['OPENLF_OP_END',['../operator__macro_8hpp.html#ab0899dd8ba7121ecbb21e22b2502210e',1,'operator_macro.hpp']]],

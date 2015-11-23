@@ -1,6 +1,20 @@
-# OpenLF Tutorial
+[TOC]
 
-This tutorial will show you how to create a simple component with one input and one output and two settings, giving an introduction into OpenLF and its parts and concepts. The component will simply read the settings and store a string into the output lightfield dataset at the specified position.
+OpenLF Tutorial 1 - A First Component {#Tutorial}
+======
+
+This tutorial will teach you how to create your first high level %OpenLF component, which operates at the clif::Dataset level (TODO ref). The tutorial is split into three parts:
+- \ref new - setup build system and source
+- \ref comp - implementing a component
+- \ref use - usage in OpenLF
+
+## Step 1 : Setup the Project {#new}
+
+If you haven't done so, set up clif and openlf according to [the readme](@ref index)
+
+
+## Step 2 : A First Component {#comp}
+
 
 ## Header
 
@@ -226,3 +240,5 @@ We will now add the component to the build system:
 - add the implementation to the list in src/components/CMakeLists.txt, so it will actually be compiled
 - in *include/openlf.hpp* add our new header to the long list of includes at the top and our new component to the global \a _comp_list.
 - rebuild the project and test the new component with the LF_Toolbox!
+
+## Step 3 : Using external Components {#use}

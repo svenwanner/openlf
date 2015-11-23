@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.10"/>
-<title>OpenLF: OpenLF Tutorial</title>
+<title>OpenLF: tutorial</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -77,10 +77,25 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title"><a class="el" href="classOpenLF.html">OpenLF</a> Tutorial </div>  </div>
+<div class="title">tutorial </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This tutorial will show you how to create a simple component with one input and one output and two settings, giving an introduction into <a class="el" href="classOpenLF.html">OpenLF</a> and its parts and concepts. The component will simply read the settings and store a string into the output lightfield dataset at the specified position.</p>
+<div class="toc"><h3>Table of Contents</h3>
+<ul><li class="level1"><a href="#Tutorial">OpenLF Tutorial 1 - A First Component </a><ul><li class="level2"><a href="#new">Step 1 : Setup the Project</a></li>
+<li class="level2"><a href="#comp">Step 2 : A First Component</a></li>
+<li class="level2"><a href="#use">Step 3 : Using external Components</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="textblock"><h1><a class="anchor" id="Tutorial"></a>
+OpenLF Tutorial 1 - A First Component </h1>
+<p>This tutorial will teach you how to create your first high level OpenLF component, which operates at the clif::Dataset level (TODO ref). The tutorial is split into three parts: <a class="el" href="md_doc_tutorial.html#new">Step 1 : Setup the Project</a>, <a class="el" href="md_doc_tutorial.html#comp">Step 2 : A First Component</a>, <a class="el" href="md_doc_tutorial.html#use">Step 3 : Using external Components</a>.</p>
+<h2><a class="anchor" id="new"></a>
+Step 1 : Setup the Project</h2>
+<p>If you haven't done so, set up clif and openlf according to <a class="el" href="index.html">the readme</a></p>
+<h2><a class="anchor" id="comp"></a>
+Step 2 : A First Component</h2>
 <h2>Header</h2>
 <div class="fragment"><div class="line"><span class="preprocessor">#ifndef _OPENLF_COMP_TUTORIAL_H</span></div>
 <div class="line"><span class="preprocessor">#define _OPENLF_COMP_TUTORIAL_H</span></div>
@@ -242,12 +257,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>Store the header in in <em>include/openlf/components/</em> for example as <em>comp_tutorial.hpp</em> and the implementation in <em>src/components/</em>.</li>
 <li>add the implementation to the list in src/components/CMakeLists.txt, so it will actually be compiled</li>
 <li>in <em><a class="el" href="openlf_8hpp.html">include/openlf.hpp</a></em> add our new header to the long list of includes at the top and our new component to the global <em>_comp_list</em>.</li>
-<li>rebuild the project and test the new component with the LF_Toolbox! </li>
+<li>rebuild the project and test the new component with the LF_Toolbox!</li>
 </ul>
+<h2><a class="anchor" id="use"></a>
+Step 3 : Using external Components</h2>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Nov 23 2015 13:59:18 for OpenLF by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Nov 23 2015 15:38:04 for OpenLF by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.10
 </small></address>

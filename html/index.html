@@ -83,13 +83,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="toc"><h3>Table of Contents</h3>
 <ul><li class="level1"><a href="#about">About </a></li>
 <li class="level1"><a href="#doc">Documentation</a></li>
-<li class="level1"><a href="#install">Installation</a><ul><li class="level2"><a href="#build">Build (generic)</a><ul><li class="level3"><a href="#deps">Dependencies</a></li>
-<li class="level3"><a href="#src">Source</a></li>
+<li class="level1"><a href="#install">Installation</a><ul><li class="level2"><a href="#build">Generic Build Instructions</a><ul><li class="level3"><a href="#deps">Dependencies</a></li>
+<li class="level3"><a href="#src">checkout</a></li>
 <li class="level3"><a href="#compile">compile</a></li>
+<li class="level3"><a href="#intall">install</a></li>
 </ul>
 </li>
-<li class="level2"><a href="#build_specific">Build (specific)</a><ul><li class="level3"><a href="#build_win_man">Manual Windows Build</a></li>
+<li class="level2"><a href="#build_specific">System Specific Build Instructions</a><ul><li class="level3"><a href="#build_win_man">Manual Windows Build</a></li>
 <li class="level3"><a href="#build_win_quick">Quick Windows build using installer</a></li>
+<li class="level3"><a href="#win_path">Setup Components Path</a></li>
 <li class="level3"><a href="#build_linux">Linux</a></li>
 </ul>
 </li>
@@ -99,14 +101,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="textblock"><h1><a class="anchor" id="about"></a>
 About </h1>
-<p><a class="el" href="classOpenLF.html">OpenLF</a> is a graph based library for light field processing with focus on EPIs.</p>
+<p>OpenLF is a graph based library for light field processing with focus on EPIs.</p>
 <h1><a class="anchor" id="doc"></a>
 Documentation</h1>
-<p><a class="el" href="md_doc_tutorial.html">OpenLF Tutorial</a></p>
+<p>Compile documention with doxygen by executing <em>doxygen</em> in the source dir. This should create html/index.html which is the starting point for the documentation (which is actually this file). After that you can start with the <a class="el" href="md_doc_tutorial.html">tutorial</a>.</p>
 <h1><a class="anchor" id="install"></a>
 Installation</h1>
 <h2><a class="anchor" id="build"></a>
-Build (generic)</h2>
+Generic Build Instructions</h2>
 <p>Generic instructions, specific platforms see <a href="#win_man">manual windows build</a>, <a href="#win_quick">quick windows build</a>, <a href="#linux">linux</a>.</p>
 <h3><a class="anchor" id="deps"></a>
 Dependencies</h3>
@@ -118,9 +120,9 @@ Dependencies</h3>
 <li>Boost (filesystem, system)</li>
 <li>QT5</li>
 </ul>
-<p>You only need to build CLIF (no need to install), cmake will link the build result into the users cmake package cache, which is searched by <a class="el" href="classOpenLF.html">OpenLF</a>.</p>
+<p>You only need to build CLIF (no need to install), cmake will link the build result into the users cmake package cache, which is searched by OpenLF.</p>
 <h3><a class="anchor" id="src"></a>
-Source</h3>
+checkout</h3>
 <p>Use your favorite git client and clone: <a href="https://github.com/svenwanner/openlf">https://github.com/svenwanner/openlf</a></p>
 <h3><a class="anchor" id="compile"></a>
 compile</h3>
@@ -128,39 +130,49 @@ compile</h3>
 <li>run cmake to generate the makefile for your favorite makesystem</li>
 <li>build</li>
 </ul>
+<h3><a class="anchor" id="intall"></a>
+install</h3>
+<p>you do not need to run the install target, but whether you do or not you need to setup your environmont so OPENLF_COMPONENT_PATH points to the path where components were compiled into (e.g. <em></em> &lt;builddir&gt;/components under *NIX). Also if you want to launch the dataset viewer (clifview) the clifview executable from clif needs to be in your path.</p>
 <h2><a class="anchor" id="build_specific"></a>
-Build (specific)</h2>
+System Specific Build Instructions</h2>
 <p><a class="anchor" id="win_man"></a> </p>
 <h3><a class="anchor" id="build_win_man"></a>
 Manual Windows Build</h3>
 <ul>
-<li>Install all dependencies from above. You only need to build CLIF (no need to install), cmake will link the build result into the users cmake package cache which will be found by <a class="el" href="classOpenLF.html">OpenLF</a>.</li>
-<li>Download <a class="el" href="classOpenLF.html">OpenLF</a> source from: <a href="https://github.com/svenwanner/openlf">https://github.com/svenwanner/openlf</a></li>
-<li>Open cmake-gui and run configure/generate to get a Visual Studio project. If you have problems finding any dependencies make sure that you supply the right paths to cmake (via cmake-gui or user/global PATH%). The correct paths are those which contain the respective SomepackageConfig.cmake. Make sure you download the exact correct dependencies for your compiler and release version!</li>
+<li>Install all dependencies from above. You only need to build CLIF (no need to install), cmake will link the build result into the users cmake package cache which will be found by OpenLF.</li>
+<li>Download OpenLF source from: <a href="https://github.com/svenwanner/openlf">https://github.com/svenwanner/openlf</a></li>
+<li>Open cmake-gui and run configure/generate to get a Visual Studio project. If you have problems finding any dependencies make sure that you supply the right paths to cmake (via cmake-gui or user/global %PATH%). The correct paths are those which contain the respective SomepackageConfig.cmake. Make sure you download the exact correct dependencies for your compiler and release version!</li>
 <li>Open the resultant <em>OpenLF.sln</em> in Visual Studio, and execute build.</li>
+<li>at last step put component library into user PATH, see <a class="el" href="index.html#win_path">Setup Components Path</a></li>
 </ul>
 <p><a class="anchor" id="win_quick"></a> </p>
 <h3><a class="anchor" id="build_win_quick"></a>
 Quick Windows build using installer</h3>
 <p>This method will work only for Microsoft Visual Studio 12 2013 (VC12) 64-bit in Relase mode.</p><ul>
 <li>Run the dependency installer: <em>Install_Dependencies_LF_Toolbox_msvc12_x64.exe</em>, This will install all required dependencies (including clif) and add them to the user PATH.</li>
-<li>Download <a class="el" href="classOpenLF.html">OpenLF</a> source from: <a href="https://github.com/svenwanner/openlf">https://github.com/svenwanner/openlf</a></li>
+<li>if you want to use your self-compiled clif (recommended) simplfy remove the clif dir from the install directory</li>
+<li>Download OpenLF source from: <a href="https://github.com/svenwanner/openlf">https://github.com/svenwanner/openlf</a></li>
 <li>execute cmake-gui and run configure/generate</li>
-<li>Open the resultant <em>OpenLF.sln</em> in Visual Studio, <b>change configuration to Release</b> and execute build.</li>
+<li>Open the resultant <em>OpenLF.sln</em> in Visual Studio, and execute build.</li>
+<li>at last step put component library into user PATH, see <a class="el" href="index.html#win_path">Setup Components Path</a></li>
 </ul>
+<h3><a class="anchor" id="win_path"></a>
+Setup Components Path</h3>
+<p>Add the OPENLF_COMPONENT_PATH Environment Variable to the environment of your user to point at the folder where the components where compiled into. For a Debug build this is <em></em> &lt;builddir&gt;\components\Debug.</p>
 <p><a class="anchor" id="linux"></a> </p>
 <h3><a class="anchor" id="build_linux"></a>
 Linux</h3>
-<p>install dependencies</p>
+<p>install dependencies, afterwards, compile openlf:</p>
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;git clone https://github.com/svenwanner/openlf.git openlf</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;mkdir openlf/build</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;cd openlf/build</div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;cmake ..</div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;make</div>
-</div><!-- fragment --> </div></div><!-- contents -->
+</div><!-- fragment --><p>setup an env variable OPENLF_COMPONENT_PATH which points at the component dir, e.g <em></em> &lt;builddir&gt;/components . </p>
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Nov 23 2015 13:59:18 for OpenLF by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Nov 23 2015 15:38:04 for OpenLF by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.10
 </small></address>
