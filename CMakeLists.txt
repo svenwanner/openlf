@@ -7,7 +7,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   # using GCC
   message("use gcc")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC -g -O3 -fopenmp")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC -g -O2 -fno-omit-frame-pointer -fopenmp")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O3 -fPIC")
   set(OPENLF_LIBRARIES dl)
   set(OPENLF_BUILD_TYPE "SHARED")
@@ -142,7 +142,7 @@ add_subdirectory(gui)
 
 add_executable(openlf-bin src/bin/openlf.cpp)
 set_target_properties(openlf-bin PROPERTIES OUTPUT_NAME openlf)
-target_link_libraries(openlf-bin ${OPENLF_LIBRARIES})
+target_link_libraries(openlf-bin ${OPENLF_LIBRARIES} profiler)
 
 #add_executable(teststuff src/bin/test.cpp)
 #add_executable(teststuff2 src/bin/test2.cpp)
