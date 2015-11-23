@@ -3,8 +3,6 @@
 - GUI/DSPatch: forward between settings of circuits components and components settings!
 - OPENLF: actually handle config hierarchy
 - OPENLF: DspParameter - store origin (type?) so a _process can only set the settings it has itself modified
-- CLIF: remove temporary files for memory_link!
-- GUI: fix memory leaks!
 - GUI: fix circuit display glitches (list circuits, re-open/show already opened, unnamed entries)
 - GUI: connectouttoin may remove other connections (only single input allowed!), sync this!
 - CLIF: CLIF_LINK_LIBRARIES contains absolute paths! (e.g. hdf5)
