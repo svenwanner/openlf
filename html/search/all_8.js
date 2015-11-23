@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['set',['set',['../classopenlf_1_1components_1_1FlexMAVSource.html#a13dc3c184fb3a6b9f17ef3a09d4744eb',1,'openlf::components::FlexMAVSource']]],
-  ['setup_5fcomponent_5fparameters',['setup_component_parameters',['../classopenlf_1_1components_1_1WKF__StructureTensor.html#a8c129382ca2b6ea92388f4dfb5ffd030',1,'openlf::components::WKF_StructureTensor']]]
+  ['set',['set',['../classopenlf_1_1MatSource.html#ac85d9bd9edb133b636583e05e13d48c7',1,'openlf::MatSource']]],
+  ['stringify',['STRINGIFY',['../operator__macro_8hpp.html#a4f980b46337801191c9410de983eeffd',1,'operator_macro.hpp']]]
 ];

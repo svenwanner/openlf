@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['get',['get',['../classopenlf_1_1components_1_1FlexMAVSink.html#a33e06fbc9115550500937d0b57294491',1,'openlf::components::FlexMAVSink']]],
-  ['getcomponentclone',['getComponentClone',['../classOpenLF.html#a15936452cb7d317489aa4c16c390d590',1,'OpenLF']]]
+  ['process_5f',['Process_',['../classopenlf_1_1MatSource.html#a02cd0455416736114f367b19be2b7142',1,'openlf::MatSource::Process_()'],['../classopenlf_1_1MatSink.html#a41ebc133863d5fd0e0446eb9cff1f416',1,'openlf::MatSink::Process_()']]]
 ];

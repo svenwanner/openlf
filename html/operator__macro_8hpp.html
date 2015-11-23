@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.10"/>
-<title>OpenLF: include/openlf/operators/operator_macro.hpp File Reference</title>
+<title>OpenLF: include/openlf/operator_macro.hpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -82,7 +82,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_2cbd1847a0463fb48ec27748346b236c.html">include</a></li><li class="navelem"><a class="el" href="dir_55c8343cbe4dcda9688f56b68cda8845.html">openlf</a></li><li class="navelem"><a class="el" href="dir_ec0a1ad38cc9a6b09b24cc8bd334958a.html">operators</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_134aa183aafe85bbbf87037da667b517.html">openlf</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -92,17 +92,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">operator_macro.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><div class="dynheader">
-This graph shows which files directly or indirectly include this file:</div>
+<div class="textblock"><code>#include &lt;vigra/multi_array.hxx&gt;</code><br />
+<code>#include &quot;dspatch/DspPlugin.h&quot;</code><br />
+<code>#include &quot;dspatch/DspComponent.h&quot;</code><br />
+<code>#include &quot;clif/dataset.hpp&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for operator_macro.hpp:</div>
 <div class="dyncontent">
-<div class="center"><img src="operator__macro_8hpp__dep__incl.png" border="0" usemap="#include_2openlf_2operators_2operator__macro_8hppdep" alt=""/></div>
-<map name="include_2openlf_2operators_2operator__macro_8hppdep" id="include_2openlf_2operators_2operator__macro_8hppdep">
-<area shape="rect" id="node2" href="operators_8hpp.html" title="include/openlf/operators\l/operators.hpp" alt="" coords="28,95,188,136"/>
-<area shape="rect" id="node3" href="comp__epi_8hpp.html" title="include/openlf/components\l/comp_epi.hpp" alt="" coords="14,273,191,315"/>
-<area shape="rect" id="node4" href="openlf_8hpp.html" title="include/openlf.hpp" alt="" coords="102,363,228,389"/>
-<area shape="rect" id="node7" href="wkf__structuretensor_8hpp.html" title="include/openlf/workflows\l/wkf_structuretensor.hpp" alt="" coords="24,184,191,225"/>
-<area shape="rect" id="node5" href="op__loadimage_8hpp.html" title="include/openlf/operators\l/op_loadimage.hpp" alt="" coords="85,437,245,479"/>
-<area shape="rect" id="node6" href="op__saveimage_8hpp.html" title="include/openlf/operators\l/op_saveimage.hpp" alt="" coords="269,437,429,479"/>
+<div class="center"><img src="operator__macro_8hpp__incl.png" border="0" usemap="#include_2openlf_2operator__macro_8hpp" alt=""/></div>
+<map name="include_2openlf_2operator__macro_8hpp" id="include_2openlf_2operator__macro_8hpp">
 </map>
 </div>
 </div>
@@ -110,261 +108,37 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a179124cf18bd97622618eaa8e9cbc75e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="operator__macro_8hpp.html#a179124cf18bd97622618eaa8e9cbc75e">OPENLF_OP_CONSTRUCT_PARAMS</a></td></tr>
-<tr class="separator:a179124cf18bd97622618eaa8e9cbc75e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa9e91fb6832527c898c2504d89a8c064"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="operator__macro_8hpp.html#aa9e91fb6832527c898c2504d89a8c064">OPENLF_OP_SINGLE2D_CLASS_HEADER</a>(NAME)</td></tr>
-<tr class="separator:aa9e91fb6832527c898c2504d89a8c064"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acac54a6ec397014df7828da97e66234b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="operator__macro_8hpp.html#acac54a6ec397014df7828da97e66234b">OPENLF_OP_SINGLE2D_START</a>(NAME)</td></tr>
-<tr class="separator:acac54a6ec397014df7828da97e66234b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04fbcc3ee3fd13d9f3ebb5c98946abfb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="operator__macro_8hpp.html#a04fbcc3ee3fd13d9f3ebb5c98946abfb">OPENLF_OP_SINGLE2D_END</a>(NAME)</td></tr>
-<tr class="separator:a04fbcc3ee3fd13d9f3ebb5c98946abfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b280fcdc083788d6b446d8d0414bf86"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="operator__macro_8hpp.html#a0b280fcdc083788d6b446d8d0414bf86">OPENLF_OP_CLASS_HEADER</a>(NAME,  INCOUNT,  OUTCOUNT,  INDIM,  OUTDIM)</td></tr>
-<tr class="separator:a0b280fcdc083788d6b446d8d0414bf86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6c87f6a6e3824b2e75c51186cc036c16"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="operator__macro_8hpp.html#a6c87f6a6e3824b2e75c51186cc036c16">OPENLF_OP_START</a>(NAME,  INCOUNT,  OUTCOUNT,  INDIM,  OUTDIM)</td></tr>
-<tr class="separator:a6c87f6a6e3824b2e75c51186cc036c16"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf150da855d48708c252c055cc04aa0c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="operator__macro_8hpp.html#adf150da855d48708c252c055cc04aa0c">OPENLF_OP_END</a>(NAME,  INCOUNT,  OUTCOUNT,  INDIM,  OUTDIM)</td></tr>
-<tr class="separator:adf150da855d48708c252c055cc04aa0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d43767159e2ddcf98830a8ed228d608"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="operator__macro_8hpp.html#a8d43767159e2ddcf98830a8ed228d608">OPENLF_OP_START_T</a>(NAME,  INCOUNT,  OUTCOUNT,  INDIM,  OUTDIM,  OUTCTYPE)</td></tr>
-<tr class="separator:a8d43767159e2ddcf98830a8ed228d608"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5a07180f161a0c07a67175e296cb63a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="operator__macro_8hpp.html#ad5a07180f161a0c07a67175e296cb63a">OPENLF_OP_END_T</a>(NAME,  INCOUNT,  OUTCOUNT,  INDIM,  OUTDIM,  OUTBASETYPE)</td></tr>
-<tr class="separator:ad5a07180f161a0c07a67175e296cb63a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f980b46337801191c9410de983eeffd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="operator__macro_8hpp.html#a4f980b46337801191c9410de983eeffd">STRINGIFY</a>(STR)&#160;&#160;&#160;#STR</td></tr>
+<tr class="separator:a4f980b46337801191c9410de983eeffd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa69e2bed1a81914138bf64624add679f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="operator__macro_8hpp.html#aa69e2bed1a81914138bf64624add679f">OPENLF_OP_START_OUTTYPE</a>(NAME,  _INCOUNT,  _OUTCOUNT,  OUTCTYPE)</td></tr>
+<tr class="separator:aa69e2bed1a81914138bf64624add679f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8745be6c564a24e64d011b4cfafa2f4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="operator__macro_8hpp.html#ab8745be6c564a24e64d011b4cfafa2f4">OPENLF_OP_START</a>(NAME,  _INCOUNT,  _OUTCOUNT)&#160;&#160;&#160;<a class="el" href="operator__macro_8hpp.html#aa69e2bed1a81914138bf64624add679f">OPENLF_OP_START_OUTTYPE</a>(NAME,_INCOUNT,_OUTCOUNT,T)</td></tr>
+<tr class="separator:ab8745be6c564a24e64d011b4cfafa2f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a528a79404fac17d78ef436b166b14d94"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="operator__macro_8hpp.html#a528a79404fac17d78ef436b166b14d94">OPENLF_VIGRA_OP_START_OUTTYPE</a>(_NAME,  _INCOUNT,  _OUTCOUNT,  INDIM,  OUTDIM,  OUTTYPE)</td></tr>
+<tr class="separator:a528a79404fac17d78ef436b166b14d94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa77f6ca25fac9b90cf8c3cf085f35f13"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="operator__macro_8hpp.html#aa77f6ca25fac9b90cf8c3cf085f35f13">OPENLF_VIGRA_OP_START</a>(_NAME,  _INCOUNT,  _OUTCOUNT,  INDIM,  OUTDIM)&#160;&#160;&#160;<a class="el" href="operator__macro_8hpp.html#a528a79404fac17d78ef436b166b14d94">OPENLF_VIGRA_OP_START_OUTTYPE</a>(_NAME, _INCOUNT,_OUTCOUNT,INDIM,OUTDIM,T)</td></tr>
+<tr class="separator:aa77f6ca25fac9b90cf8c3cf085f35f13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0899dd8ba7121ecbb21e22b2502210e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="operator__macro_8hpp.html#ab0899dd8ba7121ecbb21e22b2502210e">OPENLF_OP_END</a></td></tr>
+<tr class="separator:ab0899dd8ba7121ecbb21e22b2502210e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
-<a class="anchor" id="a0b280fcdc083788d6b446d8d0414bf86"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define OPENLF_OP_CLASS_HEADER</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">NAME, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">INCOUNT, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">OUTCOUNT, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">INDIM, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">OUTDIM&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">class </span>NAME : <span class="keyword">public</span> DspComponent { \</div>
-<div class="line">    public: \</div>
-<div class="line">        NAME(); \</div>
-<div class="line">        DSPCOMPONENT_TRIVIAL_CLONE(NAME); \</div>
-<div class="line">    protected: \</div>
-<div class="line">      virtual <span class="keywordtype">void</span> Process_(DspSignalBus&amp; inputs, DspSignalBus&amp; outputs); \</div>
-<div class="line">      virtual <span class="keywordtype">bool</span> ParameterUpdating_ (<span class="keywordtype">int</span> i, DspParameter <span class="keyword">const</span> &amp;p); \</div>
-<div class="line">    private: \</div>
-<div class="line">      clif::FlexMAV&lt;OUTDIM&gt; _output_image[OUTCOUNT]; \</div>
-<div class="line">};</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a class="anchor" id="a179124cf18bd97622618eaa8e9cbc75e"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define OPENLF_OP_CONSTRUCT_PARAMS</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="adf150da855d48708c252c055cc04aa0c"></a>
+<a class="anchor" id="ab0899dd8ba7121ecbb21e22b2502210e"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">#define OPENLF_OP_END</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">NAME, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">INCOUNT, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">OUTCOUNT, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">INDIM, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">OUTDIM&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="ad5a07180f161a0c07a67175e296cb63a"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define OPENLF_OP_END_T</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">NAME, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">INCOUNT, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">OUTCOUNT, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">INDIM, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">OUTDIM, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">OUTBASETYPE&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="aa9e91fb6832527c898c2504d89a8c064"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define OPENLF_OP_SINGLE2D_CLASS_HEADER</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">NAME</td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">class </span>NAME : <span class="keyword">public</span> DspComponent { \</div>
-<div class="line">        public: \</div>
-<div class="line">            NAME(); \</div>
-<div class="line">            DSPCOMPONENT_TRIVIAL_CLONE(NAME); \</div>
-<div class="line">        protected: \</div>
-<div class="line">          virtual <span class="keywordtype">void</span> Process_(DspSignalBus&amp; inputs, DspSignalBus&amp; outputs); \</div>
-<div class="line">          virtual <span class="keywordtype">bool</span> ParameterUpdating_ (<span class="keywordtype">int</span> i, DspParameter <span class="keyword">const</span> &amp;p); \</div>
-<div class="line">        private: \</div>
-<div class="line">          clif::FlexMAV&lt;2&gt; _output_image; \</div>
-<div class="line">    };</div>
+<b>Value:</b><div class="fragment"><div class="line">}\</div>
+<div class="line">};\</div>
+<div class="line">\</div>
+<div class="line">}\</div>
 </div><!-- fragment -->
 </div>
 </div>
-<a class="anchor" id="a04fbcc3ee3fd13d9f3ebb5c98946abfb"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define OPENLF_OP_SINGLE2D_END</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">NAME</td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="acac54a6ec397014df7828da97e66234b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define OPENLF_OP_SINGLE2D_START</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">NAME</td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">namespace </span><a class="code" href="namespaceopenlf.html">openlf</a> { <span class="keyword">namespace </span>components { \</div>
-<div class="line">\</div>
-<div class="line">  using <span class="keyword">namespace </span><a class="code" href="namespacevigra.html">vigra</a>;\</div>
-<div class="line">  using <span class="keyword">namespace </span><a class="code" href="namespaceclif.html">clif</a>;\</div>
-<div class="line">\</div>
-<div class="line">  namespace { \</div>
-<div class="line">\</div>
-<div class="line">  template&lt;typename T&gt; <span class="keyword">class </span>NAME##dispatcher {\</div>
-<div class="line">  public:\</div>
-<div class="line">    void operator()(NAME *op, FlexMAV&lt;2&gt; *in_mav, FlexMAV&lt;2&gt; *out_mav, DspSignalBus *inputs, DspSignalBus *outputs)\</div>
-<div class="line">    {\</div>
-<div class="line">      MultiArrayView&lt;2,T&gt; *in = in_mav-&gt;template get&lt;T&gt;();\</div>
-<div class="line">      MultiArrayView&lt;2,T&gt; *out = out_mav-&gt;template get&lt;T&gt;();</div>
-<div class="ttc" id="namespaceclif_html"><div class="ttname"><a href="namespaceclif.html">clif</a></div></div>
-<div class="ttc" id="namespacevigra_html"><div class="ttname"><a href="namespacevigra.html">vigra</a></div></div>
-<div class="ttc" id="namespaceopenlf_html"><div class="ttname"><a href="namespaceopenlf.html">openlf</a></div><div class="ttdef"><b>Definition:</b> comp_dispwrite.hpp:29</div></div>
-</div><!-- fragment -->
-</div>
-</div>
-<a class="anchor" id="a6c87f6a6e3824b2e75c51186cc036c16"></a>
+<a class="anchor" id="ab8745be6c564a24e64d011b4cfafa2f4"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -378,62 +152,30 @@ Macros</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname">INCOUNT, </td>
+          <td class="paramname">_INCOUNT, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname">OUTCOUNT, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">INDIM, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">OUTDIM&#160;</td>
+          <td class="paramname">_OUTCOUNT&#160;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td>&#160;&#160;&#160;<a class="el" href="operator__macro_8hpp.html#aa69e2bed1a81914138bf64624add679f">OPENLF_OP_START_OUTTYPE</a>(NAME,_INCOUNT,_OUTCOUNT,T)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">namespace </span><a class="code" href="namespaceopenlf.html">openlf</a> { <span class="keyword">namespace </span>components { \</div>
-<div class="line">\</div>
-<div class="line">  using <span class="keyword">namespace </span><a class="code" href="namespacevigra.html">vigra</a>;\</div>
-<div class="line">  using <span class="keyword">namespace </span><a class="code" href="namespaceclif.html">clif</a>;\</div>
-<div class="line">\</div>
-<div class="line">  namespace { \</div>
-<div class="line">\</div>
-<div class="line">  template&lt;typename T&gt; <span class="keyword">class </span>NAME##dispatcher {\</div>
-<div class="line">  public:\</div>
-<div class="line">    void operator()(NAME *op, FlexMAV&lt;INDIM&gt; **in_mav, FlexMAV&lt;OUTDIM&gt; **out_mav, DspSignalBus *inputs, DspSignalBus *outputs)\</div>
-<div class="line">    {\</div>
-<div class="line">      MultiArrayView&lt;INDIM, T&gt; *in[INCOUNT]; \</div>
-<div class="line">      MultiArrayView&lt;OUTDIM, T&gt; *out[OUTCOUNT]; \</div>
-<div class="line">      for(<span class="keywordtype">int</span> i=0;i&lt;INCOUNT;i++) \</div>
-<div class="line">        in[i] = in_mav[i]-&gt;<span class="keyword">template</span> get&lt;T&gt;();  \</div>
-<div class="line">      for(<span class="keywordtype">int</span> i=0;i&lt;OUTCOUNT;i++) \</div>
-<div class="line">        out[i] = out_mav[i]-&gt;<span class="keyword">template</span> get&lt;T&gt;();</div>
-<div class="ttc" id="namespaceclif_html"><div class="ttname"><a href="namespaceclif.html">clif</a></div></div>
-<div class="ttc" id="namespacevigra_html"><div class="ttname"><a href="namespacevigra.html">vigra</a></div></div>
-<div class="ttc" id="namespaceopenlf_html"><div class="ttname"><a href="namespaceopenlf.html">openlf</a></div><div class="ttdef"><b>Definition:</b> comp_dispwrite.hpp:29</div></div>
-</div><!-- fragment -->
+
 </div>
 </div>
-<a class="anchor" id="a8d43767159e2ddcf98830a8ed228d608"></a>
+<a class="anchor" id="aa69e2bed1a81914138bf64624add679f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define OPENLF_OP_START_T</td>
+          <td class="memname">#define OPENLF_OP_START_OUTTYPE</td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">NAME, </td>
@@ -442,25 +184,13 @@ Macros</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname">INCOUNT, </td>
+          <td class="paramname">_INCOUNT, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname">OUTCOUNT, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">INDIM, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">OUTDIM, </td>
+          <td class="paramname">_OUTCOUNT, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -475,33 +205,131 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">namespace </span><a class="code" href="namespaceopenlf.html">openlf</a> { <span class="keyword">namespace </span>components { \</div>
-<div class="line">\</div>
-<div class="line">  using <span class="keyword">namespace </span><a class="code" href="namespacevigra.html">vigra</a>;\</div>
-<div class="line">  using <span class="keyword">namespace </span><a class="code" href="namespaceclif.html">clif</a>;\</div>
-<div class="line">\</div>
-<div class="line">  namespace { \</div>
-<div class="line">\</div>
-<div class="line">  template&lt;typename T&gt; <span class="keyword">class </span>NAME##dispatcher {\</div>
-<div class="line">  public:\</div>
-<div class="line">    void operator()(NAME *op, FlexMAV&lt;INDIM&gt; **in_mav, FlexMAV&lt;OUTDIM&gt; **out_mav, DspSignalBus *inputs, DspSignalBus *outputs)\</div>
-<div class="line">    {\</div>
-<div class="line">      MultiArrayView&lt;INDIM, T&gt; *in[INCOUNT]; \</div>
-<div class="line">      MultiArrayView&lt;OUTDIM, OUTCTYPE&gt; *out[OUTCOUNT]; \</div>
+
+</div>
+</div>
+<a class="anchor" id="aa77f6ca25fac9b90cf8c3cf085f35f13"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define OPENLF_VIGRA_OP_START</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">_NAME, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">_INCOUNT, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">_OUTCOUNT, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">INDIM, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">OUTDIM&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;<a class="el" href="operator__macro_8hpp.html#a528a79404fac17d78ef436b166b14d94">OPENLF_VIGRA_OP_START_OUTTYPE</a>(_NAME, _INCOUNT,_OUTCOUNT,INDIM,OUTDIM,T)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a528a79404fac17d78ef436b166b14d94"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define OPENLF_VIGRA_OP_START_OUTTYPE</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">_NAME, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">_INCOUNT, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">_OUTCOUNT, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">INDIM, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">OUTDIM, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">OUTTYPE&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="operator__macro_8hpp.html#aa69e2bed1a81914138bf64624add679f">OPENLF_OP_START_OUTTYPE</a>(_NAME, _INCOUNT,_OUTCOUNT, OUTTYPE) \</div>
+<div class="line">      MultiArrayView&lt;INDIM, T&gt; in[INCOUNT]; \</div>
+<div class="line">      MultiArrayView&lt;OUTDIM, OUTTYPE&gt; out[OUTCOUNT]; \</div>
 <div class="line">      for(<span class="keywordtype">int</span> i=0;i&lt;INCOUNT;i++) \</div>
-<div class="line">        in[i] = in_mav[i]-&gt;<span class="keyword">template</span> get&lt;T&gt;();  \</div>
+<div class="line">        in[i] = vigraMAV&lt;INDIM,T&gt;(*in_mat[i]);  \</div>
 <div class="line">      for(<span class="keywordtype">int</span> i=0;i&lt;OUTCOUNT;i++) \</div>
-<div class="line">        out[i] = out_mav[i]-&gt;<span class="keyword">template</span> get&lt;OUTCTYPE&gt;();</div>
-<div class="ttc" id="namespaceclif_html"><div class="ttname"><a href="namespaceclif.html">clif</a></div></div>
-<div class="ttc" id="namespacevigra_html"><div class="ttname"><a href="namespacevigra.html">vigra</a></div></div>
-<div class="ttc" id="namespaceopenlf_html"><div class="ttname"><a href="namespaceopenlf.html">openlf</a></div><div class="ttdef"><b>Definition:</b> comp_dispwrite.hpp:29</div></div>
+<div class="line">        out[i] = vigraMAV&lt;OUTDIM,OUTTYPE&gt;(*out_mat[i]);</div>
+<div class="ttc" id="operator__macro_8hpp_html_aa69e2bed1a81914138bf64624add679f"><div class="ttname"><a href="operator__macro_8hpp.html#aa69e2bed1a81914138bf64624add679f">OPENLF_OP_START_OUTTYPE</a></div><div class="ttdeci">#define OPENLF_OP_START_OUTTYPE(NAME, _INCOUNT, _OUTCOUNT, OUTCTYPE)</div><div class="ttdef"><b>Definition:</b> operator_macro.hpp:39</div></div>
 </div><!-- fragment -->
+</div>
+</div>
+<a class="anchor" id="a4f980b46337801191c9410de983eeffd"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define STRINGIFY</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">STR</td><td>)</td>
+          <td>&#160;&#160;&#160;#STR</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 22 2015 16:35:09 for OpenLF by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Nov 23 2015 13:59:18 for OpenLF by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.10
 </small></address>
