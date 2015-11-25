@@ -13,6 +13,19 @@
 - CLIF: clifview - more generic datastore display (make it a widget?) (partly done)
 - CLIF: generic dimension handling (for attribute & datastore, hdf5 handling)
 - CLIF: fix exposure/brightness scaling if no conversion happens
+- OPENLF: update tutorial
+- CLIF: change interna to clif::Mat
+- CLIF: clif::Mat : call element destructors on delete for class elements
+- CLIF: clif::Mat : create copy when generating a cv::Mat from a mmap'ed file?
+- doc current Mac OSX homebrew Mac?:
+    CMAKE_PREFIX_PATH=/usr/local/opt/qt5/lib/cmake/:/usr/local/opt/opencv3 LIBRARY_PATH=/usr/local/lib cmake ..
+    LIBRARY_PATH=/usr/local/lib make
+- CLIF: fix FNM_EXTMATCH for windows and OSX
+- CLIF/OPENLF: proper cmake config generation (using find_package in config), similar to hdmarker/ucalib - use common cmake code base!
+- CLIF: clif::Mat: fix cvMat if original data comes from cv::Mat (roundtrip cv->clif->cv!)
+- CLIF: fix cache for re-used readImage img Matrix
+- cliini: allow appending to cliargs (for multiple type files)
+- CLIF/cliini: add --help to clis functions, via cliini
 
 Minor:
 - COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!

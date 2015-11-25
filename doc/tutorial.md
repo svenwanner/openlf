@@ -10,7 +10,7 @@ This tutorial will teach you how to create your first high level %OpenLF compone
 
 ## Step 1 : Setup the Project {#new}
 
-If you haven't done so, set up clif and openlf according to [the readme](@ref index)
+If you haven't done so, set up clif and openlf according to [the readme](@ref index).
 
 
 ## Step 2 : A First Component {#comp}
