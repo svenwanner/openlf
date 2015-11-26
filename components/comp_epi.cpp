@@ -116,14 +116,14 @@ void operator()(int line, int epi_w, int epi_h, Mat *sink_mat, Mat *disp_store, 
 }
 };
 
-void component_apply_config_path(DspComponent *comp, LF *config, path config_path)
+void component_apply_config_path(DspComponent *comp, LF *config, cpath config_path)
 {
   if (config && config->data) {
     
     for(int i=0;i<comp->GetParameterCount();i++) {
       Attribute *attr;
       const DspParameter *param = comp->GetParameter(i);
-      path param_path = config_path / comp->GetParameterName(i);
+      cpath param_path = config_path / comp->GetParameterName(i);
       
       attr = config->data->getMatch(param_path);
       if (attr) {  
@@ -154,7 +154,7 @@ void component_apply_config_path(DspComponent *comp, LF *config, path config_pat
 
 void component_child_apply_config(DspComponent *comp, LF *config, std::string parent)
 {
-  path config_path;
+  cpath config_path;
   std::string name = comp->GetComponentName();
   
   if (!parent.size())
@@ -163,18 +163,18 @@ void component_child_apply_config(DspComponent *comp, LF *config, std::string pa
   if (!name.size())
     name = "default";
   
-  component_apply_config_path(comp, config, path("openlf") / parent / name);
+  component_apply_config_path(comp, config, cpath("openlf") / parent / name);
 }
 
 void component_apply_config(DspComponent *comp, LF *config)
 {
-  path config_path;
+  cpath config_path;
   std::string name = comp->GetComponentName();
   
   if (!name.size())
     name = "default";
   
-  component_apply_config_path(comp, config, path("openlf") / name);
+  component_apply_config_path(comp, config, cpath("openlf") / name);
 }
 
 std::string GetComponentNameDefault(DspComponent *comp, std::string default_name)

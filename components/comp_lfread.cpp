@@ -69,7 +69,7 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   out->data = &_out_set;
   _out_set.reset();
   
-  if (!strcmp(path(*filename).extension().generic_string().c_str(), ".ini")) {
+  if (!strcmp(cpath(*filename).extension().generic_string().c_str(), ".ini")) {
     out->data->Attributes::open(filename->c_str());
     out->path = std::string();
   }

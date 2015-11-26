@@ -9,7 +9,7 @@ namespace openlf {
 class LF {
 public:
   clif::Dataset *data;
-  clif::path path;
+  clif::cpath path;
   //time_t timestamp
 };
 /*

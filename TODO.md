@@ -26,6 +26,10 @@
 - CLIF: fix cache for re-used readImage img Matrix
 - cliini: allow appending to cliargs (for multiple type files)
 - CLIF/cliini: add --help to clis functions, via cliini
+- CLIF: use "source" linking for default structures
+- CLIF: dynamically derive various specific classes from clif (e.g intrinsics with calibration info -  store in cache, delete when groups under some root change)
+- CLIF: multi-channel calibration for checkerboard
+- CLIF: fix overwerite of exisinstg files/stores/...
 
 Minor:
 - COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!
