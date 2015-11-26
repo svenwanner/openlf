@@ -290,11 +290,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   outputs.SetValue(0, out);
   
   errorCond(out, "output creation failed"); RETURN_ON_ERROR
-  
-  int subset_idx = 0; //we could also loop over all subsets or specify subset using string name
-  
+    
   //subset_idx -- extrinsics path
-  Subset3d subset(in->data, subset_idx);
+  Subset3d subset(in->data);
   
   Mat *disp_mat = NULL;
   

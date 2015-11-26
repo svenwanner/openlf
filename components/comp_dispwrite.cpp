@@ -213,16 +213,18 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   disp_store->read(disp);
   
   //FIXME read/pass actual datastore!
-  Subset3d subset(in->data, 0);
+  Subset3d subset(in->data);
+  //FIXME add read function to subset3d
+  Datastore *store = in->data->getStore(in->data->getSubGroup("calibration/extrinsics")/"data");
   
   float scale = 1.0;
   
   cv::Mat img3d, img;
   //FIXME should add a readimage to subset3d!
-  std::vector<int> idx(in->data->dims(), 0);
+  std::vector<int> idx(store->dims(), 0);
   //FIXME flexmav!
   idx[3] = disp[3]/2;
-  in->data->readImage(idx, &img3d, UNDISTORT | CVT_8U);
+  store->readImage(idx, &img3d, UNDISTORT | CVT_8U);
   clifMat2cv(&img3d,&img);
   
   //centerview, channel 0
