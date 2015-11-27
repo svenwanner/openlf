@@ -24,6 +24,11 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   set(OPENLF_BUILD_TYPE)
 endif()
 
+find_package(Vigra QUIET)
+if (NOT Vigra_FOUND)
+  list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/vigra)
+endif()
+
 find_package(HDF5 REQUIRED CXX)
 find_package(Vigra REQUIRED )
 find_package(OpenCV REQUIRED)
