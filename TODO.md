@@ -1,5 +1,4 @@
 - GUI: add circuit list and allow adding circuits as components (partly done)
-- GUI: execute tick on first click!
 - GUI/DSPatch: forward between settings of circuits components and components settings!
 - OPENLF: actually handle config hierarchy
 - OPENLF: DspParameter - store origin (type?) so a _process can only set the settings it has itself modified
@@ -30,6 +29,9 @@
 - CLIF: dynamically derive various specific classes from clif (e.g intrinsics with calibration info -  store in cache, delete when groups under some root change)
 - CLIF: multi-channel calibration for checkerboard
 - CLIF: fix overwerite of exisinstg files/stores/...
+- OPENLF: store lib version in components
+- OPENLF: dispatch: error handling for gml loading
+- OPENLF: circuit viewer: call config at insert/load (so errors a
 
 Minor:
 - COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!

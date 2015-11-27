@@ -149,6 +149,7 @@ public:
     bool GetParameter(int index, DspParameter& param);
     DspParameter const* GetParameter(int index);
     bool SetParameter(int index, DspParameter const& param);
+    const std::string & GetParameterAlias(int index, const std::string &alias) const;
     
     std::string const* GetParameterString(int index);
     DspCircuit* GetParentCircuit() { return _GetParentCircuit(); };
@@ -192,11 +193,12 @@ protected:
 
     int GetInputCount_();
     int GetOutputCount_();
-    int GetParameterCount_();
+    virtual int GetParameterCount_() const;
 
-    DspParameter const* GetParameter_(int index) const;
-    bool SetParameter_(int index, DspParameter const& param);
-    void UnsetParameter_(int index);
+    virtual DspParameter const* GetParameter_(int index) const;
+    virtual bool SetParameter_(int index, DspParameter const& param);
+    //FIXME TODO
+    virtual void UnsetParameter_(int index);
     void errorCond(bool cond, const char *msg = NULL, ...);
     void setTypeName_(std::string const& name);
 

@@ -60,6 +60,101 @@ The DspCircuit Process_() method simply runs through it's internal array of comp
 component's Tick() and Reset() methods.
 */
 
+#include <unordered_map>
+
+class Alias_List {
+public:
+  int count() const { return _list.size(); }
+  
+  void add(DspComponent *c, int i, std::string alias)
+  {
+    std::vector<std::pair<DspComponent*,int>> *v = NULL;
+    
+    if (!alias.size())
+      return;
+    
+    if (_map.count(alias))
+      v = _map[alias];
+    else {
+      v = new std::vector<std::pair<DspComponent*,int>>();
+      _list.push_back(std::make_pair(alias,v));
+      _map[alias] = v;
+    }
+    
+    v->push_back(std::make_pair(c,i));
+  }
+  
+  void remove(DspComponent *c, int i, std::string alias = std::string())
+  {
+    std::vector<std::pair<DspComponent*,int>> *v;
+   
+    if (!alias.size()) {
+      for(auto a_v_pair : _list) {
+        for(auto p : *a_v_pair.second)
+          if (c == p.first && i == p.second) {
+            remove(c, i, a_v_pair.first);
+            return;
+          }
+      }
+      return;
+    }
+    
+    if (!_map.count(alias))
+      abort();
+    
+    v = _map[alias];
+    
+    for(int i=0;i<v->size();i++)
+      if ((*v)[i].first == c && (*v)[i].second == i)
+        v->erase(v->begin()+i);
+      
+    if (!v->size()) {
+      _map.erase(alias);
+      
+      for(int i=0;i<_list.size();i++)
+        if (_list[i].second == v) {
+          _list.erase(_list.begin()+i);
+        }
+        
+      delete v;
+    }
+  }
+  
+  std::string get(DspComponent *c, int i)
+  {
+    for(auto a_v_pair : _list) {
+      for(auto p : *a_v_pair.second)
+        if (c == p.first && i == p.second) {
+          return a_v_pair.first;
+        }
+    }
+    
+    return std::string();
+  }
+  
+  void set(int index, const DspParameter &param)
+  {
+    std::vector<std::pair<DspComponent*,int>> *v;
+    
+    v = _list[index].second;
+    for(auto it : *v)
+      it.first->SetParameter(it.second, param);
+  }
+  
+  const DspParameter *getFirst(int index) const
+  {
+    std::vector<std::pair<DspComponent*,int>> *v;
+    
+    v = _list[index].second;
+    for(auto it : *v)
+      return it.first->GetParameter(it.second);
+  }
+
+private:
+  std::vector<std::pair<std::string,std::vector<std::pair<DspComponent*,int>>*>> _list;
+  std::unordered_map<std::string,std::vector<std::pair<DspComponent*,int>>*> _map;
+};
+
 class DLLEXPORT DspCircuit : public DspComponent
 {
 public:
@@ -68,7 +163,7 @@ public:
 
     void SetThreadCount(int threadCount);
     int GetThreadCount() const;
-    
+
     virtual DspComponent *clone();
     
     bool save(std::string filename);
@@ -130,9 +225,19 @@ public:
     
     void configure();
     virtual void changed();
+    
+    void SetComponentParameterAlias(const std::string &alias, DspComponent *, int index);
+    std::string GetComponentParameterAlias(DspComponent *, int index);
 
 protected:
     virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+    
+    virtual int GetParameterCount_() const;
+
+    virtual DspParameter const* GetParameter_(int index) const;
+    virtual bool SetParameter_(int index, DspParameter const& param);
+    //FIXME TODO
+    virtual void UnsetParameter_(int index);
 
 private:
     virtual void _PauseAutoTick();
@@ -157,6 +262,8 @@ private:
 
     DspWireBus _inToInWires;
     DspWireBus _outToOutWires;
+    
+    Alias_List _alias;
 };
 
 //=================================================================================================

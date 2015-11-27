@@ -51,6 +51,7 @@ private:
   
 private slots:
   void textSettingChanged(QString text);
+  void aliasChanged(QString text);
   void selFileClicked();
   void floatSettingChanged(double val);
   void intSettingChanged(int val);

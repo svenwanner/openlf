@@ -646,7 +646,7 @@ int DspComponent::GetOutputCount_()
 
 //-------------------------------------------------------------------------------------------------
 
-int DspComponent::GetParameterCount_()
+int DspComponent::GetParameterCount_() const
 {
     return _parameters.size();
 }

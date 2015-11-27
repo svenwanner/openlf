@@ -1005,3 +1005,48 @@ DspComponent* DspCircuit::clone()
 
 
 //=================================================================================================
+
+
+int DspCircuit::GetParameterCount_() const
+{
+  return DspComponent::GetParameterCount_() + _alias.count();
+}
+
+DspParameter const* DspCircuit::GetParameter_(int index) const
+{
+  int count = DspComponent::GetParameterCount_();
+  
+  if (index < count)
+    return DspComponent::GetParameter_(index);
+  
+  return _alias.getFirst(index);
+}
+
+bool DspCircuit::SetParameter_(int index, DspParameter const& param)
+{
+  int count = DspComponent::GetParameterCount_();
+  
+  if (index < count)
+    return DspComponent::SetParameter_(index, param);
+  
+  _alias.set(index, param);
+  
+  return true;
+}
+
+//FIXME TODO
+void DspCircuit::UnsetParameter_(int index)
+{
+  
+}
+
+void DspCircuit::SetComponentParameterAlias(const std::string &alias, DspComponent *c, int index)
+{
+  _alias.remove(c, index);
+  _alias.add(c, index, alias);
+}
+
+std::string DspCircuit::GetComponentParameterAlias(DspComponent *c, int index)
+{
+  return _alias.get(c, index);
+}

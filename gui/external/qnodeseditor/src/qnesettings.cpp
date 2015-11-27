@@ -114,6 +114,14 @@ void QNESettings::attach(DspComponent *comp, std::vector<DspCircuit*> &circuits)
           break;
       }
     }
+    
+    
+    QLineEdit *ed = new QLineEdit(_layout_w);
+    hbox->addWidget(ed);
+    ed->setProperty("component", QVariant::fromValue((void*)_component));
+    ed->setProperty("idx", i);
+    ed->setText(QString(_component->GetParentCircuit()->GetComponentParameterAlias(_component, i).c_str()));
+    connect(ed, SIGNAL(textChanged(QString)), this, SLOT(aliasChanged(QString)));
   }
 }
 
@@ -143,13 +151,22 @@ void QNESettings::attach(QNEBlock *block)
   actual_layout->addRow(tr("Pad Count"), hbox);
 }
 
-
 void QNESettings::textSettingChanged(QString text)
 {
   DspComponent *comp = (DspComponent*)sender()->property("component").value<void*>();
   int idx = sender()->property("idx").value<int>();
   
   comp->SetParameter(idx, DspParameter(DPPT::String, text.toStdString()));
+  
+  emit settingChanged();
+}
+
+void QNESettings::aliasChanged(QString text)
+{
+  DspComponent *comp = (DspComponent*)sender()->property("component").value<void*>();
+  int idx = sender()->property("idx").value<int>();
+
+  comp->GetParentCircuit()->SetComponentParameterAlias(text.toUtf8().constData(), comp, idx);
   
   emit settingChanged();
 }
