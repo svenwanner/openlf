@@ -64,7 +64,7 @@ component's Tick() and Reset() methods.
 
 class Alias_List {
 public:
-  int count() const { printf("aliases: %d\n", _list.size()); return _list.size(); }
+  int count() const { return _list.size(); }
   
   void add(DspComponent *c, int i, std::string alias)
   {    
@@ -157,6 +157,8 @@ public:
     v = _list[index].second;
     for(auto it : *v)
       return it.first->GetParameter(it.second);
+    
+    return NULL;
   }
   
   void replace(std::unordered_map<DspComponent*,DspComponent*> copies)
@@ -169,6 +171,18 @@ public:
   std::string getName(int index)
   {
     return _list[index].first;
+  }
+  
+  void save(FILE *f, std::unordered_map<DspComponent*,int> comp_idx_map)
+  {
+    for(auto v : _list)
+      for(auto pair : *v.second) {
+        fprintf(f, "alias [\n");
+        fprintf(f, "label \"%s\"\n", v.first.c_str());
+        fprintf(f, "component %d\n", comp_idx_map[pair.first]);
+        fprintf(f, "parameter %d\n", pair.second);
+        fprintf(f, "]\n");
+      }
   }
   
 private:

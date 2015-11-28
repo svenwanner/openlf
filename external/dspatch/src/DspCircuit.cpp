@@ -488,7 +488,7 @@ void DspCircuit::_RemoveComponent(int componentIndex)
 {
     changed();
     _DisconnectComponent(componentIndex);
-    _alias->remove(_components[componentIndex]);
+    _alias.remove(_components[componentIndex]);
 
     // set the removed component's parent circuit to NULL
     if (_components[componentIndex]->_GetParentCircuit() != NULL)
@@ -615,6 +615,12 @@ bool DspCircuit::save(std::string filename)
       fprintf(f, "target_pad %d\n", wire->toSignalIndex);
       fprintf(f, "]\n");
     }
+    
+  std::unordered_map<DspComponent*,int> comp_idx_map;
+  for(int i=0;i<_components.size();i++)
+    comp_idx_map[_components[i]] = i;
+    
+  _alias.save(f, comp_idx_map);
   
   fprintf(f, "]\n");
   fclose(f);
@@ -805,6 +811,44 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
     }
   } _gml_parse_add_edge;
   
+  
+  static struct {  
+    void operator()(DspCircuit *c, GML_pair *node)
+    {
+      assert(node->kind == GML_LIST);
+      int comp_id = -1;
+      const char *alias = NULL;
+      int param_idx = -1;
+      
+      GML_pair *part = node->value.list;
+      while(part) {
+        if (!strcmp(part->key, "label")) {
+          assert(part->kind == GML_STRING);
+          alias = part->value.string;
+        }
+        else if (!strcmp(part->key, "component")) {
+          assert(part->kind == GML_INT);
+          comp_id = part->value.integer;
+        }
+        else if (!strcmp(part->key, "parameter")) {
+          assert(part->kind == GML_INT);
+          param_idx = part->value.integer;
+        }
+        part = part->next;
+      }
+      
+      assert(comp_id != -1);
+      assert(param_idx != -1);
+      assert(alias);
+      
+      //FIXME check a lot of other stuff (idx and comp max, ...
+      assert(comp_id < c->_components.size());
+      assert(param_idx < c->_components[comp_id]->GetParameterCount());
+
+      c->SetComponentParameterAlias(alias, c->_components[comp_id], param_idx);
+    }
+  } _gml_parse_add_alias;
+  
   static struct {  
     void operator()(DspCircuit *c, GML_pair *node, bool is_source)
     {
@@ -887,6 +931,9 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
           _gml_parse_add_inout_edge(c, part, true);
         else if (!strcmp(part->key, "outputedge"))
           _gml_parse_add_inout_edge(c, part, false);
+        else if (!strcmp(part->key, "alias")) {
+          _gml_parse_add_alias(c, part);
+        }
         else if (!strcmp(part->key, "label")) {
           assert(part->kind == GML_STRING);
           c->SetComponentName(part->value.string);
