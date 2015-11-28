@@ -74,6 +74,7 @@ public:
   ~QNEMainWindow();
   
 private slots:
+  void newComponent(DspComponent *comp);
   void new_circuit_viewer(DspCircuit *c = NULL);
   void onApplicationFocusChanged();
   void createDockWindows();
@@ -138,6 +139,9 @@ private:
   
   openlf::LF *_lf_selected = NULL;
   clif::Mat *_mat_selected = NULL;
+  
+  QListWidget *_comp_list = NULL;
+  std::unordered_map<DspComponent*,QListWidgetItem*> _comp_map;
   
   std::vector<QThread*> threads;
   std::vector<DspCircuit*> _circuits;

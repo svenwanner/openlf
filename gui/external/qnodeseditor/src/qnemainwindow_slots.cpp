@@ -167,32 +167,44 @@ void QNEMainWindow::showPortProps(QNEPort *port)
   }
 }
 
+static QString _compNameTypeLabel(DspComponent *comp)
+{
+  std::string label = comp->getTypeName().c_str();
+  if (!label.size())
+    label = '('+comp->GetComponentName()+')';
+  return label.c_str();
+}
+
+static std::string _compNameTypeKey(DspComponent *comp)
+{
+  std::string key = comp->getTypeName()+'|'+comp->GetComponentName();
+
+  return key;
+}
+
 void QNEMainWindow::createDockWindows()
 {
   mdiArea->closeAllSubWindows();  
   
   _comp_list_dock = new QDockWidget(tr("Component list:"), this);
   _comp_list_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  List1 = new QListWidget(_comp_list_dock);
-  _comp_list_dock->setWidget(List1);
+  _comp_list = new QListWidget(_comp_list_dock);
+  _comp_list_dock->setWidget(_comp_list);
   addDockWidget(Qt::RightDockWidgetArea, _comp_list_dock);
   //viewMenu->addAction(dock->toggleViewAction());
   
   //populate component list
   QListWidgetItem *item;
   item = new QListWidgetItem("Circuit Input");
-  List1->addItem(item);
+  _comp_list->addItem(item);
   item = new QListWidgetItem("Circuit Output");
-  List1->addItem(item);
+  _comp_list->addItem(item);
   
   std::vector<DspComponent*> comps = OpenLF::componentList();
-  for(auto it=comps.begin();it!=comps.end();++it) {
-    item = new QListWidgetItem((*it)->getTypeName().c_str());
-    item->setData(Qt::UserRole, QVP<DspComponent>::asQVariant(*it));
-    List1->addItem(item);
-  }
+  for(auto it=comps.begin();it!=comps.end();++it)
+    newComponent(*it);
   
-  connect(List1, SIGNAL(itemDoubleClicked(QListWidgetItem*)),this, SLOT(addComponent(QListWidgetItem*)));
+  connect(_comp_list, SIGNAL(itemDoubleClicked(QListWidgetItem*)),this, SLOT(addComponent(QListWidgetItem*)));
   
   // ******************************************************************
   
@@ -247,9 +259,21 @@ void QNEMainWindow::newCircuit(DspCircuit* c)
   newCircuit(c, NULL);
 }
 
+void QNEMainWindow::newComponent(DspComponent *comp)
+{
+  QListWidgetItem *item = new QListWidgetItem();
+  item->setText(_compNameTypeLabel(comp));
+  item->setData(Qt::UserRole, QVP<DspComponent>::asQVariant(comp));
+  _comp_list->addItem(item);
+  _comp_map[comp] = item;
+  //FIXME listen to updates on components?
+}
+
 void QNEMainWindow::newCircuit(DspCircuit* c, Circuit_Viewer *v)
-{  
+{
   _circuits.push_back(c);
+  
+  newComponent(c);
   
   std::string name = c->GetComponentName();
   if (!name.size())
@@ -280,6 +304,10 @@ void QNEMainWindow::circuitNameChanged(QString name)
     std_name = "(unnamed)";
   
   _circuitViewer->setWindowTitle(std_name.c_str());
+  
+  QListWidgetItem *item = _comp_map[static_cast<DspComponent*>(_circuitViewer->circuit())];
+  
+  item->setText(_compNameTypeLabel(_circuitViewer->circuit()));
 }
 
 void QNEMainWindow::open_clif_viewer()

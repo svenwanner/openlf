@@ -64,10 +64,10 @@ component's Tick() and Reset() methods.
 
 class Alias_List {
 public:
-  int count() const { return _list.size(); }
+  int count() const { printf("aliases: %d\n", _list.size()); return _list.size(); }
   
   void add(DspComponent *c, int i, std::string alias)
-  {
+  {    
     std::vector<std::pair<DspComponent*,int>> *v = NULL;
     
     if (!alias.size())
@@ -84,20 +84,29 @@ public:
     v->push_back(std::make_pair(c,i));
   }
   
-  void remove(DspComponent *c, int i, std::string alias = std::string())
+  void remove(DspComponent *c)
+  {  
+    for(auto a_v_pair : _list) {
+      for(auto p : *a_v_pair.second)
+        if (c == p.first) {
+          remove(c, p.second, a_v_pair.first);
+        }
+    }
+  }
+  
+  void remove(DspComponent *c, int i)
+  {  
+    for(auto a_v_pair : _list) {
+      for(auto p : *a_v_pair.second)
+        if (c == p.first && i == p.second) {
+          remove(c, i, a_v_pair.first);
+        }
+    }
+  }
+  
+  void remove(DspComponent *c, int index, std::string alias)
   {
     std::vector<std::pair<DspComponent*,int>> *v;
-   
-    if (!alias.size()) {
-      for(auto a_v_pair : _list) {
-        for(auto p : *a_v_pair.second)
-          if (c == p.first && i == p.second) {
-            remove(c, i, a_v_pair.first);
-            return;
-          }
-      }
-      return;
-    }
     
     if (!_map.count(alias))
       abort();
@@ -105,7 +114,7 @@ public:
     v = _map[alias];
     
     for(int i=0;i<v->size();i++)
-      if ((*v)[i].first == c && (*v)[i].second == i)
+      if ((*v)[i].first == c && (*v)[i].second == index)
         v->erase(v->begin()+i);
       
     if (!v->size()) {
@@ -149,7 +158,19 @@ public:
     for(auto it : *v)
       return it.first->GetParameter(it.second);
   }
+  
+  void replace(std::unordered_map<DspComponent*,DspComponent*> copies)
+  {
+    for(auto v : _map)
+      for(auto it : *v.second)
+        it.first = copies[it.first];
+  }
 
+  std::string getName(int index)
+  {
+    return _list[index].first;
+  }
+  
 private:
   std::vector<std::pair<std::string,std::vector<std::pair<DspComponent*,int>>*>> _list;
   std::unordered_map<std::string,std::vector<std::pair<DspComponent*,int>>*> _map;
@@ -236,6 +257,10 @@ protected:
 
     virtual DspParameter const* GetParameter_(int index) const;
     virtual bool SetParameter_(int index, DspParameter const& param);
+    
+    
+    virtual std::string GetParameterName(int index);
+    
     //FIXME TODO
     virtual void UnsetParameter_(int index);
 

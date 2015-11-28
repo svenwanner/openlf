@@ -488,6 +488,7 @@ void DspCircuit::_RemoveComponent(int componentIndex)
 {
     changed();
     _DisconnectComponent(componentIndex);
+    _alias->remove(_components[componentIndex]);
 
     // set the removed component's parent circuit to NULL
     if (_components[componentIndex]->_GetParentCircuit() != NULL)
@@ -1000,6 +1001,9 @@ DspComponent* DspCircuit::clone()
       assert(ret);
   }
   
+  c->_alias = _alias;
+  c->_alias.replace(copies);
+  
   return c;
 }
 
@@ -1032,6 +1036,16 @@ bool DspCircuit::SetParameter_(int index, DspParameter const& param)
   _alias.set(index, param);
   
   return true;
+}
+
+std::string DspCircuit::GetParameterName(int index)
+{
+  int count = DspComponent::GetParameterCount_();
+  
+  if (index < count)
+    return DspComponent::GetParameterName(index);
+  
+  return _alias.getName(index-count);
 }
 
 //FIXME TODO

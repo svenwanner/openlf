@@ -31,7 +31,7 @@
 - CLIF: fix overwerite of exisinstg files/stores/...
 - OPENLF: store lib version in components
 - OPENLF: dispatch: error handling for gml loading
-- OPENLF: circuit viewer: call config at insert/load (so errors a
+- OPENLF: circuit viewer: call config at insert/load (show errors immediately)
 
 Minor:
 - COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!
