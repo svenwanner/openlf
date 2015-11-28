@@ -28,6 +28,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <assert.h>
 #include <string.h>
+#include <locale.h>
 
 #include <unordered_map>
 
@@ -571,6 +572,8 @@ bool DspCircuit::save(std::string filename)
   FILE *f = fopen(filename.c_str(), "w");
   if (!f)
     return true;
+
+  char* oldLocale = setlocale(LC_NUMERIC, "C");
   
   fprintf(f, "graph [\n");
   if (GetComponentName().size())
@@ -624,6 +627,8 @@ bool DspCircuit::save(std::string filename)
   
   fprintf(f, "]\n");
   fclose(f);
+  
+  setlocale(LC_NUMERIC, oldLocale);
     
   return false;
 }
