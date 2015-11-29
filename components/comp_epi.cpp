@@ -363,8 +363,8 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   p->GetPointer(epi_circuit);
   if (!epi_circuit) {
     printf("set epi circuit by hand!\n");
-    _default_epi_circuit = OpenLF::getComponent("ClassicStructureTensor");
-    errorCond(_default_epi_circuit, "could not load default epi circuit: \"ClassicStructureTensor\""); RETURN_ON_ERROR
+    _default_epi_circuit = OpenLF::getComponent("DefaultStructureTensor");
+    errorCond(_default_epi_circuit, "could not load default epi circuit: \"DefaultStructureTensor\""); RETURN_ON_ERROR
     SetParameter(P_IDX::Epi_Circuit, DspParameter(DPPT::Pointer, _default_epi_circuit));
     epi_circuit = _default_epi_circuit;
   }
@@ -488,7 +488,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   disp_mat = new Mat(sink->type(), size);
   disp_mat->callIf<subarray_copy,_is_convertible_to_float>(stop_line-1,epi_w,epi_h,sink,disp_mat,scale);
   
-//#pragma omp parallel for private(sink)
+#pragma omp parallel for private(sink)
   for(int i=start_line;i<stop_line-1;i++) {
 #pragma omp critical 
     {
