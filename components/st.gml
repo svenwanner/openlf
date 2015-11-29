@@ -197,4 +197,54 @@ target 0
 source_pad 0
 target_pad 0
 ]
+alias [
+label "integrate"
+component 6
+parameter 0
+]
+alias [
+label "integrate"
+component 6
+parameter 1
+]
+alias [
+label "integrate"
+component 7
+parameter 0
+]
+alias [
+label "integrate"
+component 7
+parameter 1
+]
+alias [
+label "integrate"
+component 8
+parameter 0
+]
+alias [
+label "integrate"
+component 8
+parameter 1
+]
+alias [
+label "pre_blur"
+component 0
+parameter 0
+]
+alias [
+label "pre_blur"
+component 0
+parameter 1
+]
+alias [
+label "input_disparity"
+component 9
+parameter 1
+]
+alias [
+label "min_coherence"
+component 9
+parameter 0
+]
 ]

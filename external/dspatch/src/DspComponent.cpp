@@ -28,8 +28,153 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <dspatch/DspComponent.h>
 #include <dspatch/DspComponentThread.h>
 #include <dspatch/DspWire.h>
+#include <assert.h>
 
 #include <cstdarg>
+
+void Alias_List::add(DspComponent *c, int i, std::string alias)
+{    
+  std::vector<std::pair<DspComponent*,int>> *v = NULL;
+  
+  if (!alias.size())
+    return;
+  
+  if (_map.count(alias))
+    v = _map[alias];
+  else {
+    v = new std::vector<std::pair<DspComponent*,int>>();
+    _list.push_back(std::make_pair(alias,v));
+    _map[alias] = v;
+  }
+  
+  v->push_back(std::make_pair(c,i));
+}
+
+void Alias_List::remove(DspComponent *c)
+{  
+  while (1) {
+    redo :
+    for(auto a_v_pair : _list) {
+      for(auto p : *a_v_pair.second)
+        if (c == p.first) {
+          remove(c, p.second, a_v_pair.first);
+          goto redo;
+        }
+    }
+    break;
+  }
+}
+
+void Alias_List::remove(DspComponent *c, int i)
+{  
+  while (1) {
+    redo :
+    for(auto a_v_pair : _list) {
+      for(auto p : *a_v_pair.second)
+        if (c == p.first && i == p.second) {
+          remove(c, i, a_v_pair.first);
+          goto redo;
+        }
+    }
+    break;
+  }
+}
+
+void Alias_List::remove(DspComponent *c, int index, std::string alias)
+{
+  std::vector<std::pair<DspComponent*,int>> *v;
+  
+  if (!_map.count(alias))
+    abort();
+  
+  v = _map[alias];
+  
+  for(int i=0;i<v->size();i++)
+    if ((*v)[i].first == c && (*v)[i].second == index) {
+      v->erase(v->begin()+i);
+      i--;
+    }
+    
+  if (!v->size()) {
+    _map.erase(alias);
+    
+    for(int i=0;i<_list.size();i++)
+      if (_list[i].second == v) {
+        _list.erase(_list.begin()+i);
+        i--;
+      }
+      
+    delete v;
+  }
+}
+
+std::string Alias_List::get(DspComponent *c, int i)
+{
+  for(auto a_v_pair : _list) {
+    for(auto p : *a_v_pair.second)
+      if (c == p.first && i == p.second) {
+        return a_v_pair.first;
+      }
+  }
+  
+  return std::string();
+}
+
+void Alias_List::set(int index, const DspParameter &param)
+{
+  std::vector<std::pair<DspComponent*,int>> *v;
+    
+  v = _list[index].second;
+  for(auto it : *v) {
+    it.first->SetParameter(it.second, param);
+  }
+}
+
+const DspParameter* Alias_List::getFirst(int index) const
+{
+  std::vector<std::pair<DspComponent*,int>> *v;
+  
+  v = _list[index].second;
+  for(auto it : *v)
+    return it.first->GetParameter(it.second);
+  
+  return NULL;
+}
+
+void Alias_List::replace(std::unordered_map<DspComponent*,DspComponent*> copies)
+{
+  for(auto v : _map)
+    for(int i=0;i<v.second->size();i++) {
+      assert(copies[(*v.second)[i].first]);
+      (*v.second)[i].first = copies[(*v.second)[i].first];
+    }
+}
+
+std::string Alias_List::getName(int index)
+{
+  return _list[index].first;
+}
+
+void Alias_List::save(FILE *f, std::unordered_map<DspComponent*,int> comp_idx_map)
+{
+  for(auto v : _list)
+    for(auto pair : *v.second) {
+      fprintf(f, "alias [\n");
+      fprintf(f, "label \"%s\"\n", v.first.c_str());
+      fprintf(f, "component %d\n", comp_idx_map[pair.first]);
+      fprintf(f, "parameter %d\n", pair.second);
+      fprintf(f, "]\n");
+    }
+}
+
+Alias_List Alias_List::operator=(Alias_List &arg)
+{  
+  for(auto a_v_pair : arg._list)
+    for(auto v_pair : *a_v_pair.second)
+      add(v_pair.first, v_pair.second, a_v_pair.first);
+    
+  return *this;
+}
 
 //=================================================================================================
 
@@ -209,7 +354,7 @@ int DspComponent::GetOutputCount()
 int DspComponent::GetParameterCount()
 {
     PauseAutoTick();
-    int parameterCount = GetParameterCount_();
+    int parameterCount = GetParameterCount_() + _alias.count();;
     ResumeAutoTick();
     return parameterCount;
 }
@@ -270,6 +415,8 @@ std::string DspComponent::GetParameterName(int index)
     {
         parameterName = _parameters[index].first;
     }
+    else if (index - _parameters.size() < _alias.count())
+      parameterName = _alias.getName(index - _parameters.size());
 
     ResumeAutoTick();
     return parameterName;
@@ -320,8 +467,11 @@ std::string const* DspComponent::GetParameterString(int index)
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::SetParameter(int index, DspParameter const& param)
+bool DspComponent::SetParameter(int index, DspParameter param)
 {
+    if (param._priority == DspParameter::Priority::Min)
+      param._priority = DspParameter::Priority::User;
+  
     PauseAutoTick();
     changed();
     bool result = ParameterUpdating_(index, param);
@@ -655,17 +805,23 @@ int DspComponent::GetParameterCount_() const
 
 DspParameter const* DspComponent::GetParameter_(int index) const
 {
-    if ((size_t)index < _parameters.size())
-    {
+    if ((size_t)index < _parameters.size()) {
         return &_parameters[index].second;
     }
+    else if (index - _parameters.size() < _alias.count()) {
+      return _alias.getFirst(index-_parameters.size()); 
+    }
+    
     return NULL;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::SetParameter_(int index, DspParameter const& param)
+bool DspComponent::SetParameter_(int index, DspParameter param)
 {
+    if (param._priority == DspParameter::Priority::Min)
+      param._priority = DspParameter::Priority::Auto;
+  
     changed();
     if ((size_t)index < _parameters.size())
     {
@@ -678,24 +834,47 @@ bool DspComponent::SetParameter_(int index, DspParameter const& param)
             return true;
         }
     }
+    else if (index - _parameters.size() < _alias.count())
+    {
+        _alias.set(index - _parameters.size(), param);
+        return true;
+    }
+    
     return false;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::UnsetParameter_(int index)
+void DspComponent::UnsetParameter_(int index, int max_prio)
 {
     if ((size_t)index < _parameters.size())
     {
-        _parameters[index].second.Unset();
+        _parameters[index].second.Unset(max_prio);
         
         if (_callback)
         {
             _callback(this, ParameterUpdated, index, _userData);
         }
     }
+    else 
+      printf("FIXME implement unset for alias parameters!\n");
 }
 
+void DspComponent::SetComponentParameterAlias(const std::string &alias, DspComponent *c, int index)
+{
+  _alias.remove(c, index);
+  _alias.add(c, index, alias);
+}
+
+void DspComponent::RemoveComponentAlias(DspComponent *c)
+{
+  _alias.remove(c);
+}
+
+std::string DspComponent::GetComponentParameterAlias(DspComponent *c, int index)
+{
+  return _alias.get(c, index);
+}
 
 //=================================================================================================
 

@@ -31,6 +31,7 @@
 #include "openlf/comp_mav.hpp"
 
 #include <omp.h>
+#include <unordered_set>
 
 //for printprogress
 #include <cstdarg>
@@ -51,7 +52,7 @@ public:
 protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 private:  
-  DspCircuit *_default_epi_circuit = NULL;
+  DspComponent *_default_epi_circuit = NULL;
   DspComponent *_default_merge_circuit = NULL;
   LF _out;
   clif::Dataset _out_set;
@@ -62,7 +63,7 @@ private:
 };
   
 namespace {
-  enum class P_IDX : int {Epi_Circuit,Merge_Circuit,DispStart,DispStop,DispStep,StartLine,StopLine};
+  enum P_IDX {Epi_Circuit = 0,Merge_Circuit,DispStart,DispStop,DispStep,StartLine,StopLine};
 }
 
 template<typename T> void COMP_Epi::openlf_add_param(const char *name, T val, DspParameter::ParamType type, int idx)
@@ -79,6 +80,17 @@ void COMP_Epi::openlf_add_param(const char *name, DspParameter::ParamType type, 
   assert(i == idx);
 }
   
+//FIXME selectively (all but some specified) expose params as alias
+void expose_params(DspComponent *parent, cpath path, DspComponent *child, const std::unordered_set<std::string> &exclude = std::unordered_set<std::string>())
+{
+  if (!parent || !child)
+    return;
+  
+  for(int i=0;i<child->GetParameterCount();i++)
+    if (!exclude.count(child->GetParameterName(i)))
+      parent->SetComponentParameterAlias((path/child->GetParameterName(i)).generic_string(), child, i);
+}
+  
 COMP_Epi::COMP_Epi()
 {
   setTypeName_("procEPI2D");
@@ -86,15 +98,15 @@ COMP_Epi::COMP_Epi()
   AddInput_("config");
   AddOutput_("output");
   
-  openlf_add_param("epiCircuit", (DspCircuit*)NULL, DPPT::Pointer, (int)P_IDX::Epi_Circuit);
-  openlf_add_param("mergeCircuit", (DspCircuit*)NULL, DPPT::Pointer, (int)P_IDX::Merge_Circuit);
+  openlf_add_param("epiCircuit", (DspComponent*)NULL, DPPT::Pointer, P_IDX::Epi_Circuit);
+  openlf_add_param("mergeCircuit", (DspComponent*)NULL, DPPT::Pointer, P_IDX::Merge_Circuit);
   
-  openlf_add_param("DispStart", DPPT::Float, (int)P_IDX::DispStart);
-  openlf_add_param("DispStop", DPPT::Float, (int)P_IDX::DispStop);
-  openlf_add_param("DispStep", DPPT::Float, (int)P_IDX::DispStep);
+  openlf_add_param("DispStart", DPPT::Float, P_IDX::DispStart);
+  openlf_add_param("DispStop", DPPT::Float, P_IDX::DispStop);
+  openlf_add_param("DispStep", DPPT::Float, P_IDX::DispStep);
   
-  openlf_add_param("StartLine", DPPT::Int, (int)P_IDX::StartLine);
-  openlf_add_param("StopLine", DPPT::Int, (int)P_IDX::StopLine);
+  openlf_add_param("StartLine", DPPT::Int, P_IDX::StartLine);
+  openlf_add_param("StopLine", DPPT::Int, P_IDX::StopLine);
 }
 
 template<typename T> class subarray_copy {
@@ -115,6 +127,46 @@ void operator()(int line, int epi_w, int epi_h, Mat *sink_mat, Mat *disp_store, 
   }
 }
 };
+
+//for all params apply config keys if found
+//config_path: e.g. "/openlf/componentname/merge"
+//a attribute name in config may also conatin "*" for matching
+void forward_config(DspComponent *comp, Dataset *config)
+{
+  if (!config)
+    return;
+  
+  for(int i=0;i<comp->GetParameterCount();i++) {
+    Attribute *attr;
+    const DspParameter *param = comp->GetParameter(i);
+    cpath param_path = cpath("/openlf") / comp->GetComponentName() / comp->GetParameterName(i);
+    
+    printf("search config %s\n", param_path.c_str());
+    
+    attr = config->getMatch(param_path);
+    if (attr) {  
+      //TODO abstract this (add call... to DspType??)
+      switch (param->Type()) {
+        case DPPT::Float : 
+          float fval;
+          attr->convert(&fval);
+          comp->SetParameter(i, DspParameter(param->Type(), fval));
+          printf("DEBUG: set param %s to %f\n", param_path.string().c_str(), fval);
+          break;
+        case DPPT::Int : 
+          int ival;
+          attr->convert(&ival);
+          comp->SetParameter(i, DspParameter(param->Type(), ival));
+          printf("DEBUG: set param %s to %d\n", param_path.string().c_str(), ival);
+          break;
+        default:
+          printf("FIXME: unhandled parameter type! (comp_epi)\n");
+      }
+    }
+    else
+      printf("no match for %s\n", param_path.string().c_str());
+  }
+}
 
 void component_apply_config_path(DspComponent *comp, LF *config, cpath config_path)
 {
@@ -239,18 +291,16 @@ static void printprogress(int curr, int max, int &last, const char *fmt = NULL, 
   fflush(NULL);
 }
 
-Mat *proc_epi(Subset3d *subset, float disp_start, float disp_stop, float disp_step, int i, float scale, DspComponent *merge, DspCircuit *epi, Mat &source, MatSink *sink, DspCircuit *parent)
+Mat *proc_epi(Subset3d *subset, float disp_start, float disp_stop, float disp_step, int i, float scale, DspComponent *merge, DspComponent *epi, Mat &source, MatSink *sink, DspCircuit *parent)
 {
   merge->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, true));
   
   for(float d=disp_start;d<=disp_stop;d+=disp_step) {
-    for(int c=0;c<epi->GetComponentCount();c++) {
-      DspComponent *comp = epi->GetComponent(c);
-      for(int p=0;p<comp->GetParameterCount();p++)
-        if (!comp->GetParameterName(p).compare("input_disparity")) {
-          comp->SetParameter(p, DspParameter(DspParameter::ParamType::Float, d));
-        }
-    }
+    for(int p=0;p<epi->GetParameterCount();p++)
+      if (!epi->GetParameterName(p).compare("input_disparity")) {
+        bool res = epi->SetParameter(p, DspParameter(DspParameter::ParamType::Float, d));
+        assert(res);
+      }
     
     cv::Mat cv_source;
     subset->readEPI(&cv_source, i, d, Unit::PIXELS, UNDISTORT, Interpolation::LINEAR, scale);
@@ -278,6 +328,8 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   LF *in = NULL;
   LF *config = NULL;
   LF *out = NULL;
+  DspComponent *epi_circuit;
+  DspComponent *merge_circuit;
   
   errorCond(inputs.GetValue(0, in) && in, "missing input"); RETURN_ON_ERROR
   
@@ -301,78 +353,85 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   float scale = 1.0;
   
-  float disp_start = 3.0, disp_stop = 7.0, disp_step = 1.0;
-  int start_line = 0, stop_line = subset.EPICount();
-  
-  //FIXME get from input light field!
-  SetParameter_((int)P_IDX::DispStart, DspParameter(DPPT::Float, disp_start));
-  SetParameter_((int)P_IDX::DispStep, DspParameter(DPPT::Float, disp_step));
-  SetParameter_((int)P_IDX::DispStop, DspParameter(DPPT::Float, disp_stop));
-  
-  if (!GetParameter((int)P_IDX::StartLine)->GetInt())
-    SetParameter_((int)P_IDX::StartLine, DspParameter(DPPT::Int, start_line));
-  if (!GetParameter((int)P_IDX::StopLine)->GetInt())
-    SetParameter_((int)P_IDX::StopLine, DspParameter(DPPT::Int, stop_line));
-  
-  //setup circuit and threading
-  
-  int t_count = omp_get_max_threads();
-
+  const std::unordered_set<std::string> exclude_params = {"input_disparity","copy"};
   const DspParameter *p;
-  DspCircuit *epi_circuit;
-  DspComponent *merge_circuit;
-
   
-  p = GetParameter((int)P_IDX::Epi_Circuit);
+  //FIXME handle sub-circuit as parameter?
+  //FIXME remove/add aliases?
+  p = GetParameter(P_IDX::Epi_Circuit);
   errorCond(p, "no epi circuit parameter!"); RETURN_ON_ERROR
   p->GetPointer(epi_circuit);
   if (!epi_circuit) {
-    _default_epi_circuit = dynamic_cast<DspCircuit*>(OpenLF::getComponent("ClassicStructureTensor"));
+    printf("set epi circuit by hand!\n");
+    _default_epi_circuit = OpenLF::getComponent("ClassicStructureTensor");
     errorCond(_default_epi_circuit, "could not load default epi circuit: \"ClassicStructureTensor\""); RETURN_ON_ERROR
-    SetParameter((int)P_IDX::Epi_Circuit, DspParameter(DPPT::Pointer, _default_epi_circuit));
+    SetParameter(P_IDX::Epi_Circuit, DspParameter(DPPT::Pointer, _default_epi_circuit));
     epi_circuit = _default_epi_circuit;
   }
   
-  p = GetParameter((int)P_IDX::Merge_Circuit);
+  p = GetParameter(P_IDX::Merge_Circuit);
   errorCond(p, "no merge circuit parameter!"); RETURN_ON_ERROR
   p->GetPointer(merge_circuit);
   if (!merge_circuit) {
     _default_merge_circuit = OpenLF::getComponent("OP_MergeDispByCoherence");
     errorCond(_default_merge_circuit, "could not load default merge circuit: \"OP_MergeDispByCoherence\""); RETURN_ON_ERROR
-    SetParameter((int)P_IDX::Merge_Circuit, DspParameter(DPPT::Pointer, _default_merge_circuit));
+    SetParameter(P_IDX::Merge_Circuit, DspParameter(DPPT::Pointer, _default_merge_circuit));
     merge_circuit = _default_merge_circuit;
   }
+
+  float disp_start = 3.0;
+  float disp_step = 1.0;
+  float disp_stop = 7.0;
+  int start_line = 0;
+  int stop_line = subset.EPICount();
   
+  
+  //FIXME here automatically derive from input (horopter etc.)
+  //for now defaults
+  SetParameter_(P_IDX::DispStart, DspParameter(DPPT::Float, disp_start));
+  SetParameter_(P_IDX::DispStep, DspParameter(DPPT::Float, disp_step));
+  SetParameter_(P_IDX::DispStop, DspParameter(DPPT::Float, disp_stop));
+  
+  SetParameter_(P_IDX::StartLine, DspParameter(DPPT::Int, start_line));
+  SetParameter_(P_IDX::StopLine, DspParameter(DPPT::Int, stop_line));
+  
+  //apply configs
+  forward_config(this, in->data);
+  if (config)
+    forward_config(this, config->data);
+  
+  disp_start = *GetParameter(P_IDX::DispStart)->GetFloat();
+  disp_step  = *GetParameter(P_IDX::DispStep)->GetFloat();
+  disp_stop  = *GetParameter(P_IDX::DispStop)->GetFloat();
+  
+  //FIXME set/get default!
+  get_int_param(this, start_line, P_IDX::StartLine);
+  get_int_param(this, stop_line, P_IDX::StopLine);
+  
+  
+  printf("run %f %f %f %d-%d\n",disp_start,disp_step,disp_stop,start_line,stop_line);
+
+  //setup circuit and threading
+  int t_count = omp_get_max_threads();
+  
+  if (configOnly())
+    return;
+
   
   vector<MatSource> comps_source(t_count);
   vector<MatSink>   comps_sink(t_count);
   vector<Mat> mats_source(t_count);
-  
-  component_child_apply_config(epi_circuit, config, GetComponentName());
-  component_child_apply_config(merge_circuit, config, GetComponentName());
-  component_apply_config(this, config);
-  
-  if (configOnly()) {
-    printf("config tick!\n");
-    return;
-  }
-  
-  get_float_param(this, disp_start, (int)P_IDX::DispStart);
-  get_float_param(this, disp_step, (int)P_IDX::DispStep);
-  get_float_param(this, disp_stop, (int)P_IDX::DispStop);
-  
-  get_int_param(this, start_line, (int)P_IDX::StartLine);
-  get_int_param(this, stop_line, (int)P_IDX::StopLine);
-  
+
   printf("%f %f %f\n", disp_start, disp_step, disp_stop);
   
   //FIXME delete!
-  vector<DspCircuit*>  epi_circuits(t_count);
+  vector<DspComponent*>  epi_circuits(t_count);
   vector<DspComponent*>  merge_circuits(t_count);
   vector<DspCircuit>   outer_circuits(t_count);
   for(int i=0;i<t_count;i++) {
-    epi_circuits[i] = dynamic_cast<DspCircuit*>(epi_circuit->clone());
+    epi_circuits[i] = epi_circuit->clone();
     merge_circuits[i] = merge_circuit->clone();
+    
     assert(epi_circuits[i]);
     assert(merge_circuits[i]);
     
@@ -388,6 +447,8 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     
     comps_source[i].set(&mats_source[i]);
   }
+  
+  printf("start processing\n");
   
   DspCircuit outer_circuit;
   MatSource comp_source;
@@ -427,7 +488,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   disp_mat = new Mat(sink->type(), size);
   disp_mat->callIf<subarray_copy,_is_convertible_to_float>(stop_line-1,epi_w,epi_h,sink,disp_mat,scale);
   
-#pragma omp parallel for private(sink)
+//#pragma omp parallel for private(sink)
   for(int i=start_line;i<stop_line-1;i++) {
 #pragma omp critical 
     {
@@ -462,10 +523,34 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   delete disp_mat;
 }
 
+//FIXME remove alias for replaced sub-component!
 bool COMP_Epi::ParameterUpdating_(int index, const DspParameter& param)
 {
-  //just store parameter 
-  SetParameter_(index, param);
+  const std::unordered_set<std::string> exclude_params = {"input_disparity","copy"};
+  
+  if (index == P_IDX::Epi_Circuit) {
+    DspComponent *comp;
+    const DspParameter *p = GetParameter(P_IDX::Epi_Circuit);
+    p->GetPointer(comp);
+    RemoveComponentAlias(comp);
+    SetParameter_(index, param);
+    param.GetPointer(comp);
+    expose_params(this, "disparity", comp, exclude_params);
+  }
+  else if (index == P_IDX::Merge_Circuit) {
+    DspComponent *comp;
+    const DspParameter *p = GetParameter(P_IDX::Merge_Circuit);
+    p->GetPointer(comp);
+    RemoveComponentAlias(comp);
+    SetParameter_(index, param);
+    param.GetPointer(comp);
+    expose_params(this, "merge", comp, exclude_params);
+  }
+  else 
+    //just store parameter 
+    SetParameter_(index, param);
+
+  //FIXME range chack should be implement at some central location
   
   return true;      
 }

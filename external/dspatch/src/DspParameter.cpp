@@ -55,6 +55,8 @@ DspParameter::DspParameter(ParamType const& type, int const& initValue, std::pai
         {
             _type = Null;
         }
+        else
+          _default = new DspParameter(*this);
     }
     else if (type == Float)
     {
@@ -63,6 +65,8 @@ DspParameter::DspParameter(ParamType const& type, int const& initValue, std::pai
         {
             _type = Null;
         }
+        else
+          _default = new DspParameter(*this);
     }
     else
     {
@@ -70,6 +74,8 @@ DspParameter::DspParameter(ParamType const& type, int const& initValue, std::pai
         {
             _type = Null;
         }
+        else
+          _default = new DspParameter(*this);
     }
 }
 
@@ -84,6 +90,8 @@ DspParameter::DspParameter(ParamType const& type, float const& initValue, std::p
     {
         _type = Null;
     }
+    else
+      _default = new DspParameter(*this);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -97,6 +105,8 @@ DspParameter::DspParameter(ParamType const& type, std::string const& initValue)
     {
         _type = Null;
     }
+    else
+      _default = new DspParameter(*this);
 }
 
 DspParameter::DspParameter(ParamType const& type, const char * const initValue)
@@ -108,6 +118,8 @@ DspParameter::DspParameter(ParamType const& type, const char * const initValue)
     {
         _type = Null;
     }
+    else
+      _default = new DspParameter(*this);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -121,6 +133,8 @@ DspParameter::DspParameter(ParamType const& type, std::vector<std::string> const
     {
         _type = Null;
     }
+    else
+      _default = new DspParameter(*this);
 }
 
 //=================================================================================================
@@ -262,9 +276,17 @@ std::vector<std::string> const* DspParameter::GetList() const
 
 //-------------------------------------------------------------------------------------------------
 
-void DspParameter::Unset()
+void DspParameter::Unset(int max_prio)
 {
-  _isSet = false;
+  if (_priority > max_prio)
+    return;
+  
+  if (_default)
+    *this = *_default;
+  else {
+    _isSet = false;
+    _priority = Priority::Min;
+  }
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -334,6 +356,8 @@ bool DspParameter::SetIntRange(std::pair<int, int> const& intRange)
 
 bool DspParameter::SetFloat(float const& value)
 {
+  //printf("set float\n");
+  
     if (_type == Float)
     {
         if (_isRangeSet)
@@ -343,11 +367,14 @@ bool DspParameter::SetFloat(float const& value)
         }
         else
         {
+          //printf("%f\n", value);
             _floatValue = value;
         }
         _isSet = true;
         return true;
     }
+    
+    //printf("type is not float!\n");
 
     return false;
 }
@@ -429,6 +456,16 @@ bool DspParameter::SetList(std::vector<std::string> const& value)
 
 bool DspParameter::SetParam(DspParameter const& param)
 {
+    //printf("set param prio: %d <= %d?", _priority, param._priority);
+    
+    if (_priority > param._priority)
+      return false;
+    
+    //printf("yes\n");
+    
+    //FIXME if set fails, param still has new priority!?
+    _priority = param._priority;
+  
     if (_type == Null)
     {
         _type = param.Type();
@@ -501,11 +538,11 @@ bool DspParameter::SetPointer(void* value, const std::type_info *ptrType)
     {
         _ptrValue = static_cast<void*>(value);
         _isSet = true;
-        printf("pointer set success %p!\n", value);
+        //printf("pointer set success %p!\n", value);
         return true;
     }
 
-    printf("pointer set failed %p!\n", value);
+    //printf("pointer set failed %p!\n", value);
     return false;
 }
 

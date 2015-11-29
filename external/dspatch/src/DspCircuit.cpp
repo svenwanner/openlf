@@ -100,6 +100,16 @@ int DspCircuit::GetThreadCount() const
 
 //-------------------------------------------------------------------------------------------------
 
+bool DspCircuit::ParameterUpdating_(int index, DspParameter const& param)
+{
+  if (index < GetParameterCount())
+    return SetParameter_(index, param);
+  
+  return false;
+}
+
+//-------------
+
 bool DspCircuit::AddComponent(DspComponent* component, std::string const& componentName)
 {
     if (component != this && component != NULL)
@@ -1017,9 +1027,7 @@ DspComponent* DspCircuit::clone()
 {
   DspCircuit *c = new DspCircuit();
   bool ret;
-  
-  printf("DspCircuit clone()\n");
-  
+    
   std::unordered_map<DspComponent*,DspComponent*> copies;
   
   for(int i=0;i<GetComponentCount();i++) {
@@ -1055,64 +1063,6 @@ DspComponent* DspCircuit::clone()
   
   c->_alias = _alias;
   c->_alias.replace(copies);
-  
+    
   return c;
-}
-
-
-//=================================================================================================
-
-
-int DspCircuit::GetParameterCount_() const
-{
-  return DspComponent::GetParameterCount_() + _alias.count();
-}
-
-DspParameter const* DspCircuit::GetParameter_(int index) const
-{
-  int count = DspComponent::GetParameterCount_();
-  
-  if (index < count)
-    return DspComponent::GetParameter_(index);
-  
-  return _alias.getFirst(index);
-}
-
-bool DspCircuit::SetParameter_(int index, DspParameter const& param)
-{
-  int count = DspComponent::GetParameterCount_();
-  
-  if (index < count)
-    return DspComponent::SetParameter_(index, param);
-  
-  _alias.set(index, param);
-  
-  return true;
-}
-
-std::string DspCircuit::GetParameterName(int index)
-{
-  int count = DspComponent::GetParameterCount_();
-  
-  if (index < count)
-    return DspComponent::GetParameterName(index);
-  
-  return _alias.getName(index-count);
-}
-
-//FIXME TODO
-void DspCircuit::UnsetParameter_(int index)
-{
-  
-}
-
-void DspCircuit::SetComponentParameterAlias(const std::string &alias, DspComponent *c, int index)
-{
-  _alias.remove(c, index);
-  _alias.add(c, index, alias);
-}
-
-std::string DspCircuit::GetComponentParameterAlias(DspComponent *c, int index)
-{
-  return _alias.get(c, index);
 }

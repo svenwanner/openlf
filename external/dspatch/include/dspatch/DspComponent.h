@@ -34,6 +34,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <cmath>
 #include <limits>
+#include <unordered_map>
 
 class DspCircuit;
 
@@ -84,10 +85,33 @@ virtual DspComponent* clone() \
   for(int i=0;i<GetParameterCount();i++) \
     dup->SetParameter(i, *GetParameter(i)); \
   \
+  dup->SetComponentName(GetComponentName()); \
+  dup->setTypeName_(getTypeName()); \
+  assert(!_alias.count()); \
   return dup; \
 };   
 
 #define RETURN_ON_ERROR if (hasError()) return;
+
+class Alias_List {
+public:
+  int count() const { return _list.size(); }
+  void add(DspComponent *c, int i, std::string alias);
+  void remove(DspComponent *c);
+  void remove(DspComponent *c, int i);
+  void remove(DspComponent *c, int index, std::string alias);
+  std::string get(DspComponent *c, int i);
+  void set(int index, const DspParameter &param);
+  const DspParameter *getFirst(int index) const;
+  void replace(std::unordered_map<DspComponent*,DspComponent*> copies);
+  std::string getName(int index);
+  void save(FILE *f, std::unordered_map<DspComponent*,int> comp_idx_map);
+  Alias_List operator=(Alias_List &arg);
+  
+private:
+  std::vector<std::pair<std::string,std::vector<std::pair<DspComponent*,int>>*>> _list;
+  std::unordered_map<std::string,std::vector<std::pair<DspComponent*,int>>*> _map;
+};
 
 class DLLEXPORT DspComponent
 {
@@ -142,13 +166,13 @@ public:
 
     std::string GetInputName(int index);
     std::string GetOutputName(int index);
-    virtual std::string GetParameterName(int index);
+    std::string GetParameterName(int index);
     
     void setTypeName(std::string const& name);
 
     bool GetParameter(int index, DspParameter& param);
     DspParameter const* GetParameter(int index);
-    bool SetParameter(int index, DspParameter const& param);
+    bool SetParameter(int index, DspParameter param);
     const std::string & GetParameterAlias(int index, const std::string &alias) const;
     
     std::string const* GetParameterString(int index);
@@ -173,6 +197,10 @@ public:
     double x = std::numeric_limits<double>::quiet_NaN();
     double y = std::numeric_limits<double>::quiet_NaN();
     
+    void SetComponentParameterAlias(const std::string &alias, DspComponent *, int index);
+    void RemoveComponentAlias(DspComponent *c);
+    std::string GetComponentParameterAlias(DspComponent *, int index);
+    
 protected:
     virtual void Process_(DspSignalBus&, DspSignalBus&);
     virtual bool ParameterUpdating_(int, DspParameter const&);
@@ -193,14 +221,15 @@ protected:
 
     int GetInputCount_();
     int GetOutputCount_();
-    virtual int GetParameterCount_() const;
+    int GetParameterCount_() const;
 
-    virtual DspParameter const* GetParameter_(int index) const;
-    virtual bool SetParameter_(int index, DspParameter const& param);
-    //FIXME TODO
-    virtual void UnsetParameter_(int index);
+    DspParameter const* GetParameter_(int index) const;
+    bool SetParameter_(int index, DspParameter param);
+    void UnsetParameter_(int index, int max_prio);
     void errorCond(bool cond, const char *msg = NULL, ...);
     void setTypeName_(std::string const& name);
+    
+    Alias_List _alias;
 
 private:
     virtual void _PauseAutoTick();

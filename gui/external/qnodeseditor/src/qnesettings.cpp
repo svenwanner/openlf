@@ -77,7 +77,7 @@ void QNESettings::attach(DspComponent *comp, std::vector<DspCircuit*> &circuits)
           combox->setProperty("component", QVariant::fromValue((void*)_component));
           combox->setProperty("idx", i);
           
-          DspCircuit *c;
+          DspComponent *c;
           int found = -1;
           param->GetPointer(c);
           
@@ -226,7 +226,7 @@ void QNESettings::circuitSelected(int idx)
   DspComponent *comp = (DspComponent*)sender()->property("component").value<void*>();
   int set_idx = sender()->property("idx").value<int>();
     
-  bool succ = comp->SetParameter(set_idx, DspParameter(DPPT::Pointer, (DspCircuit*)(((QComboBox*)sender())->itemData(idx).value<void*>())));
+  bool succ = comp->SetParameter(set_idx, DspParameter(DPPT::Pointer, (DspComponent*)(((QComboBox*)sender())->itemData(idx).value<void*>())));
   
   DspCircuit *cc;
   comp->GetParameter(set_idx)->GetPointer(cc);

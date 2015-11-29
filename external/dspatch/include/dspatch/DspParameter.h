@@ -31,6 +31,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <string>
 #include <vector>
 #include <typeinfo>
+#include <climits>
 
 //=================================================================================================
 /// Value container used to hold non-transient component IO
@@ -62,6 +63,14 @@ public:
         Trigger,   // this type has no value, SetParam(triggerParam) simply represents a trigger. E.g. a button press
         Pointer
     };
+    
+    enum Priority {
+      User = -10,
+      Auto = -20,
+      
+      Min = INT_MIN,
+      Max = INT_MAX
+    };
 
     DspParameter();
     DspParameter(ParamType const& type);
@@ -85,7 +94,7 @@ public:
     template<typename T> T* GetPointer() const;
     template<typename T> void GetPointer(T* &value) const;
 
-    void Unset();
+    void Unset(int max_prio = INT_MAX);
     bool SetBool(bool const& value);
     bool SetInt(int const& value);
     bool SetIntRange(std::pair<int, int> const& intRange);
@@ -96,6 +105,8 @@ public:
     template <typename T> bool SetPointer(T* value);
 
     bool SetParam(DspParameter const& param);
+    
+    int _priority = Priority::Min;
 
 private:
     bool SetPointer(void* value, const std::type_info *ptrType);
@@ -116,6 +127,7 @@ private:
     std::vector<std::string> _listValue;
     void *_ptrValue;
     const std::type_info *_ptrType = NULL;
+    DspParameter *_default = NULL;
 };
 
 template<typename T> T* DspParameter::GetPointer() const
@@ -147,6 +159,9 @@ template<typename T> DspParameter::DspParameter(ParamType const& type, T *initVa
     if (!SetPointer(initValue))
     {
         _type = Null;
+    }
+    else {
+      _default = new DspParameter(*this);
     }
 }
 

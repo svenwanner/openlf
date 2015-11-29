@@ -53,7 +53,7 @@ OPENLF_VIGRA_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
     else
       out[0].data()[i] += add;
   }*/
-
+  
   threshold *= threshold;
   
   float x,y,c_nom,c_denom,coherence,yx;
