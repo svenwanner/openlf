@@ -22,12 +22,12 @@
 
 #include "clif/subset3d.hpp"
 #include "clif/clif_cv.hpp"
-
 #include "opencv2/core/core.hpp"
-
 #include "openlf/types.hpp"
 
 #include "dspatch/DspPlugin.h"
+
+#include <locale.h>
 
 using namespace clif;
 using namespace vigra;
@@ -231,10 +231,14 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //FIXME flexmav!
   MultiArrayView<2,float> centerview = vigraMAV<4,float>(disp).bindAt(3,disp[3]/2).bindAt(2,0);
   
+  char* locale_old = setlocale(LC_NUMERIC, "C");
+  
   if (ply_filename)
     write_ply(ply_filename->c_str(), centerview, img, subset);
   if (obj_filename)
     write_obj(obj_filename->c_str(), centerview, img, subset);
+  
+  setlocale(LC_NUMERIC, locale_old);
   
   /*ClifFile *debugfile = new ClifFile();
   debugfile->create("debug.clif");
