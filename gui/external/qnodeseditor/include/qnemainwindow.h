@@ -86,6 +86,7 @@ private slots:
   void newCircuit(DspCircuit* c, Circuit_Viewer *v);
   void viewer_circuit_changed(DspCircuit* new_c = NULL, DspCircuit* old = NULL, Circuit_Viewer *v = NULL);
   void circuitNameChanged(QString name);
+  void circuitTypeChanged(QString name);
   void view_mode_changed(bool tabbed);
   void show_circuit(QListWidgetItem *it);
   void check_viewer_state(Circuit_Viewer *v);
@@ -132,6 +133,7 @@ private:
   QPushButton *_open_clif_btn = NULL;
   
   QLineEdit *_c_name_ed = NULL;
+  QLineEdit *_c_type_ed = NULL;
   
   Circuit_Viewer *_circuitViewer = NULL;
   QNESettings *_settings = NULL;

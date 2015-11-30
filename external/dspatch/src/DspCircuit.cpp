@@ -728,7 +728,6 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
   static struct {
     void operator()(DspCircuit *c, GML_pair *node, DspComponent *(*getComponentClone)(const std::string &typeName))
     {
-      printf("add node\n");
       GML_pair *part;
       DspComponent *comp = NULL;
       const char *name = NULL;
@@ -744,13 +743,11 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
         if (!strcmp(part->key, "type")) {
           assert(part->kind == GML_STRING);
           const char *type = part->value.string;
-          printf("type %s\n", type);
           comp = getComponentClone(type);
         }
         else if (!strcmp(part->key, "label")) {
           assert(part->kind == GML_STRING);
           name = part->value.string;
-          printf("name %s\n", name);
         }
         else if (!strcmp(part->key, "id")) {
           assert(part->kind == GML_INT);
@@ -821,7 +818,6 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
       assert(source_idx < c->_components[source]->GetOutputCount());
       assert(target_idx < c->_components[target]->GetInputCount());
       
-      printf("connect edge\n");
       c->ConnectOutToIn(c->_components[source],source_idx,c->_components[target],target_idx);
     }
   } _gml_parse_add_edge;
@@ -903,7 +899,6 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
           sprintf(buf, "input_%d", c->GetInputCount());
           c->AddInput(buf);
         }
-        printf("connect circuit source edge\n");
         c->ConnectInToIn(source_idx, c->_components[target],target_idx);
       }
       else {
@@ -911,7 +906,6 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
           sprintf(buf, "output_%d", c->GetOutputCount());
           c->AddOutput(buf);
         }
-        printf("connect circuit sink edge\n");
         c->ConnectOutToOut(c->_components[source], source_idx, target_idx);
       }
     }
@@ -929,8 +923,6 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
       
       start = pair->value.list;
       part = start;
-     
-      printf("parse circuit!\n");
       
       while (part) {
         if (!strcmp(part->key, "node"))
@@ -1006,12 +998,10 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
       default:
         break;
     }
-    
-    printf ("\n");
   }      
-  GML_print_list(list, 0);
-  printf ("Keys used in %s: \n", filename.c_str());
-  print_keys(stat->key_list);
+  //GML_print_list(list, 0);
+  //printf ("Keys used in %s: \n", filename.c_str());
+  //print_keys(stat->key_list);
   
   DspCircuit *c = NULL;
   
@@ -1041,7 +1031,6 @@ DspComponent* DspCircuit::clone()
     DspWireBus *inputs = &it->first->_inputWires;
     for(int i=0;i<inputs->GetWireCount();i++) {
       DspWire *input = inputs->GetWire(i);
-      printf("conn outin\n");
       ret = c->ConnectOutToIn(copies[input->linkedComponent], input->fromSignalIndex, it->second, input->toSignalIndex);
       assert(ret);
     }

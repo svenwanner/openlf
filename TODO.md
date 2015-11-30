@@ -33,6 +33,7 @@
 - OPENLF: dispatch: error handling for gml loading
 - OPENLF: circuit viewer: call config at insert/load (show errors immediately)
 - OPENLF: expose sub-circuit parameter via aliases
+- OPENLF: fix small inconsitencies in gui
 
 Minor:
 - COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!

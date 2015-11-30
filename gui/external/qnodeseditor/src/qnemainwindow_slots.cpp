@@ -223,8 +223,12 @@ void QNEMainWindow::createDockWindows()
   box->setLayout(layout);
   _c_name_ed = new QLineEdit(_circuit_dock);
   connect(_c_name_ed, SIGNAL(textChanged(QString)), this, SLOT(circuitNameChanged(QString)));
-  if (_circuitViewer)
+  _c_type_ed = new QLineEdit(_circuit_dock);
+  connect(_c_type_ed, SIGNAL(textChanged(QString)), this, SLOT(circuitTypeChanged(QString)));
+  if (_circuitViewer) {
     _c_name_ed->setText(_circuitViewer->circuit()->GetComponentName().c_str());
+    _c_type_ed->setText(_circuitViewer->circuit()->GetComponentType().c_str());
+  }
   layout->addRow(tr("&Name"), _c_name_ed);   
   
   addDockWidget(Qt::RightDockWidgetArea, _circuit_dock);
@@ -304,6 +308,19 @@ void QNEMainWindow::circuitNameChanged(QString name)
     std_name = "(unnamed)";
   
   _circuitViewer->setWindowTitle(std_name.c_str());
+  
+  QListWidgetItem *item = _comp_map[static_cast<DspComponent*>(_circuitViewer->circuit())];
+  
+  item->setText(_compNameTypeLabel(_circuitViewer->circuit()));
+}
+
+void QNEMainWindow::circuitTypeChanged(QString name)
+{
+  if (!_circuitViewer)
+    return;
+  
+  _circuitViewer->circuit()->setTypeName(name.toUtf8().constData());
+  viewer_circuit_changed(_circuitViewer->circuit(), NULL, _circuitViewer);
   
   QListWidgetItem *item = _comp_map[static_cast<DspComponent*>(_circuitViewer->circuit())];
   
