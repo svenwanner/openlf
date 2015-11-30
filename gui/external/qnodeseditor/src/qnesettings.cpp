@@ -138,6 +138,7 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
           actual_layout->addWidget(ed, i+header_lines, xpos++);
           ed->setProperty("component", QVariant::fromValue((void*)_component));
           ed->setProperty("idx", i);
+          connect(ed, SIGNAL(textChanged(QString)), this, SLOT(textSettingChanged(QString)));
           
           QPushButton *btn = new QPushButton(_layout_w);
           actual_layout->addWidget(btn, i+header_lines, xpos++);
