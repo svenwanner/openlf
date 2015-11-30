@@ -88,8 +88,10 @@ void QNEMainWindow::activate(QWidget* wid){
   
   _circuitViewer = (Circuit_Viewer*)wid;
   
-  if (_c_name_ed && _circuitViewer->circuit())
+  if (_c_name_ed && _circuitViewer->circuit()) {
     _c_name_ed->setText(_circuitViewer->circuit()->GetComponentName().c_str());
+    _c_type_ed->setText(_circuitViewer->circuit()->getTypeName().c_str());
+  }
 };
 
 void QNEMainWindow::onApplicationFocusChanged(){
@@ -222,14 +224,13 @@ void QNEMainWindow::createDockWindows()
   QFormLayout *layout = new QFormLayout(_circuit_dock);
   box->setLayout(layout);
   _c_name_ed = new QLineEdit(_circuit_dock);
-  connect(_c_name_ed, SIGNAL(textChanged(QString)), this, SLOT(circuitNameChanged(QString)));
   _c_type_ed = new QLineEdit(_circuit_dock);
+  if (_circuitViewer)
+    activate(_circuitViewer);
+  connect(_c_name_ed, SIGNAL(textChanged(QString)), this, SLOT(circuitNameChanged(QString)));
   connect(_c_type_ed, SIGNAL(textChanged(QString)), this, SLOT(circuitTypeChanged(QString)));
-  if (_circuitViewer) {
-    _c_name_ed->setText(_circuitViewer->circuit()->GetComponentName().c_str());
-    _c_type_ed->setText(_circuitViewer->circuit()->GetComponentType().c_str());
-  }
   layout->addRow(tr("&Name"), _c_name_ed);   
+  layout->addRow(tr("&Type"), _c_type_ed);   
   
   addDockWidget(Qt::RightDockWidgetArea, _circuit_dock);
   
@@ -273,6 +274,14 @@ void QNEMainWindow::newComponent(DspComponent *comp)
   //FIXME listen to updates on components?
 }
 
+
+/*
+ * maybo:
+ * 
+  std::ostringstream addr;
+  addr << (void*)c;
+  c->SetComponentName(addr.str());
+  */
 void QNEMainWindow::newCircuit(DspCircuit* c, Circuit_Viewer *v)
 {
   _circuits.push_back(c);

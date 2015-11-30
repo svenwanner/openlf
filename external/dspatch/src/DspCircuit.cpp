@@ -1050,8 +1050,10 @@ DspComponent* DspCircuit::clone()
       assert(ret);
   }
   
+  c->setTypeName(_typeName);
+    
   c->_alias = _alias;
   c->_alias.replace(copies);
-    
+  
   return c;
 }

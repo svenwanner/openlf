@@ -1,5 +1,4 @@
 graph [
-label "epi"
 type "DefaultStructureTensor"
 node [
 id 0
@@ -95,7 +94,7 @@ y -13.000000
 ]
 params [
 min_coherence 0.500000
-input_disparity 7.000000
+input_disparity 0.000000
 ]
 ]
 node [
@@ -103,8 +102,8 @@ id 9
 label "OP_Scharr_1"
 type "OP_Scharr"
 graphics [
-x -278.000000
-y -9.000000
+x -304.589928
+y -41.129496
 ]
 ]
 node [
@@ -112,11 +111,11 @@ id 10
 label "OP_Gauss_0"
 type "OP_Gauss"
 graphics [
-x -404.000000
+x -451.640288
 y -40.000000
 ]
 params [
-x_blur 0.500000
+x_blur 0.000000
 y_blur 0.000000
 ]
 ]

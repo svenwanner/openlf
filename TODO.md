@@ -35,6 +35,9 @@
 - OPENLF: expose sub-circuit parameter via aliases
 - OPENLF: fix small inconsitencies in gui
 
+Big:
+- DSPatch: integrate type system - only allow correctly typed settings and connections!
+
 Minor:
 - COMP_Epi somhow directly store epi processing results in target FlexMav, avoiding one copy!
 - GUI: popOut , popOut

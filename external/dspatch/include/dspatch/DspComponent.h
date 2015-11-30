@@ -85,6 +85,7 @@ virtual DspComponent* clone() \
   for(int i=0;i<GetParameterCount();i++) \
     dup->SetParameter(i, *GetParameter(i)); \
   \
+  printf("clone: %s / %s\n", GetComponentName().c_str(), getTypeName().c_str()); \
   dup->SetComponentName(GetComponentName()); \
   dup->setTypeName_(getTypeName()); \
   assert(!_alias.count()); \
