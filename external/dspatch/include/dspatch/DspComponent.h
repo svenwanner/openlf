@@ -103,6 +103,7 @@ public:
   void remove(DspComponent *c, int index, std::string alias);
   std::string get(DspComponent *c, int i);
   void set(int index, const DspParameter &param);
+  void unset(int index, int max_prio);
   const DspParameter *getFirst(int index) const;
   void replace(std::unordered_map<DspComponent*,DspComponent*> copies);
   std::string getName(int index);
@@ -202,13 +203,15 @@ public:
     void RemoveComponentAlias(DspComponent *c);
     std::string GetComponentParameterAlias(DspComponent *, int index);
     
+    void UnsetParameter(int index, int max_prio = DspParameter::Priority::User);
+    
 protected:
     virtual void Process_(DspSignalBus&, DspSignalBus&);
     virtual bool ParameterUpdating_(int, DspParameter const&);
 
     bool AddInput_(std::string const& inputName = "");
     bool AddOutput_(std::string const& outputName = "");
-    int AddParameter_(std::string const& paramName, DspParameter const& param);
+    int AddParameter_(std::string const& paramName, DspParameter param);
 
     void progress_(float p);
     
@@ -226,7 +229,7 @@ protected:
 
     DspParameter const* GetParameter_(int index) const;
     bool SetParameter_(int index, DspParameter param);
-    void UnsetParameter_(int index, int max_prio);
+    void UnsetParameter_(int index, int max_prio = DspParameter::Priority::Auto);
     void errorCond(bool cond, const char *msg = NULL, ...);
     void setTypeName_(std::string const& name);
     

@@ -23,6 +23,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
 #include <dspatch/DspParameter.h>
+#include <assert.h>
 
 //=================================================================================================
 
@@ -30,7 +31,30 @@ DspParameter::DspParameter()
     : _type(Null)
     , _isSet(false)
     , _isRangeSet(false)
+    , _default(NULL)
 {
+}
+
+DspParameter::DspParameter(const DspParameter& other)
+{
+    _priority = other._priority;
+    _type = other._type;
+    _isSet = other._isSet;
+    
+    _isRangeSet = other._isRangeSet;
+    _boolValue = other._boolValue;
+    _intRange = other._intRange;
+    _intValue = other._intValue;
+    _floatRange = other._floatRange;
+    _floatValue = other._floatValue;
+    _stringValue = other._stringValue;
+    _listValue = other._listValue;
+    _ptrValue = other._ptrValue;
+    _ptrType = other._ptrType;
+    _default = NULL;
+    
+    if (other._default)
+      SetDefault(*other._default);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -39,6 +63,7 @@ DspParameter::DspParameter(ParamType const& type)
     : _type(type)
     , _isSet(false)
     , _isRangeSet(false)
+    , _default(NULL)
 {
 }
 
@@ -48,6 +73,7 @@ DspParameter::DspParameter(ParamType const& type, int const& initValue, std::pai
     : _type(type)
     , _isSet(false)
     , _isRangeSet(false)
+    , _default(NULL)
 {
     if (type == Bool)
     {
@@ -55,8 +81,6 @@ DspParameter::DspParameter(ParamType const& type, int const& initValue, std::pai
         {
             _type = Null;
         }
-        else
-          _default = new DspParameter(*this);
     }
     else if (type == Float)
     {
@@ -65,8 +89,6 @@ DspParameter::DspParameter(ParamType const& type, int const& initValue, std::pai
         {
             _type = Null;
         }
-        else
-          _default = new DspParameter(*this);
     }
     else
     {
@@ -74,8 +96,6 @@ DspParameter::DspParameter(ParamType const& type, int const& initValue, std::pai
         {
             _type = Null;
         }
-        else
-          _default = new DspParameter(*this);
     }
 }
 
@@ -85,13 +105,12 @@ DspParameter::DspParameter(ParamType const& type, float const& initValue, std::p
     : _type(type)
     , _isSet(false)
     , _isRangeSet(false)
+    , _default(NULL)
 {
     if (!SetFloatRange(valueRange) || !SetFloat(initValue))
     {
         _type = Null;
     }
-    else
-      _default = new DspParameter(*this);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -100,26 +119,24 @@ DspParameter::DspParameter(ParamType const& type, std::string const& initValue)
     : _type(type)
     , _isSet(false)
     , _isRangeSet(false)
+    , _default(NULL)
 {
     if (!SetString(initValue))
     {
         _type = Null;
     }
-    else
-      _default = new DspParameter(*this);
 }
 
 DspParameter::DspParameter(ParamType const& type, const char * const initValue)
     : _type(type)
     , _isSet(false)
     , _isRangeSet(false)
+    , _default(NULL)
 {
     if (!SetString(initValue))
     {
         _type = Null;
     }
-    else
-      _default = new DspParameter(*this);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -128,13 +145,12 @@ DspParameter::DspParameter(ParamType const& type, std::vector<std::string> const
     : _type(type)
     , _isSet(false)
     , _isRangeSet(false)
+    , _default(NULL)
 {
     if (!SetList(initValue))
     {
         _type = Null;
     }
-    else
-      _default = new DspParameter(*this);
 }
 
 //=================================================================================================
@@ -278,15 +294,27 @@ std::vector<std::string> const* DspParameter::GetList() const
 
 void DspParameter::Unset(int max_prio)
 {
+  printf("unset? %d <= %d?\n", _priority, max_prio);
+  
   if (_priority > max_prio)
     return;
   
-  if (_default)
-    *this = *_default;
+  if (_default) {
+    assert(!_default->_default);
+    assert(_type == _default->_type);
+    DspParameter *def = _default;
+    _default = NULL;
+    *this = *def;
+    _default = def;
+    printf("default prio: %d\n", _default->_priority);
+    _priority = Priority::Min;
+  }
   else {
     _isSet = false;
     _priority = Priority::Min;
   }
+  
+  printf("done unset, prio %d\n", _priority);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -454,12 +482,53 @@ bool DspParameter::SetList(std::vector<std::string> const& value)
 
 //-------------------------------------------------------------------------------------------------
 
+DspParameter & DspParameter::operator=(const DspParameter& other)
+{
+  if (this != &other) {
+    //use inplace destructor and copy construtor to simply copy everything
+    //this->~DspParameter();
+    if (_default) {
+      assert(_default != other._default);
+      assert(_default != &other);
+      delete _default;
+      _default = NULL;
+    }
+    new (this) DspParameter(other);
+  }
+  return *this;
+}
+
+DspParameter::~DspParameter()
+{
+  if (_default)
+    delete _default;
+}
+
+
+bool DspParameter::SetDefault(DspParameter param)
+{
+  assert(param._type == _type);
+  assert(param._type != ParamType::Null);
+  
+  if (_default)
+    delete _default;
+  
+  if (param._default) {
+    delete param._default;
+    param._default = NULL;
+  }
+  
+  _default = new DspParameter(param);
+  _default->_priority = Priority::Min;
+  
+  return true;
+}
+
 bool DspParameter::SetParam(DspParameter const& param)
 {
-    //printf("set param prio: %d <= %d?", _priority, param._priority);
-    
     if (_priority > param._priority)
       return false;
+    
     
     //printf("yes\n");
     
@@ -470,6 +539,9 @@ bool DspParameter::SetParam(DspParameter const& param)
     {
         _type = param.Type();
     }
+    
+    if (param._default)
+      SetDefault(*param._default);
 
     if (param.Type() == Bool)
     {

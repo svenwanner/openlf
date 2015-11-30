@@ -702,19 +702,28 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
         }
         else {
           switch (p->Type()) {
-            case DPPT::String :
+            case DPPT::String : {
               assert(part->kind = GML_STRING);
-              res = comp->SetParameter(p_idx, DspParameter(DPPT::String, std::string(part->value.string)));
+              DspParameter p(DPPT::String, std::string(part->value.string));
+              p.SetDefault(p); 
+              res = comp->SetParameter(p_idx, p);
               assert(res);
               break;
-            case DPPT::Float :
+            }
+            case DPPT::Float : {
               assert(part->kind = GML_DOUBLE);
-              comp->SetParameter(p_idx, DspParameter(DPPT::Float, (float)part->value.floating));
+              DspParameter p(DPPT::Float, (float)part->value.floating);
+              p.SetDefault(p);
+              comp->SetParameter(p_idx, p);
               break;
-            case DPPT::Int :
+            }
+            case DPPT::Int : {
               assert(part->kind = GML_INT);
-              comp->SetParameter(p_idx, DspParameter(DPPT::Int, (int)part->value.integer));
+              DspParameter p(DPPT::Int, (int)part->value.integer);
+              p.SetDefault(p);
+              comp->SetParameter(p_idx, p);
               break;
+            }
             default :
               printf("skipping parameter \"%s\" with unknown type for component \"%s\"\n",
                 part->key, comp->getTypeName().c_str());

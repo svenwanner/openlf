@@ -141,7 +141,7 @@ void forward_config(DspComponent *comp, Dataset *config)
     const DspParameter *param = comp->GetParameter(i);
     cpath param_path = cpath("/openlf") / comp->GetComponentName() / comp->GetParameterName(i);
     
-    printf("search config %s\n", param_path.c_str());
+    //printf("search config %s\n", param_path.c_str());
     
     attr = config->getMatch(param_path);
     if (attr) {  
@@ -151,92 +151,21 @@ void forward_config(DspComponent *comp, Dataset *config)
           float fval;
           attr->convert(&fval);
           comp->SetParameter(i, DspParameter(param->Type(), fval));
-          printf("DEBUG: set param %s to %f\n", param_path.string().c_str(), fval);
+          //printf("DEBUG: set param %s to %f\n", param_path.string().c_str(), fval);
           break;
         case DPPT::Int : 
           int ival;
           attr->convert(&ival);
           comp->SetParameter(i, DspParameter(param->Type(), ival));
-          printf("DEBUG: set param %s to %d\n", param_path.string().c_str(), ival);
+          //printf("DEBUG: set param %s to %d\n", param_path.string().c_str(), ival);
           break;
         default:
           printf("FIXME: unhandled parameter type! (comp_epi)\n");
       }
     }
-    else
-      printf("no match for %s\n", param_path.string().c_str());
+    //else
+      //printf("no match for %s\n", param_path.string().c_str());
   }
-}
-
-void component_apply_config_path(DspComponent *comp, LF *config, cpath config_path)
-{
-  if (config && config->data) {
-    
-    for(int i=0;i<comp->GetParameterCount();i++) {
-      Attribute *attr;
-      const DspParameter *param = comp->GetParameter(i);
-      cpath param_path = config_path / comp->GetParameterName(i);
-      
-      attr = config->data->getMatch(param_path);
-      if (attr) {  
-        //TODO abstract this (add call... to DspType??)
-        switch (param->Type()) {
-          case DPPT::Float : 
-            float fval;
-            attr->convert(&fval);
-            comp->SetParameter(i, DspParameter(param->Type(), fval));
-            printf("DEBUG: set param %s to %f\n", param_path.string().c_str(), fval);
-            break;
-          case DPPT::Int : 
-            int ival;
-            attr->convert(&ival);
-            comp->SetParameter(i, DspParameter(param->Type(), ival));
-			printf("DEBUG: set param %s to %d\n", param_path.string().c_str(), ival);
-            break;
-          default:
-            printf("FIXME: unhandled parameter type! (comp_epi)\n");
-        }
-      }
-      else
-		  printf("no match for %s\n", param_path.string().c_str());
-    }
-  }
-}
-
-
-void component_child_apply_config(DspComponent *comp, LF *config, std::string parent)
-{
-  cpath config_path;
-  std::string name = comp->GetComponentName();
-  
-  if (!parent.size())
-    parent = "default";
-  
-  if (!name.size())
-    name = "default";
-  
-  component_apply_config_path(comp, config, cpath("openlf") / parent / name);
-}
-
-void component_apply_config(DspComponent *comp, LF *config)
-{
-  cpath config_path;
-  std::string name = comp->GetComponentName();
-  
-  if (!name.size())
-    name = "default";
-  
-  component_apply_config_path(comp, config, cpath("openlf") / name);
-}
-
-std::string GetComponentNameDefault(DspComponent *comp, std::string default_name)
-{
-  std::string name = comp->GetComponentName();
-  
-  if (!name.size())
-    return default_name;
-  
-  return name;
 }
 
 template<typename T> void get_float_param(DspComponent *comp, T &val, int idx)
@@ -362,7 +291,6 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   errorCond(p, "no epi circuit parameter!"); RETURN_ON_ERROR
   p->GetPointer(epi_circuit);
   if (!epi_circuit) {
-    printf("set epi circuit by hand!\n");
     _default_epi_circuit = OpenLF::getComponent("DefaultStructureTensor");
     errorCond(_default_epi_circuit, "could not load default epi circuit: \"DefaultStructureTensor\""); RETURN_ON_ERROR
     SetParameter(P_IDX::Epi_Circuit, DspParameter(DPPT::Pointer, _default_epi_circuit));
@@ -408,9 +336,6 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   get_int_param(this, start_line, P_IDX::StartLine);
   get_int_param(this, stop_line, P_IDX::StopLine);
   
-  
-  printf("run %f %f %f %d-%d\n",disp_start,disp_step,disp_stop,start_line,stop_line);
-
   //setup circuit and threading
   int t_count = omp_get_max_threads();
   
@@ -421,8 +346,6 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   vector<MatSource> comps_source(t_count);
   vector<MatSink>   comps_sink(t_count);
   vector<Mat> mats_source(t_count);
-
-  printf("%f %f %f\n", disp_start, disp_step, disp_stop);
   
   //FIXME delete!
   vector<DspComponent*>  epi_circuits(t_count);

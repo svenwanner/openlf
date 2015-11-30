@@ -28,6 +28,8 @@
 
 #include "qneblock.h"
 
+class Circuit_Viewer;
+
 class QNESettings : public QWidget
 {
   Q_OBJECT
@@ -35,8 +37,11 @@ class QNESettings : public QWidget
 public:
   QNESettings(QWidget *parent = 0) : QWidget(parent) { setLayout(&_layout); };
   
-  void attach(DspComponent *comp, std::vector<DspCircuit*> &circuits);
+  void attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector<DspCircuit*> &circuits);
   void attach(QNEBlock *block);
+  
+public slots:
+  void reload();
   
 signals:
   void settingChanged();
@@ -48,8 +53,11 @@ private:
   
   DspComponent *_component = NULL;
   QWidget *_layout_w = NULL;
+  Circuit_Viewer *_viewer = NULL;
+  std::vector<DspCircuit*> _circuits;
   
 private slots:
+  void settingOnOffReset();
   void textSettingChanged(QString text);
   void aliasChanged(QString text);
   void selFileClicked();

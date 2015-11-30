@@ -130,6 +130,16 @@ void Alias_List::set(int index, const DspParameter &param)
   }
 }
 
+void Alias_List::unset(int index, int max_prio)
+{
+  std::vector<std::pair<DspComponent*,int>> *v;
+    
+  v = _list[index].second;
+  for(auto it : *v) {
+    it.first->UnsetParameter(it.second, max_prio);
+  }
+}
+
 const DspParameter* Alias_List::getFirst(int index) const
 {
   std::vector<std::pair<DspComponent*,int>> *v;
@@ -671,9 +681,13 @@ const std::string& DspComponent::getTypeName()
 
 //-------------------------------------------------------------------------------------------------
 
-int DspComponent::AddParameter_(std::string const& paramName, DspParameter const& param)
+int DspComponent::AddParameter_(std::string const& paramName, DspParameter param)
 {
     changed();
+    
+    if (param.IsSet())
+      param.SetDefault(param);
+    
     _parameters.push_back(std::make_pair(paramName, param));
     if (_callback)
     {
@@ -845,19 +859,35 @@ bool DspComponent::SetParameter_(int index, DspParameter param)
 
 //-------------------------------------------------------------------------------------------------
 
+void DspComponent::UnsetParameter(int index, int max_prio)
+{
+    printf("UnsetParameter() %d %d\n", index, max_prio);
+    UnsetParameter_(index, max_prio);
+}
+
+//-------------------------------------------------------------------------------------------------
+
 void DspComponent::UnsetParameter_(int index, int max_prio)
 {
+  printf("UnsetParameter_() %d %d %d\n", index, _parameters.size(), _alias.count());
+  
     if ((size_t)index < _parameters.size())
     {
+        printf("unset %s\n", GetParameterName(index).c_str());
         _parameters[index].second.Unset(max_prio);
+        changed();
         
         if (_callback)
         {
             _callback(this, ParameterUpdated, index, _userData);
         }
     }
-    else 
-      printf("FIXME implement unset for alias parameters!\n");
+    else if (index - _parameters.size() < _alias.count())
+    {
+        printf("unset alias %s\n", GetParameterName(index).c_str());
+        _alias.unset(index - _parameters.size(), max_prio);
+        changed();
+    }
 }
 
 void DspComponent::SetComponentParameterAlias(const std::string &alias, DspComponent *c, int index)

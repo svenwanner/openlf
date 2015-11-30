@@ -96,6 +96,10 @@ signals:
   void circuitChanged(DspCircuit* new_c, DspCircuit* old, Circuit_Viewer *v);
   void state_changed(Circuit_Viewer *v);
   
+public slots:
+
+  void configure();
+  
 protected:
   virtual bool event(QEvent* e);
   virtual void closeEvent(QCloseEvent *event);
@@ -115,7 +119,6 @@ private slots:
   void on_action_Pop_Out_triggered();
   void on_action_Pop_In_triggered();
   void tick();
-  void configure();
   void thread_finished();
   
   

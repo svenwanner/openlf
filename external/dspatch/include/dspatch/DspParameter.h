@@ -72,7 +72,9 @@ public:
       Max = INT_MAX
     };
 
+    ~DspParameter();
     DspParameter();
+    DspParameter(const DspParameter& other);
     DspParameter(ParamType const& type);
     DspParameter(ParamType const& type, int const& initValue, std::pair<int, int> const& valueRange = std::make_pair(-1, -1));
     DspParameter(ParamType const& type, float const& initValue, std::pair<float, float> const& valueRange = std::make_pair(-1.0f, -1.0f));
@@ -105,6 +107,8 @@ public:
     template <typename T> bool SetPointer(T* value);
 
     bool SetParam(DspParameter const& param);
+    bool SetDefault(DspParameter param);
+    DspParameter & operator=(const DspParameter& other);
     
     int _priority = Priority::Min;
 

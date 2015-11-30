@@ -509,7 +509,6 @@ void Circuit_Viewer::configure()
     tickAct->setDisabled(true);
   else
     tickAct->setDisabled(false);
-  
 }
 
 DspCircuit *Circuit_Viewer::circuit()

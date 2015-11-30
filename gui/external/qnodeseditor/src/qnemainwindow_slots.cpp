@@ -133,7 +133,7 @@ void QNEMainWindow::show_circuit(QListWidgetItem *it)
 
 void QNEMainWindow::showCompSettings(DspComponent *comp)
 {
-  _settings->attach(comp, _circuits);
+  _settings->attach(_circuitViewer, comp, _circuits);
   //FIXME is this the right circuit viewer?
   connect(_settings, SIGNAL(settingChanged()), _circuitViewer, SLOT(configure()));
 }
