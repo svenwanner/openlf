@@ -72,7 +72,7 @@ class NAME : public DspComponent { \
 }\
 \
 namespace { \
-template <class FROM> struct _is_valid : public std::integral_constant<bool, std::is_convertible<FROM,float>::value> {}; \
+template <class FROM> struct _is_valid : public std::integral_constant<bool, std::is_convertible<FROM,float>::value && !std::is_same<FROM,char>::value> {}; \
 } \
 \
 void NAME::Process_(DspSignalBus& inputs, DspSignalBus& outputs)\

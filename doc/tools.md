@@ -7,7 +7,7 @@ Tools
 
 ## Command Line {#tools_cli}
 
-Aside from the tools available from CLIF for work on clif OpenLF ships a %openlf executable which may be used like this to execute a single circuit:
+Aside from the tools available from CLIF for work on .clif files, %OpenLF ships an %openlf executable which may be used like this to execute a single circuit:
 ```
 openlf -c somecircuitfile.gml
 ```
