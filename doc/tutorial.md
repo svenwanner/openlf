@@ -1,9 +1,9 @@
-%OpenLF Tutorial 1
+%Tutorial 1 - A First Component
 ======
 
 [TOC]
 
-# OpenLF Tutorial 1 - A First Component {#tutorial}
+# Tutorial 1 - A First Component {#tutorial}
 
 This tutorial will teach you how to create your first high level %OpenLF component, which operates at the clif::Dataset level.
 

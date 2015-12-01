@@ -1,9 +1,9 @@
-%OpenLF Tutorial 2
+Tutorial 2 - Simple Image Processing
 ======
 
 [TOC]
 
-# OpenLF Tutorial 2 - Simple Image Processing {#timg}
+# Tutorial 2 - Simple Image Processing {#timg}
 
 This tutorial shows how to use several shortcuts to write an image (or any multidimensional array) processing component in less than 10 in lines of code. 
 
