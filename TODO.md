@@ -34,6 +34,7 @@
 - OPENLF: circuit viewer: call config at insert/load (show errors immediately)
 - OPENLF: expose sub-circuit parameter via aliases
 - OPENLF: fix small inconsitencies in gui
+- OPENLF: ticking - execute on extra circuit(s), allowing viewing and inspecting executing and executed circuits in extra view(er)?
 
 Big:
 - DSPatch: integrate type system - only allow correctly typed settings and connections!

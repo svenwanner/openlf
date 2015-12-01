@@ -8,7 +8,11 @@ About {#about}
 # Documentation {#doc}
 
 Compile documention with doxygen by executing *doxygen* in the source dir.
-This should create html/index.html which is the starting point for the documentation (which is actually this file). After that you can start with the \ref doc/tutorial.md.
+This should create html/index.html which is the starting point for the documentation (which is actually this file). 
+
+Habe a look at the [Tutorial 1 - A First Component](@ref tutorial) and [Tutorial 2 - Image Processing Components](@ref timg).
+
+See [tools](doc/tools.md) and [advanced component programing](doc/advanced.md) for further information or have a look at the [architecture overview](doc/architecture.md).
 
 # Installation {#install}
 
