@@ -76,7 +76,7 @@ QNEMainWindow::~QNEMainWindow()
 void QNEMainWindow::createMenus()
 {
   fileMenu = new QMenu(tr("&File"), this);
-  fileMenu->addAction(loadAct);
+  //fileMenu->addAction(loadAct);
   //fileMenu->addAction(saveAct);
   fileMenu->addAction(newAct);
   fileMenu->addSeparator();
@@ -97,12 +97,12 @@ void QNEMainWindow::createMenus()
 void QNEMainWindow::createToolBars()
 {
   //ToolBar defined in source code
-  fileToolBar = addToolBar(tr("File"));
+  /*fileToolBar = addToolBar(tr("File"));
   fileToolBar->addAction(loadAct);
   fileToolBar->addAction(saveAct);
   fileToolBar->addAction(newAct);
   fileToolBar->addSeparator();
-  fileToolBar->addAction(quitAct);
+  fileToolBar->addAction(quitAct);*/
   //fileToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 }
 

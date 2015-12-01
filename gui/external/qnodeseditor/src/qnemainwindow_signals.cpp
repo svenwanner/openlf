@@ -41,8 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void QNEMainWindow::createActions()
 {
-  
-  loadAct = new QAction(QIcon(":/open.png"), tr("&Load Circuit in new Window"), this);
+  /*loadAct = new QAction(QIcon(":/open.png"), tr("&Load Circuit in new Window"), this);
   loadAct->setShortcuts(QKeySequence::Open);
   loadAct->setStatusTip(tr("Open a file"));
   connect(loadAct, SIGNAL(triggered()), this, SLOT(loadFile()));
@@ -50,9 +49,9 @@ void QNEMainWindow::createActions()
   saveAct = new QAction(QIcon(":/save.png"), tr("&Save"), this);
   saveAct->setShortcuts(QKeySequence::Save);
   saveAct->setStatusTip(tr("Save a file"));
-  connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));
+  connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));*/
   
-  newAct = new QAction(QIcon(":/circuit.png"), tr("&New Circuit in new Window"), this);
+  newAct = new QAction(QIcon(":/circuit.png"), tr("&New Circuit"), this);
   //saveAct->setShortcuts(QKeySequence::Save);
   newAct->setStatusTip(tr("New circuit"));
   connect(newAct, SIGNAL(triggered()), this, SLOT(new_circuit_viewer()));

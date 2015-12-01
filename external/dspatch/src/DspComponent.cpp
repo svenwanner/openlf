@@ -622,9 +622,9 @@ void DspComponent::Process_(DspSignalBus&, DspSignalBus&)
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::ParameterUpdating_(int, DspParameter const&)
+bool DspComponent::ParameterUpdating_(int i, DspParameter const& p)
 {
-    return false;
+    return SetParameter_(i, p);
 }
 
 //-------------------------------------------------------------------------------------------------
