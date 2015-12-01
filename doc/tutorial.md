@@ -1,244 +1,191 @@
-[TOC]
-
-OpenLF Tutorial 1 - A First Component {#Tutorial}
+%OpenLF Tutorial 1
 ======
 
-This tutorial will teach you how to create your first high level %OpenLF component, which operates at the clif::Dataset level (TODO ref). The tutorial is split into three parts:
-- \ref new - setup build system and source
-- \ref comp - implementing a component
-- \ref use - usage in OpenLF
+[TOC]
 
-## Step 1 : Setup the Project {#new}
+# OpenLF Tutorial 1 - A First Component {#tutorial}
 
-If you haven't done so, set up clif and openlf according to [the readme](@ref index).
+This tutorial will teach you how to create your first high level %OpenLF component, which operates at the clif::Dataset level.
 
+### Overview
 
-## Step 2 : A First Component {#comp}
+ The tutorial is split into three parts:
+- \ref tut_new - setup build system and source
+- \ref tut_comp - implementing a component
+- \ref tut_use - using the component with  the @ref editor
 
+### Prerequisites
 
-## Header
+If you haven't done so, set up clif and openlf according to [the readme](@ref install).
 
-```cpp
-#ifndef _OPENLF_COMP_TUTORIAL_H
-#define _OPENLF_COMP_TUTORIAL_H
+### Next Steps
 
-#include "dspatch/DspComponent.h"
+Have a look at the [Simple image Processing Tutorial](@ref timg) or [advanced topics](@ref adv) for more component programming topics, or return to the [main index](@ref doc).
 
-namespace openlf { namespace components {
+## Step 1 : Setup and Building {#tut_new}
 
-class COMP_Tutorial : public DspComponent {
-public:
-  COMP_Tutorial();
-  DSPCOMPONENT_TRIVIAL_CLONE(COMP_Tutorial);
-protected:
-  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
-private:  
-  bool ParameterUpdating_(int index, const DspParameter& param);
-};
+Assuming *root* points to the source tree of openlf. At the momement external projects are not tested, so to build our first component we place a new source file in the directory *root/components/*, lets call it *tutorial.cpp*. Copy the code below into the source file. You will need to re-run cmake to get the file integrated into the build system. After running cmake you can build %OpenLF which will automatically compile the new component.
 
-}} //namespace openlf::components
+~~~~~~~~~~~~~{.cpp}
+#include "clif/dataset.hpp"
+#include "openlf/types.hpp"
+#include "dspatch/DspPlugin.h"
 
-#endif
-```
-
-### Explanation
-
-```cpp
-#ifndef _OPENLF_COMP_TUTORIAL_H
-#define _OPENLF_COMP_TUTORIAL_H
-
-#include "dspatch/DspComponent.h"
-```
-Standard include guard and required header.
-
-```cpp
-namespace openlf { namespace components {
-```
-All components should go into openlf::components.
-
-```cpp
-class COMP_Tutorial : public DspComponent {
-```
-To create a new component we always derive from DspComponent.
-
-```cpp
-COMP_Tutorial();
-```
-Our constructor.
-
-```cpp
-DSPCOMPONENT_TRIVIAL_CLONE(COMP_Tutorial);
-```
-This is a macro which implements \a ::clone() by creating a new instance with **new** and then applies all parameters to the new instance. This should be sufficient for almost all cases. Clone is used by OpenLF to implement threading, as well as by the GUI to interactively add new components.
-
-
-```cpp
-virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
-```
-This method will implement the actual processing.
-
-```cpp
-bool ParameterUpdating_(int index, const DspParameter& param);
-```
-This method will be called when parameters are changed.
-
-## Implementation
-
-```cpp
-#include "comp_tutorial.hpp"
-#include "types.hpp"
+#include <opencv2/highgui/highgui.hpp>
 
 using namespace clif;
+using namespace openlf;
 
-namespace openlf { namespace components {
+class OpenLF_Tutorial : public DspComponent {
+public:
+  OpenLF_Tutorial();
+  DSPCOMPONENT_TRIVIAL_CLONE(OpenLF_Tutorial);
+protected:
+  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+private:
+  LF _out;
+  Dataset _out_set;
+};
 
-COMP_Tutorial::COMP_Tutorial()
+OpenLF_Tutorial::OpenLF_Tutorial()
 {
-  setTypeName_("tutorial");
+  setTypeName_("openlf_tutorial");
   AddInput_("input");
   AddOutput_("output");
-  
-  AddParameter_("path", DspParameter(DspParameter::ParamType::String));
-  AddParameter_("message", DspParameter(DspParameter::ParamType::String));
+  AddParameter_("img_filename", DspParameter(DspParameter::ParamType::String));
 }
 
-void COMP_Tutorial::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
+void OpenLF_Tutorial::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   LF *in = NULL;
-  LF *out = NULL;
-  const std::string *path;
-  const std::string *message;
+  cv::Mat img;
+  const std::string *filename;
 
-  //get input and produce error if not available
-  errorCond(inputs.GetValue(0, in)); RETURN_ON_ERROR
+  errorCond(inputs.GetValue(0, in), "missing input"); RETURN_ON_ERROR
 
-  //get settings
-  path = GetParameter(0)->GetString();
-  message = GetParameter(1)->GetString();
+  filename = GetParameter(0)->GetString();
+  errorCond(filename, "missing filename"); RETURN_ON_ERROR
 
-  //check for errors
-  errorCond(path); RETURN_ON_ERROR
-  errorCond(message); RETURN_ON_ERROR
+  _out.data = &_out_set;
+  _out_set.reset();
+  _out.path = "tutorial_data";
 
-  //create output LF dataset by linking input
-  out = new LF();
-  out->data = new Dataset();
-  out->data->memory_link(in->data);
-  outputs.SetValue(0, out);
-
-  //skip actual processing
-  if (configOnly())
-    return;
-
-  //create attribute for path
-  Attribute attr(*path);
-  //set message
-  attr.set(message->c_str());
-  //append to output dataset
-  out->data->append(attr);
+  _out.data->memory_link(in->data);
+  outputs.SetValue(0, &_out);
+    
+  if (!configOnly()) {
+    Datastore *store = _out.data->addStore("tutorial_data", 2);
+    img = cv::imread(filename->c_str(), CV_LOAD_IMAGE_GRAYSCALE);
+    store->write(img);
+  }
 }
 
-bool COMP_Tutorial::ParameterUpdating_(int index, const DspParameter& param)
-{  
-  //just store parameter 
-  return SetParameter_(index, param);
-}
+EXPORT_DSPCOMPONENT(OpenLF_Tutorial)
 
-}} //namespace openlf::components
-```
+~~~~~~~~~~~~~
 
-### Explanation
+## Step 2 : A First Component {#tut_comp}
 
-```cpp
-COMP_Tutorial::COMP_Tutorial()
+In the following we will go through the code step by step, explaining all parts as we go.
+
+~~~~~~~~~~~~~{.cpp}
+#include "clif/dataset.hpp"
+#include "openlf/types.hpp"
+#include "dspatch/DspPlugin.h"
+
+#include <opencv2/highgui/highgui.hpp>
+
+using namespace clif;
+using namespace openlf;
+~~~~~~~~~~~~~
+The includes needed for our component plus *using* directives for our convenience.
+
+
+~~~~~~~~~~~~~{.cpp}
+class OpenLF_Tutorial : public DspComponent {
+public:
+  OpenLF_Tutorial();
+  DSPCOMPONENT_TRIVIAL_CLONE(OpenLF_Tutorial);
+protected:
+  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+private:
+  LF _out;
+  Dataset _out_set;
+};
+~~~~~~~~~~~~~
+The *OpenLF_Tutorial* implements our new component. All components inherit from DspComponent which provides the framework necessary for graph processing:
+- `DSPCOMPONENT_TRIVIAL_CLONE(OpenLF_Tutorial);` Under the hood OpenLF takes control of the components and uses *clone()* to create component instances for use within circuits, for threading etc. When using only trivially managed fields within our class (e.g. no pointers, now shared structures) we can use the *DSPCOMPONENT_TRIVIAL_CLONE* to clone our class.
+- *LF _out;* and *Dataset _out_set;* provide storage for the output generated by our component. OpenLF will never delete components whose output is in use, and will create an instance of our class for each thread (if threading is used) therefore this neatly handles resorce (de)allocation without us needing to worry about threading and memory management.
+The remaining parts of our class declaration will be explained below.
+
+~~~~~~~~~~~~~{.cpp}
+OpenLF_Tutorial::OpenLF_Tutorial()
 {
-  setTypeName_("tutorial");
+  setTypeName_("openlf_tutorial");
   AddInput_("input");
   AddOutput_("output");
-
-  AddParameter_("path", DspParameter(DspParameter::ParamType::String));
-  AddParameter_("message", DspParameter(DspParameter::ParamType::String));
+  AddParameter_("img_filename", DspParameter(DspParameter::ParamType::String));
 }
-```
-This is the constructor. The only mandatory part is *setTypeName()*, which will be used display our new component and identify it when storing circuits. Inputs and outputs are added with *AddInput_()*, *AddOutput_()* respectively, add as many inputs and outputs as desired.
-*AddParameter_()* adds a new Paramter and specifies the type. You can also pass default values by using for example: `DspParameter(DspParameter::ParamType::Int, 17)`.
+~~~~~~~~~~~~~
+The constructor needs to set all relevant external connection to the component.
+- `setTypeName_(` sets the type name and is used to identify the component when loading a circuit from a .gml file.
+- `AddInput_(`/`AddOutput_(` add an input/output with the specififed name. Add as many inputs and outputs as desired.
+- `AddParameter_(` adds an Parameter with the type specified by the second argument. You can also set a default parameter with a call like this:
+~~~~~~~~~~~~~{.cpp}
+AddParameter_("img_filename", DspParameter(DspParameter::ParamType::String, "defaultvalue"));
+AddParameter_("the_answer", DspParameter(DspParameter::ParamType::Int, 42));
+~~~~~~~~~~~~~
 
 
-```cpp
-void COMP_Tutorial::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
+~~~~~~~~~~~~~{.cpp}
+void OpenLF_Tutorial::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   LF *in = NULL;
-  LF *out = NULL;
-  const std::string *path;
-  const std::string *message;
-```
-This marks the begin of our actual component implementation. *inputs* and *outputs* contain the input and output signals which are connected to different components. *LF* contains an actual clif::Dataset and an optional string to specify some component of the dataset.
+  cv::Mat img;
+  const std::string *filename;
+~~~~~~~~~~~~~
+The virtual `Process_` method provides the actual implementation and implements error handling. The `inputs` and `outputs` are a means to communicate with the connected components. Process_ is executed in one of two modes, regular and "configuration". The configuration mode is meant as a way to check error conditions and set parameters depending on input without actually executing any heavy work. The ConfigOnly() returns true if we are currently executing a config run.
 
-```cpp
-  //get input and produce error if not available
-  errorCond(inputs.GetValue(0, in)); RETURN_ON_ERROR
-```
-*inputs.GetValue(0, in)* reads the first input into *in* if *in* is of the same type as got passed from the connected component. If *GetValue()* is successfull true is return, else false.
+~~~~~~~~~~~~~{.cpp}
+errorCond(inputs.GetValue(0, in), "missing input"); RETURN_ON_ERROR
 
-*errorCond()* provides error checking by setting an error on our component if the passed condition is false. You can also pass an error message as second parameter which can be displayed by the GUI. The error state can be checked with *hasError()*. 
+filename = GetParameter(0)->GetString();
+errorCond(filename, "missing filename"); RETURN_ON_ERROR
+~~~~~~~~~~~~~
+`inputs.GetValue(0, in)` stores the first input from inputs in *in* **if a connected component has stored an output of the same type**. If the connected component has not provided any output or stored an output of a different type GetValue return false.
+This fact is used by `errorCond` to provide error handling. errorCond will check wether the condition supplied as first argument is true and if not set the error state of the component. Afterwards execution continues, RETURN_ON_ERROR checks the error state and takes appropiate action depending on the config state, forwarding error message to the user, but in any cases leaves Process_ immediately if there is an error. Note that errorCond accepts printf style formatting, e.g: `errorCond(cond, "too much rain: %fmm", measured_rainfall);`
 
-Components can be executed in two modes, the method configOnly() shows wether this is only a configuration run or the actual execution. Config runs are used to find and display errors prior to actual execution, therefore only simple error checking and parameter passing should be executed if *configOnly()* returns true.
+~~~~~~~~~~~~~{.cpp}
+...
+_out.data->memory_link(in->data);
+...
+~~~~~~~~~~~~~
+Normally when working with a clif::Dataset we want to output a copy of the dataset, together with whatever data is generated in our component. But we neither want to cause IO nor do we want actually copy a potentially large dataset (even in memory). The solution is the possibility of HDF5 (and CLIF) to create datasets in memory and to use links within datasets to transparently point to existing data. The whole magic is implemented in the memory_link() method which link a dataset against the supplied dataset, within a file existing only in memory. Subsequent writes to this dataset will happen in memory, but reads to existing data are forwarded to the original dataset. 
 
-*RETURN_ON_ERROR* combines error checking with the config state and simply returns from the caller if there is an error in a config run, and aborts if an error is detected in actual execution. This macro should always be used, as it will later implement more advanced error handling.
+The rest is just wrapper code to allow the memory handling mentioned above:
+~~~~~~~~~~~~~{.cpp}
+_out.data = &_out_set;
+_out_set.reset();
+_out.path = "tutorial_data";
+...
+outputs.SetValue(0, &_out);
+~~~~~~~~~~~~~
+_out is a OpenLF::LF structure which simply points to clif::Dataset and a path within this dataset. The path is simply a hint for the next component which structure in the Dataset was changed, usefule for example to open the clifview directly at newly generated content when called from within the openlf circuit editor.
+_out and _out_set are members of our component class and are reused between consecutive iterations, therefore we need to call reset() on our dataset to discard previously generated data.
 
-```cpp
-  //get settings
-  path = GetParameter(0)->GetString();
-  message = GetParameter(1)->GetString();
+Finally, with `outputs.SetValue(0, &_out);` we store a pointer to our internally allocated data in the output bus which will be consumed by the next component in the graph.
 
-  //check for errors
-  errorCond(path); RETURN_ON_ERROR
-  errorCond(message); RETURN_ON_ERROR
-```
-Get parameters and check for errors again.
-
-```cpp
-  //create output LF dataset by linking input
-  out = new LF();
-  out->data = new Dataset();
-  out->data->memory_link(in->data);
-  outputs.SetValue(0, out);
-```
-Create our output and store it in outpus using *SetValue()*. *memory_link* will create a shallow copy of the dataset in memory. Only newly added elements will actually be stored in the dataset, all others will be linked from the original dataset. This is also partly true if the dataset is stored on disk again. In that case soft links within the hdf5 file are used to reference the original data, though this is true only for all hdf5 datasets (= clif::Datastore) within the file, all attributes are actually copied.
-
-```cpp
-  //skip actual processing
-  if (configOnly())
-    return;
-```
-We are now finished with the preparations, if we are in config mode we return now to skip any actual processing.
-
-```cpp
-  //create attribute for path
-  Attribute attr(*path);
-  //set message
-  attr.set(message->c_str());
-  //append to output dataset
-  out->data->append(attr);
+~~~~~~~~~~~~~{.cpp}
+if (!configOnly()) {
+  Datastore *store = _out.data->addStore("tutorial_data", 2);
+  img = cv::imread(filename->c_str(), CV_LOAD_IMAGE_GRAYSCALE);
+  store->write(img);
 }
-```
-This is the code which represents our (quite heavy) processing. We simply create a new *clif::Attribute* for the specified path, store our message and append the attribute to our dataset.
+~~~~~~~~~~~~~
+This is the actual implementation, addStore() adds a new 2D clif::Datastore to our dataset, we read the image set by the user using opencv's imread and then store the image in the Datastore. For more details on how to read/write/and process using clif see the respective documentation in the clif library.
 
-```cpp
-bool COMP_Tutorial::ParameterUpdating_(int index, const DspParameter& param)
-{  
-  //just store parameter 
-  return SetParameter_(index, param);
-}
-```
-This method must be implemented if we need any parameters. This implementation simply passes through the parameter, if desired more complex checks can be implemented checking parameter type and content and returning false when problems are found.
+Note that the processing is only executed if `configOnly()` returns *false*. Else processing is skipped, as configuration is executed whenever parameters or circuit connections change, to give the user a direct feedback within the OpenLF circuit editor. 
 
-### Build
+## Step 3 : Usage {#tut_use}
 
-We will now add the component to the build system:
-- Store the header in in *include/openlf/components/* for example as *comp_tutorial.hpp* and the implementation in *src/components/*.
-- add the implementation to the list in src/components/CMakeLists.txt, so it will actually be compiled
-- in *include/openlf.hpp* add our new header to the long list of includes at the top and our new component to the global \a _comp_list.
-- rebuild the project and test the new component with the LF_Toolbox!
-
-## Step 3 : Using external Components {#use}
+Simply fire up the [OpenLF Circuit Editor](@ref editor) and add three components to the default circuit: *read_clif*, *write_clif* and our new *openlf_tutorial*. Connect them, select an existing clif file for input (possibly quite large ;-) ) a new clif file for output and some image for the *img_filename* parameter. Tick the circuit and in no time  %OpenLF should generate the output file with a similar size as the input image. If you inspect the file using clifinfo of clifview (or alternatively h5list or h5dump) you will see that while all attributes were written again in the new file, all datastores are actually linked against the input file, with the exception of our newly added image. 
