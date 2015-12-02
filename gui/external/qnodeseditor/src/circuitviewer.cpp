@@ -242,6 +242,8 @@ void Circuit_Viewer::addComponent(DspComponent *comp, bool gui_only)
   }
   
   _blocks.push_back(new QNEBlock(comp, _scene));
+  
+  QMetaObject::invokeMethod(this, "configure", Qt::QueuedConnection);
 }
 
 //FIXME delete old input comp if already existing!
@@ -496,9 +498,7 @@ bool Circuit_Viewer::processing()
 }
 
 void Circuit_Viewer::configure()
-{
-  printf("config circtui\n");
-  
+{  
   _circuit->configure();
   QList<QGraphicsItem*> items = _scene->items();
   
