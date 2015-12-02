@@ -1,5 +1,7 @@
 #include "gui_toolbox.h"
 
+#include "clif/clifviewcaller.hpp"
+
 //#ifdef _MSC_VER
 //#include "ui_gui_windows.h"
 //#elif __GNUC__
@@ -31,15 +33,13 @@ void GUI_Toolbox::OpenLFCamConfigurator(){
 void GUI_Toolbox::showNode()
 {
 	QNEMainWindow *_QNEMW = new QNEMainWindow();
-	_QNEMW->show();
+	_QNEMW->showMaximized();
 
 }
 
 void GUI_Toolbox::showViewer()
 {
-	QNEMainWindow *_QNEMW = new QNEMainWindow();
-	_QNEMW->show();
-
+  new ExternalClifViewer();
 }
 
 void GUI_Toolbox::showAnimator()
