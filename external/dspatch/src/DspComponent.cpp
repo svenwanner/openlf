@@ -831,9 +831,9 @@ DspParameter const* DspComponent::GetParameter_(int index) const
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::SetParameter_(int index, DspParameter param)
+bool DspComponent::SetParameter_(int index, DspParameter param, bool auto_prio)
 {
-    if (param._priority == DspParameter::Priority::Min)
+    if (auto_prio && param._priority == DspParameter::Priority::Min)
       param._priority = DspParameter::Priority::Auto;
   
     changed();

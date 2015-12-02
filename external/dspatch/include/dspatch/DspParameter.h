@@ -110,6 +110,8 @@ public:
     bool SetDefault(DspParameter param);
     DspParameter & operator=(const DspParameter& other);
     
+    int GetPriority();
+    
     int _priority = Priority::Min;
 
 private:

@@ -135,6 +135,7 @@ void Circuit_Viewer::createActions()
   connect(_editor, SIGNAL(compSelected(DspComponent*)), this, SLOT(onCompSelected(DspComponent*)));
   connect(_editor, SIGNAL(compSelected(QNEBlock*)), this, SLOT(onCompSelected(QNEBlock*)));
   connect(_editor, SIGNAL(portSelected(QNEPort*)), this, SLOT(onPortSelected(QNEPort*)));
+  connect(_editor, SIGNAL(circuitChanged()), this, SLOT(configure()));
 }
 
 bool Circuit_Viewer::event(QEvent* e)
@@ -496,6 +497,8 @@ bool Circuit_Viewer::processing()
 
 void Circuit_Viewer::configure()
 {
+  printf("config circtui\n");
+  
   _circuit->configure();
   QList<QGraphicsItem*> items = _scene->items();
   

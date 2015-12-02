@@ -154,6 +154,7 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 					conn->setPort2(port2);
 					conn->updatePath();
 					conn = 0;
+                                        emit circuitChanged();
 					return true;
 				}
 			}

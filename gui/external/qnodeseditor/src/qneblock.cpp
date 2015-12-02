@@ -53,7 +53,7 @@ QNEBlock::QNEBlock(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 
 void _progress_f(DspComponent *c, float progress, void *data)
 {
-  printf("somehow enqueue progress update %f\n", progress);
+  printf("progress: %.2f%%\n", progress*100.0);
   QNEBlock *block = (QNEBlock*)data;
   block->_progress = progress;
   

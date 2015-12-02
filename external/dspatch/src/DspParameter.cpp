@@ -293,9 +293,7 @@ std::vector<std::string> const* DspParameter::GetList() const
 //-------------------------------------------------------------------------------------------------
 
 void DspParameter::Unset(int max_prio)
-{
-  printf("unset? %d <= %d?\n", _priority, max_prio);
-  
+{ 
   if (_priority > max_prio)
     return;
   
@@ -306,7 +304,6 @@ void DspParameter::Unset(int max_prio)
     _default = NULL;
     *this = *def;
     _default = def;
-    printf("default prio: %d\n", _default->_priority);
     _priority = Priority::Min;
   }
   else {
@@ -383,9 +380,7 @@ bool DspParameter::SetIntRange(std::pair<int, int> const& intRange)
 //-------------------------------------------------------------------------------------------------
 
 bool DspParameter::SetFloat(float const& value)
-{
-  //printf("set float\n");
-  
+{ 
     if (_type == Float)
     {
         if (_isRangeSet)
@@ -435,6 +430,11 @@ bool DspParameter::SetFloatRange(std::pair<float, float> const& floatRange)
 }
 
 //-------------------------------------------------------------------------------------------------
+
+int DspParameter::GetPriority()
+{
+  return _priority;
+}
 
 bool DspParameter::SetString(std::string const& value)
 {
@@ -528,9 +528,6 @@ bool DspParameter::SetParam(DspParameter const& param)
 {
     if (_priority > param._priority)
       return false;
-    
-    
-    //printf("yes\n");
     
     //FIXME if set fails, param still has new priority!?
     _priority = param._priority;

@@ -370,9 +370,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     
     comps_source[i].set(&mats_source[i]);
   }
-  
-  printf("start processing\n");
-  
+    
   DspCircuit outer_circuit;
   MatSource comp_source;
   MatSink   comp_sink;

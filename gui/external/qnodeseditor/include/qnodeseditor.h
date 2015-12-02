@@ -54,6 +54,7 @@ signals:
 	void compSelected(DspComponent *comp);
 	void compSelected(QNEBlock *block);
 	void portSelected(QNEPort *port);
+	void circuitChanged();
 
 private:
 	QGraphicsItem *itemAt(const QPointF&);

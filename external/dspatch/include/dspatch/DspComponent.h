@@ -83,7 +83,7 @@ virtual DspComponent* clone() \
   auto dup = new CLASS(); \
   \
   for(int i=0;i<GetParameterCount();i++) \
-    dup->SetParameter(i, *GetParameter(i)); \
+    dup->SetParameter_(i, *GetParameter(i), false); \
   \
   printf("clone: %s / %s\n", GetComponentName().c_str(), getTypeName().c_str()); \
   dup->SetComponentName(GetComponentName()); \
@@ -175,6 +175,7 @@ public:
     bool GetParameter(int index, DspParameter& param);
     DspParameter const* GetParameter(int index);
     bool SetParameter(int index, DspParameter param);
+    bool SetParameter(int index, DspParameter param, int priority);
     const std::string & GetParameterAlias(int index, const std::string &alias) const;
     
     std::string const* GetParameterString(int index);
@@ -228,7 +229,7 @@ protected:
     int GetParameterCount_() const;
 
     DspParameter const* GetParameter_(int index) const;
-    bool SetParameter_(int index, DspParameter param);
+    bool SetParameter_(int index, DspParameter param, bool auto_prio = true);
     void UnsetParameter_(int index, int max_prio = DspParameter::Priority::Auto);
     void errorCond(bool cond, const char *msg = NULL, ...);
     void setTypeName_(std::string const& name);

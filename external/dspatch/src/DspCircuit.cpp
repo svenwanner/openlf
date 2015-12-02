@@ -1022,6 +1022,7 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
   return c;
 }
 
+//FIXME clone parameters!
 DspComponent* DspCircuit::clone()
 {
   DspCircuit *c = new DspCircuit();
