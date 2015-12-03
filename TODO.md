@@ -37,6 +37,8 @@
 - OPENLF: ticking - execute on extra circuit(s), allowing viewing and inspecting executing and executed circuits in extra view(er)?
 - OPENLF: circuit::clone - copy parameters in circuit!
 - OPENLF: component clone don'ts set unset parameters! (use GetParaemter?)
+- OPENLF/Write...: check if output dirctory exists and is writable
+- OPENLF: cmake - don't add \Debug to release
 
 Big:
 - DSPatch: integrate type system - only allow correctly typed settings and connections!
