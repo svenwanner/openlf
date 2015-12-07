@@ -40,6 +40,7 @@
 - OPENLF/Write...: check if output dirctory exists and is writable
 - OPENLF: cmake - don't add \Debug to release
 - CLIF: clif-bin always truncate outout?
+- CLIF: protect all hdf5 reads with omp pragma critical (hdf5)
 
 Big:
 - DSPatch: integrate type system - only allow correctly typed settings and connections!
