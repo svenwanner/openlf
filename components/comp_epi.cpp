@@ -22,6 +22,7 @@
 #include <vigra/impex.hxx>
 
 #include "clif/subset3d.hpp"
+#include "clif/preproc.hpp"
 
 #include "dspatch/DspComponent.h"
 #include "dspatch/DspPlugin.h"
@@ -232,7 +233,7 @@ Mat *proc_epi(Subset3d *subset, float disp_start, float disp_stop, float disp_st
       }
     
     cv::Mat cv_source;
-    subset->readEPI(&cv_source, i, d, Unit::PIXELS, UNDISTORT, Interpolation::LINEAR, scale);
+    subset->readEPI(&cv_source, i, d, Unit::PIXELS, Improc::UNDISTORT, Interpolation::LINEAR, scale);
     source = Mat(cv_source);
     
     //tick the circuit to fill _sink_mav using _source_mav and the circuit
