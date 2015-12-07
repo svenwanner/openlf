@@ -39,6 +39,7 @@
 - OPENLF: component clone don'ts set unset parameters! (use GetParaemter?)
 - OPENLF/Write...: check if output dirctory exists and is writable
 - OPENLF: cmake - don't add \Debug to release
+- CLIF: clif-bin always truncate outout?
 
 Big:
 - DSPatch: integrate type system - only allow correctly typed settings and connections!
