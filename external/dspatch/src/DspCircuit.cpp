@@ -38,6 +38,16 @@ extern "C" {
 
 typedef unsigned int uint;
 
+std::string replace_all(std::string str, const std::string& search, const std::string& replace) {
+    size_t pos = 0;
+    while ((pos = str.find(search, pos)) != std::string::npos) {
+         str.replace(pos, search.length(), replace);
+         pos += replace.length();
+    }
+    return str;
+}
+
+
 //=================================================================================================
 
 DspCircuit::DspCircuit(int threadCount)
@@ -553,7 +563,7 @@ void DspCircuit::_save_comp(FILE *f, int i)
     fprintf(f, "params [\n");
     for(int i=0;i<comp->GetParameterCount();i++) {
       const DspParameter *p = comp->GetParameter(i);
-      fprintf(f, "%s ", comp->GetParameterName(i).c_str());
+      fprintf(f, "%s ", replace_all(comp->GetParameterName(i), "/", "_S_").c_str());
       if (p->IsSet())
         switch (p->Type()) {
           case DspParameter::ParamType::String :
@@ -565,6 +575,15 @@ void DspCircuit::_save_comp(FILE *f, int i)
           case DspParameter::ParamType::Int :
             fprintf(f, "%d\n", *p->GetInt());
             break;
+          case DspParameter::ParamType::Pointer : {
+            DspComponent *comp = NULL;
+            p->GetPointer(comp);
+            if (comp) {
+              fprintf(f, "\"%s\"\n", comp->getTypeName().c_str());
+              break;
+            }
+            //falls down to default!
+          }
           default:
             fprintf(f, "\"(UNKNOWN)\"\n");
         }
@@ -674,7 +693,7 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
   } _gml_parse_comp_graphics;
   
   static struct {
-    void operator()(DspComponent *comp, GML_pair *node)
+    void operator()(DspComponent *comp, GML_pair *node, DspComponent *(*getComponentClone)(const std::string &typeName))
     {
       bool res;
       GML_pair *part;
@@ -683,8 +702,10 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
       while(part) {
         const DspParameter *p = NULL;
         int p_idx;
+        printf("search param %s\n", part->key);
+        std::string search_name = replace_all(part->key, "_S_", "/");
         for(int i=0;i<comp->GetParameterCount();i++)
-          if (!comp->GetParameterName(i).compare(part->key)) {
+          if (!comp->GetParameterName(i).compare(search_name)) {
             p = comp->GetParameter(i);
             p_idx = i;
             break;
@@ -724,6 +745,18 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
               comp->SetParameter(p_idx, p);
               break;
             }
+            case DPPT::Pointer : {
+              printf("load pointer!\n");
+              assert(part->kind == GML_STRING);
+              assert(*p->GetPointerType() == typeid(DspComponent));
+              DspComponent *comp_child = getComponentClone(part->value.string);
+              DspParameter p(DPPT::Pointer, comp_child);
+              //FIXME why setdefault?
+              //p.SetDefault(p); 
+              res = comp->SetParameter(p_idx, p);
+              assert(res);
+              break;
+            }
             default :
               printf("skipping parameter \"%s\" with unknown type for component \"%s\"\n",
                 part->key, comp->getTypeName().c_str());
@@ -748,6 +781,7 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
       assert(node->kind == GML_LIST);
   
       part = node->value.list;
+      printf("start %p\n", part);
       while(part) {
         if (!strcmp(part->key, "type")) {
           assert(part->kind == GML_STRING);
@@ -785,7 +819,7 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
       comp->y = y;
       
       if (params)
-        _gml_parse_add_params(comp, params);
+        _gml_parse_add_params(comp, params, getComponentClone);
     }
   } _gml_parse_add_component;
   

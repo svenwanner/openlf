@@ -153,6 +153,11 @@ DspParameter::DspParameter(ParamType const& type, std::vector<std::string> const
     }
 }
 
+const std::type_info* DspParameter::GetPointerType() const
+{
+  return _ptrType;
+}
+
 //=================================================================================================
 
 DspParameter::ParamType DspParameter::Type() const

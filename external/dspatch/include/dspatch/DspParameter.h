@@ -95,6 +95,7 @@ public:
     std::vector<std::string> const* GetList() const;
     template<typename T> T* GetPointer() const;
     template<typename T> void GetPointer(T* &value) const;
+    const std::type_info *GetPointerType() const;
 
     void Unset(int max_prio = INT_MAX);
     bool SetBool(bool const& value);
