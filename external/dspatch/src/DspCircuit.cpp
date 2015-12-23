@@ -712,7 +712,7 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
           }
         if (!p) {
           printf("skipping unknown parameter \"%s\" for component \"%s\"\n",
-            part->key, comp->getTypeName().c_str());
+            search_name.c_str(), comp->getTypeName().c_str());
         }
         else if (part->kind == GML_STRING
                  && (!strcmp(part->value.string,"(UNKNOWN)")
