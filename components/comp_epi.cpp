@@ -221,7 +221,7 @@ static void printprogress(int curr, int max, int &last, const char *fmt = NULL, 
   fflush(NULL);
 }
 
-Mat *proc_epi(Subset3d *subset, float disp_start, float disp_stop, float disp_step, int i, float scale, DspComponent *merge, DspComponent *epi, Mat &source, MatSink *sink, DspCircuit *parent)
+Mat *proc_epi(Subset3d *subset, float disp_start, float disp_stop, float disp_step, int i, float scale, DspComponent *merge, DspComponent *epi, Mat &source, MatSink *sink, MatSink *coherence_matsink, DspCircuit *parent, Mat **coherence)
 {
   merge->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, true));
   
@@ -244,6 +244,7 @@ Mat *proc_epi(Subset3d *subset, float disp_start, float disp_stop, float disp_st
     merge->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, false));
   }
   
+  *coherence = coherence_matsink->get();
   return sink->get();
 }
 
@@ -277,6 +278,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   Subset3d subset(in->data);
   
   Mat *disp_mat = NULL;
+  Mat *coh_mat = NULL;
   
   int epi_w = subset.EPIWidth();
   int epi_h = subset.EPIHeight();
@@ -346,6 +348,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   vector<MatSource> comps_source(t_count);
   vector<MatSink>   comps_sink(t_count);
+  vector<MatSink>   comps_sinks_coherence(t_count);
   vector<Mat> mats_source(t_count);
   
   //FIXME delete!
@@ -362,12 +365,14 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     outer_circuits[i].AddComponent(comps_source[i], "source");
     outer_circuits[i].AddComponent(epi_circuits[i], "epi");  
     outer_circuits[i].AddComponent(comps_sink[i], "sink");
+    outer_circuits[i].AddComponent(comps_sinks_coherence[i], "sink_coherence");
     outer_circuits[i].AddComponent(merge_circuits[i], "merge");  
     
     outer_circuits[i].ConnectOutToIn(comps_source[i], 0, epi_circuits[i], 0);
     outer_circuits[i].ConnectOutToIn(epi_circuits[i], 0, merge_circuits[i], 0);
     outer_circuits[i].ConnectOutToIn(epi_circuits[i], 1, merge_circuits[i], 1);
     outer_circuits[i].ConnectOutToIn(merge_circuits[i], 0, comps_sink[i], 0);
+    outer_circuits[i].ConnectOutToIn(merge_circuits[i], 1, comps_sinks_coherence[i], 0);
     
     comps_source[i].set(&mats_source[i]);
   }
@@ -375,21 +380,24 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   DspCircuit outer_circuit;
   MatSource comp_source;
   MatSink   comp_sink;
+  MatSink   comp_sink_coherence;
   Mat source;
   
   outer_circuit.AddComponent(comp_source, "source");
   outer_circuit.AddComponent(epi_circuit, "epi");  
   outer_circuit.AddComponent(comp_sink, "sink");
+  outer_circuit.AddComponent(comp_sink_coherence, "sink_coherence");
   outer_circuit.AddComponent(merge_circuit, "merge");  
   
   outer_circuit.ConnectOutToIn(comp_source, 0, epi_circuit, 0);
   outer_circuit.ConnectOutToIn(epi_circuit, 0, merge_circuit, 0);
   outer_circuit.ConnectOutToIn(epi_circuit, 1, merge_circuit, 1);
   outer_circuit.ConnectOutToIn(merge_circuit, 0, comp_sink, 0);
+  outer_circuit.ConnectOutToIn(merge_circuit, 1, comp_sink_coherence, 0);
   
   comp_source.set(&source);
   
-  Mat *sink;
+  Mat *sink, *sink_coherence;
       
   int done = 0;
   printf("\n");
@@ -403,14 +411,18 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     epi_circuit,
     source,
     &comp_sink,
-    &outer_circuit               
+    &comp_sink_coherence,
+    &outer_circuit,
+    &sink_coherence
   );
   
   Idx size = {subset.EPIWidth(), subset.EPICount(), (*sink)[2], subset.EPIHeight()};
   disp_mat = new Mat(sink->type(), size);
+  coh_mat = new Mat(sink_coherence->type(), size);
   disp_mat->callIf<subarray_copy,_is_convertible_to_float>(stop_line-1,epi_w,epi_h,sink,disp_mat,scale);
+  coh_mat->callIf<subarray_copy,_is_convertible_to_float>(stop_line-1,epi_w,epi_h,sink_coherence,coh_mat,scale);
   
-#pragma omp parallel for private(sink)
+#pragma omp parallel for private(sink, sink_coherence)
   for(int i=start_line;i<stop_line-1;i++) {
 #pragma omp critical 
     {
@@ -426,12 +438,15 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
       epi_circuits[t],
       mats_source[t],
       &comps_sink[t],
-      &outer_circuits[t]                  
+      &comps_sinks_coherence[t],
+      &outer_circuits[t],
+      &sink_coherence
     );
       
     assert(sink->type() == BaseType::FLOAT);
     
     disp_mat->callIf<subarray_copy,_is_convertible_to_float>(i,epi_w,epi_h,sink,disp_mat,scale);
+    coh_mat->callIf<subarray_copy,_is_convertible_to_float>(i,epi_w,epi_h,sink_coherence,coh_mat,scale);
   }
   //cv::setNumThreads(-1);
   
@@ -443,6 +458,13 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   disp_store->write(disp_mat);
   out->path = "disparity/default/data";
   delete disp_mat;
+  
+  
+  //FIXME write!
+  Datastore *coh_store = out->data->addStore("disparity/default/coherence");
+  coh_store->write(coh_mat);
+  //out->path = "disparity/default/coherence";
+  delete coh_mat;
 }
 
 //FIXME remove alias for replaced sub-component!
