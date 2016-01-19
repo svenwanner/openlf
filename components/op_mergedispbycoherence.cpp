@@ -26,11 +26,12 @@
 #include "openlf/operator_macro.hpp"
 
 #define OPENLF_OP_CONSTRUCT_PARAMS \
-  AddParameter_("copy", DspParameter(DspParameter::ParamType::Bool, true));
+  AddParameter_("copy", DspParameter(DspParameter::ParamType::Bool, true)); \
+  AddParameter_("input_disparity", DspParameter(DspParameter::ParamType::Float, 0.0f));
     
 OPENLF_VIGRA_OP_START(OP_MergeDispByCoherence, 2, 2, 3, 3)
 
-  T *in0 = (T*)in_mat[0]->data();
+  /*T *in0 = (T*)in_mat[0]->data();
   T *in1 = (T*)in_mat[1]->data();
   T *out0 = (T*)out_mat[0]->data();
   T *out1 = (T*)out_mat[1]->data();
@@ -50,7 +51,43 @@ OPENLF_VIGRA_OP_START(OP_MergeDispByCoherence, 2, 2, 3, 3)
         out1[i] = in1[i];
       }
     }
-  }
+  }*/
+  
+  bool copy = *op->GetParameter(0)->GetBool();
+  float input_disparity = *op->GetParameter(1)->GetFloat();
+  
+  for(int ch=0;ch<(*in_mat[0])[2];ch++)
+    for(int j=0;j<(*in_mat[0])[1];j++) {
+      T *in0 = &(*in_mat[0]).operator()<T>(0, j, ch);
+      T *in1 = &(*in_mat[1]).operator()<T>(0, j, ch);
+      T *out0 = &(*out_mat[0]).operator()<T>(0, j, ch);
+      T *out1 = &(*out_mat[1]).operator()<T>(0, j, ch);
+      
+      int offset = -input_disparity*(j-(*in_mat[0])[1]/2);
+      
+      int start = 0;
+      int stop = (*in_mat[0])[0];
+      
+      if (offset > 0)
+        start = offset;
+      if (stop - offset > (*in_mat[0])[0])
+        stop = (*in_mat[0])[0] + offset;
+      int size = stop - start;
+      
+      if (copy) {
+        for(int i=start;i<start+size;i++) {
+          out0[i] = in0[i-offset];
+          out1[i] = in1[i-offset];
+        }
+      }
+      else {
+        for(int i=start;i<start+size;i++)
+          if (in1[i-offset] > out1[i]) {
+            out0[i] = in0[i-offset];
+            out1[i] = in1[i-offset];
+          }
+      }
+    }
 
 OPENLF_OP_END
 

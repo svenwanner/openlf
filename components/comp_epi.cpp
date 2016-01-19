@@ -231,6 +231,11 @@ Mat *proc_epi(Subset3d *subset, float disp_start, float disp_stop, float disp_st
         bool res = epi->SetParameter(p, DspParameter(DspParameter::ParamType::Float, d));
         assert(res);
       }
+    for(int p=0;p<merge->GetParameterCount();p++)
+      if (!merge->GetParameterName(p).compare("input_disparity")) {
+        bool res = merge->SetParameter(p, DspParameter(DspParameter::ParamType::Float, d));
+        assert(res);
+      }
     
     cv::Mat cv_source;
     subset->readEPI(&cv_source, i, d, Unit::PIXELS, Improc::UNDISTORT, Interpolation::LINEAR, scale);
