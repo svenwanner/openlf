@@ -570,11 +570,13 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   float integrate_sigma = 5.0;
   int integrate_r = 3*integrate_sigma;
   
-//#pragma omp parallel for private(epi_disp, epi_coh)
+  int work = 2*(stop_line-start_line) + epi_h*3;
+  
+#pragma omp parallel for
   for(int i=start_line;i<stop_line;i++) {
 #pragma omp critical 
     {
-      progress_((float)done/(stop_line-start_line));
+      progress_((float)done/work);
       done++;
     }
     
@@ -589,8 +591,14 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     );
   }
   
+#pragma omp parallel for
   for(int c=0;c<3;c++)
     for(int i=0;i<epi_h;i++) {
+#pragma omp critical 
+      {
+        progress_((float)done/work);
+        done++;
+      }
       cv::Mat src = cvMat(st_data.bind(3, c).bind(1, i));
       cv::Mat dst = cvMat(st_blur.bind(3, c).bind(1, i));
       /*cv::Mat src2 = cvMat(st_data.bind(3, c).bind(1, i));
@@ -599,11 +607,11 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
       cv::GaussianBlur(src, dst, cv::Size(1, integrate_r), 0.0, integrate_sigma);
     }
   
-  
+#pragma omp parallel for
   for(int i=start_line;i<stop_line;i++) {
 #pragma omp critical 
     {
-      progress_((float)done/(stop_line-start_line));
+      progress_((float)done/work);
       done++;
     }
     
