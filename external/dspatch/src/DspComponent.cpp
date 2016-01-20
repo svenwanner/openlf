@@ -861,19 +861,15 @@ bool DspComponent::SetParameter_(int index, DspParameter param, bool auto_prio)
 
 void DspComponent::UnsetParameter(int index, int max_prio)
 {
-    printf("UnsetParameter() %d %d\n", index, max_prio);
     UnsetParameter_(index, max_prio);
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void DspComponent::UnsetParameter_(int index, int max_prio)
-{
-  printf("UnsetParameter_() %d %d %d\n", index, _parameters.size(), _alias.count());
-  
+{ 
     if ((size_t)index < _parameters.size())
     {
-        printf("unset %s\n", GetParameterName(index).c_str());
         _parameters[index].second.Unset(max_prio);
         changed();
         
@@ -884,7 +880,6 @@ void DspComponent::UnsetParameter_(int index, int max_prio)
     }
     else if (index - _parameters.size() < _alias.count())
     {
-        printf("unset alias %s\n", GetParameterName(index).c_str());
         _alias.unset(index - _parameters.size(), max_prio);
         changed();
     }

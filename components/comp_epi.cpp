@@ -221,9 +221,93 @@ static void printprogress(int curr, int max, int &last, const char *fmt = NULL, 
   fflush(NULL);
 }
 
-Mat *proc_epi(Subset3d *subset, float disp_start, float disp_stop, float disp_step, int i, float scale, DspComponent *merge, DspComponent *epi, Mat &source, MatSink *sink, MatSink *coherence_matsink, DspCircuit *parent, Mat **coherence)
+namespace {
+  class _sub_circuit {
+  public:
+    _sub_circuit() {};
+    void init(DspComponent *comp, int threads = 1)
+    {
+      int inputs = comp->GetInputCount();
+      int outputs = comp->GetOutputCount();
+      
+      Idx source_size({threads, inputs});
+      Idx sink_size({threads, outputs});
+      
+      printf("init with %d sources!\n", inputs);
+      
+      _sources.create(source_size);
+      _mats_source.create(source_size);
+      
+      _sinks.create(sink_size);
+      
+      _comps.resize(threads);
+      _circuits.resize(threads);
+      
+      for(int t=0;t<threads;t++) {
+        _comps[t] = comp->clone();
+        
+        char buf[16];
+        
+        for(int i=0;i<inputs;i++) {
+          sprintf(buf, "source%d", i);
+          _circuits[t].AddComponent(_sources(t, i), buf);
+        }
+        _circuits[t].AddComponent(_comps[t], "proc");
+        for(int o=0;o<outputs;o++) {
+          sprintf(buf, "sink%d", o);
+          _circuits[t].AddComponent(_sinks(t, o), buf);
+        }
+        
+        bool res;
+        for(int i=0;i<inputs;i++) {
+          res = _circuits[t].ConnectOutToIn(_sources(t, i), i, _comps[t], i);
+          assert(res);
+        }
+        for(int o=0;o<outputs;o++) {
+          res = _circuits[t].ConnectOutToIn(_comps[t], o, _sinks(t, o), o);
+          assert(res);
+        }
+      }
+    }
+      
+    void setSource(int thread, int input, Mat *m)
+    {
+      _sources(thread, input).set(m);
+    }
+    
+    clif::Mat* getSink(int thread, int output)
+    {
+      return _sinks(thread, output).get();
+    }
+    
+    DspComponent *component(int thread)
+    {
+      return _comps[thread];
+    }
+    
+    void process(int thread)
+    {
+      _circuits[thread].Tick();
+      _circuits[thread].Reset();
+    }
+
+  private:
+    //x threads, y inputs
+    Mat_<MatSource> _sources;
+    Mat_<MatSink> _sinks;
+    Mat_<Mat> _mats_source;
+    
+    std::vector<DspComponent*> _comps;
+    std::vector<DspCircuit> _circuits;
+  };
+}
+
+Mat *proc_epi(int t, Subset3d *subset, float disp_start, float disp_stop, float disp_step, int i, float scale, _sub_circuit &epi_circuits, _sub_circuit &merge_circuits, Mat **disp, Mat **coherence, std::vector<Mat> &source_mats)
 {
-  merge->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, true));
+  DspComponent *epi = merge_circuits.component(t);
+  DspComponent *merge = epi_circuits.component(t);
+  
+  merge->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, false));
   
   for(float d=disp_start;d<=disp_stop;d+=disp_step) {
     for(int p=0;p<epi->GetParameterCount();p++)
@@ -236,21 +320,18 @@ Mat *proc_epi(Subset3d *subset, float disp_start, float disp_stop, float disp_st
         bool res = merge->SetParameter(p, DspParameter(DspParameter::ParamType::Float, d));
         assert(res);
       }
+      
+    cv::Mat tmp = cvMat(source_mats[t]);
+    subset->readEPI(&tmp, i, d, Unit::PIXELS, Improc::UNDISTORT, Interpolation::LINEAR, scale);
     
-    cv::Mat cv_source;
-    subset->readEPI(&cv_source, i, d, Unit::PIXELS, Improc::UNDISTORT, Interpolation::LINEAR, scale);
-    source = Mat(cv_source);
-    
-    //tick the circuit to fill _sink_mav using _source_mav and the circuit
-    parent->Reset();
-    parent->Tick();
-    //don't reset the last one, so we can read it out later!
+    epi_circuits.process(t);
+    merge_circuits.process(t);
     
     merge->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, false));
   }
   
-  *coherence = coherence_matsink->get();
-  return sink->get();
+  *disp = merge_circuits.getSink(t, 0);
+  *coherence = merge_circuits.getSink(t, 1);
 }
 
 template<class FROM> struct _is_convertible_to_float : public std::is_convertible<FROM,float> {};
@@ -350,8 +431,27 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   if (configOnly())
     return;
 
+  _sub_circuit epi_circuits;
+  _sub_circuit merge_circuits;
   
-  vector<MatSource> comps_source(t_count);
+  epi_circuits.init(epi_circuit, t_count);
+  merge_circuits.init(merge_circuit, t_count);
+  std::vector<Mat> source_mats(t_count);
+  
+  //FIXME hack add imgType(int flags) to datastore? 
+  cv::Mat tmp;
+  subset.readEPI(&tmp, 0, disp_start, Unit::PIXELS, Improc::UNDISTORT, Interpolation::LINEAR, scale);
+  
+  for(int t=0;t<t_count;t++) {
+    source_mats[t].create(CvDepth2BaseType(tmp.depth()), {tmp.size[2],tmp.size[1],tmp.size[0]});
+  
+    epi_circuits.setSource(t, 0, &source_mats[t]);
+    //FIXME not yet known!
+    merge_circuits.setSource(t, 0, epi_circuits.getSink(t, 0));
+    merge_circuits.setSource(t, 1, epi_circuits.getSink(t, 1));
+  }
+  
+  /*vector<MatSource> comps_source(t_count);
   vector<MatSink>   comps_sink(t_count);
   vector<MatSink>   comps_sinks_coherence(t_count);
   vector<Mat> mats_source(t_count);
@@ -381,7 +481,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     
     comps_source[i].set(&mats_source[i]);
   }
-    
+
   DspCircuit outer_circuit;
   MatSource comp_source;
   MatSink   comp_sink;
@@ -425,10 +525,14 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   disp_mat = new Mat(sink->type(), size);
   coh_mat = new Mat(sink_coherence->type(), size);
   disp_mat->callIf<subarray_copy,_is_convertible_to_float>(stop_line-1,epi_w,epi_h,sink,disp_mat,scale);
-  coh_mat->callIf<subarray_copy,_is_convertible_to_float>(stop_line-1,epi_w,epi_h,sink_coherence,coh_mat,scale);
+  coh_mat->callIf<subarray_copy,_is_convertible_to_float>(stop_line-1,epi_w,epi_h,sink_coherence,coh_mat,scale);*/
   
-#pragma omp parallel for private(sink, sink_coherence)
-  for(int i=start_line;i<stop_line-1;i++) {
+  
+  Mat *epi_disp, *epi_coh;
+  int done = 0;
+  
+#pragma omp parallel for private(epi_disp, epi_coh)
+  for(int i=start_line;i<stop_line;i++) {
 #pragma omp critical 
     {
       progress_((float)done/(stop_line-start_line));
@@ -437,21 +541,20 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     
     int t = omp_get_thread_num();
     
-    sink = proc_epi(
+    proc_epi(
+      t,
       &subset, disp_start, disp_stop, disp_step, i, scale,
-      merge_circuits[t],
-      epi_circuits[t],
-      mats_source[t],
-      &comps_sink[t],
-      &comps_sinks_coherence[t],
-      &outer_circuits[t],
-      &sink_coherence
+      epi_circuits,
+      merge_circuits,
+      &epi_disp,
+      &epi_coh,
+      source_mats
     );
       
-    assert(sink->type() == BaseType::FLOAT);
+    assert(epi_disp->type() == BaseType::FLOAT);
     
-    disp_mat->callIf<subarray_copy,_is_convertible_to_float>(i,epi_w,epi_h,sink,disp_mat,scale);
-    coh_mat->callIf<subarray_copy,_is_convertible_to_float>(i,epi_w,epi_h,sink_coherence,coh_mat,scale);
+    disp_mat->callIf<subarray_copy,_is_convertible_to_float>(i,epi_w,epi_h,epi_disp,disp_mat,scale);
+    coh_mat->callIf<subarray_copy,_is_convertible_to_float>(i,epi_w,epi_h,epi_coh,coh_mat,scale);
   }
   //cv::setNumThreads(-1);
   

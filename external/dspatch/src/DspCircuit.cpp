@@ -702,7 +702,6 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
       while(part) {
         const DspParameter *p = NULL;
         int p_idx;
-        printf("search param %s\n", part->key);
         std::string search_name = replace_all(part->key, "_S_", "/");
         for(int i=0;i<comp->GetParameterCount();i++)
           if (!comp->GetParameterName(i).compare(search_name)) {
@@ -718,8 +717,6 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
                  && (!strcmp(part->value.string,"(UNKNOWN)")
                      || !strcmp(part->value.string,"(UNSET)")
                 )) {
-          printf("skipping unset parameter \"%s\" for component \"%s\"\n",
-            part->key, comp->getTypeName().c_str());
         }
         else {
           switch (p->Type()) {
@@ -746,7 +743,6 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
               break;
             }
             case DPPT::Pointer : {
-              printf("load pointer!\n");
               assert(part->kind == GML_STRING);
               assert(*p->GetPointerType() == typeid(DspComponent));
               DspComponent *comp_child = getComponentClone(part->value.string);
@@ -781,7 +777,6 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
       assert(node->kind == GML_LIST);
   
       part = node->value.list;
-      printf("start %p\n", part);
       while(part) {
         if (!strcmp(part->key, "type")) {
           assert(part->kind == GML_STRING);
