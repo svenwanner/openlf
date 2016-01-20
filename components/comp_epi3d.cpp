@@ -131,6 +131,25 @@ void operator()(int line, int epi_w, int epi_h, Mat *sink_mat, Mat *disp_store, 
 }
 };
 
+template<typename T> class subarray_uncopy {
+public:
+void operator()(int line, int epi_w, int epi_h, Mat *sink_mat, Mat *disp_store, float disp_scale)
+{
+  for(int c=0;c<(*sink_mat)[2];c++) {
+    MultiArrayView<2,T> sink = vigraMAV<3,T>(*sink_mat).bindAt(2, c);
+    MultiArrayView<3,T> store = vigraMAV<4,T>(*disp_store).bindAt(2, c);
+    
+    for(int i=0;i<epi_h;i++) {
+      //bind store y to epi line
+      MultiArrayView<2,T> epi = store.bindAt(1, line);
+      sink = epi;
+      //if (disp_scale != 1.0)
+        //epi *= 1.0/disp_scale;
+    }
+  }
+}
+};
+
 //FIXME not yet working...
 /*template<typename T> class subarray_copy {
 public:
@@ -325,99 +344,93 @@ namespace {
 }
 
 
-Mat *proc_epi_tensor(int t, Subset3d *subset, float disp_start, float disp_stop, float disp_step, int line, float scale, std::vector<Mat> &source_mats, _sub_circuit &tensor_circuits, vigra::MultiArrayView<4,float> &st_data)
+Mat *proc_epi_tensor(int t, Subset3d *subset, float d, int line, float scale, std::vector<Mat> &source_mats, _sub_circuit &tensor_circuits, vigra::MultiArrayView<4,float> &st_data)
 {
   DspComponent *tensor = tensor_circuits.component(t);
   
-  for(float d=disp_start;d<=disp_stop;d+=disp_step) {
-    cv::Mat tmp = cvMat(source_mats[t]);
-    subset->readEPI(&tmp, line, d, Unit::PIXELS, Improc::UNDISTORT, Interpolation::LINEAR, scale);
-    
-    tensor_circuits.process(t);
-    
-    Mat *xx = tensor_circuits.getSink(t, 0);
-    Mat *xy = tensor_circuits.getSink(t, 1);
-    Mat *yy = tensor_circuits.getSink(t, 2);
-   
-    vigra::MultiArrayView<3,float> v3_xx = vigraMAV<3,float>(xx);
-    vigra::MultiArrayView<3,float> v3_xy = vigraMAV<3,float>(xy);
-    vigra::MultiArrayView<3,float> v3_yy = vigraMAV<3,float>(yy);
-    
-    vigra::MultiArrayView<2,float> v_xx = v3_xx.bindAt(2, 0);
-    vigra::MultiArrayView<2,float> v_xy = v3_xy.bindAt(2, 0);
-    vigra::MultiArrayView<2,float> v_yy = v3_yy.bindAt(2, 0);
-    
-    vigra::MultiArrayView<2,float> dst_xx = st_data.bindAt(3, 0).bindAt(2, line);
-    vigra::MultiArrayView<2,float> dst_xy = st_data.bindAt(3, 1).bindAt(2, line);
-    vigra::MultiArrayView<2,float> dst_yy = st_data.bindAt(3, 2).bindAt(2, line);
-    
-    dst_xx = v_xx;
-    dst_xy = v_xy;
-    dst_yy = v_yy;
-  }
-
+  cv::Mat tmp = cvMat(source_mats[t]);
+  subset->readEPI(&tmp, line, d, Unit::PIXELS, Improc::UNDISTORT, Interpolation::LINEAR, scale);
+  
+  tensor_circuits.process(t);
+  
+  Mat *xx = tensor_circuits.getSink(t, 0);
+  Mat *xy = tensor_circuits.getSink(t, 1);
+  Mat *yy = tensor_circuits.getSink(t, 2);
+  
+  vigra::MultiArrayView<3,float> v3_xx = vigraMAV<3,float>(xx);
+  vigra::MultiArrayView<3,float> v3_xy = vigraMAV<3,float>(xy);
+  vigra::MultiArrayView<3,float> v3_yy = vigraMAV<3,float>(yy);
+  
+  vigra::MultiArrayView<2,float> v_xx = v3_xx.bindAt(2, 0);
+  vigra::MultiArrayView<2,float> v_xy = v3_xy.bindAt(2, 0);
+  vigra::MultiArrayView<2,float> v_yy = v3_yy.bindAt(2, 0);
+  
+  vigra::MultiArrayView<2,float> dst_xx = st_data.bindAt(3, 0).bindAt(2, line);
+  vigra::MultiArrayView<2,float> dst_xy = st_data.bindAt(3, 1).bindAt(2, line);
+  vigra::MultiArrayView<2,float> dst_yy = st_data.bindAt(3, 2).bindAt(2, line);
+  
+  dst_xx = v_xx;
+  dst_xy = v_xy;
+  dst_yy = v_yy;
 }
 
 
 template<class FROM> struct _is_convertible_to_float : public std::is_convertible<FROM,float> {};
 
-Mat *proc_epi_ori_merge(int t, Subset3d *subset, float disp_start, float disp_stop, float disp_step, int line, float scale, vigra::MultiArrayView<4,float> &st_data, _sub_circuit &orientation_circuits, _sub_circuit &merge_circuits, Mat *disp_mat, Mat *coh_mat)
+Mat *proc_epi_ori_merge(int t, Subset3d *subset, float d, int line, float scale, vigra::MultiArrayView<4,float> &st_data, _sub_circuit &orientation_circuits, _sub_circuit &merge_circuits, Mat *disp_mat, Mat *coh_mat, bool copy)
 {
   int epi_w = st_data.shape(0);
   int epi_h = st_data.shape(1);
   
+  if (!copy) {
+    disp_mat->callIf<subarray_uncopy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 0),disp_mat,scale);
+    coh_mat->callIf<subarray_uncopy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 1),coh_mat,scale);
+  }
+  
   DspComponent *orientation = orientation_circuits.component(t);
   DspComponent *merge = merge_circuits.component(t);
   
-  merge->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, true));
+  merge->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, copy));
   
-  for(float d=disp_start;d<=disp_stop;d+=disp_step) {
-    for(int p=0;p<orientation->GetParameterCount();p++)
-      if (!orientation->GetParameterName(p).compare("input_disparity")) {
-        bool res = orientation->SetParameter(p, DspParameter(DspParameter::ParamType::Float, d));
-        assert(res);
-      }
-    for(int p=0;p<merge->GetParameterCount();p++)
-      if (!merge->GetParameterName(p).compare("input_disparity")) {
-        bool res = merge->SetParameter(p, DspParameter(DspParameter::ParamType::Float, d));
-        assert(res);
-      }
-      
+  for(int p=0;p<orientation->GetParameterCount();p++)
+    if (!orientation->GetParameterName(p).compare("input_disparity")) {
+      bool res = orientation->SetParameter(p, DspParameter(DspParameter::ParamType::Float, d));
+      assert(res);
+    }
+  for(int p=0;p<merge->GetParameterCount();p++)
+    if (!merge->GetParameterName(p).compare("input_disparity")) {
+      bool res = merge->SetParameter(p, DspParameter(DspParameter::ParamType::Float, d));
+      assert(res);
+    }
+    
 
-    vigra::MultiArrayView<2,float> src_xx = st_data.bindAt(3, 0).bindAt(2, line);
-    vigra::MultiArrayView<2,float> src_xy = st_data.bindAt(3, 1).bindAt(2, line);
-    vigra::MultiArrayView<2,float> src_yy = st_data.bindAt(3, 2).bindAt(2, line);
-    
-    std::vector<Mat> sources(3);
-    
-    for(int i=0;i<3;i++)
-      sources[i].create(BaseType::FLOAT, {epi_w,epi_h,1});
-    
-    vigra::MultiArrayView<2,float> dst_xx = vigraMAV<3,float>(sources[0]).bindAt(2, 0);
-    vigra::MultiArrayView<2,float> dst_xy = vigraMAV<3,float>(sources[1]).bindAt(2, 0);
-    vigra::MultiArrayView<2,float> dst_yy = vigraMAV<3,float>(sources[2]).bindAt(2, 0);
-    
-    dst_xx = src_xx;
-    dst_xy = src_xy;
-    dst_yy = src_yy;
-    
-    orientation_circuits.setSource(t, 0, &sources[0]);
-    orientation_circuits.setSource(t, 1, &sources[1]);
-    orientation_circuits.setSource(t, 2, &sources[2]);
-    
-    orientation_circuits.process(t);
-    
-    merge_circuits.setSource(t, 0, orientation_circuits.getSink(t, 0));
-    merge_circuits.setSource(t, 1, orientation_circuits.getSink(t, 1));
-    
-    merge_circuits.process(t);
-    
-    merge->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, false));
-    
-    //FIXME move out of loop
-    //disp_mat->callIf<subarray_copy,_is_convertible_to_float>(line,epi_w,epi_h,&sources[0] /*merge_circuits.getSink(t, 0)*/,disp_mat,scale);
-    //coh_mat->callIf<subarray_copy,_is_convertible_to_float>(line,epi_w,epi_h,&sources[1]/*merge_circuits.getSink(t, 1)*/,coh_mat,scale);
-  }
+  vigra::MultiArrayView<2,float> src_xx = st_data.bindAt(3, 0).bindAt(2, line);
+  vigra::MultiArrayView<2,float> src_xy = st_data.bindAt(3, 1).bindAt(2, line);
+  vigra::MultiArrayView<2,float> src_yy = st_data.bindAt(3, 2).bindAt(2, line);
+  
+  std::vector<Mat> sources(3);
+  
+  for(int i=0;i<3;i++)
+    sources[i].create(BaseType::FLOAT, {epi_w,epi_h,1});
+  
+  vigra::MultiArrayView<2,float> dst_xx = vigraMAV<3,float>(sources[0]).bindAt(2, 0);
+  vigra::MultiArrayView<2,float> dst_xy = vigraMAV<3,float>(sources[1]).bindAt(2, 0);
+  vigra::MultiArrayView<2,float> dst_yy = vigraMAV<3,float>(sources[2]).bindAt(2, 0);
+  
+  dst_xx = src_xx;
+  dst_xy = src_xy;
+  dst_yy = src_yy;
+  
+  orientation_circuits.setSource(t, 0, &sources[0]);
+  orientation_circuits.setSource(t, 1, &sources[1]);
+  orientation_circuits.setSource(t, 2, &sources[2]);
+  
+  orientation_circuits.process(t);
+  
+  merge_circuits.setSource(t, 0, orientation_circuits.getSink(t, 0));
+  merge_circuits.setSource(t, 1, orientation_circuits.getSink(t, 1));
+  
+  merge_circuits.process(t);
 
   disp_mat->callIf<subarray_copy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 0),disp_mat,scale);
   coh_mat->callIf<subarray_copy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 1),coh_mat,scale);
@@ -570,65 +583,68 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   float integrate_sigma = 5.0;
   int integrate_r = 3*integrate_sigma;
   
-  int work = 2*(stop_line-start_line) + epi_h*3;
+  int work = (2*(stop_line-start_line) + epi_h*3)*(disp_stop-disp_start+1);
   
-#pragma omp parallel for
-  for(int i=start_line;i<stop_line;i++) {
-#pragma omp critical 
-    {
-      progress_((float)done/work);
-      done++;
-    }
-    
-    int t = omp_get_thread_num();
-    
-    proc_epi_tensor(
-      t,
-      &subset, disp_start, disp_stop, disp_step, i, scale,
-      source_mats,
-      tensor_circuits,
-      st_data_v
-    );
-  }
-  
-#pragma omp parallel for
-  for(int c=0;c<3;c++)
-    for(int i=0;i<epi_h;i++) {
-#pragma omp critical 
+  for(float d=disp_start;d<=disp_stop;d+=disp_step) {
+  #pragma omp parallel for
+    for(int i=start_line;i<stop_line;i++) {
+  #pragma omp critical 
       {
         progress_((float)done/work);
         done++;
       }
-      cv::Mat src = cvMat(st_data.bind(3, c).bind(1, i));
-      cv::Mat dst = cvMat(st_blur.bind(3, c).bind(1, i));
-      /*cv::Mat src2 = cvMat(st_data.bind(3, c).bind(1, i));
-      cv::Mat dst2 = cvMat(st_blur.bind(3, c).bind(1, i));
-      abort();*/
-      cv::GaussianBlur(src, dst, cv::Size(1, integrate_r), 0.0, integrate_sigma);
-    }
-  
-#pragma omp parallel for
-  for(int i=start_line;i<stop_line;i++) {
-#pragma omp critical 
-    {
-      progress_((float)done/work);
-      done++;
-    }
-    
-    int t = omp_get_thread_num();
-    
-    proc_epi_ori_merge(
-      t,
-      &subset, disp_start, disp_stop, disp_step, i, scale,
-      st_blur_v,
-      orientation_circuits,
-      merge_circuits,
-      disp_mat,
-      coh_mat
-    );
       
-    //assert(epi_disp->type() == BaseType::FLOAT);
+      int t = omp_get_thread_num();
+      
+      proc_epi_tensor(
+        t,
+        &subset, d, i, scale,
+        source_mats,
+        tensor_circuits,
+        st_data_v
+      );
+    }
     
+  #pragma omp parallel for
+    for(int c=0;c<3;c++)
+      for(int i=0;i<epi_h;i++) {
+  #pragma omp critical 
+        {
+          progress_((float)done/work);
+          done++;
+        }
+        cv::Mat src = cvMat(st_data.bind(3, c).bind(1, i));
+        cv::Mat dst = cvMat(st_blur.bind(3, c).bind(1, i));
+        /*cv::Mat src2 = cvMat(st_data.bind(3, c).bind(1, i));
+        cv::Mat dst2 = cvMat(st_blur.bind(3, c).bind(1, i));
+        abort();*/
+        cv::GaussianBlur(src, dst, cv::Size(1, integrate_r), 0.0, integrate_sigma);
+      }
+    
+  #pragma omp parallel for
+    for(int i=start_line;i<stop_line;i++) {
+  #pragma omp critical 
+      {
+        progress_((float)done/work);
+        done++;
+      }
+      
+      int t = omp_get_thread_num();
+      
+      proc_epi_ori_merge(
+        t,
+        &subset, d, i, scale,
+        st_blur_v,
+        orientation_circuits,
+        merge_circuits,
+        disp_mat,
+        coh_mat,
+        d == disp_start
+      );
+        
+      //assert(epi_disp->type() == BaseType::FLOAT);
+      
+    }
   }
   
   
