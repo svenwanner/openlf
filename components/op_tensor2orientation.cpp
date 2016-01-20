@@ -81,7 +81,7 @@ OPENLF_VIGRA_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
     c_denom *= c_denom;
     c_denom += FLT_MIN;;
     coherence = c_nom / c_denom;
-    
+        
     if (x <= 0) {
       out0[i] = std::numeric_limits<float>::quiet_NaN();
       out1[i] = -1;
