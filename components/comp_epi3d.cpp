@@ -344,7 +344,7 @@ namespace {
 }
 
 
-Mat *proc_epi_tensor(int t, Subset3d *subset, float d, int line, float scale, std::vector<Mat> &source_mats, _sub_circuit &tensor_circuits, vigra::MultiArrayView<4,float> &st_data)
+Mat *proc_epi_tensor(int t, Subset3d *subset, float d, int line, float scale, std::vector<Mat> &source_mats, _sub_circuit &tensor_circuits, vigra::MultiArrayView<4,float> &st_data, int st_start)
 {
   DspComponent *tensor = tensor_circuits.component(t);
   
@@ -365,9 +365,9 @@ Mat *proc_epi_tensor(int t, Subset3d *subset, float d, int line, float scale, st
   vigra::MultiArrayView<2,float> v_xy = v3_xy.bindAt(2, 0);
   vigra::MultiArrayView<2,float> v_yy = v3_yy.bindAt(2, 0);
   
-  vigra::MultiArrayView<2,float> dst_xx = st_data.bindAt(3, 0).bindAt(2, line);
-  vigra::MultiArrayView<2,float> dst_xy = st_data.bindAt(3, 1).bindAt(2, line);
-  vigra::MultiArrayView<2,float> dst_yy = st_data.bindAt(3, 2).bindAt(2, line);
+  vigra::MultiArrayView<2,float> dst_xx = st_data.bindAt(3, 0).bindAt(2, line-st_start);
+  vigra::MultiArrayView<2,float> dst_xy = st_data.bindAt(3, 1).bindAt(2, line-st_start);
+  vigra::MultiArrayView<2,float> dst_yy = st_data.bindAt(3, 2).bindAt(2, line-st_start);
   
   dst_xx = v_xx;
   dst_xy = v_xy;
@@ -377,7 +377,7 @@ Mat *proc_epi_tensor(int t, Subset3d *subset, float d, int line, float scale, st
 
 template<class FROM> struct _is_convertible_to_float : public std::is_convertible<FROM,float> {};
 
-Mat *proc_epi_ori_merge(int t, Subset3d *subset, float d, int line, float scale, vigra::MultiArrayView<4,float> &st_data, _sub_circuit &orientation_circuits, _sub_circuit &merge_circuits, Mat *disp_mat, Mat *coh_mat, bool copy)
+Mat *proc_epi_ori_merge(int t, Subset3d *subset, float d, int line, float scale, vigra::MultiArrayView<4,float> &st_data, int st_start, _sub_circuit &orientation_circuits, _sub_circuit &merge_circuits, Mat *disp_mat, Mat *coh_mat, bool copy, bool store_res)
 {
   int epi_w = st_data.shape(0);
   int epi_h = st_data.shape(1);
@@ -404,9 +404,9 @@ Mat *proc_epi_ori_merge(int t, Subset3d *subset, float d, int line, float scale,
     }
     
 
-  vigra::MultiArrayView<2,float> src_xx = st_data.bindAt(3, 0).bindAt(2, line);
-  vigra::MultiArrayView<2,float> src_xy = st_data.bindAt(3, 1).bindAt(2, line);
-  vigra::MultiArrayView<2,float> src_yy = st_data.bindAt(3, 2).bindAt(2, line);
+  vigra::MultiArrayView<2,float> src_xx = st_data.bindAt(3, 0).bindAt(2, line-st_start);
+  vigra::MultiArrayView<2,float> src_xy = st_data.bindAt(3, 1).bindAt(2, line-st_start);
+  vigra::MultiArrayView<2,float> src_yy = st_data.bindAt(3, 2).bindAt(2, line-st_start);
   
   std::vector<Mat> sources(3);
   
@@ -432,8 +432,10 @@ Mat *proc_epi_ori_merge(int t, Subset3d *subset, float d, int line, float scale,
   
   merge_circuits.process(t);
 
-  disp_mat->callIf<subarray_copy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 0),disp_mat,scale);
-  coh_mat->callIf<subarray_copy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 1),coh_mat,scale);
+  if (store_res) {
+    disp_mat->callIf<subarray_copy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 0),disp_mat,scale);
+    coh_mat->callIf<subarray_copy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 1),coh_mat,scale);
+  }
 }
 
 //different example:
@@ -574,19 +576,23 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   Mat st_data;
   Mat st_blur;
   
-  st_data.create(BaseType::FLOAT, {epi_w, epi_h, subset.EPICount(), 3});
-  st_blur.create(BaseType::FLOAT, {epi_w, epi_h, subset.EPICount(), 3});
+  float integrate_sigma = 5.0;
+  int integrate_r = 3*integrate_sigma;
+  
+  int st_lines = stop_line-start_line;
+  
+  st_data.create(BaseType::FLOAT, {epi_w, epi_h, st_lines, 3});
+  st_blur.create(BaseType::FLOAT, {epi_w, epi_h, st_lines, 3});
   
   vigra::MultiArrayView<4,float> st_data_v = vigraMAV<4,float>(st_data);
   vigra::MultiArrayView<4,float> st_blur_v = vigraMAV<4,float>(st_blur);
   
-  float integrate_sigma = 5.0;
-  int integrate_r = 3*integrate_sigma;
   
   int work = (2*(stop_line-start_line) + epi_h*3)*(disp_stop-disp_start+1);
   
   for(float d=disp_start;d<=disp_stop;d+=disp_step) {
-  #pragma omp parallel for
+printf("calc tensor\n");
+#pragma omp parallel for
     for(int i=start_line;i<stop_line;i++) {
   #pragma omp critical 
       {
@@ -601,11 +607,13 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         &subset, d, i, scale,
         source_mats,
         tensor_circuits,
-        st_data_v
+        st_data_v,
+        start_line
       );
     }
     
-  #pragma omp parallel for
+  printf("integrate 3d\n");
+#pragma omp parallel for
     for(int c=0;c<3;c++)
       for(int i=0;i<epi_h;i++) {
   #pragma omp critical 
@@ -621,7 +629,8 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         cv::GaussianBlur(src, dst, cv::Size(1, integrate_r), 0.0, integrate_sigma);
       }
     
-  #pragma omp parallel for
+  printf("calc orientation\n");
+#pragma omp parallel for
     for(int i=start_line;i<stop_line;i++) {
   #pragma omp critical 
       {
@@ -635,11 +644,13 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         t,
         &subset, d, i, scale,
         st_blur_v,
+        start_line,
         orientation_circuits,
         merge_circuits,
         disp_mat,
         coh_mat,
-        d == disp_start
+        d == disp_start, //first run
+        d+disp_step > disp_stop //last run
       );
         
       //assert(epi_disp->type() == BaseType::FLOAT);
