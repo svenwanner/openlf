@@ -665,7 +665,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
           /*cv::Mat src2 = cvMat(st_data.bind(3, c).bind(1, i));
           cv::Mat dst2 = cvMat(st_blur.bind(3, c).bind(1, i));
           abort();*/
-          cv::GaussianBlur(src, dst, cv::Size(1, integrate_r), 0.0, integrate_sigma);
+          cv::GaussianBlur(src, dst, cv::Size(1, integrate_r*2+1), 0.0, integrate_sigma);
         }
       
     printf("calc orientation\n");
