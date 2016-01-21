@@ -608,7 +608,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   float integrate_sigma = 5.0;
   int integrate_r = 3*integrate_sigma;
   
-  int st_lines = stop_line-start_line;
+  
+  int chunk_size = std::min(100, stop_line-start_line);
+  int st_lines = chunk_size+2*integrate_r;
   
   st_data.create(BaseType::FLOAT, {epi_w, epi_h, st_lines, 3});
   st_blur.create(BaseType::FLOAT, {epi_w, epi_h, st_lines, 3});
@@ -621,73 +623,80 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   int work = (2*(stop_line-start_line) + epi_h*3)*(disp_stop-disp_start+1);
   
-  for(float d=disp_start;d<=disp_stop;d+=disp_step) {
-printf("calc tensor\n");
-#pragma omp parallel for
-    for(int i=start_line;i<stop_line;i++) {
-  #pragma omp critical 
-      {
-        progress_((float)done/work);
-        done++;
-      }
-      
-      int t = omp_get_thread_num();
-      
-      proc_epi_tensor(
-        t,
-        &subset, d, i, scale,
-        source_mats,
-        tensor_circuits,
-        st_data_v,
-        start_line
-      );
-    }
+  for(int curr_chunk=start_line;curr_chunk<stop_line;curr_chunk+=chunk_size) {
+    int curr_chunk_stop = std::min(curr_chunk+chunk_size,stop_line);
     
-  printf("integrate 3d\n");
-#pragma omp parallel for
-    for(int c=0;c<3;c++)
-      for(int i=0;i<epi_h;i++) {
-  #pragma omp critical 
+    int act_start = std::max(0, curr_chunk-integrate_r);
+    int act_stop = std::min(subset.EPICount(), curr_chunk_stop+integrate_r+1);
+    
+    for(float d=disp_start;d<=disp_stop;d+=disp_step) {
+  printf("calc tensor\n");
+  #pragma omp parallel for
+      for(int i=act_start;i<act_stop;i++) {
+    #pragma omp critical 
         {
           progress_((float)done/work);
           done++;
         }
-        cv::Mat src = cvMat(st_data.bind(3, c).bind(1, i));
-        cv::Mat dst = cvMat(st_blur.bind(3, c).bind(1, i));
-        /*cv::Mat src2 = cvMat(st_data.bind(3, c).bind(1, i));
-        cv::Mat dst2 = cvMat(st_blur.bind(3, c).bind(1, i));
-        abort();*/
-        cv::GaussianBlur(src, dst, cv::Size(1, integrate_r), 0.0, integrate_sigma);
-      }
-    
-  printf("calc orientation\n");
-#pragma omp parallel for
-    for(int i=start_line;i<stop_line;i++) {
-  #pragma omp critical 
-      {
-        progress_((float)done/work);
-        done++;
-      }
-      
-      int t = omp_get_thread_num();
-      
-      proc_epi_ori_merge(
-        t,
-        &subset, d, i, scale,
-        st_blur_v,
-        start_line,
-        orientation_circuits,
-        merge_circuits,
-        disp_stack,
-        coh_stack,
-        disp_mat,
-        coh_mat,
-        d == disp_start, //first run
-        d+disp_step > disp_stop //last run
-      );
         
-      //assert(epi_disp->type() == BaseType::FLOAT);
+        int t = omp_get_thread_num();
+        
+        proc_epi_tensor(
+          t,
+          &subset, d, i, scale,
+          source_mats,
+          tensor_circuits,
+          st_data_v,
+          act_start
+        );
+      }
       
+    printf("integrate 3d\n");
+  #pragma omp parallel for
+      for(int c=0;c<3;c++)
+        for(int i=0;i<epi_h;i++) {
+    #pragma omp critical 
+          {
+            progress_((float)done/work);
+            done++;
+          }
+          cv::Mat src = cvMat(st_data.bind(3, c).bind(1, i));
+          cv::Mat dst = cvMat(st_blur.bind(3, c).bind(1, i));
+          /*cv::Mat src2 = cvMat(st_data.bind(3, c).bind(1, i));
+          cv::Mat dst2 = cvMat(st_blur.bind(3, c).bind(1, i));
+          abort();*/
+          cv::GaussianBlur(src, dst, cv::Size(1, integrate_r), 0.0, integrate_sigma);
+        }
+      
+    printf("calc orientation\n");
+  #pragma omp parallel for
+      for(int i=curr_chunk;i<curr_chunk_stop;i++) {
+    #pragma omp critical 
+        {
+          progress_((float)done/work);
+          done++;
+        }
+        
+        int t = omp_get_thread_num();
+        
+        proc_epi_ori_merge(
+          t,
+          &subset, d, i, scale,
+          st_blur_v,
+          act_start,
+          orientation_circuits,
+          merge_circuits,
+          disp_stack,
+          coh_stack,
+          disp_mat,
+          coh_mat,
+          d == disp_start, //first run
+          d+disp_step > disp_stop //last run
+        );
+          
+        //assert(epi_disp->type() == BaseType::FLOAT);
+        
+      }
     }
   }
   
