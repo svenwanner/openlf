@@ -150,6 +150,45 @@ void operator()(int line, int epi_w, int epi_h, Mat *sink_mat, Mat *disp_store, 
 }
 };
 
+//WARNING this ignores color for epi!
+void epi_stack(clif::Mat *epi, vigra::MultiArrayView<3,float> &stack, int line)
+{
+  vigra::MultiArrayView<3,float> epi_v = vigraMAV<3,float>(*epi);
+  
+  vigra::MultiArrayView<2,float> epi_v_2d = epi_v.bindAt(2, 0);
+  
+  vigra::MultiArrayView<2,float> dst = stack.bindAt(2, line);
+  
+  dst = epi_v_2d;
+}
+
+//WARNING this ignores color for epi!
+void epi_stack(clif::Mat *epi, Mat &stack, int line)
+{
+  vigra::MultiArrayView<3,float> stack_v = vigraMAV<3,float>(stack);
+  epi_stack(epi, stack_v, line);
+}
+
+//WARNING this ignores color for epi!
+void epi_unstack(clif::Mat *epi, vigra::MultiArrayView<3,float> &stack, int line)
+{
+  vigra::MultiArrayView<3,float> epi_v = vigraMAV<3,float>(*epi);
+  
+  vigra::MultiArrayView<2,float> epi_v_2d = epi_v.bindAt(2, 0);
+  
+  vigra::MultiArrayView<2,float> dst = stack.bindAt(2, line);
+  
+  epi_v_2d = dst;
+}
+
+//WARNING this ignores color for epi!
+void epi_unstack(clif::Mat *epi, Mat &stack, int line)
+{
+  vigra::MultiArrayView<3,float> stack_v = vigraMAV<3,float>(stack);
+  epi_unstack(epi, stack_v, line);
+}
+
+
 //FIXME not yet working...
 /*template<typename T> class subarray_copy {
 public:
@@ -353,38 +392,26 @@ Mat *proc_epi_tensor(int t, Subset3d *subset, float d, int line, float scale, st
   
   tensor_circuits.process(t);
   
-  Mat *xx = tensor_circuits.getSink(t, 0);
-  Mat *xy = tensor_circuits.getSink(t, 1);
-  Mat *yy = tensor_circuits.getSink(t, 2);
-  
-  vigra::MultiArrayView<3,float> v3_xx = vigraMAV<3,float>(xx);
-  vigra::MultiArrayView<3,float> v3_xy = vigraMAV<3,float>(xy);
-  vigra::MultiArrayView<3,float> v3_yy = vigraMAV<3,float>(yy);
-  
-  vigra::MultiArrayView<2,float> v_xx = v3_xx.bindAt(2, 0);
-  vigra::MultiArrayView<2,float> v_xy = v3_xy.bindAt(2, 0);
-  vigra::MultiArrayView<2,float> v_yy = v3_yy.bindAt(2, 0);
-  
-  vigra::MultiArrayView<2,float> dst_xx = st_data.bindAt(3, 0).bindAt(2, line-st_start);
-  vigra::MultiArrayView<2,float> dst_xy = st_data.bindAt(3, 1).bindAt(2, line-st_start);
-  vigra::MultiArrayView<2,float> dst_yy = st_data.bindAt(3, 2).bindAt(2, line-st_start);
-  
-  dst_xx = v_xx;
-  dst_xy = v_xy;
-  dst_yy = v_yy;
+  for(int i=0;i<3;i++) {
+    vigra::MultiArrayView<3,float> data = st_data.bindAt(3, i);
+    epi_stack(tensor_circuits.getSink(t, i), data, line-st_start);
+  }
 }
 
 
 template<class FROM> struct _is_convertible_to_float : public std::is_convertible<FROM,float> {};
 
-Mat *proc_epi_ori_merge(int t, Subset3d *subset, float d, int line, float scale, vigra::MultiArrayView<4,float> &st_data, int st_start, _sub_circuit &orientation_circuits, _sub_circuit &merge_circuits, Mat *disp_mat, Mat *coh_mat, bool copy, bool store_res)
+Mat *proc_epi_ori_merge(int t, Subset3d *subset, float d, int line, float scale, vigra::MultiArrayView<4,float> &st_data, int st_start, _sub_circuit &orientation_circuits, _sub_circuit &merge_circuits, Mat &disp_stack, Mat &coh_stack, Mat *disp_mat, Mat *coh_mat, bool copy, bool store_res)
 {
   int epi_w = st_data.shape(0);
   int epi_h = st_data.shape(1);
   
   if (!copy) {
-    disp_mat->callIf<subarray_uncopy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 0),disp_mat,scale);
-    coh_mat->callIf<subarray_uncopy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 1),coh_mat,scale);
+    //disp_mat->callIf<subarray_uncopy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 0),disp_mat,scale);
+    //coh_mat->callIf<subarray_uncopy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 1),coh_mat,scale);
+    
+    epi_unstack(merge_circuits.getSink(t, 0), disp_stack, line-st_start);
+    epi_unstack(merge_circuits.getSink(t, 1), coh_stack, line-st_start);
   }
   
   DspComponent *orientation = orientation_circuits.component(t);
@@ -402,24 +429,21 @@ Mat *proc_epi_ori_merge(int t, Subset3d *subset, float d, int line, float scale,
       bool res = merge->SetParameter(p, DspParameter(DspParameter::ParamType::Float, d));
       assert(res);
     }
-    
 
-  vigra::MultiArrayView<2,float> src_xx = st_data.bindAt(3, 0).bindAt(2, line-st_start);
+  /*vigra::MultiArrayView<2,float> src_xx = st_data.bindAt(3, 0).bindAt(2, line-st_start);
   vigra::MultiArrayView<2,float> src_xy = st_data.bindAt(3, 1).bindAt(2, line-st_start);
-  vigra::MultiArrayView<2,float> src_yy = st_data.bindAt(3, 2).bindAt(2, line-st_start);
+  vigra::MultiArrayView<2,float> src_yy = st_data.bindAt(3, 2).bindAt(2, line-st_start);*/
   
+  //FIXME directly use memory?
   std::vector<Mat> sources(3);
   
   for(int i=0;i<3;i++)
     sources[i].create(BaseType::FLOAT, {epi_w,epi_h,1});
   
-  vigra::MultiArrayView<2,float> dst_xx = vigraMAV<3,float>(sources[0]).bindAt(2, 0);
-  vigra::MultiArrayView<2,float> dst_xy = vigraMAV<3,float>(sources[1]).bindAt(2, 0);
-  vigra::MultiArrayView<2,float> dst_yy = vigraMAV<3,float>(sources[2]).bindAt(2, 0);
-  
-  dst_xx = src_xx;
-  dst_xy = src_xy;
-  dst_yy = src_yy;
+  for(int i=0;i<3;i++) {
+    vigra::MultiArrayView<3,float> data = st_data.bindAt(3, i);
+    epi_unstack(&sources[i], data, line-st_start);
+  }
   
   orientation_circuits.setSource(t, 0, &sources[0]);
   orientation_circuits.setSource(t, 1, &sources[1]);
@@ -435,6 +459,10 @@ Mat *proc_epi_ori_merge(int t, Subset3d *subset, float d, int line, float scale,
   if (store_res) {
     disp_mat->callIf<subarray_copy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 0),disp_mat,scale);
     coh_mat->callIf<subarray_copy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 1),coh_mat,scale);
+  }
+  else {
+    epi_stack(merge_circuits.getSink(t, 0), disp_stack, line-st_start);
+    epi_stack(merge_circuits.getSink(t, 1), coh_stack, line-st_start);
   }
 }
 
@@ -575,6 +603,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //dims: x, y, line, st-component
   Mat st_data;
   Mat st_blur;
+  Mat disp_stack, coh_stack;
   
   float integrate_sigma = 5.0;
   int integrate_r = 3*integrate_sigma;
@@ -583,6 +612,8 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   st_data.create(BaseType::FLOAT, {epi_w, epi_h, st_lines, 3});
   st_blur.create(BaseType::FLOAT, {epi_w, epi_h, st_lines, 3});
+  disp_stack.create(BaseType::FLOAT, {epi_w, epi_h, st_lines});
+  coh_stack.create(BaseType::FLOAT, {epi_w, epi_h, st_lines});
   
   vigra::MultiArrayView<4,float> st_data_v = vigraMAV<4,float>(st_data);
   vigra::MultiArrayView<4,float> st_blur_v = vigraMAV<4,float>(st_blur);
@@ -647,6 +678,8 @@ printf("calc tensor\n");
         start_line,
         orientation_circuits,
         merge_circuits,
+        disp_stack,
+        coh_stack,
         disp_mat,
         coh_mat,
         d == disp_start, //first run
