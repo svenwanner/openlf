@@ -95,8 +95,15 @@ OPENLF_VIGRA_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
             out1[i] = -1;
         }
         else {
-          out0[i] = add + (sqrt(yx*yx+1)-1)/yx;
-          out1[i] = coherence;
+          float disp = (sqrt(yx*yx+1)-1)/yx;
+          if (abs(disp) <= 0.5) {
+            out0[i] = add + disp;
+            out1[i] = coherence;
+          }
+          else {
+            out0[i] = std::numeric_limits<float>::quiet_NaN();
+            out1[i] = -1;
+          }
         }
       }
       else {
