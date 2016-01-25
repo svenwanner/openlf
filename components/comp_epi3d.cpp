@@ -101,7 +101,7 @@ COMP_Epi::COMP_Epi()
   AddOutput_("output");
   
   openlf_add_param("tensorCircuit", (DspComponent*)NULL, DPPT::Pointer, P_IDX::Tensor_Circuit);
-  openlf_add_param("orienationCircuit", (DspComponent*)NULL, DPPT::Pointer, P_IDX::Orientation_Circuit);
+  openlf_add_param("orientaionCircuit", (DspComponent*)NULL, DPPT::Pointer, P_IDX::Orientation_Circuit);
   openlf_add_param("mergeCircuit", (DspComponent*)NULL, DPPT::Pointer, P_IDX::Merge_Circuit);
   
   openlf_add_param("DispStart", DPPT::Float, P_IDX::DispStart);
@@ -479,6 +479,12 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   DspComponent *orientation_circuit;
   DspComponent *merge_circuit;
   
+  
+  int cv_t_count = cv::getNumThreads();
+#pragma omp critical
+  if (!cv_t_count)
+    cv::setNumThreads(0);
+  
   errorCond(inputs.GetValue(0, in) && in, "missing input"); RETURN_ON_ERROR
   
   inputs.GetValue(1, config);
@@ -612,6 +618,8 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   int chunk_size = std::min(100, stop_line-start_line);
   int st_lines = chunk_size+2*integrate_r;
   
+  printf("cache size: %d %d %d %d\n", epi_w, epi_h, st_lines, 3);
+  
   st_data.create(BaseType::FLOAT, {epi_w, epi_h, st_lines, 3});
   st_blur.create(BaseType::FLOAT, {epi_w, epi_h, st_lines, 3});
   disp_stack.create(BaseType::FLOAT, {epi_w, epi_h, st_lines});
@@ -627,11 +635,11 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     int curr_chunk_stop = std::min(curr_chunk+chunk_size,stop_line);
     
     int act_start = std::max(0, curr_chunk-integrate_r);
-    int act_stop = std::min(subset.EPICount(), curr_chunk_stop+integrate_r+1);
+    int act_stop = std::min(subset.EPICount(), curr_chunk_stop+integrate_r);
     
     for(float d=disp_start;d<=disp_stop;d+=disp_step) {
   printf("calc tensor\n");
-  #pragma omp parallel for
+#pragma omp parallel for
       for(int i=act_start;i<act_stop;i++) {
     #pragma omp critical 
         {
@@ -652,7 +660,8 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
       }
       
     printf("integrate 3d\n");
-  #pragma omp parallel for
+#pragma omp parallel for
+    //FIXME
       for(int c=0;c<3;c++)
         for(int i=0;i<epi_h;i++) {
     #pragma omp critical 
@@ -669,7 +678,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         }
       
     printf("calc orientation\n");
-  #pragma omp parallel for
+#pragma omp parallel for
       for(int i=curr_chunk;i<curr_chunk_stop;i++) {
     #pragma omp critical 
         {
@@ -717,6 +726,10 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   coh_store->write(coh_mat);
   //out->path = "disparity/default/coherence";
   delete coh_mat;
+  
+#pragma omp critical
+  if (!cv_t_count)
+    cv::setNumThreads(cv_t_count);
 }
 
 //FIXME remove alias for replaced sub-component!
