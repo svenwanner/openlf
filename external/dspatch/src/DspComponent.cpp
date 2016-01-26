@@ -513,7 +513,9 @@ void DspComponent::Tick()
         _outputBus.ClearAllValues();
 
         // 4. call Process_() with newly aquired inputs
+        printf("start process %s\n", getTypeName().c_str());
         Process_(_inputBus, _outputBus);
+        printf("finish process %s\n", getTypeName().c_str());
     }
 }
 

@@ -96,8 +96,8 @@ OPENLF_VIGRA_OP_START(OP_Blur, 1, 1, 3, 3)
 
   //FIXME make buffers to class members
   clif::Mat_<T> by, bx;
-  by.create(Idx{in[0].shape(0), (in[0].shape(1)+1)/2});
-  bx.create(Idx{(in[0].shape(0)+1)/2, (in[0].shape(1)+1)/2});
+  by.create(Idx{int(in[0].shape(0)), int((in[0].shape(1)+1)/2)});
+  bx.create(Idx{int((in[0].shape(0)+1)/2), int((in[0].shape(1)+1)/2)});
   
   MultiArrayView<2,T> bx_v = vigraMAV<2,T>(bx);
   MultiArrayView<2,T> by_v = vigraMAV<2,T>(by);

@@ -383,7 +383,7 @@ namespace {
 }
 
 
-Mat *proc_epi_tensor(int t, Subset3d *subset, float d, int line, float scale, std::vector<Mat> &source_mats, _sub_circuit &tensor_circuits, vigra::MultiArrayView<4,float> &st_data, int st_start)
+void proc_epi_tensor(int t, Subset3d *subset, float d, int line, float scale, std::vector<Mat> &source_mats, _sub_circuit &tensor_circuits, vigra::MultiArrayView<4,float> &st_data, int st_start)
 {
   DspComponent *tensor = tensor_circuits.component(t);
   
@@ -401,7 +401,7 @@ Mat *proc_epi_tensor(int t, Subset3d *subset, float d, int line, float scale, st
 
 template<class FROM> struct _is_convertible_to_float : public std::is_convertible<FROM,float> {};
 
-Mat *proc_epi_ori_merge(int t, Subset3d *subset, float d, int line, float scale, vigra::MultiArrayView<4,float> &st_data, int st_start, _sub_circuit &orientation_circuits, _sub_circuit &merge_circuits, Mat &disp_stack, Mat &coh_stack, Mat *disp_mat, Mat *coh_mat, bool copy, bool store_res)
+void proc_epi_ori_merge(int t, Subset3d *subset, float d, int line, float scale, vigra::MultiArrayView<4,float> &st_data, int st_start, _sub_circuit &orientation_circuits, _sub_circuit &merge_circuits, Mat &disp_stack, Mat &coh_stack, Mat *disp_mat, Mat *coh_mat, bool copy, bool store_res)
 {
   int epi_w = st_data.shape(0);
   int epi_h = st_data.shape(1);

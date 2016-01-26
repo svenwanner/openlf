@@ -322,7 +322,7 @@ namespace {
   };
 }
 
-Mat *proc_epi(int t, Subset3d *subset, float disp_start, float disp_stop, float disp_step, int i, float scale, _sub_circuit &epi_circuits, _sub_circuit &merge_circuits, Mat **disp, Mat **coherence, std::vector<Mat> &source_mats)
+void proc_epi(int t, Subset3d *subset, float disp_start, float disp_stop, float disp_step, int i, float scale, _sub_circuit &epi_circuits, _sub_circuit &merge_circuits, Mat **disp, Mat **coherence, std::vector<Mat> &source_mats)
 {
   DspComponent *epi = epi_circuits.component(t);
   DspComponent *merge = merge_circuits.component(t);
@@ -348,7 +348,7 @@ Mat *proc_epi(int t, Subset3d *subset, float disp_start, float disp_stop, float 
     
     merge_circuits.setSource(t, 0, epi_circuits.getSink(t, 0));
     merge_circuits.setSource(t, 1, epi_circuits.getSink(t, 1));
-    
+
     merge_circuits.process(t);
     
     merge->SetParameter(0, DspParameter(DspParameter::ParamType::Bool, false));
@@ -480,7 +480,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   disp_mat = new Mat(BaseType::FLOAT, size);
   coh_mat = new Mat(BaseType::FLOAT, size);
   
-#pragma omp parallel for private(epi_disp, epi_coh)
+//#pragma omp parallel for private(epi_disp, epi_coh)
   for(int i=start_line;i<stop_line;i++) {
 #pragma omp critical 
     {
