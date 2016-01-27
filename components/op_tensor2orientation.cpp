@@ -46,7 +46,7 @@ OPENLF_VIGRA_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
     out[1].data()[i] = up / down;
     
     // threshold orientation and check invalid coherence
-    if (out[0].data()[i] > 1 || out[0].data()[i] < -1 || out[1].data()[i] < threshold) {
+    if (out[0].data()[i] > 0.5 || out[0].data()[i] < -0.5 || out[1].data()[i] < threshold) {
       out[0].data()[i] = -1;
       out[1].data()[i] = 0;
     }
@@ -96,7 +96,7 @@ OPENLF_VIGRA_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
         }
         else {
           float disp = (sqrt(yx*yx+1)-1)/yx;
-          if (abs(disp) <= 0.5) {
+          if (abs(disp) <= 1.0) {
             out0[i] = add + disp;
             out1[i] = coherence;
           }

@@ -42,6 +42,9 @@
 - CLIF: clif-bin always truncate outout?
 - CLIF: protect all hdf5 reads with omp pragma critical (hdf5)
 
+NEW
+- OPENLF: comp aliasung from sub (procepi2d) only works if sub-comp specififed via parameter first!
+
 Big:
 - DSPatch: integrate type system - only allow correctly typed settings and connections!
 

@@ -57,12 +57,19 @@ OPENLF_VIGRA_OP_START_OUTTYPE(OP_Scharr, 1, 2, 3, 3, float)
     cv::Mat cv_in(Size(ch_in.shape(0), ch_in.shape(1)), BaseType2CvDepth(in_mat[0]->type()), ch_in.data());
     cv::Mat cv_out_x(Size(ch_out_x.shape(0), ch_out_x.shape(1)), BaseType2CvDepth(out_mat[0]->type()), ch_out_x.data());
     cv::Mat cv_out_y(Size(ch_out_y.shape(0), ch_out_y.shape(1)), BaseType2CvDepth(out_mat[0]->type()), ch_out_y.data());
+    /*cv::Mat mask;
+    
+    cv::dilate(cv_in, mask, cv::Mat());
+    cv::threshold(mask, mask, 0, 1, cv::THRESH_BINARY_INV);
+    mask.convertTo(mask, CV_8U);*/
     
     Scharr(cv_in, cv_out_x, CV_32F, 1, 0);
+    //cv_out_x.setTo(0, mask);
     Scharr(cv_in, cv_out_y, CV_32F, 0, 1);
+    //cv_out_y.setTo(0, mask);
   }
   //FIXME hack - need better treatment of the border between background and shifted epi
-  for(int c=0;c<(*in_mat[0])[2];c++)
+  /*for(int c=0;c<(*in_mat[0])[2];c++)
     for(int j=0;j<(*in_mat[0])[1];j++)
       for(int i=0;i<(*in_mat[0])[0];i++)
         if (in[0](i, j, c) == 0)
@@ -70,7 +77,7 @@ OPENLF_VIGRA_OP_START_OUTTYPE(OP_Scharr, 1, 2, 3, 3, float)
             for(int x=std::max(i-1,0);x<std::min(i+2, (*in_mat[0])[0]);x++) {
               out[0](x, y, c) = 0;
               out[1](x, y, c) = 0;
-            }
+            }*/
     
 OPENLF_OP_END
 

@@ -392,7 +392,7 @@ void proc_epi_tensor(int t, Subset3d *subset, float d, int line, float scale, st
   
   tensor_circuits.process(t);
   
-  for(int i=0;i<3;i++) {
+  for(int i=0;i<st_data.shape(3);i++) {
     vigra::MultiArrayView<3,float> data = st_data.bindAt(3, i);
     epi_stack(tensor_circuits.getSink(t, i), data, line-st_start);
   }
@@ -615,13 +615,13 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   int integrate_r = 3*integrate_sigma;
   
   
-  int chunk_size = std::min(100, stop_line-start_line);
+  int chunk_size = std::min(150, stop_line-start_line);
   int st_lines = chunk_size+2*integrate_r;
   
-  printf("cache size: %d %d %d %d\n", epi_w, epi_h, st_lines, 3);
+  int epi_chs = tmp.size[0];
   
-  st_data.create(BaseType::FLOAT, {epi_w, epi_h, st_lines, 3});
-  st_blur.create(BaseType::FLOAT, {epi_w, epi_h, st_lines, 3});
+  st_data.create(BaseType::FLOAT, {epi_w, epi_h, st_lines, epi_chs});
+  st_blur.create(BaseType::FLOAT, {epi_w, epi_h, st_lines, epi_chs});
   disp_stack.create(BaseType::FLOAT, {epi_w, epi_h, st_lines});
   coh_stack.create(BaseType::FLOAT, {epi_w, epi_h, st_lines});
   
@@ -629,7 +629,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   vigra::MultiArrayView<4,float> st_blur_v = vigraMAV<4,float>(st_blur);
   
   
-  int work = (2*(stop_line-start_line) + epi_h*3)*(disp_stop-disp_start+1);
+  int work = (2*(stop_line-start_line))*(disp_stop-disp_start+1);
   
   for(int curr_chunk=start_line;curr_chunk<stop_line;curr_chunk+=chunk_size) {
     int curr_chunk_stop = std::min(curr_chunk+chunk_size,stop_line);
@@ -638,9 +638,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     int act_stop = std::min(subset.EPICount(), curr_chunk_stop+integrate_r);
     
     for(float d=disp_start;d<=disp_stop;d+=disp_step) {
-  printf("calc tensor\n");
-#pragma omp parallel for
+#pragma omp parallel for schedule(dynamic)
       for(int i=act_start;i<act_stop;i++) {
+        if (i >= curr_chunk && i < std::min(curr_chunk+chunk_size,stop_line))
     #pragma omp critical 
         {
           progress_((float)done/work);
@@ -659,32 +659,29 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         );
       }
       
-    printf("integrate 3d\n");
 #pragma omp parallel for
     //FIXME
-      for(int c=0;c<3;c++)
+      for(int c=0;c<epi_chs;c++)
         for(int i=0;i<epi_h;i++) {
-    #pragma omp critical 
+          if (i >= curr_chunk && i < std::min(curr_chunk+chunk_size,stop_line))
+//#pragma omp critical 
+            {
+              progress_((float)done/work);
+              done++;
+            }
+          cv::Mat src = cvMat(st_data.bind(3, c).bind(1, i));
+          cv::Mat dst = cvMat(st_blur.bind(3, c).bind(1, i));
+          cv::GaussianBlur(src, dst, cv::Size(1, integrate_r*2+1), 0.0, integrate_sigma);
+        }
+      
+#pragma omp parallel for schedule(dynamic)
+      for(int i=curr_chunk;i<curr_chunk_stop;i++) {
+        if (i >= curr_chunk && i < std::min(curr_chunk+chunk_size,stop_line))
+#pragma omp critical 
           {
             progress_((float)done/work);
             done++;
           }
-          cv::Mat src = cvMat(st_data.bind(3, c).bind(1, i));
-          cv::Mat dst = cvMat(st_blur.bind(3, c).bind(1, i));
-          /*cv::Mat src2 = cvMat(st_data.bind(3, c).bind(1, i));
-          cv::Mat dst2 = cvMat(st_blur.bind(3, c).bind(1, i));
-          abort();*/
-          cv::GaussianBlur(src, dst, cv::Size(1, integrate_r*2+1), 0.0, integrate_sigma);
-        }
-      
-    printf("calc orientation\n");
-#pragma omp parallel for
-      for(int i=curr_chunk;i<curr_chunk_stop;i++) {
-    #pragma omp critical 
-        {
-          progress_((float)done/work);
-          done++;
-        }
         
         int t = omp_get_thread_num();
         
