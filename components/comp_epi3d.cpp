@@ -62,6 +62,9 @@ private:
   template<typename T> void openlf_add_param(const char *name, T val, DspParameter::ParamType type, int idx);
   void openlf_add_param(const char *name, DspParameter::ParamType type, int idx);
   bool ParameterUpdating_(int index, const DspParameter& param);
+  
+  //FIXME workaround - make forwarded and our own parameter play nicely together... 
+  double integrate = 0.0;
 };
   
 namespace {
@@ -611,7 +614,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   Mat st_blur;
   Mat disp_stack, coh_stack;
   
-  float integrate_sigma = 5.0;
+  float integrate_sigma = integrate;
   int integrate_r = 3*integrate_sigma;
   
   
@@ -761,9 +764,14 @@ bool COMP_Epi::ParameterUpdating_(int index, const DspParameter& param)
     param.GetPointer(comp);
     expose_params(this, "merge", comp, exclude_params);
   }
-  else 
+  else {
+    if (!GetParameterName(index).compare("disparity/integrate")) {
+      integrate = *param.GetFloat();
+    }
+      
     //just store parameter 
     SetParameter_(index, param);
+  }
 
   //FIXME range chack should be implement at some central location
   

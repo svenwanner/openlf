@@ -747,7 +747,6 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
               assert(*p->GetPointerType() == typeid(DspComponent));
               DspComponent *comp_child = getComponentClone(part->value.string);
               assert(comp_child);
-              printf("set comp %s\n", comp_child->GetComponentType().c_str());
               DspParameter p(DPPT::Pointer, comp_child);
               //FIXME why setdefault?
               //p.SetDefault(p); 
