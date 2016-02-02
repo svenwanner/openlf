@@ -198,8 +198,6 @@ template<typename T> void get_float_param(DspComponent *comp, T &val, int idx)
   ptr = p->GetFloat();
   if (!ptr) return;
   val = *ptr;
-  
-  printf("got %d copm %p\n", val, comp);
 }
 
 template<typename T> void get_int_param(DspComponent *comp, T &val, int idx)
@@ -211,8 +209,6 @@ template<typename T> void get_int_param(DspComponent *comp, T &val, int idx)
   ptr = p->GetInt();
   if (!ptr) return;
   val = *ptr;
-  
-  printf("got %d copm %p\n", val, comp);
 }
 
 static void printprogress(int curr, int max, int &last, const char *fmt = NULL, ...)
@@ -252,9 +248,7 @@ namespace {
       
       Idx source_size({threads, inputs});
       Idx sink_size({threads, outputs});
-      
-      printf("init with %d sources!\n", inputs);
-      
+            
       _sources.create(source_size);
       _mats_source.create(source_size);
       

@@ -555,7 +555,9 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   std::vector<int> idx(store->dims(), 0);
   //FIXME flexmav!
   idx[3] = disp[3]/2;
-  store->readImage(idx, &img3d, Improc::UNDISTORT | Improc::CVT_8U);
+  
+  //opts.set_flags(UNDISTORT | CVT_8U);
+  store->readImage(idx, &img3d, UNDISTORT | CVT_8U);
   clifMat2cv(&img3d,&img);
   
   //centerview, channel 0

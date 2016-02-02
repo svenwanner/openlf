@@ -261,8 +261,6 @@ template<typename T> void get_float_param(DspComponent *comp, T &val, int idx)
   ptr = p->GetFloat();
   if (!ptr) return;
   val = *ptr;
-  
-  printf("got %d copm %p\n", val, comp);
 }
 
 template<typename T> void get_int_param(DspComponent *comp, T &val, int idx)
@@ -274,8 +272,6 @@ template<typename T> void get_int_param(DspComponent *comp, T &val, int idx)
   ptr = p->GetInt();
   if (!ptr) return;
   val = *ptr;
-  
-  printf("got %d copm %p\n", val, comp);
 }
 
 static void printprogress(int curr, int max, int &last, const char *fmt = NULL, ...)
@@ -315,9 +311,7 @@ namespace {
       
       Idx source_size({threads, inputs});
       Idx sink_size({threads, outputs});
-      
-      printf("init with %d sources!\n", inputs);
-      
+
       _sources.create(source_size);
       _mats_source.create(source_size);
       
@@ -648,7 +642,6 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     int act_stop = std::min(subset.EPICount(), curr_chunk_stop+integrate_r);
     
     for(float d=disp_start;d<=disp_stop;d+=disp_step) {
-      printf("\nproc depth %f (%f-%f)\n\n",d,disp_start,disp_stop);
 #pragma omp parallel for schedule(dynamic)
       for(int i=act_start;i<act_stop;i++) {
         if (i >= curr_chunk && i < std::min(curr_chunk+chunk_size,stop_line))
