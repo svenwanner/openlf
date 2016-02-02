@@ -580,8 +580,8 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   //cv::imwrite("norm.png", img);
   
-  if (obj_filename)
-    write_obj("debug_regular.obj", centerview, img, subset);
+  //if (obj_filename)
+    //write_obj("debug_regular.obj", centerview, img, subset);
   
 
   
