@@ -64,7 +64,7 @@ private:
 };
   
 namespace {
-  enum P_IDX {Epi_Circuit = 0,Merge_Circuit,DispStart,DispStop,DispStep,StartLine,StopLine};
+  enum P_IDX {Epi_Circuit = 0,Merge_Circuit,DispStart,DispStop,DispStep,StartLine,StopLine,scale};
 }
 
 template<typename T> void COMP_Epi::openlf_add_param(const char *name, T val, DspParameter::ParamType type, int idx)
@@ -108,11 +108,13 @@ COMP_Epi::COMP_Epi()
   
   openlf_add_param("StartLine", DPPT::Int, P_IDX::StartLine);
   openlf_add_param("StopLine", DPPT::Int, P_IDX::StopLine);
+  
+  openlf_add_param("scale", DPPT::Float, P_IDX::scale);
 }
 
 template<typename T> class subarray_copy {
 public:
-void operator()(int line, int epi_w, int epi_h, Mat *sink_mat, Mat *disp_store, float disp_scale)
+void operator()(int line, int epi_w, int epi_h, Mat *sink_mat, Mat *disp_store)
 {
   for(int c=0;c<(*sink_mat)[2];c++) {
     MultiArrayView<2,T> sink = vigraMAV<3,T>(*sink_mat).bindAt(2, c);
@@ -122,8 +124,6 @@ void operator()(int line, int epi_w, int epi_h, Mat *sink_mat, Mat *disp_store, 
       //bind store y to epi line
       MultiArrayView<2,T> epi = store.bindAt(1, line);
       epi = sink;
-      //if (disp_scale != 1.0)
-        //epi *= 1.0/disp_scale;
     }
   }
 }
@@ -322,7 +322,7 @@ namespace {
   };
 }
 
-void proc_epi(int t, Subset3d *subset, float disp_start, float disp_stop, float disp_step, int i, float scale, _sub_circuit &epi_circuits, _sub_circuit &merge_circuits, Mat **disp, Mat **coherence, std::vector<Mat> &source_mats)
+void proc_epi(int t, Subset3d *subset, float disp_start, float disp_stop, float disp_step, int i, _sub_circuit &epi_circuits, _sub_circuit &merge_circuits, Mat **disp, Mat **coherence, std::vector<Mat> &source_mats)
 {
   DspComponent *epi = epi_circuits.component(t);
   DspComponent *merge = merge_circuits.component(t);
@@ -342,7 +342,7 @@ void proc_epi(int t, Subset3d *subset, float disp_start, float disp_stop, float 
       }
       
     cv::Mat tmp = cvMat(source_mats[t]);
-    subset->readEPI(&tmp, i, d, Unit::PIXELS, Improc::UNDISTORT, Interpolation::LINEAR, scale);
+    subset->readEPI(&tmp, i, d, Unit::PIXELS);
     
     epi_circuits.process(t);
     
@@ -383,17 +383,20 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   outputs.SetValue(0, out);
   
   errorCond(out, "output creation failed"); RETURN_ON_ERROR
-    
+  
+  //default
+  SetParameter_(P_IDX::scale, DspParameter(DPPT::Float, 1.0f));
+  
+  ProcData opts;
+  opts.set_scale(*GetParameter(P_IDX::scale)->GetFloat());
   //subset_idx -- extrinsics path
-  Subset3d subset(in->data);
+  Subset3d subset(in->data, cpath(), opts);
   
   Mat *disp_mat = NULL;
   Mat *coh_mat = NULL;
   
   int epi_w = subset.EPIWidth();
   int epi_h = subset.EPIHeight();
-  
-  float scale = 1.0;
   
   const std::unordered_set<std::string> exclude_params = {"input_disparity","copy"};
   const DspParameter *p;
@@ -441,9 +444,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   if (config)
     forward_config(this, config->data);
   
-  disp_start = *GetParameter(P_IDX::DispStart)->GetFloat();
+  disp_start = *GetParameter(P_IDX::DispStart)->GetFloat()*opts.scale();
   disp_step  = *GetParameter(P_IDX::DispStep)->GetFloat();
-  disp_stop  = *GetParameter(P_IDX::DispStop)->GetFloat();
+  disp_stop  = (*GetParameter(P_IDX::DispStop)->GetFloat()+(disp_step/opts.scale()-1))*opts.scale();
   
   //FIXME set/get default!
   get_int_param(this, start_line, P_IDX::StartLine);
@@ -464,7 +467,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   //FIXME hack add imgType(int flags) to datastore? 
   cv::Mat tmp;
-  subset.readEPI(&tmp, 0, disp_start, Unit::PIXELS, Improc::UNDISTORT, Interpolation::LINEAR, scale);
+  subset.readEPI(&tmp, 0, disp_start, Unit::PIXELS);
   
   for(int t=0;t<t_count;t++) {
     source_mats[t].create(CvDepth2BaseType(tmp.depth()), {tmp.size[2],tmp.size[1],tmp.size[0]});
@@ -492,7 +495,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     
     proc_epi(
       t,
-      &subset, disp_start, disp_stop, disp_step, i, scale,
+      &subset, disp_start, disp_stop, disp_step, i,
       epi_circuits,
       merge_circuits,
       &epi_disp,
@@ -502,8 +505,8 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
       
     assert(epi_disp->type() == BaseType::FLOAT);
     
-    disp_mat->callIf<subarray_copy,_is_convertible_to_float>(i,epi_w,epi_h,epi_disp,disp_mat,scale);
-    coh_mat->callIf<subarray_copy,_is_convertible_to_float>(i,epi_w,epi_h,epi_coh,coh_mat,scale);
+    disp_mat->callIf<subarray_copy,_is_convertible_to_float>(i,epi_w,epi_h,epi_disp,disp_mat);
+    coh_mat->callIf<subarray_copy,_is_convertible_to_float>(i,epi_w,epi_h,epi_coh,coh_mat);
   }
   //cv::setNumThreads(-1);
   
@@ -513,7 +516,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //FIXME write!
   Datastore *disp_store = out->data->addStore("disparity/default/data");
   disp_store->write(disp_mat);
-  out->path = "disparity/default/data";
+  out->path = "disparity/default";
   delete disp_mat;
   
   
@@ -522,6 +525,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   coh_store->write(coh_mat);
   //out->path = "disparity/default/coherence";
   delete coh_mat;
+  
+  out->data->addLink("disparity/default/subset/source", subset.extrinsics_group());
+  out->data->setAttribute("disparity/default/subset/scale", opts.scale());
 }
 
 //FIXME remove alias for replaced sub-component!

@@ -68,7 +68,7 @@ private:
 };
   
 namespace {
-  enum P_IDX {Tensor_Circuit = 0,Orientation_Circuit,Merge_Circuit,DispStart,DispStop,DispStep,StartLine,StopLine};
+  enum P_IDX {Tensor_Circuit = 0,Orientation_Circuit,Merge_Circuit,DispStart,DispStop,DispStep,StartLine,StopLine,scale};
 }
 
 template<typename T> void COMP_Epi::openlf_add_param(const char *name, T val, DspParameter::ParamType type, int idx)
@@ -113,11 +113,13 @@ COMP_Epi::COMP_Epi()
   
   openlf_add_param("StartLine", DPPT::Int, P_IDX::StartLine);
   openlf_add_param("StopLine", DPPT::Int, P_IDX::StopLine);
+  
+  openlf_add_param("scale", DPPT::Float, P_IDX::scale);
 }
 
 template<typename T> class subarray_copy {
 public:
-void operator()(int line, int epi_w, int epi_h, Mat *sink_mat, Mat *disp_store, float disp_scale)
+void operator()(int line, int epi_w, int epi_h, Mat *sink_mat, Mat *disp_store)
 {
   for(int c=0;c<(*sink_mat)[2];c++) {
     MultiArrayView<2,T> sink = vigraMAV<3,T>(*sink_mat).bindAt(2, c);
@@ -127,8 +129,6 @@ void operator()(int line, int epi_w, int epi_h, Mat *sink_mat, Mat *disp_store, 
       //bind store y to epi line
       MultiArrayView<2,T> epi = store.bindAt(1, line);
       epi = sink;
-      //if (disp_scale != 1.0)
-        //epi *= 1.0/disp_scale;
     }
   }
 }
@@ -386,16 +386,16 @@ namespace {
 }
 
 
-void proc_epi_tensor(int t, Subset3d *subset, float d, int line, float scale, std::vector<Mat> &source_mats, _sub_circuit &tensor_circuits, vigra::MultiArrayView<4,float> &st_data, int st_start)
+void proc_epi_tensor(int t, Subset3d *subset, float d, int line, std::vector<Mat> &source_mats, _sub_circuit &tensor_circuits, vigra::MultiArrayView<4,float> &st_data, int st_start)
 {
   DspComponent *tensor = tensor_circuits.component(t);
   
   cv::Mat tmp = cvMat(source_mats[t]);
-  subset->readEPI(&tmp, line, d, Unit::PIXELS, Improc::UNDISTORT, Interpolation::LINEAR, scale);
+  subset->readEPI(&tmp, line, d, Unit::PIXELS);
   
   tensor_circuits.process(t);
   
-  for(int i=0;i<st_data.shape(3);i++) {
+  for(int i=0;i<3;i++) {
     vigra::MultiArrayView<3,float> data = st_data.bindAt(3, i);
     epi_stack(tensor_circuits.getSink(t, i), data, line-st_start);
   }
@@ -404,7 +404,7 @@ void proc_epi_tensor(int t, Subset3d *subset, float d, int line, float scale, st
 
 template<class FROM> struct _is_convertible_to_float : public std::is_convertible<FROM,float> {};
 
-void proc_epi_ori_merge(int t, Subset3d *subset, float d, int line, float scale, vigra::MultiArrayView<4,float> &st_data, int st_start, _sub_circuit &orientation_circuits, _sub_circuit &merge_circuits, Mat &disp_stack, Mat &coh_stack, Mat *disp_mat, Mat *coh_mat, bool copy, bool store_res)
+void proc_epi_ori_merge(int t, Subset3d *subset, float d, int line, vigra::MultiArrayView<4,float> &st_data, int st_start, _sub_circuit &orientation_circuits, _sub_circuit &merge_circuits, Mat &disp_stack, Mat &coh_stack, Mat *disp_mat, Mat *coh_mat, bool copy, bool store_res)
 {
   int epi_w = st_data.shape(0);
   int epi_h = st_data.shape(1);
@@ -460,8 +460,8 @@ void proc_epi_ori_merge(int t, Subset3d *subset, float d, int line, float scale,
   merge_circuits.process(t);
 
   if (store_res) {
-    disp_mat->callIf<subarray_copy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 0),disp_mat,scale);
-    coh_mat->callIf<subarray_copy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 1),coh_mat,scale);
+    disp_mat->callIf<subarray_copy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 0),disp_mat);
+    coh_mat->callIf<subarray_copy,_is_convertible_to_float>(line,epi_w,epi_h,merge_circuits.getSink(t, 1),coh_mat);
   }
   else {
     epi_stack(merge_circuits.getSink(t, 0), disp_stack, line-st_start);
@@ -490,6 +490,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   errorCond(inputs.GetValue(0, in) && in, "missing input"); RETURN_ON_ERROR
   
+  //default
+  SetParameter_(P_IDX::scale, DspParameter(DPPT::Float, 1.0f));
+  
   inputs.GetValue(1, config);
   
   out = &_out;
@@ -500,8 +503,11 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   errorCond(out, "output creation failed"); RETURN_ON_ERROR
     
+  ProcData opts;
+  opts.set_scale(*GetParameter(P_IDX::scale)->GetFloat());
+    
   //subset_idx -- extrinsics path
-  Subset3d subset(in->data);
+  Subset3d subset(in->data, cpath(), opts);
   
   Mat *disp_mat = NULL;
   Mat *coh_mat = NULL;
@@ -509,7 +515,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   int epi_w = subset.EPIWidth();
   int epi_h = subset.EPIHeight();
   
-  float scale = 1.0;
+  //float scale = 1.0;
   
   const std::unordered_set<std::string> exclude_params = {"input_disparity","copy"};
   const DspParameter *p;
@@ -562,14 +568,15 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   SetParameter_(P_IDX::StartLine, DspParameter(DPPT::Int, start_line));
   SetParameter_(P_IDX::StopLine, DspParameter(DPPT::Int, stop_line));
   
+  
   //apply configs
   forward_config(this, in->data);
   if (config)
     forward_config(this, config->data);
   
-  disp_start = *GetParameter(P_IDX::DispStart)->GetFloat();
+  disp_start = *GetParameter(P_IDX::DispStart)->GetFloat()*opts.scale();
   disp_step  = *GetParameter(P_IDX::DispStep)->GetFloat();
-  disp_stop  = *GetParameter(P_IDX::DispStop)->GetFloat();
+  disp_stop  = (*GetParameter(P_IDX::DispStop)->GetFloat()+(disp_step/opts.scale()-1))*opts.scale();
   
   //FIXME set/get default!
   get_int_param(this, start_line, P_IDX::StartLine);
@@ -592,7 +599,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   //FIXME hack add imgType(int flags) to datastore? 
   cv::Mat tmp;
-  subset.readEPI(&tmp, 0, disp_start, Unit::PIXELS, Improc::UNDISTORT, Interpolation::LINEAR, scale);
+  subset.readEPI(&tmp, 0, disp_start, Unit::PIXELS);
   
   for(int t=0;t<t_count;t++) {
     source_mats[t].create(CvDepth2BaseType(tmp.depth()), {tmp.size[2],tmp.size[1],tmp.size[0]});
@@ -623,8 +630,8 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   int epi_chs = tmp.size[0];
   
-  st_data.create(BaseType::FLOAT, {epi_w, epi_h, st_lines, epi_chs});
-  st_blur.create(BaseType::FLOAT, {epi_w, epi_h, st_lines, epi_chs});
+  st_data.create(BaseType::FLOAT, {epi_w, epi_h, st_lines, 3});
+  st_blur.create(BaseType::FLOAT, {epi_w, epi_h, st_lines, 3});
   disp_stack.create(BaseType::FLOAT, {epi_w, epi_h, st_lines});
   coh_stack.create(BaseType::FLOAT, {epi_w, epi_h, st_lines});
   
@@ -641,6 +648,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     int act_stop = std::min(subset.EPICount(), curr_chunk_stop+integrate_r);
     
     for(float d=disp_start;d<=disp_stop;d+=disp_step) {
+      printf("\nproc depth %f (%f-%f)\n\n",d,disp_start,disp_stop);
 #pragma omp parallel for schedule(dynamic)
       for(int i=act_start;i<act_stop;i++) {
         if (i >= curr_chunk && i < std::min(curr_chunk+chunk_size,stop_line))
@@ -654,7 +662,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         
         proc_epi_tensor(
           t,
-          &subset, d, i, scale,
+          &subset, d, i,
           source_mats,
           tensor_circuits,
           st_data_v,
@@ -662,9 +670,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         );
       }
       
-#pragma omp parallel for
+//#pragma omp parallel for
     //FIXME
-      for(int c=0;c<epi_chs;c++)
+      for(int c=0;c<3;c++)
         for(int i=0;i<epi_h;i++) {
           if (i >= curr_chunk && i < std::min(curr_chunk+chunk_size,stop_line))
 //#pragma omp critical 
@@ -690,7 +698,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         
         proc_epi_ori_merge(
           t,
-          &subset, d, i, scale,
+          &subset, d, i,
           st_blur_v,
           act_start,
           orientation_circuits,
@@ -717,7 +725,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //FIXME write!
   Datastore *disp_store = out->data->addStore("disparity/default/data");
   disp_store->write(disp_mat);
-  out->path = "disparity/default/data";
+  out->path = "disparity/default";
   delete disp_mat;
   
   
@@ -726,6 +734,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   coh_store->write(coh_mat);
   //out->path = "disparity/default/coherence";
   delete coh_mat;
+  
+  out->data->addLink("disparity/default/subset/source", subset.extrinsics_group());
+  out->data->setAttribute("disparity/default/subset/scale", opts.scale());
   
 #pragma omp critical
   if (!cv_t_count)

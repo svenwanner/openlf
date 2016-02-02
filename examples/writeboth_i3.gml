@@ -25,12 +25,12 @@ tensorCircuit "StructureTensor_Part1"
 DispStart 3.000000
 DispStop 7.000000
 DispStep 2.000000
-StartLine 1000
-StopLine 1200
-disparity_S_integrate 5.000000
-disparity_S_min_coherence 0.800000
-disparity_S_pre_blur_x 0.000000
-disparity_S_pre_blur_y 0.000000
+#StartLine 0
+#StopLine 1080
+disparity_S_integrate 2.0
+disparity_S_min_coherence 0.0
+disparity_S_pre_blur_x 0.0
+disparity_S_pre_blur_y 0.0
 ]
 ]
 node [

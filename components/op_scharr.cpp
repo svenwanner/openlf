@@ -69,7 +69,7 @@ OPENLF_VIGRA_OP_START_OUTTYPE(OP_Scharr, 1, 2, 3, 3, float)
     //cv_out_y.setTo(0, mask);
   }
   //FIXME hack - need better treatment of the border between background and shifted epi
-  /*for(int c=0;c<(*in_mat[0])[2];c++)
+  for(int c=0;c<(*in_mat[0])[2];c++)
     for(int j=0;j<(*in_mat[0])[1];j++)
       for(int i=0;i<(*in_mat[0])[0];i++)
         if (in[0](i, j, c) == 0)
@@ -77,7 +77,7 @@ OPENLF_VIGRA_OP_START_OUTTYPE(OP_Scharr, 1, 2, 3, 3, float)
             for(int x=std::max(i-1,0);x<std::min(i+2, (*in_mat[0])[0]);x++) {
               out[0](x, y, c) = 0;
               out[1](x, y, c) = 0;
-            }*/
+            }
     
 OPENLF_OP_END
 

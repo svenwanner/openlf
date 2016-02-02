@@ -43,10 +43,10 @@ OPENLF_VIGRA_OP_START(OP_Gauss, 1, 1, 3, 3)
         //Sorry vigra but OpenCv is 6x faster!
         cv::Mat cv_in(cv::Size(channel_in.shape(0), channel_in.shape(1)), BaseType2CvDepth(in_mat[0]->type()), channel_in.data());
         cv::Mat cv_out(cv::Size(channel_out.shape(0), channel_out.shape(1)), BaseType2CvDepth(out_mat[0]->type()), channel_out.data());
-        int kx = int(sx*3+0.99)/2*2+1;
+        int kx = int(sx*3+0.99)*2+1;
         //FIXME hack, add ignore border flag?
-        int ky = std::min(int(sy*3+0.99)/2*2+1, int(channel_in.shape(1)/2*2+1-4));
-        //printf("%dx %d %fx%f\n", kx, ky, sx, sy);
+        int ky = std::min(int(sy*3+0.99)*2+1, (int(channel_in.shape(1))-4)/2*2+1);
+        //printf("%dx %d (%d) %fx%f\n", kx, ky, channel_in.shape(1), sx, sy);
         cv::GaussianBlur(cv_in, cv_out, cv::Size(kx, ky), sx, sy);
     }
 

@@ -23,11 +23,9 @@ y 31.000000
 params [
 epiCircuit "(UNKNOWN)"
 mergeCircuit "(UNKNOWN)"
-DispStart 3.000000
-DispStop 7.000000
-DispStep 1.000000
-StartLine 300
-StopLine 600
+DispStart 0.000000
+DispStop 2.000000
+DispStep 2.000000
 ]
 ]
 node [
