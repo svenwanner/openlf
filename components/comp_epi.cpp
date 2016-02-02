@@ -352,8 +352,6 @@ void proc_epi(int t, Subset3d *subset, float disp_start, float disp_stop, float 
   *coherence = merge_circuits.getSink(t, 1);
 }
 
-template<class FROM> struct _is_convertible_to_float : public std::is_convertible<FROM,float> {};
-
 //different example:
 //template <class FROM> struct _is_valid : public std::integral_constant<bool, std::is_convertible<FROM,float>::value && !std::is_same<unsigned char,FROM>::value> {};
 

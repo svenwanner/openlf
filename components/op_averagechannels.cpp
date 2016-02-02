@@ -30,8 +30,6 @@
 using namespace clif;
 using namespace vigra;
 
-template<class FROM> struct _is_convertible_to_float : public std::is_convertible<FROM,float> {};
-
 class OP_AverageChannels : public DspComponent {
 public:
   OP_AverageChannels();

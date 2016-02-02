@@ -396,8 +396,6 @@ void proc_epi_tensor(int t, Subset3d *subset, float d, int line, std::vector<Mat
 }
 
 
-template<class FROM> struct _is_convertible_to_float : public std::is_convertible<FROM,float> {};
-
 void proc_epi_ori_merge(int t, Subset3d *subset, float d, int line, vigra::MultiArrayView<4,float> &st_data, int st_start, _sub_circuit &orientation_circuits, _sub_circuit &merge_circuits, Mat &disp_stack, Mat &coh_stack, Mat *disp_mat, Mat *coh_mat, bool copy, bool store_res)
 {
   int epi_w = st_data.shape(0);
