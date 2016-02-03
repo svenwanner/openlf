@@ -542,9 +542,6 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   ProcData opts;
   opts.set_scale(scale);
   
-  printf("scale: %f\n", scale);
-  printf("root: %s\n", disparity_root.c_str());
-  
   //FIXME read/pass actual datastore!
   Subset3d subset(in->data, disparity_root/"subset/source", opts);
   //FIXME add read function to subset3d

@@ -24,7 +24,6 @@ const std::vector<DspComponent*> OpenLF::componentList()
     std::vector<boost::filesystem::path> comp_paths;
 
     const char *c_path = getenv("OPENLF_COMPONENT_PATH");
-    printf("plugin path: %s\n", c_path);
     std::string path;
 #if _WIN32
     const char delimiter = ';';
@@ -33,7 +32,7 @@ const std::vector<DspComponent*> OpenLF::componentList()
 #endif
 
     if (!c_path || !strlen(c_path)) {
-      printf("OpenLF: no plugin path found!\n");
+      printf("OpenLF: no plugin path found, please set OPENLF_COMPONENT_PATH!\n");
       return _comp_list;
     }
     else
@@ -53,7 +52,7 @@ const std::vector<DspComponent*> OpenLF::componentList()
     DIR *dir;
     struct dirent *d_it;
     for(int i=0;i<plugin_paths.size();i++) {
-		printf("plugin path: %s\n", plugin_paths[i].string().c_str());
+      //printf("plugin path: %s\n", plugin_paths[i].string().c_str());
       dir = opendir(plugin_paths[i].string().c_str());
       if (!dir)
         continue;
@@ -66,19 +65,16 @@ const std::vector<DspComponent*> OpenLF::componentList()
     DspComponent *comp;
     //first load component dll's
     for(int i=0;i<comp_paths.size();i++) {
-      printf("loading component from file %s\n", comp_paths[i].string().c_str());
 
       
       DspPluginLoader *loader = new DspPluginLoader(comp_paths[i].string());
       if (!loader->IsLoaded()) {
         //FIXME error msg
-        printf("error loading %s!\n", comp_paths[i].c_str());
         continue;
       }
       comp = loader->Create();
       if (!comp) {
         //FIXME error msg
-        printf("error creating component!\n");
         continue;
       }
       _comp_list.push_back(comp);
@@ -90,11 +86,10 @@ const std::vector<DspComponent*> OpenLF::componentList()
       if (comp_paths[i].extension().string().compare(".gml"))
         continue;
       
-      printf("loading circuit file %s\n", comp_paths[i].string().c_str());
       comp = DspCircuit::load(comp_paths[i].string(), &getComponent);
       if (!comp) {
         //FIXME error msg
-        printf("error loading circuit!\n");
+        printf("error loading circuit %s!\n", comp_paths[i].extension().string().c_str());
         continue;
       }
       _comp_list.push_back(comp);

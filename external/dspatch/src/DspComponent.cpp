@@ -1219,13 +1219,15 @@ void DspComponent::progress_(float p)
 
   clock_gettime(CLOCK_MONOTONIC, &now);
 #pragma omp critical (printprogress_timed)
-  if (now.tv_sec != last_time.tv_sec || now.tv_nsec - last_time.tv_nsec >= 1000000000/4) {
+  if (p == 0.0 || p == 1.0 || now.tv_sec != last_time.tv_sec || now.tv_nsec - last_time.tv_nsec >= 1000000000/4) {
     last_time = now;
 
     if (_prog_callback)
       _prog_callback(this, p, _prog_data);
+    else if (p == 1.0)
+      printprogress(p*1000, 1000, last, " %s\n", _componentName.c_str());
     else
-      printprogress(p*1000, 1000, last);
+      printprogress(p*1000, 1000, last, " %s", _componentName.c_str());
   }
 }
 

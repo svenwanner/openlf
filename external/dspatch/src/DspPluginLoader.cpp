@@ -109,7 +109,6 @@ void DspPluginLoader::_LoadPlugin(std::string const& pluginPath)
         _handle = dlopen(pluginPath.c_str(), RTLD_NOW);
     #endif
 
-        printf("handle %p\n", _handle);
         if (_handle)
         {
     // load symbols

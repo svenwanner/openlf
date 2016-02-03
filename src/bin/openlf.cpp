@@ -50,7 +50,6 @@ int main(const int argc, const char *argv[])
   if (!c)
     printf("could not load circuit from %s\n", c_name);
   else {
-    printf("running circuit\n");
     c->Tick();
     c->Reset();
   }
