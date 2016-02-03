@@ -27,8 +27,8 @@ DispStop 7.000000
 DispStep 2.000000
 #StartLine 0
 #StopLine 1080
-disparity_S_integrate 2.0
-disparity_S_min_coherence 0.0
+disparity_S_integrate 3.5
+disparity_S_min_coherence 0.8
 disparity_S_pre_blur_x 0.0
 disparity_S_pre_blur_y 0.0
 ]

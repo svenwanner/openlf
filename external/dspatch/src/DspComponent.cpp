@@ -31,6 +31,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <assert.h>
 
 #include <cstdarg>
+#include <cstring>
+#include <ctime>
 
 void Alias_List::add(DspComponent *c, int i, std::string alias)
 {    
@@ -1181,11 +1183,50 @@ void DspComponent::setProgressCallback(void (*progress)(DspComponent *c, float p
   _prog_data = userdata;
 }
 
+static void printprogress(int curr, int max, int &last, const char *fmt = NULL, ...)
+{
+  last = (last + 1) % 4;
+  int pos = curr*60/max;
+  char unf[] = "                                                             ]";
+  char fin[] = "[============================================================]";
+  char buf[100];
+  
+  char cs[] = "-\\|/";
+  memcpy(buf, fin, pos+1);
+  buf[pos+1] = cs[last];
+  memcpy(buf+pos+2, unf+pos+2, 62-pos-2+1);
+  if (!fmt) {
+    printf("%s\r", buf);
+  }
+  else {
+    printf("%s", buf);
+    va_list arglist;
+    va_start(arglist, fmt);
+    vprintf(fmt, arglist);
+    va_end(arglist);
+    printf("\r");
+  }
+  fflush(NULL);
+}
+
+//TODO obviously not (really) threadsafe
 void DspComponent::progress_(float p)
 {
-  if (_prog_callback)
-    _prog_callback(this, p, _prog_data);
-  else printf("progress %f\n", p);
+  static int last = 0;
+  static struct timespec last_time = {0,0};
+  
+  struct timespec now;
+
+  clock_gettime(CLOCK_MONOTONIC, &now);
+#pragma omp critical (printprogress_timed)
+  if (now.tv_sec != last_time.tv_sec || now.tv_nsec - last_time.tv_nsec >= 1000000000/4) {
+    last_time = now;
+
+    if (_prog_callback)
+      _prog_callback(this, p, _prog_data);
+    else
+      printprogress(p*1000, 1000, last);
+  }
 }
 
 DspComponent* DspComponent::clone()
