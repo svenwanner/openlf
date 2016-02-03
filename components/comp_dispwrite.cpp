@@ -548,7 +548,7 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //FIXME read/pass actual datastore!
   Subset3d subset(in->data, disparity_root/"subset/source", opts);
   //FIXME add read function to subset3d
-  Datastore *store = in->data->getStore(in->data->getSubGroup("calibration/extrinsics")/"data");
+  Datastore *store = in->data->getStore(subset.extrinsics_group()/"data");
   
   cv::Mat img3d, img;
   //FIXME should add a readimage to subset3d!
@@ -556,8 +556,8 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //FIXME flexmav!
   idx[3] = disp[3]/2;
   
-  //opts.set_flags(UNDISTORT | CVT_8U);
-  store->readImage(idx, &img3d, UNDISTORT | CVT_8U);
+  opts.set_flags(UNDISTORT | CVT_8U);
+  store->readImage(idx, &img3d, opts);
   clifMat2cv(&img3d,&img);
   
   //centerview, channel 0

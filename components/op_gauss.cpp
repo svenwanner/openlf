@@ -46,7 +46,6 @@ OPENLF_VIGRA_OP_START(OP_Gauss, 1, 1, 3, 3)
         int kx = int(sx*3+0.99)*2+1;
         //FIXME hack, add ignore border flag?
         int ky = std::min(int(sy*3+0.99)*2+1, (int(channel_in.shape(1))-4)/2*2+1);
-        //printf("%dx %d (%d) %fx%f\n", kx, ky, channel_in.shape(1), sx, sy);
         cv::GaussianBlur(cv_in, cv_out, cv::Size(kx, ky), sx, sy);
     }
 
