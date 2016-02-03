@@ -75,11 +75,12 @@ void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   Mat_<float> disp;
   Datastore *disp_store = in->data->getStore(disparity_root/"data");
   Datastore *coh_store = in->data->getStore(disparity_root/"coherence");
-
+  Datastore *lf_store = in->data->getStore(disparity_root/"subset/source/data");
   
 	
   disp_store->read(disp);
   coh_store->read(coh);
+  lf_store->read(lf, ProcData(UNDISTORT));
   
   for(int x = 0; x<lf[0]; x++ )
 	{
