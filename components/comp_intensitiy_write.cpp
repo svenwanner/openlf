@@ -61,6 +61,8 @@ void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   errorCond(inputs.GetValue(0, in), "missing input"); RETURN_ON_ERROR
   cpath disparity_root = in->path;
+  if (disparity_root.empty())
+	disparity_root = in->data->getSubGroup("disparity");
   filename = GetParameter(0)->GetString();
   if (GetParameter(1))
     dataset_name = GetParameter(1)->GetString();
@@ -75,18 +77,24 @@ void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   Mat_<float> disp;
   Datastore *disp_store = in->data->getStore(disparity_root/"data");
   Datastore *coh_store = in->data->getStore(disparity_root/"coherence");
-  Datastore *lf_store = in->data->getStore(disparity_root/"subset/source/data");
-  
+  Datastore *lf_store = in->data->getStore(disparity_root/"subset/source/data");  
 	
   disp_store->read(disp);
   coh_store->read(coh);
   lf_store->read(lf, ProcData(UNDISTORT));
   
-  for(int x = 0; x<lf[0]; x++ )
-	{
-		for(int y= 0; y<lf[0]; y++)
+  raw_brdf.create(lf.type(), lf);
+  
+  for(int y= 0; y<lf[1]; y++)	
+  {
+    progress_((float)y/lf[1]);
+#pragma omp parallel for
+    for(int x = 0; x<lf[0]; x++ )
+  
 		{
-			get_intensities(lf, raw_brdf,  x, y, disp(x,y,0,lf[3]/2));
+		  Mat brdf = raw_brdf.bind(1,y).bind(0,x);
+		  if (!isnan( disp(x,y,0,lf[3]/2)))
+			get_intensities(lf, brdf,  x, y, disp(x,y,0,lf[3]/2));
 		}
 	}
   ClifFile f_out;
