@@ -3,7 +3,7 @@ Concepts and Usage
 
 [TOC]
 
-# Workflow
+# Workflow {#concepts}
 
 Working with openlf looks like this:
 1. write component(s) which implement desired functionality(ies)
@@ -21,6 +21,10 @@ Optional:
 OpenLF makes extensive use of the external link functionality of clif/hdf5. This means that outputs are generated from inputs by taking the whole input dataset and appending the newly generated data. The output is a "new" dataset which contains the old and new data in one structure, were the old data is actually a shallow copy (a reference) to the input dataset. 
 
 These references are even retained when writing the output dataset to disk, which means that in general openlf circuits generated clif files contain all input data as links within the generated output files. Input files never have to be modififed, allowing more repeatble and side-effect free processing.
+
+## Partial Processing
+
+Most high level components work on a clif::Dataset as both input and output. As a clif::Dataset can be written to disk at any time (using the writeCLIF component) it is possible to redo single processing steps by saving their input and using the saved clif file in a shortened circuit which start with a readCLIF component instead of the previous processing chain.
 
 # Circuit Generation
 
