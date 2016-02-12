@@ -20,9 +20,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-   qt5_wrap_ui(hdrs src/lfcamconfigurator_linux.ui)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
+qt5_wrap_ui(hdrs src/lfcamconfigurator_linux.ui)
 add_library (${PROJECT_NAME} ${OPENLF_BUILD_TYPE} ${srcs} ${hdrs})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
