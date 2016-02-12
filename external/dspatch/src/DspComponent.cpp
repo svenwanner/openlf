@@ -1209,6 +1209,20 @@ static void printprogress(int curr, int max, int &last, const char *fmt = NULL, 
   fflush(NULL);
 }
 
+//FIXME hack to run CLOCK_MONOTONIC and timespec
+#ifdef _WIN32
+	#define CLOCK_MONOTONIC 1
+	struct timespec { long tv_sec; long tv_nsec; };    //header part
+	int clock_gettime(int, struct timespec *spec)      //C-file part
+	{
+		__int64 wintime; GetSystemTimeAsFileTime((FILETIME*)&wintime);
+		wintime -= 116444736000000000i64;  //1jan1601 to 1jan1970
+		spec->tv_sec = wintime / 10000000i64;           //seconds
+		spec->tv_nsec = wintime % 10000000i64 * 100;      //nano-seconds
+		return 0;
+	}
+#endif
+
 //TODO obviously not (really) threadsafe
 void DspComponent::progress_(float p)
 {
@@ -1218,6 +1232,7 @@ void DspComponent::progress_(float p)
   struct timespec now;
 
   clock_gettime(CLOCK_MONOTONIC, &now);
+
 #pragma omp critical (printprogress_timed)
   if (p == 0.0 || p == 1.0 || now.tv_sec != last_time.tv_sec || now.tv_nsec - last_time.tv_nsec >= 1000000000/4) {
     last_time = now;
