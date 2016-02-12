@@ -29,16 +29,19 @@ if (NOT Vigra_FOUND)
   list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/vigra)
 endif()
 
+message("Search HDF5")
 find_package(HDF5 REQUIRED CXX)
+message("Search Vigra")
 find_package(Vigra REQUIRED )
+message("Search OpenCV")
 find_package(OpenCV REQUIRED)
-find_package(Boost COMPONENTS filesystem system REQUIRED)
 
+message("Search Boost")
+SET(Boost_USE_STATIC_LIBS ON)
+find_package(Boost REQUIRED COMPONENTS system filesystem serialization program_options regex thread date_time REQUIRED)
 
 include(ExternalProject)
-
-
-# 
+ 
 ######################################################
 ## force build add configure phase                ####
 ######################################################
@@ -78,6 +81,7 @@ endfunction()
 ######################################################
 ## clif                                             ##
 ######################################################
+message("Search clif")
 find_package(clif QUIET)
 if (NOT clif_FOUND)
   option(OPENLF_INTERNAL_CLIF "internal clif download and build" ON)
@@ -104,20 +108,15 @@ message("clif lib dirs: ${CLIF_LIBRARY_DIRS}")
 #                    GIT_REPOSITORY https://github.com/hendriksiedelmann/clifview.git
 #                    INSTALL_DIR ${CMAKE_INSTALL_PREFIX})
 
-
-add_definitions(${HDF5_CPPFLAGS})
-
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${HDF5_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${Vigra_INCLUDE_DIRS})
 include_directories(${CLIF_INCLUDE_DIRS})
-message(${CLIF_INCLUDE_DIRS})
-link_directories(${CLIF_LIBRARY_DIRS})
-#FIXME needed for boost under windows - whats the proper way? Boost_LIBRARY_DIR?
-link_directories($ENV{Path})
 
-list(APPEND OPENLF_LIBRARIES ${CLIF_LIBRARIES})
+link_directories(${CLIF_LIBRARY_DIRS})
+
+list(APPEND OPENLF_LIBRARIES ${CLIF_LIBRARIES} ${Boost_LIBRARIES})
 
 add_subdirectory(external/gml_parser)
 include_directories(external/gml_parser)
@@ -130,6 +129,7 @@ include_directories(external/dspatch/include/dspatch)
 
 include_directories(include)
 include_directories(include/openlf)
+
 #include_directories(include/openlf/components)
 #include_directories(include/openlf/workflows)
 #include_directories(include/openlf/operators)
@@ -143,7 +143,6 @@ add_subdirectory(src/lib)
 add_subdirectory(components)
 
 add_subdirectory(gui)
-
 
 add_executable(openlf-bin src/bin/openlf.cpp)
 set_target_properties(openlf-bin PROPERTIES OUTPUT_NAME openlf)

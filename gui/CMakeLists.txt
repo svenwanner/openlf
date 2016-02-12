@@ -3,12 +3,12 @@ cmake_minimum_required(VERSION 2.8.11)
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-SET(Boost_USE_STATIC_LIBS ON)
+#SET(Boost_USE_STATIC_LIBS ON)
 
 #Defines Project name which also becomes the executable name
 project(LF_Toolbox)
 
-find_package(Boost REQUIRED COMPONENTS system filesystem serialization program_options regex thread date_time REQUIRED)
+#find_package(Boost REQUIRED COMPONENTS system filesystem serialization program_options regex thread date_time REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
