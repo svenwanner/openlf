@@ -58,8 +58,7 @@ if (Boost_INTERNAL)
 						URL http://downloads.sourceforge.net/project/boost/boost/${Boost_Version}/boost_${Boost_Version_Underscore}.zip
 						UPDATE_COMMAND \"bootstrap.bat\"
 						CONFIGURE_COMMAND \"\"
-						BUILD_COMMAND bjam address-model=64 toolset=msvc-12.0 variant=release link=shared runtime-link=shared
-						#BUILD_COMMAND bjam address-model=64 toolset=msvc-12.0 variant=release link=static runtime-link=shared
+						BUILD_COMMAND bjam address-model=64 toolset=msvc-12.0 variant=release link=static link=shared runtime-link=shared
 						BUILD_IN_SOURCE 1
 						INSTALL_COMMAND \"\"
 		)
@@ -156,9 +155,9 @@ if (HDF5_INTERNAL)
 		HDF5
 			PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5
 			URL https://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.15-patch1/src/hdf5-1.8.15-patch1.tar.gz
-			#INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/external/hdf5/install
+			CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install
 			CMAKE_ARGS -DCMAKE_BUILD_TYPE=Release
-			INSTALL_COMMAND \"\"
+			INSTALL_COMMAND ;
 		)
 	")
 	
@@ -169,13 +168,13 @@ if (HDF5_INTERNAL)
 	execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/build)
 	
-	execute_process(COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/dependencies/HDF5_include.tar 
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build)
-	set(HDF5_C_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/include)
-	set(HDF5_CXX_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/include)
+	#execute_process(COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/dependencies/HDF5_include.tar 
+	#	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build)
+	set(HDF5_C_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include)
+	set(HDF5_CXX_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include)
 	set(HDF5_hdf5_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/libhdf5.lib)
 	set(HDF5_hdf5_cxx_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/libhdf5_cxx.lib)
-
+	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/cmake)
 	endif()
 #
 find_package(HDF5 REQUIRED)
@@ -225,6 +224,179 @@ message(STATUS "OpenCV include dir: ${OPENCV_INCLUDE_DIR}")
 message(STATUS "OpenCV lib dir: ${OPNECV_LIBRARY_DIR}")
 find_package(OpenCV REQUIRED)
 
+
+###########################################################################################
+# Below is a CMake command to download, build and install EIGEN 
+###########################################################################################
+find_package(EIGEN QUIET)
+if (NOT EIGEN_FOUND)
+  option(EIGEN_INTERNAL "internal EIGEN download and build" ON)
+else()
+  option(EIGEN_INTERNAL "internal EIGEN download and build" OFF)
+endif()
+
+if (EIGEN_INTERNAL)
+message( STATUS "EIGEN Version: latest will be downloaded and installed")
+	#generate auxiliary dependency project
+	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen)
+	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
+
+    #generate false dependency project
+    set(CMAKE_LIST_CONTENT "
+		cmake_minimum_required(VERSION 2.8)
+
+		include(ExternalProject)
+		ExternalProject_Add(
+		eigen
+						PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_eigen
+						URL http://bitbucket.org/eigen/eigen/get/3.2.8.tar.bz2
+						CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install
+						INSTALL_COMMAND ;
+		)
+	")
+	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+	
+    execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
+
+	set(EIGEN_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install/include/eigen3)
+endif()
+
+
+###########################################################################################
+# Below is a CMake command to download, build and install FLANN 
+###########################################################################################
+find_package(FLANN QUIET)
+if (NOT FLANN_FOUND)
+  option(FLANN_INTERNAL "internal FLANN download and build" ON)
+else()
+  option(FLANN_INTERNAL "internal FLANN download and build" OFF)
+endif()
+
+if (FLANN_INTERNAL)
+message( STATUS "FLANN Version: latest will be downloaded and installed")
+	#generate auxiliary dependency project
+	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann)
+	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/build)
+
+    #generate false dependency project
+    set(CMAKE_LIST_CONTENT "
+		cmake_minimum_required(VERSION 2.8)
+
+		include(ExternalProject)
+		ExternalProject_Add(
+		flann
+						PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_flann
+						GIT_REPOSITORY https://github.com/mariusmuja/flann.git
+						#CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_flann/install
+						INSTALL_COMMAND \"\"
+		)
+	")
+	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_flann/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+	
+    execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/build)
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/build)
+
+	set(FLANN_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/src/flann-build/lib/Release/flann.lib)
+	set(FLANN_S_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/src/flann-build/lib/Release/flann_s.lib)
+	set(FLANN_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_flann/src/flann/src/cpp)
+endif()
+
+
+
+###########################################################################################
+# Below is a CMake command to download, build and install VTK
+###########################################################################################
+find_package(VTK QUIET)
+if (NOT VTK)
+  option(VTK_INTERNAL "internal FLANN download and build" ON)
+else()
+  option(VTK_INTERNAL "internal FLANN download and build" OFF)
+endif()
+
+if (VTK_INTERNAL)
+message( STATUS "VTK Version: latest will be downloaded and installed")
+	#generate auxiliary dependency project
+	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_VTK)
+	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/build)
+
+    #generate false dependency project
+    set(CMAKE_LIST_CONTENT "
+		cmake_minimum_required(VERSION 2.8)
+
+		include(ExternalProject)
+		ExternalProject_Add(
+		VTK
+						PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_VTK
+						URL http://www.vtk.org/files/release/7.0/VTK-7.0.0.zip
+						CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_VTK/install
+						INSTALL_COMMAND ;
+		)
+	")
+	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+	
+    execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/build)
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/build)
+
+	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/install/lib/cmake/vtk-7.0)
+endif()
+find_package(VTK REQUIRED)
+
+
+###########################################################################################
+# Below is a CMake command to download, build and install PCL 
+###########################################################################################
+find_package(PLC QUIET)
+if (NOT PLC)
+  option(PLC_INTERNAL "internal FLANN download and build" ON)
+else()
+  option(PLC_INTERNAL "internal FLANN download and build" OFF)
+endif()
+
+if (PLC_INTERNAL)
+message( STATUS "PLC Version: latest will be downloaded and installed")
+	#generate auxiliary dependency project
+	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_PCL)
+	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/build)
+
+    #generate false dependency project
+    set(CMAKE_LIST_CONTENT "
+		cmake_minimum_required(VERSION 2.8)
+
+		include(ExternalProject)
+		ExternalProject_Add(
+		PCL
+						PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_PCL
+						GIT_REPOSITORY https://github.com/PointCloudLibrary/pcl.git
+						CMAKE_ARGS -DEIGEN_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}
+						CMAKE_ARGS -DFLANN_LIBRARY=${FLANN_S_LIBRARY}
+						CMAKE_ARGS -DFLANN_INCLUDE_DIR=${FLANN_INCLUDE_DIR}	
+						CMAKE_ARGS -DVTK_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_VTK/src/VTK-build
+						CMAKE_ARGS -DZLIB_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}basic_libs/include -DZLIB_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/zlib.lib
+						CMAKE_ARGS -DPNG_PNG_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DPNG_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libpng.lib
+						CMAKE_ARGS -DBOOST_ROOT=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost
+						CMAKE_ARGS -DWITH_PCAP=OFF
+						INSTALL_COMMAND \"\"
+		)
+	")
+	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+	
+    execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/build)
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/build)	
+	
+endif()	
+
+	
+	
+	
 ###########################################################################################
 ## Below is a CMake command to locate or download and build clif                                             
 ###########################################################################################
@@ -261,6 +433,7 @@ if (OPENLF_INTERNAL_CLIF)
 			CMAKE_ARGS -DHDF5_hdf5_LIBRARY_RELEASE=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/libhdf5.lib
 			CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_RELEASE=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/libhdf5_cpp.lib
 			CMAKE_ARGS -DBoost_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost
+			CMAKE_ARGS -DEIGEN_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}
             INSTALL_COMMAND \"\"
             )
 		")
@@ -278,6 +451,8 @@ endif()
 message(STATUS "clif libraries: ${CLIF_LIBRARIES}")
 message(STATUS "clif lib dirs: ${CLIF_LIBRARY_DIRS}")
 find_package(clif REQUIRED)
+
+
 
 
 include_directories(${OpenCV_INCLUDE_DIRS})
@@ -320,8 +495,6 @@ add_executable(openlf-bin src/bin/openlf.cpp)
 set_target_properties(openlf-bin PROPERTIES OUTPUT_NAME openlf)
 target_link_libraries(openlf-bin ${OPENLF_LIBRARIES})
 
-message(${HDF5_C_INCLUDE_DIR})
-message(${HDF5_hdf5_LIBRARY_RELEASE})
 
 ##add_executable(teststuff src/bin/test.cpp)
 ##add_executable(teststuff2 src/bin/test2.cpp)
