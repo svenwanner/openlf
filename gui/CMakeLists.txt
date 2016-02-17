@@ -50,12 +50,12 @@ qt5_wrap_ui(hdrs src/toolbox_ui.ui)
 ######################## WINDOWS ###############################################
 ################################################################################
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")# the short system name, e.g. "Linux", "FreeBSD" or "Windows"
-	MESSAGE(STATUS "INFO: WINDOWS BUILD" )
+	MESSAGE(STATUS "WINDOWS BUILD" )
 
 #Define output target and link dependencies
 	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHc /EHsc")
 	add_executable( ${PROJECT_NAME} ${srcs} ${hdrs} ${ResourceSources} )
-	message("openlf libs: ${OPENLF_LIBRARIES}")
+	message(STATUS "openlf libs: ${OPENLF_LIBRARIES}")
 	target_link_libraries(${PROJECT_NAME} ${OPENLF_LIBRARIES} Qt5::Widgets Qt5::Gui Qt5::Core Qt5::Network qnodeseditor LFCamconfigurator)
 
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
@@ -64,7 +64,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 ######################## Linux #################################################
 ################################################################################
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	message(STATUS "INFO: LINUX BUILD" )
+	message(STATUS "LINUX BUILD" )
 #Set default include directory for all dependent library headers	
 	set(LIBS_INCLUDE_DIR "/usr/local/include" CACHE PATH "Include path for external libraries")
 	include_directories(${LIBS_INCLUDE_DIR})
