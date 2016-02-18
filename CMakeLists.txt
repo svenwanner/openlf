@@ -74,7 +74,7 @@ if (Boost_INTERNAL OR REBUILD_Boost)
 	execute_process(COMMAND ${CMAKE_COMMAND} --build .
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_boost)	
 
-	set(Boost_ROOT ${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/ CACHE TYPE STRING)
+	set(BOOST_ROOT ${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/ CACHE TYPE STRING)
 endif()
 
 find_package(Boost REQUIRED)
