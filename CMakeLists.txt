@@ -461,6 +461,8 @@ else()
   message(STATUS "clif NOT found")
 endif()
 
+
+
 if (CLIF_INTERNAL OR REBUILD_CLIF)
 
 	message( STATUS "Clif Version: latest will be downloaded and installed")
@@ -480,11 +482,11 @@ if (CLIF_INTERNAL OR REBUILD_CLIF)
             GIT_REPOSITORY https://github.com/hendriksiedelmann/clif.git
             CMAKE_ARGS -DVigra_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_vigra/src/vigra-build
 			CMAKE_ARGS -DOpenCV_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_opencv/src/opencv-build
-			CMAKE_ARGS -DHDF5_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/include
-			CMAKE_ARGS -DHDF5_CXX_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/include
-			CMAKE_ARGS -DHDF5_C_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/include
-			CMAKE_ARGS -DHDF5_hdf5_LIBRARY_RELEASE=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/libhdf5.lib
-			CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_RELEASE=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/libhdf5_cpp.lib
+			CMAKE_ARGS -DHDF5_INCLUDE_DIR=${HDF5_INCLUDE_DIRS}
+			CMAKE_ARGS -DHDF5_CXX_INCLUDE_DIR=${HDF5_CXX_INCLUDE_DIR}
+			CMAKE_ARGS -DHDF5_C_INCLUDE_DIR=${HDF5_INCLUDE_DIRS}
+			CMAKE_ARGS -DHDF5_hdf5_LIBRARY_RELEASE=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5.lib
+			CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_RELEASE=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5_cpp.lib
 			CMAKE_ARGS -DBoost_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost
 			CMAKE_ARGS -DEIGEN_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}
             INSTALL_COMMAND \"\"
