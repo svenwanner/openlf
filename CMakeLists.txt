@@ -30,12 +30,8 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 endif()
 
 
-
-
-
 SET(CompileAs "Release" CACHE STRING "library selected at CMake configure time")
 SET_PROPERTY(CACHE CompileAs PROPERTY STRINGS RelWithDebInfo Release Debug) 
-
 
 include(ExternalProject)
 
@@ -112,6 +108,12 @@ if (Vigra_INTERNAL OR REBUILD_Vigra)
 	#generate auxiliary dependency project
 	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra)
 	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/build)
+	if(${CompileAs} STREQUAL "Debug")
+		set(vigranumpyflag 0)
+	else()
+		set(vigranumpyflag 1)
+	endif()
+	message(${vigranumpyflag})
     set(CMAKE_LIST_CONTENT "
 		cmake_minimum_required(VERSION 2.8)
 
@@ -126,7 +128,7 @@ if (Vigra_INTERNAL OR REBUILD_Vigra)
 			CMAKE_ARGS -DZLIB_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DZLIB_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/zlib.lib
 			CMAKE_ARGS -DBoost_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost -DBoost_PYTHON_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/stage/lib/boost_python-vc120-mt-1_58.lib
 			CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_vigra/install
-			CMAKE_ARGS -DWITH_OPENEXR=0 -DCMAKE_BUILD_TYPE=Release -DWITH_VIGRANUMPY=1 -DWITH_HDF5=0
+			CMAKE_ARGS -DWITH_OPENEXR=0 -DCMAKE_BUILD_TYPE=Release -DWITH_VIGRANUMPY=${vigranumpyflag} -DWITH_HDF5=0
 			CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
 			INSTALL_COMMAND ;
 		)
@@ -197,12 +199,14 @@ if (HDF5_INTERNAL OR REBUILD_HDF5)
 	set(HDF5_CXX_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include CACHE TYPE STRING)
 	set(HDF5_hdf5_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/libhdf5.lib CACHE TYPE STRING)
 	set(HDF5_hdf5_cxx_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/libhdf5_cxx.lib CACHE TYPE STRING)
+	set(HDF5_hdf5_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Debug/libhdf5_D.lib CACHE TYPE STRING)
+	set(HDF5_hdf5_cxx_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Rebug/libhdf5_cxx_D.lib CACHE TYPE STRING)
 	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/cmake)
 	endif()
 
 find_package(HDF5 REQUIRED)
 message(STATUS "HDF5 include dir: ${HDF5_INCLUDE_DIRS}")
-message(STATUS "HDF5 lib dirs: ${HDF5_LIBRARIES}")
+message(STATUS "HDF5 lib dirs: ${HDF5_LIBRARIES} ${HDF5_hdf5_cxx_LIBRARY_RELEASE} ${HDF5_hdf5_LIBRARY_DEBUG} ${HDF5_hdf5_cxx_LIBRARY_DEBUG}")
 
 
 
@@ -504,8 +508,8 @@ if (CLIF_INTERNAL OR REBUILD_CLIF)
 			CMAKE_ARGS -DHDF5_C_INCLUDE_DIR=${HDF5_INCLUDE_DIRS}
 			CMAKE_ARGS -DHDF5_hdf5_LIBRARY_RELEASE=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5.lib
 			CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_RELEASE=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5_cpp.lib
-			MAKE_ARGS -DHDF5_hdf5_LIBRARY_DEBUG=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5.lib
-			CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_DEBUG=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5_cpp.lib
+			CMAKE_ARGS -DHDF5_hdf5_LIBRARY_DEBUG=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5_D.lib
+			CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_DEBUG=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5_cpp_D.lib
 			CMAKE_ARGS -DBoost_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost
 			CMAKE_ARGS -DEIGEN_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}
 			CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
