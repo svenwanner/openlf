@@ -37,7 +37,7 @@ include(ExternalProject)
 message(STATUS "Search Boost")
 SET(Boost_USE_STATIC_LIBS ON)
 find_package(Boost QUIET COMPONENTS system filesystem serialization program_options regex thread date_time QUIET)
-option(Boost_INTERNAL  "internal Boost download and build")
+option(REBUILD_Boost "internal HDF5 download and build" OFF)
 if (Boost_FOUND)
   set(Boost_INTERNAL OFF)
   message(STATUS "Boost found")
@@ -46,7 +46,7 @@ else()
   message(STATUS "Boost NOT found")
 endif()
 
-if (Boost_INTERNAL)
+if (Boost_INTERNAL OR REBUILD_Boost)
 	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_boost)
 	set( Boost_Version 1.58.0 )
 	string( REPLACE "." "_" Boost_Version_Underscore ${Boost_Version} )
@@ -74,7 +74,7 @@ if (Boost_INTERNAL)
 	execute_process(COMMAND ${CMAKE_COMMAND} --build .
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_boost)	
 
-	set(BOOST_ROOT ${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/ CACHE TYPE STRING)
+	set(Boost_ROOT ${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/ CACHE TYPE STRING)
 endif()
 
 find_package(Boost REQUIRED)
@@ -88,7 +88,7 @@ message(STATUS "Boost lib dirs: ${Boost_LIBRARY_DIRS}")
 ###########################################################################################
 message(STATUS "Search Vigra")
 find_package(Vigra QUIET)
-option(Vigra_INTERNAL "internal vigra download and build")
+option(REBUILD_Vigra "internal HDF5 download and build" OFF)
 if (Vigra_FOUND)
   set(Vigra_INTERNAL OFF)
   message(STATUS "Vigra found")
@@ -97,7 +97,7 @@ else()
   message(STATUS "Vigra NOT found")
 endif()
 
-if (Vigra_INTERNAL)
+if (Vigra_INTERNAL OR REBUILD_Vigra)
 	message( STATUS "VIGRA Version: latest will be downloaded and installed")
 	#generate auxiliary dependency project
 	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra)
@@ -114,7 +114,8 @@ if (Vigra_INTERNAL)
 			CMAKE_ARGS -DJPEG_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DJPEG_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libjpeg.lib
 			CMAKE_ARGS -DPNG_PNG_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DPNG_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libpng.lib
 			CMAKE_ARGS -DZLIB_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DZLIB_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/zlib.lib
-			CMAKE_ARGS -DWITH_OPENEXR=0 -DCMAKE_BUILD_TYPE=Release -DWITH_VIGRANUMPY=0 -DWITH_HDF5=0
+			CMAKE_ARGS -DBoost_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost -DBoost_PYTHON_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/stage/lib/boost_python-vc120-mt-1_58.lib
+			CMAKE_ARGS -DWITH_OPENEXR=0 -DCMAKE_BUILD_TYPE=Release -DWITH_VIGRANUMPY=1 -DWITH_HDF5=0
 			INSTALL_COMMAND \"\"
 		)
 	")
@@ -142,7 +143,7 @@ message(STATUS "Vigra lib dirs: ${Vigra_LIBRARY_DIRS}")
 ###########################################################################################
 message(STATUS "Search HDF5")
 find_package(HDF5 QUIET)
-option(HDF5_INTERNAL "internal HDF5 download and build")
+option(REBUILD_HDF5 "internal HDF5 download and build" OFF)
 if (HDF5_FOUND)
   set(HDF5_INTERNAL OFF)
   message(STATUS "HDF5 found")
@@ -151,7 +152,7 @@ else()
   message(STATUS "HDF5 NOT found")
 endif()
 
-if (HDF5_INTERNAL)
+if (HDF5_INTERNAL OR REBUILD_HDF5)
 	message( STATUS "HDF5 Version: 1.8.15-patch1 will be downloaded and installed")
 
 	#generate auxiliary dependency project
@@ -198,7 +199,7 @@ message(STATUS "HDF5 lib dirs: ${HDF5_LIBRARIES}")
 ###########################################################################################
 message(STATUS "Search OpenCV")
 find_package(OpenCV QUIET)
-option(OpenCV_INTERNAL "internal OpenCV download and build")
+option(REBUILD_OpenCV "internal HDF5 download and build" OFF)
 if (OpenCV_FOUND)
   set(OpenCV_INTERNAL OFF)
   message(STATUS "OpenCV found")
@@ -207,7 +208,7 @@ else()
   message(STATUS "OpenCV found")
 endif()
 
-if (OpenCV_INTERNAL)
+if (OpenCV_INTERNAL OR REBUILD_OpenCV)
 
 	message( STATUS "OpenCV Version: 3.0.0 will be downloaded and installed")
 	
@@ -246,7 +247,7 @@ message(STATUS "OpenCV lib dir: ${OpenCV_LIBS}")
 ###########################################################################################
 # Below is a CMake command to download, build and install EIGEN 
 ###########################################################################################
-option(EIGEN_INTERNAL "internal EIGEN download and build" )
+option(REBUILD_Eigen "internal HDF5 download and build" OFF)
 if(EIGEN_INCLUDE_DIR)
   set(EIGEN_INTERNAL OFF)
   message(STATUS "EIGEN found")
@@ -255,7 +256,7 @@ else()
   message(STATUS "EIGEN NOT found")
 endif()
 
-if (EIGEN_INTERNAL)
+if (EIGEN_INTERNAL OR REBUILD_Eigen)
 message( STATUS "EIGEN Version: latest will be downloaded and installed")
 	#generate auxiliary dependency project
 	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen)
@@ -295,7 +296,7 @@ if (WITH_PCL)
 	###########################################################################################
 	# Below is a CMake command to download, build and install FLANN 
 	###########################################################################################
-	option(FLANN_INTERNAL "internal FLANN download and build")
+	option(REBUILD_Flann "internal HDF5 download and build" OFF)
 	if (FLANN_S_LIBRARY)
 	  set(FLANN_INTERNAL OFF)
 	  message(STATUS "FLANN found")
@@ -304,7 +305,7 @@ if (WITH_PCL)
 	  message(STATUS "FLANN found")
 	endif()
 
-	if (FLANN_INTERNAL)
+	if (FLANN_INTERNAL OR REBUILD_Flann)
 	message( STATUS "FLANN Version: latest will be downloaded and installed")
 		#generate auxiliary dependency project
 		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann)
@@ -346,7 +347,7 @@ if (WITH_PCL)
 	# Below is a CMake command to download, build and install VTK
 	###########################################################################################
 	find_package(VTK QUIET)
-	option(VTK_INTERNAL "internal VTK download and build")
+	option(REBUILD_VTK "internal HDF5 download and build" OFF)
 	if (VTK_FOUND)
 	  set(VTK_INTERNAL OFF)
 	  message(STATUS "VTK found")
@@ -355,7 +356,7 @@ if (WITH_PCL)
 	  message(STATUS "VTK found")
 	endif()
 
-	if (VTK_INTERNAL)
+	if (VTK_INTERNAL OR REBUILD_VTK)
 	message( STATUS "VTK Version: latest will be downloaded and installed")
 		#generate auxiliary dependency project
 		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_VTK)
@@ -394,7 +395,7 @@ if (WITH_PCL)
 	# Below is a CMake command to download, build and install PCL 
 	###########################################################################################
 	find_package(PCL QUIET)
-	option(PCL_INTERNAL "internal FLANN download and build")
+	option(REBUILD_PCL "internal HDF5 download and build" OFF)
 	if (PCL_FOUND)
 	  set(PCL_INTERNAL OFF)
 	  message(STATUS "PCL found")
@@ -403,7 +404,7 @@ if (WITH_PCL)
 	  message(STATUS "PCL NOT found")
 	endif()
 
-	if (PCL_INTERNAL)
+	if (PCL_INTERNAL OR REBUILD_PCL)
 	message( STATUS "PLC Version: latest will be downloaded and installed")
 		#generate auxiliary dependency project
 		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_PCL)
@@ -451,7 +452,7 @@ endif()
 ###########################################################################################
 message(STATUS "Search clif")
 find_package(clif QUIET)
-option(CLIF_INTERNAL "internal clif download and build")
+option(REBUILD_CLIF "internal HDF5 download and build" OFF)
 if (clif_FOUND)
   set(CLIF_INTERNAL OFF)
   message(STATUS "clif found")
@@ -460,7 +461,7 @@ else()
   message(STATUS "clif NOT found")
 endif()
 
-if (CLIF_INTERNAL)
+if (CLIF_INTERNAL OR REBUILD_CLIF)
 
 	message( STATUS "Clif Version: latest will be downloaded and installed")
 	
