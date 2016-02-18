@@ -75,11 +75,13 @@ if (Boost_INTERNAL OR REBUILD_Boost)
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_boost)	
 
 	set(BOOST_ROOT ${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/ CACHE TYPE STRING)
+	
 endif()
-
-find_package(Boost REQUIRED)
+#set(Boost_LIBRARIES ${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/)
+find_package(Boost REQUIRED COMPONENTS system filesystem serialization program_options regex thread date_time)
 message(STATUS "Boost include dir: ${Boost_INCLUDE_DIRS}")
 message(STATUS "Boost lib dirs: ${Boost_LIBRARY_DIRS}")
+message(STATUS "Boost libs: ${Boost_LIBRARIES}")
 
 
 
@@ -115,8 +117,9 @@ if (Vigra_INTERNAL OR REBUILD_Vigra)
 			CMAKE_ARGS -DPNG_PNG_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DPNG_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libpng.lib
 			CMAKE_ARGS -DZLIB_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DZLIB_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/zlib.lib
 			CMAKE_ARGS -DBoost_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost -DBoost_PYTHON_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/stage/lib/boost_python-vc120-mt-1_58.lib
+			CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_vigra/install
 			CMAKE_ARGS -DWITH_OPENEXR=0 -DCMAKE_BUILD_TYPE=Release -DWITH_VIGRANUMPY=1 -DWITH_HDF5=0
-			INSTALL_COMMAND \"\"
+			INSTALL_COMMAND ;
 		)
 	")
 			
@@ -127,8 +130,8 @@ if (Vigra_INTERNAL OR REBUILD_Vigra)
 	execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/build)
 			
-	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/src/vigra-build)
-	set(Vigra_LIBRARY_DIRS ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/src/vigra-build/src/impex/Release CACHE TYPE STRING)				
+	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/install/lib/vigra)
+	set(Vigra_LIBRARY_DIRS ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/install/lib CACHE TYPE STRING)				
 	set(Vigra_INTERNAL OFF)
 endif()
 
@@ -517,7 +520,7 @@ include_directories(${CLIF_INCLUDE_DIRS})
 link_directories(${CLIF_LIBRARY_DIRS})
 
 list(APPEND OPENLF_LIBRARIES ${CLIF_LIBRARIES} ${Boost_LIBRARIES})
-
+message("Boost: ${Boost_LIBRARIES}")
 add_subdirectory(external/gml_parser)
 include_directories(external/gml_parser)
 
