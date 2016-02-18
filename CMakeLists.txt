@@ -37,10 +37,12 @@ include(ExternalProject)
 message(STATUS "Search Boost")
 SET(Boost_USE_STATIC_LIBS ON)
 find_package(Boost QUIET COMPONENTS system filesystem serialization program_options regex thread date_time QUIET)
-if (NOT Boost_FOUND)
-  option(Boost_INTERNAL "internal Boost download and build" ON)
-else()
+if (Boost_FOUND)
   option(Boost_INTERNAL "internal Boost download and build" OFF)
+  message(STATUS "Boost found")
+else()
+  option(Boost_INTERNAL "internal Boost download and build" ON)
+  message(STATUS "Boost NOT found")
 endif()
 
 if (Boost_INTERNAL)
@@ -71,27 +73,26 @@ if (Boost_INTERNAL)
 	execute_process(COMMAND ${CMAKE_COMMAND} --build .
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_boost)	
 
-	set(BOOST_ROOT ${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/)
-	set(BOOST_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/)
-	set(BOOST_LIBRARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/stage/lib)
-	include_directories(${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/stage/lib)
-	link_directories (${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/stage/lib)
-	
+	set(BOOST_ROOT ${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/ CACHE TYPE STRING)
 endif()
 
-message(STATUS "Boost include dir: ${BOOST_INCLUDE_DIR}")
-message(STATUS "Boost lib dirs: ${BOOST_LIBRARY_DIR}")
 find_package(Boost REQUIRED)
+message(STATUS "Boost include dir: ${Boost_INCLUDE_DIRS}")
+message(STATUS "Boost lib dirs: ${Boost_LIBRARY_DIRS}")
+
+
 
 ###########################################################################################
 # Below is a CMake command to locate or download and build VIGRA 
 ###########################################################################################
 message(STATUS "Search Vigra")
 find_package(Vigra QUIET)
-if (NOT Vigra_FOUND)
-  option(Vigra_INTERNAL "internal vigra download and build" ON)
+if (NOT VIGRA_FOUND)
+  option(VIGRA_INTERNAL "internal vigra download and build" OFF)
+  message(STATUS "Vigra found")
 else()
-  option(Vigra_INTERNAL "internal vigra download and build" OFF)
+  option(VIGRA_INTERNAL "internal vigra download and build" ON)
+  message(STATUS "Vigra NOT found")
 endif()
 
 if (Vigra_INTERNAL)
@@ -125,9 +126,13 @@ if (Vigra_INTERNAL)
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/build)
 			
 	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/src/vigra-build)
+	set(Vigra_LIBRARY_DIRS ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/src/vigra-build/src/impex/Release CACHE TYPE STRING)				
 endif()
 
 find_package(Vigra REQUIRED)
+message(STATUS "Vigra include dir: ${Vigra_INCLUDE_DIRS}")
+message(STATUS "Vigra lib dirs: ${Vigra_LIBRARY_DIRS}")
+
 
 
 ###########################################################################################
@@ -135,10 +140,12 @@ find_package(Vigra REQUIRED)
 ###########################################################################################
 message(STATUS "Search HDF5")
 find_package(HDF5 QUIET)
-if (NOT HDF5_FOUND)
-  option(HDF5_INTERNAL "internal HDF5 download and build" ON)
-else()
+if (HDF5_FOUND)
   option(HDF5_INTERNAL "internal HDF5 download and build" OFF)
+  message(STATUS "HDF5 found")
+else()
+  option(HDF5_INTERNAL "internal HDF5 download and build" ON)
+  message(STATUS "HDF5 NOT found")
 endif()
 
 if (HDF5_INTERNAL)
@@ -170,24 +177,30 @@ if (HDF5_INTERNAL)
 	
 	#execute_process(COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/dependencies/HDF5_include.tar 
 	#	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build)
-	set(HDF5_C_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include)
-	set(HDF5_CXX_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include)
-	set(HDF5_hdf5_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/libhdf5.lib)
-	set(HDF5_hdf5_cxx_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/libhdf5_cxx.lib)
+	set(HDF5_C_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include CACHE TYPE STRING)
+	set(HDF5_CXX_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include CACHE TYPE STRING)
+	set(HDF5_hdf5_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/libhdf5.lib CACHE TYPE STRING)
+	set(HDF5_hdf5_cxx_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/libhdf5_cxx.lib CACHE TYPE STRING)
 	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/cmake)
 	endif()
-#
+
 find_package(HDF5 REQUIRED)
+message(STATUS "HDF5 include dir: ${HDF5_INCLUDE_DIRS}")
+message(STATUS "HDF5 lib dirs: ${HDF5_LIBRARIES}")
+
+
 
 ###########################################################################################
 # Below is a CMake command to locate or download and build openCV 3.0
 ###########################################################################################
 message(STATUS "Search OpenCV")
 find_package(OpenCV QUIET)
-if (NOT OpenCV_FOUND)
-  option(OpenCV_INTERNAL "internal OpenCV download and build" ON)
-else()
+if (OpenCV_FOUND)
   option(OpenCV_INTERNAL "internal OpenCV download and build" OFF)
+  message(STATUS "OpenCV found")
+else()
+  option(OpenCV_INTERNAL "internal OpenCV download and build" ON)
+  message(STATUS "OpenCV found")
 endif()
 
 if (OpenCV_INTERNAL)
@@ -219,64 +232,71 @@ if (OpenCV_INTERNAL)
 
 	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_opencv/src/opencv-build)
 endif()
-#
-#message(STATUS "OpenCV include dir: ${OPENCV_INCLUDE_DIR}")
-#message(STATUS "OpenCV lib dir: ${OPNECV_LIBRARY_DIR}")
+
 find_package(OpenCV REQUIRED)
+message(STATUS "OpenCV include dir: ${OpenCV_INCLUDE_DIRS}")
+message(STATUS "OpenCV lib dir: ${OpenCV_LIBS}")
+
+
+
+###########################################################################################
+# Below is a CMake command to download, build and install EIGEN 
+###########################################################################################
+
+if(EIGEN_INCLUDE_DIR)
+  option(EIGEN_INTERNAL "internal EIGEN download and build" OFF)
+  message(STATUS "EIGEN found")
+else()
+  option(EIGEN_INTERNAL "internal EIGEN download and build" ON)
+  message(STATUS "EIGEN NOT found")
+endif()
+
+if (EIGEN_INTERNAL)
+message( STATUS "EIGEN Version: latest will be downloaded and installed")
+	#generate auxiliary dependency project
+	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen)
+	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
+
+	#generate false dependency project
+	set(CMAKE_LIST_CONTENT "
+		cmake_minimum_required(VERSION 2.8)
+
+		include(ExternalProject)
+		ExternalProject_Add(
+		eigen
+						PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_eigen
+						URL http://bitbucket.org/eigen/eigen/get/3.2.8.tar.bz2
+						CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install
+						INSTALL_COMMAND ;
+		)
+	")
+	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+	
+	execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
+	execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
+
+	set(EIGEN_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install/include/eigen3 CACHE TYPE STRING)
+endif()
+message(STATUS "EIGEN include dir: ${EIGEN_INCLUDE_DIR}")
+
 
 
 option(WITH_PCL "compile PCL" OFF)
-
-if (WITH_PCL)
+if (WITH_PCL)	
 	message(STATUS "Compile PCL")
-	###########################################################################################
-	# Below is a CMake command to download, build and install EIGEN 
-	###########################################################################################
-	find_package(EIGEN QUIET)
-	if (NOT EIGEN_FOUND)
-	  option(EIGEN_INTERNAL "internal EIGEN download and build" ON)
-	else()
-	  option(EIGEN_INTERNAL "internal EIGEN download and build" OFF)
-	endif()
-
-	if (EIGEN_INTERNAL)
-	message( STATUS "EIGEN Version: latest will be downloaded and installed")
-		#generate auxiliary dependency project
-		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen)
-		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
-
-		#generate false dependency project
-		set(CMAKE_LIST_CONTENT "
-			cmake_minimum_required(VERSION 2.8)
-
-			include(ExternalProject)
-			ExternalProject_Add(
-			eigen
-							PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_eigen
-							URL http://bitbucket.org/eigen/eigen/get/3.2.8.tar.bz2
-							CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install
-							INSTALL_COMMAND ;
-			)
-		")
-		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
-		
-		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
-		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
-
-		set(EIGEN_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install/include/eigen3)
-	endif()
-
+	
 
 	###########################################################################################
 	# Below is a CMake command to download, build and install FLANN 
 	###########################################################################################
-	find_package(FLANN QUIET)
-	if (NOT FLANN_FOUND)
-	  option(FLANN_INTERNAL "internal FLANN download and build" ON)
-	else()
+	if (FLANN_S_LIBRARY)
 	  option(FLANN_INTERNAL "internal FLANN download and build" OFF)
+	  message(STATUS "FLANN found")
+	else()
+	  option(FLANN_INTERNAL "internal FLANN download and build" ON)
+	  message(STATUS "FLANN found")
 	endif()
 
 	if (FLANN_INTERNAL)
@@ -305,21 +325,28 @@ if (WITH_PCL)
 		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/build)
 
-		set(FLANN_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/lib/flann.lib)
-		set(FLANN_S_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/lib/flann_s.lib)
-		set(FLANN_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/include)
-		set(FLANN_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/force_flann/sinstall/include)
+		set(FLANN_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/lib/flann.lib CACHE TYPE STRING)
+		set(FLANN_S_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/lib/flann_s.lib CACHE TYPE STRING)
+		set(FLANN_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/include CACHE TYPE STRING)
+		#set(FLANN_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/include CACHE TYPE STRING)
 	endif()
+	message(STATUS "FLANN lib: ${FLANN_LIBRARY}")	
+	message(STATUS "FLANN static lib: ${FLANN_S_LIBRARY}")	
+	message(STATUS "FLANN include dir: ${FLANN_INCLUDE_DIR}")	
 	
+	
+
 
 	###########################################################################################
 	# Below is a CMake command to download, build and install VTK
 	###########################################################################################
 	find_package(VTK QUIET)
-	if (NOT VTK)
-	  option(VTK_INTERNAL "internal FLANN download and build" ON)
+	if (VTK_FOUND)
+	  option(VTK_INTERNAL "internal VTK download and build" OFF)
+	  message(STATUS "VTK found")
 	else()
-	  option(VTK_INTERNAL "internal FLANN download and build" OFF)
+	  option(VTK_INTERNAL "internal VTK download and build" ON)
+	  message(STATUS "VTK found")
 	endif()
 
 	if (VTK_INTERNAL)
@@ -350,17 +377,23 @@ if (WITH_PCL)
 
 		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/install/lib/cmake/vtk-7.0)
 	endif()
-	find_package(VTK REQUIRED)
-
+	find_package(VTK REQUIRED)	
+	message(STATUS "VTK include dir: ${VTK_INCLUDE_DIRS}")	
+	message(STATUS "VTK lib: ${VTK_LIBRARIES}")
+	
+	
+	
 
 	###########################################################################################
 	# Below is a CMake command to download, build and install PCL 
 	###########################################################################################
 	find_package(PCL QUIET)
-	if (NOT PCL)
-	  option(PCL_INTERNAL "internal FLANN download and build" ON)
-	else()
+	if (PCL)
 	  option(PCL_INTERNAL "internal FLANN download and build" OFF)
+	  message(STATUS "PCL found")
+	else()
+	  option(PCL_INTERNAL "internal FLANN download and build" ON)
+	  message(STATUS "PCL found")
 	endif()
 
 	if (PCL_INTERNAL)
@@ -398,23 +431,27 @@ if (WITH_PCL)
 		
 		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/src/PCL-build)
 	endif()	
-	
 	find_package(PCL REQUIRED)
+	message(STATUS "PCL include dir: ${PCL_INCLUDE_DIRS}")	
+	message(STATUS "PCL lib: ${PCL_LIBRARIES}")
+	message(STATUS "PCL lib: ${PCL_INCLUDE_DIRS}")
 	
 endif()
-	
+
 ###########################################################################################
 ## Below is a CMake command to locate or download and build clif                                             
 ###########################################################################################
 message(STATUS "Search clif")
 find_package(clif QUIET)
-if (NOT clif_FOUND)
-  option(OPENLF_INTERNAL_CLIF "internal clif download and build" ON)
+if (clif_FOUND)
+  option(CLIF_INTERNAL "internal clif download and build" OFF)
+  message(STATUS "clif found")
 else()
-  option(OPENLF_INTERNAL_CLIF "internal clif download and build" OFF)
+  option(CLIF_INTERNAL "internal clif download and build" ON)
+  message(STATUS "clif NOT found")
 endif()
 
-if (OPENLF_INTERNAL_CLIF)
+if (CLIF_INTERNAL)
 
 	message( STATUS "Clif Version: latest will be downloaded and installed")
 	
@@ -453,17 +490,15 @@ if (OPENLF_INTERNAL_CLIF)
 
 	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_clif/src/clif-build)
 endif()
-#
+
+find_package(clif REQUIRED)
 message(STATUS "clif libraries: ${CLIF_LIBRARIES}")
 message(STATUS "clif lib dirs: ${CLIF_LIBRARY_DIRS}")
-find_package(clif REQUIRED)
-
-
 
 
 include_directories(${OpenCV_INCLUDE_DIRS})
-include_directories(${HDF5_C_INCLUDE_DIR})
-include_directories(${Boost_INCLUDE_DIR})
+include_directories(${HDF5_INCLUDE_DIRS})
+include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${Vigra_INCLUDE_DIRS})
 include_directories(${CLIF_INCLUDE_DIRS})
 

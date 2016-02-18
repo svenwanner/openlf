@@ -1209,12 +1209,9 @@ static void printprogress(int curr, int max, int &last, const char *fmt = NULL, 
   fflush(NULL);
 }
 
-//FIXME hack to run CLOCK_MONOTONIC and timespec
-#ifdef _WIN32
 
-	#define CLOCK_MONOTONIC 1
+#ifdef _MSC_VER
 	struct timespec { long tv_sec; long tv_nsec; };    //header part
-
 #endif
 
 //TODO obviously not (really) threadsafe
@@ -1225,6 +1222,7 @@ void DspComponent::progress_(float p)
   struct timespec now;
 
 #ifdef _MSC_VER   
+
   static LARGE_INTEGER frequency;   
   if (!frequency.QuadPart)
 		QueryPerformanceFrequency(&frequency);
