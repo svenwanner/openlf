@@ -29,6 +29,14 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   set(OPENLF_BUILD_TYPE)
 endif()
 
+
+
+
+
+SET(CompileAs "RelWithDebInfo" CACHE STRING "library selected at CMake configure time")
+SET_PROPERTY(CACHE CompileAs PROPERTY STRINGS RelWithDebInfo Release Debug) 
+
+
 include(ExternalProject)
 
 ###########################################################################################
@@ -61,7 +69,7 @@ if (Boost_INTERNAL OR REBUILD_Boost)
 						URL http://downloads.sourceforge.net/project/boost/boost/${Boost_Version}/boost_${Boost_Version_Underscore}.zip
 						UPDATE_COMMAND \"bootstrap.bat\"
 						CONFIGURE_COMMAND \"\"
-						BUILD_COMMAND bjam address-model=64 toolset=msvc-12.0 variant=release link=static link=shared runtime-link=shared
+						BUILD_COMMAND bjam address-model=64 toolset=msvc-12.0 variant=release debug link=static link=shared runtime-link=shared
 						BUILD_IN_SOURCE 1
 						INSTALL_COMMAND \"\"
 		)
@@ -119,6 +127,7 @@ if (Vigra_INTERNAL OR REBUILD_Vigra)
 			CMAKE_ARGS -DBoost_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost -DBoost_PYTHON_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/stage/lib/boost_python-vc120-mt-1_58.lib
 			CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_vigra/install
 			CMAKE_ARGS -DWITH_OPENEXR=0 -DCMAKE_BUILD_TYPE=Release -DWITH_VIGRANUMPY=1 -DWITH_HDF5=0
+			CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
 			INSTALL_COMMAND ;
 		)
 	")
@@ -127,7 +136,7 @@ if (Vigra_INTERNAL OR REBUILD_Vigra)
 
 	execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/build)
-	execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
+	execute_process(COMMAND ${CMAKE_COMMAND} --build . #--config Release
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/build)
 			
 	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/install/lib/vigra)
@@ -170,7 +179,7 @@ if (HDF5_INTERNAL OR REBUILD_HDF5)
 			PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5
 			URL https://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.15-patch1/src/hdf5-1.8.15-patch1.tar.gz
 			CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install
-			CMAKE_ARGS -DCMAKE_BUILD_TYPE=Release
+			CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
 			INSTALL_COMMAND ;
 		)
 	")
@@ -179,7 +188,7 @@ if (HDF5_INTERNAL OR REBUILD_HDF5)
 
 	execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/build)
-	execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
+	execute_process(COMMAND ${CMAKE_COMMAND} --build . #--config Release
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/build)
 	
 	#execute_process(COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/dependencies/HDF5_include.tar 
@@ -227,6 +236,7 @@ if (OpenCV_INTERNAL OR REBUILD_OpenCV)
 						PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_opencv
 						GIT_REPOSITORY https://github.com/Itseez/opencv.git
 						GIT_TAG 3.0.0
+						CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
 						INSTALL_COMMAND \"\"
 		)
 	")
@@ -235,7 +245,7 @@ if (OpenCV_INTERNAL OR REBUILD_OpenCV)
 
 	execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_opencv/build)
-	execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
+	execute_process(COMMAND ${CMAKE_COMMAND} --build . #--config Release
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_opencv/build)
 
 	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_opencv/src/opencv-build)
@@ -275,6 +285,7 @@ message( STATUS "EIGEN Version: latest will be downloaded and installed")
 						PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_eigen
 						URL http://bitbucket.org/eigen/eigen/get/3.2.8.tar.bz2
 						CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install
+						CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
 						INSTALL_COMMAND ;
 		)
 	")
@@ -282,7 +293,7 @@ message( STATUS "EIGEN Version: latest will be downloaded and installed")
 	
 	execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
-	execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
+	execute_process(COMMAND ${CMAKE_COMMAND} --build . #--config Release
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
 
 	set(EIGEN_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install/include/eigen3 CACHE TYPE STRING)
@@ -324,6 +335,7 @@ if (WITH_PCL)
 							PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_flann
 							GIT_REPOSITORY https://github.com/mariusmuja/flann.git
 							CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_flann/install
+							CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
 							INSTALL_COMMAND ;
 			)
 		")
@@ -331,7 +343,7 @@ if (WITH_PCL)
 		
 		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/build)
-		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
+		execute_process(COMMAND ${CMAKE_COMMAND} --build . #--config Release
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/build)
 
 		set(FLANN_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/lib/flann.lib CACHE TYPE STRING)
@@ -375,6 +387,7 @@ if (WITH_PCL)
 							PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_VTK
 							URL http://www.vtk.org/files/release/7.0/VTK-7.0.0.zip
 							CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_VTK/install
+							CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
 							INSTALL_COMMAND ;
 			)
 		")
@@ -382,7 +395,7 @@ if (WITH_PCL)
 		
 		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/build)
-		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
+		execute_process(COMMAND ${CMAKE_COMMAND} --build . #--config Release
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/build)
 
 		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/install/lib/cmake/vtk-7.0)
@@ -430,6 +443,7 @@ if (WITH_PCL)
 							CMAKE_ARGS -DPNG_PNG_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DPNG_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libpng.lib
 							CMAKE_ARGS -DBOOST_ROOT=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost
 							CMAKE_ARGS -DWITH_PCAP=OFF
+							CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
 							INSTALL_COMMAND \"\"
 			)
 		")
@@ -437,7 +451,7 @@ if (WITH_PCL)
 		
 		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/build)
-		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
+		execute_process(COMMAND ${CMAKE_COMMAND} --build . #--config Release
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/build)	
 		
 		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/src/PCL-build)
@@ -492,6 +506,7 @@ if (CLIF_INTERNAL OR REBUILD_CLIF)
 			CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_RELEASE=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5_cpp.lib
 			CMAKE_ARGS -DBoost_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost
 			CMAKE_ARGS -DEIGEN_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}
+			CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
             INSTALL_COMMAND \"\"
             )
 		")
@@ -500,7 +515,7 @@ if (CLIF_INTERNAL OR REBUILD_CLIF)
 
     execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_clif/build)
-    execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . #--config Release
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_clif/build)
 
 	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_clif/src/clif-build)
@@ -520,7 +535,7 @@ include_directories(${CLIF_INCLUDE_DIRS})
 link_directories(${CLIF_LIBRARY_DIRS})
 
 list(APPEND OPENLF_LIBRARIES ${CLIF_LIBRARIES} ${Boost_LIBRARIES})
-message("Boost: ${Boost_LIBRARIES}")
+
 add_subdirectory(external/gml_parser)
 include_directories(external/gml_parser)
 
