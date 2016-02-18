@@ -33,7 +33,7 @@ endif()
 
 
 
-SET(CompileAs "RelWithDebInfo" CACHE STRING "library selected at CMake configure time")
+SET(CompileAs "Release" CACHE STRING "library selected at CMake configure time")
 SET_PROPERTY(CACHE CompileAs PROPERTY STRINGS RelWithDebInfo Release Debug) 
 
 
@@ -69,7 +69,7 @@ if (Boost_INTERNAL OR REBUILD_Boost)
 						URL http://downloads.sourceforge.net/project/boost/boost/${Boost_Version}/boost_${Boost_Version_Underscore}.zip
 						UPDATE_COMMAND \"bootstrap.bat\"
 						CONFIGURE_COMMAND \"\"
-						BUILD_COMMAND bjam address-model=64 toolset=msvc-12.0 variant=release debug link=static link=shared runtime-link=shared
+						BUILD_COMMAND bjam --with-system --with-filesystem --with-regex --with-python address-model=64 toolset=msvc-12.0 variant=release debug link=static link=shared runtime-link=shared
 						BUILD_IN_SOURCE 1
 						INSTALL_COMMAND \"\"
 		)
@@ -136,7 +136,7 @@ if (Vigra_INTERNAL OR REBUILD_Vigra)
 
 	execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/build)
-	execute_process(COMMAND ${CMAKE_COMMAND} --build . #--config Release
+	execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/build)
 			
 	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/install/lib/vigra)
@@ -188,7 +188,7 @@ if (HDF5_INTERNAL OR REBUILD_HDF5)
 
 	execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/build)
-	execute_process(COMMAND ${CMAKE_COMMAND} --build . #--config Release
+	execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/build)
 	
 	#execute_process(COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/dependencies/HDF5_include.tar 
@@ -245,7 +245,7 @@ if (OpenCV_INTERNAL OR REBUILD_OpenCV)
 
 	execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_opencv/build)
-	execute_process(COMMAND ${CMAKE_COMMAND} --build . #--config Release
+	execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_opencv/build)
 
 	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_opencv/src/opencv-build)
@@ -293,7 +293,7 @@ message( STATUS "EIGEN Version: latest will be downloaded and installed")
 	
 	execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
-	execute_process(COMMAND ${CMAKE_COMMAND} --build . #--config Release
+	execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
 
 	set(EIGEN_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install/include/eigen3 CACHE TYPE STRING)
@@ -343,7 +343,7 @@ if (WITH_PCL)
 		
 		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/build)
-		execute_process(COMMAND ${CMAKE_COMMAND} --build . #--config Release
+		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/build)
 
 		set(FLANN_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/lib/flann.lib CACHE TYPE STRING)
@@ -395,7 +395,7 @@ if (WITH_PCL)
 		
 		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/build)
-		execute_process(COMMAND ${CMAKE_COMMAND} --build . #--config Release
+		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/build)
 
 		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/install/lib/cmake/vtk-7.0)
@@ -451,7 +451,7 @@ if (WITH_PCL)
 		
 		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/build)
-		execute_process(COMMAND ${CMAKE_COMMAND} --build . #--config Release
+		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/build)	
 		
 		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/src/PCL-build)
@@ -504,6 +504,8 @@ if (CLIF_INTERNAL OR REBUILD_CLIF)
 			CMAKE_ARGS -DHDF5_C_INCLUDE_DIR=${HDF5_INCLUDE_DIRS}
 			CMAKE_ARGS -DHDF5_hdf5_LIBRARY_RELEASE=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5.lib
 			CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_RELEASE=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5_cpp.lib
+			MAKE_ARGS -DHDF5_hdf5_LIBRARY_DEBUG=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5.lib
+			CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_DEBUG=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5_cpp.lib
 			CMAKE_ARGS -DBoost_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost
 			CMAKE_ARGS -DEIGEN_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}
 			CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
@@ -515,7 +517,7 @@ if (CLIF_INTERNAL OR REBUILD_CLIF)
 
     execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_clif/build)
-    execute_process(COMMAND ${CMAKE_COMMAND} --build . #--config Release
+    execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_clif/build)
 
 	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_clif/src/clif-build)
