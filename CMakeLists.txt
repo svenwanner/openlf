@@ -482,8 +482,6 @@ else()
   message(STATUS "clif NOT found")
 endif()
 
-
-
 if (CLIF_INTERNAL OR REBUILD_CLIF)
 
 	message( STATUS "Clif Version: latest will be downloaded and installed")
@@ -506,7 +504,7 @@ if (CLIF_INTERNAL OR REBUILD_CLIF)
 			CMAKE_ARGS -DHDF5_INCLUDE_DIR=${HDF5_INCLUDE_DIRS}
 			CMAKE_ARGS -DHDF5_CXX_INCLUDE_DIR=${HDF5_CXX_INCLUDE_DIR}
 			CMAKE_ARGS -DHDF5_C_INCLUDE_DIR=${HDF5_INCLUDE_DIRS}
-			CMAKE_ARGS -DHDF5_hdf5_LIBRARY_RELEASE=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5.lib
+			CMAKE_ARGS -DHDF5_hdf5_LIBRARY_RELEASE=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5_D.lib
 			CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_RELEASE=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5_cpp.lib
 			CMAKE_ARGS -DHDF5_hdf5_LIBRARY_DEBUG=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5_D.lib
 			CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_DEBUG=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5_cpp_D.lib
@@ -572,6 +570,7 @@ add_executable(openlf-bin src/bin/openlf.cpp)
 set_target_properties(openlf-bin PROPERTIES OUTPUT_NAME openlf)
 target_link_libraries(openlf-bin ${OPENLF_LIBRARIES})
 
+message(${OPENLF_LIBRARIES})
 
 ##add_executable(teststuff src/bin/test.cpp)
 ##add_executable(teststuff2 src/bin/test2.cpp)
