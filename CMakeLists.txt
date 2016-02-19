@@ -65,7 +65,7 @@ if (Boost_INTERNAL OR REBUILD_Boost)
 						URL http://downloads.sourceforge.net/project/boost/boost/${Boost_Version}/boost_${Boost_Version_Underscore}.zip
 						UPDATE_COMMAND \"bootstrap.bat\"
 						CONFIGURE_COMMAND \"\"
-						BUILD_COMMAND bjam --with-system --with-filesystem --with-regex --with-python address-model=64 toolset=msvc-12.0 variant=release debug link=static link=shared runtime-link=shared
+						BUILD_COMMAND bjam --with-system --with-filesystem --with-regex --with-python --with-thread --with-date_time --with-program_options --with-serialization address-model=64 toolset=msvc-12.0 variant=release debug link=static link=shared runtime-link=shared
 						BUILD_IN_SOURCE 1
 						INSTALL_COMMAND \"\"
 		)
