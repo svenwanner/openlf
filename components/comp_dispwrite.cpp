@@ -570,7 +570,7 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     write_obj(obj_filename->c_str(), centerview, img, subset);
 
   
-  store->readImage(idx, &img3d, Improc::UNDISTORT);
+  store->readImage(idx, &img3d, opts);
   clifMat2cv(&img3d,&img);
   cv::Mat img_norm;
   cv::normalize(img, img_norm, 0, 255, cv::NORM_MINMAX, CV_8UC1); 
