@@ -91,7 +91,7 @@ void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
 		{
 		  Mat brdf = raw_brdf.bind(1,y).bind(0,x);
-		  if (!isnan( disp(x,y,0,lf[3]/2)))
+		  if (!std::isnan( disp(x,y,0,lf[3]/2)))
 			get_intensities(lf, brdf,  x, y, disp(x,y,0,lf[3]/2));
 		}
 	}

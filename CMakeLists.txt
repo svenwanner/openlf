@@ -65,7 +65,7 @@ if (Boost_INTERNAL OR REBUILD_Boost)
 						URL http://downloads.sourceforge.net/project/boost/boost/${Boost_Version}/boost_${Boost_Version_Underscore}.zip
 						UPDATE_COMMAND \"bootstrap.bat\"
 						CONFIGURE_COMMAND \"\"
-						BUILD_COMMAND bjam --with-system --with-filesystem --with-regex --with-python --with-thread --with-date_time --with-program_options --with-serialization address-model=64 toolset=msvc-12.0 variant=release debug link=static link=shared runtime-link=shared
+						BUILD_COMMAND bjam --with-python --with-system --with-chrono --with-filesystem --with-regex --with-atomic --with-thread --with-date_time --with-program_options --with-serialization address-model=64 toolset=msvc-12.0 variant=release debug link=static link=shared runtime-link=shared
 						BUILD_IN_SOURCE 1
 						INSTALL_COMMAND \"\"
 		)
@@ -79,13 +79,14 @@ if (Boost_INTERNAL OR REBUILD_Boost)
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_boost)	
 
 	set(BOOST_ROOT ${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/ CACHE TYPE STRING)
-	
+	set(REBUILD_Boost "internal HDF5 download and build" OFF)
 endif()
 #set(Boost_LIBRARIES ${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/)
-find_package(Boost REQUIRED COMPONENTS system filesystem serialization program_options regex thread date_time)
 message(STATUS "Boost include dir: ${Boost_INCLUDE_DIRS}")
 message(STATUS "Boost lib dirs: ${Boost_LIBRARY_DIRS}")
 message(STATUS "Boost libs: ${Boost_LIBRARIES}")
+message(STATUS "Boost root: ${BOOST_ROOT}")
+find_package(Boost REQUIRED COMPONENTS system filesystem serialization program_options regex thread date_time)
 
 
 
@@ -102,16 +103,16 @@ else()
   set(Vigra_INTERNAL ON)
   message(STATUS "Vigra NOT found")
 endif()
-
+message(STATUS "Vigra CHECK_INCLUDE_FILE(Boost_PYTHON_LIBRARY)")
 if (Vigra_INTERNAL OR REBUILD_Vigra)
 	message( STATUS "VIGRA Version: latest will be downloaded and installed")
 	#generate auxiliary dependency project
 	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra)
 	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/build)
-	if(${CompileAs} STREQUAL "Debug")
-		set(vigranumpyflag 0)
-	else()
+	if(EXISTS ${Boost_PYTHON_LIBRARY})
 		set(vigranumpyflag 1)
+	else()
+		set(vigranumpyflag 0)
 	endif()
 	message(${vigranumpyflag})
     set(CMAKE_LIST_CONTENT "
@@ -126,7 +127,7 @@ if (Vigra_INTERNAL OR REBUILD_Vigra)
 			CMAKE_ARGS -DJPEG_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DJPEG_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libjpeg.lib
 			CMAKE_ARGS -DPNG_PNG_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DPNG_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libpng.lib
 			CMAKE_ARGS -DZLIB_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DZLIB_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/zlib.lib
-			CMAKE_ARGS -DBoost_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost -DBoost_PYTHON_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/stage/lib/boost_python-vc120-mt-1_58.lib
+			CMAKE_ARGS -DBoost_INCLUDE_DIR=${Boost_INCLUDE_DIRS} -DBoost_PYTHON_LIBRARY=${Boost_PYTHON_LIBRARY}
 			CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_vigra/install
 			CMAKE_ARGS -DOPENEXR_HALF_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/Half.lib
 			CMAKE_ARGS -DOPENEXR_IEX_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/Iex-2_2.lib
@@ -183,31 +184,31 @@ if (HDF5_INTERNAL OR REBUILD_HDF5)
 
 		include(ExternalProject)
 		ExternalProject_Add(
-		HDF5
+		hdf5
 			PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5
 			URL https://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.15-patch1/src/hdf5-1.8.15-patch1.tar.gz
 			CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install
 			CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
-			CMAKE_ARGS -DBUILD_SHARED_LIBS
+			CMAKE_ARGS -DBUILD_SHARED_LIBS=0
 			INSTALL_COMMAND ;
 		)
 	")
 	
 	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
-
+	
 	execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/build)
+	execute_process(COMMAND ${CMAKE_COMMAND} ../hdf5 -G "Visual Studio 12 2013 Win64"
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/hdf5-build)	
 	execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/build)
 	
-	#execute_process(COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/dependencies/HDF5_include.tar 
-	#	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build)
 	set(HDF5_C_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include CACHE TYPE STRING)
 	set(HDF5_CXX_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include CACHE TYPE STRING)
 	set(HDF5_hdf5_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/libhdf5.lib CACHE TYPE STRING)
 	set(HDF5_hdf5_cxx_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/libhdf5_cxx.lib CACHE TYPE STRING)
 	set(HDF5_hdf5_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Debug/libhdf5_D.lib CACHE TYPE STRING)
-	set(HDF5_hdf5_cxx_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Rebug/libhdf5_cxx_D.lib CACHE TYPE STRING)
+	set(HDF5_hdf5_cxx_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Debug/libhdf5_cxx_D.lib CACHE TYPE STRING)
 	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/cmake)
 	endif()
 
@@ -513,11 +514,11 @@ if (CLIF_INTERNAL OR REBUILD_CLIF)
 			CMAKE_ARGS -DHDF5_INCLUDE_DIR=${HDF5_INCLUDE_DIRS}
 			CMAKE_ARGS -DHDF5_CXX_INCLUDE_DIR=${HDF5_CXX_INCLUDE_DIR}
 			CMAKE_ARGS -DHDF5_C_INCLUDE_DIR=${HDF5_INCLUDE_DIRS}
-			CMAKE_ARGS -DHDF5_hdf5_LIBRARY_RELEASE=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5.lib
-			CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_RELEASE=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5_cpp.lib
-			CMAKE_ARGS -DHDF5_hdf5_LIBRARY_DEBUG=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5_D.lib
-			CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_DEBUG=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/libhdf5_cpp_D.lib
-			CMAKE_ARGS -DBoost_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost
+			CMAKE_ARGS -DHDF5_hdf5_LIBRARY_RELEASE=${HDF5_hdf5_LIBRARY_RELEASE}
+			CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_RELEASE=${HDF5_hdf5_cxx_LIBRARY_RELEASE}
+			CMAKE_ARGS -DHDF5_hdf5_LIBRARY_DEBUG=${HDF5_hdf5_LIBRARY_DEBUG}
+			CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_DEBUG=${HDF5_hdf5_cxx_LIBRARY_DEBUG_LIBRARY_DEBUG}
+			CMAKE_ARGS -DBoost_INCLUDE_DIR=${Boost_INCLUDE_DIRS}
 			CMAKE_ARGS -DEIGEN_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}
 			CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
             INSTALL_COMMAND \"\"
