@@ -173,45 +173,47 @@ else()
   message(STATUS "HDF5 NOT found")
 endif()
 
-if (HDF5_INTERNAL OR REBUILD_HDF5)
-	message( STATUS "HDF5 Version: 1.8.15-patch1 will be downloaded and installed")
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+	if (HDF5_INTERNAL OR REBUILD_HDF5)
+		message( STATUS "HDF5 Version: 1.8.15-patch1 will be downloaded and installed")
 
-	#generate auxiliary dependency project
-	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5)
-	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/build)
-	set(CMAKE_LIST_CONTENT "
-		cmake_minimum_required(VERSION 2.8)
+		#generate auxiliary dependency project
+		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5)
+		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/build)
+		set(CMAKE_LIST_CONTENT "
+			cmake_minimum_required(VERSION 2.8)
 
-		include(ExternalProject)
-		ExternalProject_Add(
-		hdf5
-			PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5
-			URL https://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.15-patch1/src/hdf5-1.8.15-patch1.tar.gz
-			CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install
-			CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
-			CMAKE_ARGS -DBUILD_SHARED_LIBS=0
-			INSTALL_COMMAND ;
-		)
-	")
-	
-	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
-	
-	execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/build)
-	execute_process(COMMAND ${CMAKE_COMMAND} ../hdf5 -G "Visual Studio 12 2013 Win64"
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/hdf5-build)	
-	execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/build)
-	
-	set(HDF5_C_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include CACHE TYPE STRING)
-	set(HDF5_CXX_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include CACHE TYPE STRING)
-	set(HDF5_hdf5_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/libhdf5.lib CACHE TYPE STRING)
-	set(HDF5_hdf5_cxx_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/libhdf5_cxx.lib CACHE TYPE STRING)
-	set(HDF5_hdf5_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Debug/libhdf5_D.lib CACHE TYPE STRING)
-	set(HDF5_hdf5_cxx_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Debug/libhdf5_cxx_D.lib CACHE TYPE STRING)
-	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/cmake)
+			include(ExternalProject)
+			ExternalProject_Add(
+			hdf5
+				PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5
+				URL https://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.15-patch1/src/hdf5-1.8.15-patch1.tar.gz
+				CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install
+				CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
+				CMAKE_ARGS -DBUILD_SHARED_LIBS=1
+				INSTALL_COMMAND ;
+			)
+		")
+		
+		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+		
+		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/build)
+		execute_process(COMMAND ${CMAKE_COMMAND} ../hdf5 -G "Visual Studio 12 2013 Win64"
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/hdf5-build)	
+		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/build)
+		
+		set(HDF5_C_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include CACHE TYPE STRING)
+		set(HDF5_CXX_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include CACHE TYPE STRING)
+		set(HDF5_hdf5_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/hdf5.lib CACHE TYPE STRING)
+		set(HDF5_hdf5_cxx_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/hdf5_cxx.lib CACHE TYPE STRING)
+		set(HDF5_hdf5_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Debug/hdf5_D.lib CACHE TYPE STRING)
+		set(HDF5_hdf5_cxx_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Debug/hdf5_cxx_D.lib CACHE TYPE STRING)
+		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/cmake)
 	endif()
-
+endif()
+	
 find_package(HDF5 REQUIRED)
 message(STATUS "HDF5 include dir: ${HDF5_INCLUDE_DIRS}")
 message(STATUS "HDF5 lib dirs: ${HDF5_LIBRARIES} ${HDF5_hdf5_cxx_LIBRARY_RELEASE} ${HDF5_hdf5_LIBRARY_DEBUG} ${HDF5_hdf5_cxx_LIBRARY_DEBUG}")
@@ -232,39 +234,41 @@ else()
   message(STATUS "OpenCV found")
 endif()
 
-if (OpenCV_INTERNAL OR REBUILD_OpenCV)
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+	if (OpenCV_INTERNAL OR REBUILD_OpenCV)
 
-	message( STATUS "OpenCV Version: 3.0.0 will be downloaded and installed")
-	
-	#generate auxiliary dependency project
-	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_opencv)
-	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_opencv/build)
-	set(CMAKE_LIST_CONTENT "
-		cmake_minimum_required(VERSION 2.8)
+		message( STATUS "OpenCV Version: 3.0.0 will be downloaded and installed")
+		
+		#generate auxiliary dependency project
+		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_opencv)
+		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_opencv/build)
+		set(CMAKE_LIST_CONTENT "
+			cmake_minimum_required(VERSION 2.8)
 
-		include(ExternalProject)
-		ExternalProject_Add(
-		opencv
-						PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_opencv
-						GIT_REPOSITORY https://github.com/Itseez/opencv.git
-						GIT_TAG 3.0.0
-						CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
-						CMAKE_ARGS -DWITH_QT=1
-						CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_opencv/install
-						INSTALL_COMMAND ;
-		)
-	")
-	
-	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_opencv/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+			include(ExternalProject)
+			ExternalProject_Add(
+			opencv
+							PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_opencv
+							GIT_REPOSITORY https://github.com/Itseez/opencv.git
+							GIT_TAG 3.0.0
+							CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
+							CMAKE_ARGS -DWITH_QT=1
+							CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_opencv/install
+							INSTALL_COMMAND ;
+			)
+		")
+		
+		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_opencv/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
 
-	execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_opencv/build)
-	execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_opencv/build)
+		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_opencv/build)
+		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_opencv/build)
 
-	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_opencv/install)
+		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_opencv/install)
+	endif()
 endif()
-
+	
 find_package(OpenCV REQUIRED)
 message(STATUS "OpenCV include dir: ${OpenCV_INCLUDE_DIRS}")
 message(STATUS "OpenCV lib dir: ${OpenCV_LIBS}")
@@ -282,35 +286,36 @@ else()
   set(EIGEN_INTERNAL ON)
   message(STATUS "EIGEN NOT found")
 endif()
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+	if (EIGEN_INTERNAL OR REBUILD_Eigen)
+	message( STATUS "EIGEN Version: latest will be downloaded and installed")
+		#generate auxiliary dependency project
+		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen)
+		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
 
-if (EIGEN_INTERNAL OR REBUILD_Eigen)
-message( STATUS "EIGEN Version: latest will be downloaded and installed")
-	#generate auxiliary dependency project
-	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen)
-	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
+		#generate false dependency project
+		set(CMAKE_LIST_CONTENT "
+			cmake_minimum_required(VERSION 2.8)
 
-	#generate false dependency project
-	set(CMAKE_LIST_CONTENT "
-		cmake_minimum_required(VERSION 2.8)
+			include(ExternalProject)
+			ExternalProject_Add(
+			eigen
+							PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_eigen
+							URL http://bitbucket.org/eigen/eigen/get/3.2.8.tar.bz2
+							CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install
+							CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
+							INSTALL_COMMAND ;
+			)
+		")
+		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+		
+		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
+		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
 
-		include(ExternalProject)
-		ExternalProject_Add(
-		eigen
-						PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_eigen
-						URL http://bitbucket.org/eigen/eigen/get/3.2.8.tar.bz2
-						CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install
-						CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
-						INSTALL_COMMAND ;
-		)
-	")
-	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
-	
-	execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
-	execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
-
-	set(EIGEN_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install/include/eigen3 CACHE TYPE STRING)
+		set(EIGEN_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install/include/eigen3 CACHE TYPE STRING)
+	endif()
 endif()
 message(STATUS "EIGEN include dir: ${EIGEN_INCLUDE_DIR}")
 
@@ -320,7 +325,6 @@ option(WITH_PCL "compile PCL" OFF)
 if (WITH_PCL)	
 	message(STATUS "Compile PCL")
 	
-
 	###########################################################################################
 	# Below is a CMake command to download, build and install FLANN 
 	###########################################################################################
@@ -332,38 +336,39 @@ if (WITH_PCL)
 	  set(FLANN_INTERNAL ON)
 	  message(STATUS "FLANN found")
 	endif()
+	if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+		if (FLANN_INTERNAL OR REBUILD_Flann)
+		message( STATUS "FLANN Version: latest will be downloaded and installed")
+			#generate auxiliary dependency project
+			file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann)
+			file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/build)
 
-	if (FLANN_INTERNAL OR REBUILD_Flann)
-	message( STATUS "FLANN Version: latest will be downloaded and installed")
-		#generate auxiliary dependency project
-		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann)
-		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/build)
+			#generate false dependency project
+			set(CMAKE_LIST_CONTENT "
+				cmake_minimum_required(VERSION 2.8)
 
-		#generate false dependency project
-		set(CMAKE_LIST_CONTENT "
-			cmake_minimum_required(VERSION 2.8)
+				include(ExternalProject)
+				ExternalProject_Add(
+				flann
+								PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_flann
+								GIT_REPOSITORY https://github.com/mariusmuja/flann.git
+								CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_flann/install
+								CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
+								INSTALL_COMMAND ;
+				)
+			")
+			file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_flann/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+			
+			execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/build)
+			execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/build)
 
-			include(ExternalProject)
-			ExternalProject_Add(
-			flann
-							PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_flann
-							GIT_REPOSITORY https://github.com/mariusmuja/flann.git
-							CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_flann/install
-							CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
-							INSTALL_COMMAND ;
-			)
-		")
-		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_flann/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
-		
-		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/build)
-		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/build)
-
-		set(FLANN_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/lib/flann.lib CACHE TYPE STRING)
-		set(FLANN_S_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/lib/flann_s.lib CACHE TYPE STRING)
-		set(FLANN_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/include CACHE TYPE STRING)
-		#set(FLANN_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/include CACHE TYPE STRING)
+			set(FLANN_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/lib/flann.lib CACHE TYPE STRING)
+			set(FLANN_S_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/lib/flann_s.lib CACHE TYPE STRING)
+			set(FLANN_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/include CACHE TYPE STRING)
+			#set(FLANN_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/include CACHE TYPE STRING)
+		endif()
 	endif()
 	message(STATUS "FLANN lib: ${FLANN_LIBRARY}")	
 	message(STATUS "FLANN static lib: ${FLANN_S_LIBRARY}")	
@@ -384,36 +389,38 @@ if (WITH_PCL)
 	  set(VTK_INTERNAL ON)
 	  message(STATUS "VTK found")
 	endif()
+	if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+		if (VTK_INTERNAL OR REBUILD_VTK)
+		message( STATUS "VTK Version: latest will be downloaded and installed")
+			#generate auxiliary dependency project
+			file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_VTK)
+			file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/build)
 
-	if (VTK_INTERNAL OR REBUILD_VTK)
-	message( STATUS "VTK Version: latest will be downloaded and installed")
-		#generate auxiliary dependency project
-		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_VTK)
-		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/build)
+			#generate false dependency project
+			set(CMAKE_LIST_CONTENT "
+				cmake_minimum_required(VERSION 2.8)
 
-		#generate false dependency project
-		set(CMAKE_LIST_CONTENT "
-			cmake_minimum_required(VERSION 2.8)
+				include(ExternalProject)
+				ExternalProject_Add(
+				VTK
+								PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_VTK
+								URL http://www.vtk.org/files/release/7.0/VTK-7.0.0.zip
+								CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_VTK/install
+								CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
+								INSTALL_COMMAND ;
+				)
+			")
+			file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+			
+			execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/build)
+			execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/build)
 
-			include(ExternalProject)
-			ExternalProject_Add(
-			VTK
-							PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_VTK
-							URL http://www.vtk.org/files/release/7.0/VTK-7.0.0.zip
-							CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_VTK/install
-							CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
-							INSTALL_COMMAND ;
-			)
-		")
-		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
-		
-		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/build)
-		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/build)
-
-		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/install/lib/cmake/vtk-7.0)
+			list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_VTK/install/lib/cmake/vtk-7.0)
+		endif()
 	endif()
+	
 	find_package(VTK REQUIRED)	
 	message(STATUS "VTK include dir: ${VTK_INCLUDE_DIRS}")	
 	message(STATUS "VTK lib: ${VTK_LIBRARIES}")
@@ -433,43 +440,45 @@ if (WITH_PCL)
 	  set(PCL_INTERNAL ON)
 	  message(STATUS "PCL NOT found")
 	endif()
+	if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+		if (PCL_INTERNAL OR REBUILD_PCL)
+		message( STATUS "PLC Version: latest will be downloaded and installed")
+			#generate auxiliary dependency project
+			file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_PCL)
+			file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/build)
 
-	if (PCL_INTERNAL OR REBUILD_PCL)
-	message( STATUS "PLC Version: latest will be downloaded and installed")
-		#generate auxiliary dependency project
-		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_PCL)
-		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/build)
+			#generate false dependency project
+			set(CMAKE_LIST_CONTENT "
+				cmake_minimum_required(VERSION 2.8)
 
-		#generate false dependency project
-		set(CMAKE_LIST_CONTENT "
-			cmake_minimum_required(VERSION 2.8)
-
-			include(ExternalProject)
-			ExternalProject_Add(
-			PCL
-							PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_PCL
-							GIT_REPOSITORY https://github.com/PointCloudLibrary/pcl.git
-							CMAKE_ARGS -DEIGEN_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}
-							CMAKE_ARGS -DFLANN_LIBRARY=${FLANN_S_LIBRARY}
-							CMAKE_ARGS -DFLANN_INCLUDE_DIR=${FLANN_INCLUDE_DIR}	
-							CMAKE_ARGS -DVTK_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_VTK/src/VTK-build
-							CMAKE_ARGS -DZLIB_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}basic_libs/include -DZLIB_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/zlib.lib
-							CMAKE_ARGS -DPNG_PNG_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DPNG_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libpng.lib
-							CMAKE_ARGS -DBOOST_ROOT=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost
-							CMAKE_ARGS -DWITH_PCAP=OFF
-							CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
-							INSTALL_COMMAND \"\"
-			)
-		")
-		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+				include(ExternalProject)
+				ExternalProject_Add(
+				PCL
+								PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_PCL
+								GIT_REPOSITORY https://github.com/PointCloudLibrary/pcl.git
+								CMAKE_ARGS -DEIGEN_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}
+								CMAKE_ARGS -DFLANN_LIBRARY=${FLANN_S_LIBRARY}
+								CMAKE_ARGS -DFLANN_INCLUDE_DIR=${FLANN_INCLUDE_DIR}	
+								CMAKE_ARGS -DVTK_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_VTK/src/VTK-build
+								CMAKE_ARGS -DZLIB_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}basic_libs/include -DZLIB_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/zlib.lib
+								CMAKE_ARGS -DPNG_PNG_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DPNG_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libpng.lib
+								CMAKE_ARGS -DBOOST_ROOT=${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost
+								CMAKE_ARGS -DWITH_PCAP=OFF
+								CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
+								INSTALL_COMMAND \"\"
+				)
+			")
+			file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+			
+			execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/build)
+			execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/build)	
+			
+			list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/src/PCL-build)
+		endif()	
+	endif()
 		
-		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/build)
-		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/build)	
-		
-		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_PCL/src/PCL-build)
-	endif()	
 	find_package(PCL REQUIRED)
 	
 	message(STATUS "PCL include dir: ${PCL_INCLUDE_DIRS}")	
@@ -492,50 +501,56 @@ else()
   message(STATUS "clif NOT found")
 endif()
 
-if (CLIF_INTERNAL OR REBUILD_CLIF)
+ message(STATUS "${HDF5_hdf5_LIBRARY_RELEASE} ")
+ message(STATUS "${HDF5_hdf5_LIBRARY_DEBUG} ")
+  message(STATUS "${HDF5_hdf5_cxx_LIBRARY_DEBUG} ")
+   message(STATUS "${HDF5_hdf5_cxx_LIBRARY_RELEASE} ")
 
-	message( STATUS "Clif Version: latest will be downloaded and installed")
-	
-	#generate auxiliary dependency project
-	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_clif)
-	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_clif/build)
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+	if (CLIF_INTERNAL OR REBUILD_CLIF)
 
-    #generate false dependency project
-    set(CMAKE_LIST_CONTENT "
-		cmake_minimum_required(VERSION 2.8)
+		message( STATUS "Clif Version: latest will be downloaded and installed")
+		
+		#generate auxiliary dependency project
+		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_clif)
+		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_clif/build)
 
-		include(ExternalProject)
-		ExternalProject_add(
-		clif
-            PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_clif
-            GIT_REPOSITORY https://github.com/hendriksiedelmann/clif.git
-            CMAKE_ARGS -DVigra_DIR=${Vigra_DIR}
-			CMAKE_ARGS -DOpenCV_DIR=${OpenCV_DIR}
-			CMAKE_ARGS -DHDF5_INCLUDE_DIR=${HDF5_INCLUDE_DIRS}
-			CMAKE_ARGS -DHDF5_CXX_INCLUDE_DIR=${HDF5_CXX_INCLUDE_DIR}
-			CMAKE_ARGS -DHDF5_C_INCLUDE_DIR=${HDF5_INCLUDE_DIRS}
-			CMAKE_ARGS -DHDF5_hdf5_LIBRARY_RELEASE=${HDF5_hdf5_LIBRARY_RELEASE}
-			CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_RELEASE=${HDF5_hdf5_cxx_LIBRARY_RELEASE}
-			CMAKE_ARGS -DHDF5_hdf5_LIBRARY_DEBUG=${HDF5_hdf5_LIBRARY_DEBUG}
-			CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_DEBUG=${HDF5_hdf5_cxx_LIBRARY_DEBUG_LIBRARY_DEBUG}
-			CMAKE_ARGS -DBoost_INCLUDE_DIR=${Boost_INCLUDE_DIRS}
-			CMAKE_ARGS -DEIGEN_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}
-			CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
-			CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_clif/install
-            INSTALL_COMMAND ;
-            )
-		")
-			
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_clif/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+		#generate false dependency project
+		set(CMAKE_LIST_CONTENT "
+			cmake_minimum_required(VERSION 2.8)
 
-    execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_clif/build)
-    execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_clif/build)
+			include(ExternalProject)
+			ExternalProject_add(
+			clif
+				PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_clif
+				GIT_REPOSITORY https://github.com/hendriksiedelmann/clif.git
+				CMAKE_ARGS -DVigra_DIR=${Vigra_DIR}
+				CMAKE_ARGS -DOpenCV_DIR=${OpenCV_DIR}
+				CMAKE_ARGS -DHDF5_INCLUDE_DIR=${HDF5_INCLUDE_DIRS}
+				CMAKE_ARGS -DHDF5_CXX_INCLUDE_DIR=${HDF5_CXX_INCLUDE_DIR}
+				CMAKE_ARGS -DHDF5_C_INCLUDE_DIR=${HDF5_INCLUDE_DIRS}
+				CMAKE_ARGS -DHDF5_hdf5_LIBRARY_RELEASE=${HDF5_hdf5_LIBRARY_RELEASE}
+				CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_RELEASE=${HDF5_hdf5_cxx_LIBRARY_RELEASE}
+				CMAKE_ARGS -DHDF5_hdf5_LIBRARY_DEBUG=${HDF5_hdf5_LIBRARY_DEBUG}
+				CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_DEBUG=${HDF5_hdf5_cxx_LIBRARY_DEBUG}
+				CMAKE_ARGS -DBoost_INCLUDE_DIR=${Boost_INCLUDE_DIRS}
+				CMAKE_ARGS -DEIGEN3_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}
+				CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
+				CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_clif/install
+				INSTALL_COMMAND ;
+				)
+			")
+				
+		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_clif/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
 
-	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_clif/src/clif-build)
+		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_clif/build)
+		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_clif/build)
+
+		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_clif/src/clif-build)
+	endif()
 endif()
-
 find_package(clif REQUIRED)
 message(STATUS "clif libraries: ${CLIF_LIBRARIES}")
 message(STATUS "clif lib dirs: ${CLIF_LIBRARY_DIRS}")

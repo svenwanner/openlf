@@ -85,7 +85,7 @@ void _load_existing_param(QGridLayout *layout, DspComponent *comp, int i, std::v
         combox->setCurrentIndex(found);
       else {
         char label[128];
-        sprintf(label, "unknown %p", circuits[i]);
+        sprintf(label, "unknown %p", c);
         combox->addItem(label, QVariant::fromValue((void*)c));
         //combox->addItem(c->GetComponentName().c_str(), QVariant::fromValue((void*)c));
         combox->setCurrentIndex(combox->count()-1);
