@@ -563,8 +563,8 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 				
 		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_clif/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
 
-		#execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
-		#	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_clif/build)
+		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_clif/build)
 		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_clif/build)
 
