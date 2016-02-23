@@ -29,7 +29,6 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   set(OPENLF_BUILD_TYPE)
 endif()
 
-
 SET(CompileAs "Release" CACHE STRING "library selected at CMake configure time")
 SET_PROPERTY(CACHE CompileAs PROPERTY STRINGS RelWithDebInfo Release Debug) 
 
@@ -38,121 +37,126 @@ include(ExternalProject)
 ###########################################################################################
 # Below is a CMake command to locate or download and build Boost 
 ##########################################################################################
-message(STATUS "Search Boost")
-SET(Boost_USE_STATIC_LIBS ON)
-find_package(Boost QUIET COMPONENTS system filesystem serialization program_options regex thread date_time QUIET)
-option(REBUILD_Boost "internal HDF5 download and build" OFF)
-if (Boost_FOUND)
-  set(Boost_INTERNAL OFF)
-  message(STATUS "Boost found")
-else()
-  set(Boost_INTERNAL ON)
-  message(STATUS "Boost NOT found")
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+	message(STATUS "Search Boost")
+	SET(Boost_USE_STATIC_LIBS ON)
+	find_package(Boost QUIET COMPONENTS system filesystem serialization program_options regex thread date_time QUIET)
+	option(REBUILD_Boost "internal HDF5 download and build" OFF)
+	if (Boost_FOUND)
+	  set(Boost_INTERNAL OFF)
+	  message(STATUS "Boost found")
+	else()
+	  set(Boost_INTERNAL ON)
+	  message(STATUS "Boost NOT found")
+	endif()
+
+	if (Boost_INTERNAL OR REBUILD_Boost)
+		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_boost)
+		set( Boost_Version 1.58.0 )
+		string( REPLACE "." "_" Boost_Version_Underscore ${Boost_Version} )
+		#generate auxiliary dependency project
+		message( STATUS "Boost_Version: " ${Boost_Version} " will be downloaded and installed")
+		set(CMAKE_LIST_CONTENT "
+			cmake_minimum_required(VERSION 2.8)
+			include(ExternalProject)
+			ExternalProject_Add(
+			Boost
+							PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_boost
+							URL http://downloads.sourceforge.net/project/boost/boost/${Boost_Version}/boost_${Boost_Version_Underscore}.zip
+							UPDATE_COMMAND \"bootstrap.bat\"
+							CONFIGURE_COMMAND \"\"
+							BUILD_COMMAND bjam --with-python --with-system --with-chrono --with-filesystem --with-regex --with-atomic --with-thread --with-date_time --with-program_options --with-serialization address-model=64 toolset=msvc-12.0 variant=release debug link=static link=shared runtime-link=shared
+							BUILD_IN_SOURCE 1
+							INSTALL_COMMAND \"\"
+			)
+		")
+			
+		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_boost/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+
+		execute_process(COMMAND ${CMAKE_COMMAND} . -G "Visual Studio 12 2013 Win64"
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_boost)
+		execute_process(COMMAND ${CMAKE_COMMAND} --build .
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_boost)	
+
+		set(BOOST_ROOT ${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/ CACHE TYPE STRING)
+		set(REBUILD_Boost "internal HDF5 download and build" OFF)
+	endif()
 endif()
 
-if (Boost_INTERNAL OR REBUILD_Boost)
-	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_boost)
-	set( Boost_Version 1.58.0 )
-	string( REPLACE "." "_" Boost_Version_Underscore ${Boost_Version} )
-	#generate auxiliary dependency project
-	message( STATUS "Boost_Version: " ${Boost_Version} " will be downloaded and installed")
-	set(CMAKE_LIST_CONTENT "
-		cmake_minimum_required(VERSION 2.8)
-		include(ExternalProject)
-		ExternalProject_Add(
-		Boost
-						PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_boost
-						URL http://downloads.sourceforge.net/project/boost/boost/${Boost_Version}/boost_${Boost_Version_Underscore}.zip
-						UPDATE_COMMAND \"bootstrap.bat\"
-						CONFIGURE_COMMAND \"\"
-						BUILD_COMMAND bjam --with-python --with-system --with-chrono --with-filesystem --with-regex --with-atomic --with-thread --with-date_time --with-program_options --with-serialization address-model=64 toolset=msvc-12.0 variant=release debug link=static link=shared runtime-link=shared
-						BUILD_IN_SOURCE 1
-						INSTALL_COMMAND \"\"
-		)
-	")
-		
-	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_boost/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
-
-	execute_process(COMMAND ${CMAKE_COMMAND} . -G "Visual Studio 12 2013 Win64"
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_boost)
-	execute_process(COMMAND ${CMAKE_COMMAND} --build .
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_boost)	
-
-	set(BOOST_ROOT ${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/ CACHE TYPE STRING)
-	set(REBUILD_Boost "internal HDF5 download and build" OFF)
-endif()
-#set(Boost_LIBRARIES ${CMAKE_CURRENT_BINARY_DIR}/force_boost/src/Boost/)
+SET(REBUILD_Boost OFF CACHE BOOL "internal HDF5 download and build" FORCE)
+find_package(Boost REQUIRED COMPONENTS system filesystem serialization program_options regex thread date_time)
 message(STATUS "Boost include dir: ${Boost_INCLUDE_DIRS}")
 message(STATUS "Boost lib dirs: ${Boost_LIBRARY_DIRS}")
 message(STATUS "Boost libs: ${Boost_LIBRARIES}")
 message(STATUS "Boost root: ${BOOST_ROOT}")
-find_package(Boost REQUIRED COMPONENTS system filesystem serialization program_options regex thread date_time)
-
 
 
 ###########################################################################################
 # Below is a CMake command to locate or download and build VIGRA 
 ###########################################################################################
-message(STATUS "Search Vigra")
-find_package(Vigra QUIET)
-option(REBUILD_Vigra "internal HDF5 download and build" OFF)
-if (Vigra_FOUND)
-  set(Vigra_INTERNAL OFF)
-  message(STATUS "Vigra found")
-else()
-  set(Vigra_INTERNAL ON)
-  message(STATUS "Vigra NOT found")
-endif()
-message(STATUS "Vigra CHECK_INCLUDE_FILE(Boost_PYTHON_LIBRARY)")
-if (Vigra_INTERNAL OR REBUILD_Vigra)
-	message( STATUS "VIGRA Version: latest will be downloaded and installed")
-	#generate auxiliary dependency project
-	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra)
-	file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/build)
-	if(EXISTS ${Boost_PYTHON_LIBRARY})
-		set(vigranumpyflag 1)
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+	message(STATUS "Search Vigra")
+	find_package(Vigra QUIET)
+	option(REBUILD_Vigra "internal HDF5 download and build" OFF)
+	if (Vigra_FOUND)
+	  set(Vigra_INTERNAL OFF)
+	  message(STATUS "Vigra found")
 	else()
-		set(vigranumpyflag 0)
+	  set(Vigra_INTERNAL ON)
+	  message(STATUS "Vigra NOT found")
 	endif()
-	message(${vigranumpyflag})
-    set(CMAKE_LIST_CONTENT "
-		cmake_minimum_required(VERSION 2.8)
+	message(STATUS "Vigra CHECK_INCLUDE_FILE(Boost_PYTHON_LIBRARY)")
+	if (Vigra_INTERNAL OR REBUILD_Vigra)
+		message( STATUS "VIGRA Version: latest will be downloaded and installed")
+		#generate auxiliary dependency project
+		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra)
+		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/build)
+		if(EXISTS ${Boost_PYTHON_LIBRARY})
+			set(vigranumpyflag 1)
+		else()
+			set(vigranumpyflag 0)
+		endif()
+		message(${vigranumpyflag})
+		set(CMAKE_LIST_CONTENT "
+			cmake_minimum_required(VERSION 2.8)
 
-		include(ExternalProject)
-		ExternalProject_Add(
-		vigra
-			PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_vigra
-			GIT_REPOSITORY https://github.com/ukoethe/vigra.git
-			CMAKE_ARGS -DTIFF_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DTIFF_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libtiff.lib
-			CMAKE_ARGS -DJPEG_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DJPEG_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libjpeg.lib
-			CMAKE_ARGS -DPNG_PNG_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DPNG_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libpng.lib
-			CMAKE_ARGS -DZLIB_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DZLIB_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/zlib.lib
-			CMAKE_ARGS -DBoost_INCLUDE_DIR=${Boost_INCLUDE_DIRS} -DBoost_PYTHON_LIBRARY=${Boost_PYTHON_LIBRARY}
-			CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_vigra/install
-			CMAKE_ARGS -DOPENEXR_HALF_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/Half.lib
-			CMAKE_ARGS -DOPENEXR_IEX_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/Iex-2_2.lib
-			CMAKE_ARGS -DOPENEXR_ILMIMF_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/IlmImf.lib
-			CMAKE_ARGS -DOPENEXR_ILMTHREAD_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/IlmThread-2_2.lib
-			CMAKE_ARGS -DOPENEXR_IMATH_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/Imath-2_2.lib
-			CMAKE_ARGS -DOPENEXR_INCLUDE_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include
-			CMAKE_ARGS -DWITH_OPENEXR=1 -DCMAKE_BUILD_TYPE=Release -DWITH_VIGRANUMPY=${vigranumpyflag} -DWITH_HDF5=0
-			CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
-			INSTALL_COMMAND ;
-		)
-	")
-			
-	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+			include(ExternalProject)
+			ExternalProject_Add(
+			vigra
+				PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_vigra
+				GIT_REPOSITORY https://github.com/ukoethe/vigra.git
+				CMAKE_ARGS -DTIFF_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DTIFF_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libtiff.lib
+				CMAKE_ARGS -DJPEG_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DJPEG_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libjpeg.lib
+				CMAKE_ARGS -DPNG_PNG_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DPNG_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libpng.lib
+				CMAKE_ARGS -DZLIB_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DZLIB_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/zlib.lib
+				CMAKE_ARGS -DBoost_INCLUDE_DIR=${Boost_INCLUDE_DIRS} -DBoost_PYTHON_LIBRARY=${Boost_PYTHON_LIBRARY}
+				CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_vigra/install
+				CMAKE_ARGS -DOPENEXR_HALF_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/Half.lib
+				CMAKE_ARGS -DOPENEXR_IEX_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/Iex-2_2.lib
+				CMAKE_ARGS -DOPENEXR_ILMIMF_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/IlmImf.lib
+				CMAKE_ARGS -DOPENEXR_ILMTHREAD_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/IlmThread-2_2.lib
+				CMAKE_ARGS -DOPENEXR_IMATH_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/Imath-2_2.lib
+				CMAKE_ARGS -DOPENEXR_INCLUDE_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include
+				CMAKE_ARGS -DWITH_OPENEXR=1 -DCMAKE_BUILD_TYPE=Release -DWITH_VIGRANUMPY=${vigranumpyflag} -DWITH_HDF5=0
+				CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
+				INSTALL_COMMAND ;
+			)
+		")
+				
+		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
 
-	execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/build)
-	execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/build)
-			
-	list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/install/lib/vigra)
-	set(Vigra_LIBRARY_DIRS ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/install/lib CACHE TYPE STRING)				
-	set(Vigra_INTERNAL OFF)
+		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/build)
+		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/build)
+				
+		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/install/lib/vigra)
+		set(Vigra_LIBRARY_DIRS ${CMAKE_CURRENT_BINARY_DIR}/force_vigra/install/lib CACHE TYPE STRING)				
+		set(Vigra_INTERNAL OFF)
+	endif()
 endif()
 
+SET(REBUILD_Vigra OFF CACHE BOOL "internal HDF5 download and build" FORCE)
 find_package(Vigra REQUIRED)
 message(STATUS "Vigra include dir: ${Vigra_INCLUDE_DIRS}")
 message(STATUS "Vigra lib dirs: ${Vigra_LIBRARY_DIRS}")
@@ -162,18 +166,18 @@ message(STATUS "Vigra lib dirs: ${Vigra_LIBRARY_DIRS}")
 ###########################################################################################
 # Below is a CMake command to locate or download and build HDF5 
 ###########################################################################################
-message(STATUS "Search HDF5")
-find_package(HDF5 QUIET)
-option(REBUILD_HDF5 "internal HDF5 download and build" OFF)
-if (HDF5_FOUND)
-  set(HDF5_INTERNAL OFF)
-  message(STATUS "HDF5 found")
-else()
-  set(HDF5_INTERNAL ON)
-  message(STATUS "HDF5 NOT found")
-endif()
-
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+	message(STATUS "Search HDF5")
+	find_package(HDF5 QUIET)
+	option(REBUILD_HDF5 "internal HDF5 download and build" OFF)
+	if (HDF5_FOUND)
+	  set(HDF5_INTERNAL OFF)
+	  message(STATUS "HDF5 found")
+	else()
+	  set(HDF5_INTERNAL ON)
+	  message(STATUS "HDF5 NOT found")
+	endif()
+
 	if (HDF5_INTERNAL OR REBUILD_HDF5)
 		message( STATUS "HDF5 Version: 1.8.15-patch1 will be downloaded and installed")
 
@@ -206,14 +210,18 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 		
 		set(HDF5_C_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include CACHE TYPE STRING)
 		set(HDF5_CXX_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include CACHE TYPE STRING)
-		set(HDF5_hdf5_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/hdf5.lib CACHE TYPE STRING)
-		set(HDF5_hdf5_cxx_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Release/hdf5_cxx.lib CACHE TYPE STRING)
-		set(HDF5_hdf5_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Debug/hdf5_D.lib CACHE TYPE STRING)
-		set(HDF5_hdf5_cxx_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/src/HDF5-build/bin/Debug/hdf5_cxx_D.lib CACHE TYPE STRING)
+		set(HDF5_hdf5_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5.lib CACHE TYPE STRING)
+		set(HDF5_hdf5_cxx_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5_cxx.lib CACHE TYPE STRING)
+		set(HDF5_hdf5_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5_D.lib CACHE TYPE STRING)
+		set(HDF5_hdf5_cxx_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5_cxx_D.lib CACHE TYPE STRING)
+		set(HDF5_C_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5.lib CACHE TYPE STRING FORCE)
+		set(HDF5_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/cmake CACHE TYPE STRING FORCE)
+		set(HDF5_DIFF_EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/bin/h5diff.exe CACHE TYPE STRING FORCE)
 		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/cmake)
 	endif()
 endif()
-	
+
+SET(REBUILD_HDF5 OFF CACHE BOOL "internal HDF5 download and build" FORCE)
 find_package(HDF5 REQUIRED)
 message(STATUS "HDF5 include dir: ${HDF5_INCLUDE_DIRS}")
 message(STATUS "HDF5 lib dirs: ${HDF5_LIBRARIES} ${HDF5_hdf5_cxx_LIBRARY_RELEASE} ${HDF5_hdf5_LIBRARY_DEBUG} ${HDF5_hdf5_cxx_LIBRARY_DEBUG}")
@@ -223,18 +231,18 @@ message(STATUS "HDF5 lib dirs: ${HDF5_LIBRARIES} ${HDF5_hdf5_cxx_LIBRARY_RELEASE
 ###########################################################################################
 # Below is a CMake command to locate or download and build openCV 3.0
 ###########################################################################################
-message(STATUS "Search OpenCV")
-find_package(OpenCV QUIET)
-option(REBUILD_OpenCV "internal HDF5 download and build" OFF)
-if (OpenCV_FOUND)
-  set(OpenCV_INTERNAL OFF)
-  message(STATUS "OpenCV found")
-else()
-  set(OpenCV_INTERNAL ON)
-  message(STATUS "OpenCV found")
-endif()
-
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+	message(STATUS "Search OpenCV")
+	find_package(OpenCV QUIET)
+	option(REBUILD_OpenCV "internal HDF5 download and build" OFF)
+	if (OpenCV_FOUND)
+	  set(OpenCV_INTERNAL OFF)
+	  message(STATUS "OpenCV found")
+	else()
+	  set(OpenCV_INTERNAL ON)
+	  message(STATUS "OpenCV found")
+	endif()
+
 	if (OpenCV_INTERNAL OR REBUILD_OpenCV)
 
 		message( STATUS "OpenCV Version: 3.0.0 will be downloaded and installed")
@@ -269,6 +277,7 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 	endif()
 endif()
 	
+SET(REBUILD_OpenCV OFF CACHE BOOL "internal HDF5 download and build" FORCE)
 find_package(OpenCV REQUIRED)
 message(STATUS "OpenCV include dir: ${OpenCV_INCLUDE_DIRS}")
 message(STATUS "OpenCV lib dir: ${OpenCV_LIBS}")
@@ -278,15 +287,16 @@ message(STATUS "OpenCV lib dir: ${OpenCV_LIBS}")
 ###########################################################################################
 # Below is a CMake command to download, build and install EIGEN 
 ###########################################################################################
-option(REBUILD_Eigen "internal HDF5 download and build" OFF)
-if(EIGEN_INCLUDE_DIR)
-  set(EIGEN_INTERNAL OFF)
-  message(STATUS "EIGEN found")
-else()
-  set(EIGEN_INTERNAL ON)
-  message(STATUS "EIGEN NOT found")
-endif()
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+	option(REBUILD_Eigen "internal HDF5 download and build" OFF)
+	if(EIGEN_INCLUDE_DIR)
+	  set(EIGEN_INTERNAL OFF)
+	  message(STATUS "EIGEN found")
+	else()
+	  set(EIGEN_INTERNAL ON)
+	  message(STATUS "EIGEN NOT found")
+	endif()
+
 	if (EIGEN_INTERNAL OR REBUILD_Eigen)
 	message( STATUS "EIGEN Version: latest will be downloaded and installed")
 		#generate auxiliary dependency project
@@ -317,26 +327,27 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 		set(EIGEN_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install/include/eigen3 CACHE TYPE STRING)
 	endif()
 endif()
-message(STATUS "EIGEN include dir: ${EIGEN_INCLUDE_DIR}")
 
+SET(REBUILD_Eigen OFF CACHE BOOL "internal HDF5 download and build" FORCE)
+message(STATUS "EIGEN include dir: ${EIGEN_INCLUDE_DIR}")
 
 
 option(WITH_PCL "compile PCL" OFF)
 if (WITH_PCL)	
-	message(STATUS "Compile PCL")
 	
 	###########################################################################################
 	# Below is a CMake command to download, build and install FLANN 
 	###########################################################################################
-	option(REBUILD_Flann "internal HDF5 download and build" OFF)
-	if (FLANN_S_LIBRARY)
-	  set(FLANN_INTERNAL OFF)
-	  message(STATUS "FLANN found")
-	else()
-	  set(FLANN_INTERNAL ON)
-	  message(STATUS "FLANN found")
-	endif()
 	if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+		option(REBUILD_Flann "internal HDF5 download and build" OFF)
+		if (FLANN_S_LIBRARY)
+		  set(FLANN_INTERNAL OFF)
+		  message(STATUS "FLANN found")
+		else()
+		  set(FLANN_INTERNAL ON)
+		  message(STATUS "FLANN found")
+		endif()
+	
 		if (FLANN_INTERNAL OR REBUILD_Flann)
 		message( STATUS "FLANN Version: latest will be downloaded and installed")
 			#generate auxiliary dependency project
@@ -370,6 +381,8 @@ if (WITH_PCL)
 			#set(FLANN_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/force_flann/install/include CACHE TYPE STRING)
 		endif()
 	endif()
+	
+	SET(REBUILD_Flann OFF CACHE BOOL "internal HDF5 download and build" FORCE)
 	message(STATUS "FLANN lib: ${FLANN_LIBRARY}")	
 	message(STATUS "FLANN static lib: ${FLANN_S_LIBRARY}")	
 	message(STATUS "FLANN include dir: ${FLANN_INCLUDE_DIR}")	
@@ -380,16 +393,16 @@ if (WITH_PCL)
 	###########################################################################################
 	# Below is a CMake command to download, build and install VTK
 	###########################################################################################
-	find_package(VTK QUIET)
-	option(REBUILD_VTK "internal HDF5 download and build" OFF)
-	if (VTK_FOUND)
-	  set(VTK_INTERNAL OFF)
-	  message(STATUS "VTK found")
-	else()
-	  set(VTK_INTERNAL ON)
-	  message(STATUS "VTK found")
-	endif()
 	if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+		find_package(VTK QUIET)
+		option(REBUILD_VTK "internal HDF5 download and build" OFF)
+		if (VTK_FOUND)
+		  set(VTK_INTERNAL OFF)
+		  message(STATUS "VTK found")
+		else()
+		  set(VTK_INTERNAL ON)
+		  message(STATUS "VTK found")
+		endif()
 		if (VTK_INTERNAL OR REBUILD_VTK)
 		message( STATUS "VTK Version: latest will be downloaded and installed")
 			#generate auxiliary dependency project
@@ -421,6 +434,7 @@ if (WITH_PCL)
 		endif()
 	endif()
 	
+	SET(REBUILD_VTK OFF CACHE BOOL "internal HDF5 download and build" FORCE)
 	find_package(VTK REQUIRED)	
 	message(STATUS "VTK include dir: ${VTK_INCLUDE_DIRS}")	
 	message(STATUS "VTK lib: ${VTK_LIBRARIES}")
@@ -431,16 +445,16 @@ if (WITH_PCL)
 	###########################################################################################
 	# Below is a CMake command to download, build and install PCL 
 	###########################################################################################
-	find_package(PCL QUIET)
-	option(REBUILD_PCL "internal HDF5 download and build" OFF)
-	if (PCL_FOUND)
-	  set(PCL_INTERNAL OFF)
-	  message(STATUS "PCL found")
-	else()
-	  set(PCL_INTERNAL ON)
-	  message(STATUS "PCL NOT found")
-	endif()
 	if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+		find_package(PCL QUIET)
+		option(REBUILD_PCL "internal HDF5 download and build" OFF)
+		if (PCL_FOUND)
+		  set(PCL_INTERNAL OFF)
+		  message(STATUS "PCL found")
+		else()
+		  set(PCL_INTERNAL ON)
+		  message(STATUS "PCL NOT found")
+		endif()
 		if (PCL_INTERNAL OR REBUILD_PCL)
 		message( STATUS "PLC Version: latest will be downloaded and installed")
 			#generate auxiliary dependency project
@@ -479,8 +493,8 @@ if (WITH_PCL)
 		endif()	
 	endif()
 		
+	SET(REBUILD_PCL OFF CACHE BOOL "internal HDF5 download and build" FORCE)
 	find_package(PCL REQUIRED)
-	
 	message(STATUS "PCL include dir: ${PCL_INCLUDE_DIRS}")	
 	message(STATUS "PCL lib: ${PCL_LIBRARIES}")
 	message(STATUS "PCL lib: ${PCL_INCLUDE_DIRS}")
@@ -490,6 +504,7 @@ endif()
 ###########################################################################################
 ## Below is a CMake command to locate or download and build clif                                             
 ###########################################################################################
+
 message(STATUS "Search clif")
 find_package(clif QUIET)
 option(REBUILD_CLIF "internal HDF5 download and build" OFF)
@@ -501,10 +516,6 @@ else()
   message(STATUS "clif NOT found")
 endif()
 
- message(STATUS "${HDF5_hdf5_LIBRARY_RELEASE} ")
- message(STATUS "${HDF5_hdf5_LIBRARY_DEBUG} ")
-  message(STATUS "${HDF5_hdf5_cxx_LIBRARY_DEBUG} ")
-   message(STATUS "${HDF5_hdf5_cxx_LIBRARY_RELEASE} ")
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 	if (CLIF_INTERNAL OR REBUILD_CLIF)
@@ -514,6 +525,12 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 		#generate auxiliary dependency project
 		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_clif)
 		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_clif/build)
+		
+		if (CMAKE_BUILD_TYPE MATCHES Debug)
+			set(HDF5_CXX_LIBRARIES ${HDF5_hdf5_cxx_LIBRARY_DEBUG})
+		else()
+			set(HDF5_CXX_LIBRARIES ${HDF5_hdf5_cxx_LIBRARY_RELEASE})
+		endif()
 
 		#generate false dependency project
 		set(CMAKE_LIST_CONTENT "
@@ -526,9 +543,12 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 				GIT_REPOSITORY https://github.com/hendriksiedelmann/clif.git
 				CMAKE_ARGS -DVigra_DIR=${Vigra_DIR}
 				CMAKE_ARGS -DOpenCV_DIR=${OpenCV_DIR}
+				CMAKE_ARGS -DHDF5_DIR=${HDF5_DIR}
+				CMAKE_ARGS -DHDF5_CXX_LIBRARIES=${HDF5_CXX_LIBRARIES}
 				CMAKE_ARGS -DHDF5_INCLUDE_DIR=${HDF5_INCLUDE_DIRS}
+				CMAKE_ARGS -DHDF5_DIFF_EXECUTABLE=${HDF5_DIFF_EXECUTABLE}
 				CMAKE_ARGS -DHDF5_CXX_INCLUDE_DIR=${HDF5_CXX_INCLUDE_DIR}
-				CMAKE_ARGS -DHDF5_C_INCLUDE_DIR=${HDF5_INCLUDE_DIRS}
+				CMAKE_ARGS -DHDF5_C_INCLUDE_DIR=${HDF5_C_INCLUDE_DIR}
 				CMAKE_ARGS -DHDF5_hdf5_LIBRARY_RELEASE=${HDF5_hdf5_LIBRARY_RELEASE}
 				CMAKE_ARGS -DHDF5_hdf5_cpp_LIBRARY_RELEASE=${HDF5_hdf5_cxx_LIBRARY_RELEASE}
 				CMAKE_ARGS -DHDF5_hdf5_LIBRARY_DEBUG=${HDF5_hdf5_LIBRARY_DEBUG}
@@ -551,6 +571,18 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_clif/src/clif-build)
 	endif()
 endif()
+
+		set(HDF5_C_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include CACHE TYPE STRING)
+		set(HDF5_CXX_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include CACHE TYPE STRING)
+		set(HDF5_hdf5_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5.lib CACHE TYPE STRING)
+		set(HDF5_hdf5_cxx_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5_cpp.lib CACHE TYPE STRING)
+		set(HDF5_hdf5_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5_D.lib CACHE TYPE STRING)
+		set(HDF5_hdf5_cxx_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5_cpp_D.lib CACHE TYPE STRING)
+		set(HDF5_C_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5.lib CACHE TYPE STRING FORCE)
+		set(HDF5_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/cmake CACHE TYPE STRING FORCE)
+		set(HDF5_DIFF_EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/bin/h5diff.exe CACHE TYPE STRING FORCE)
+
+SET(REBUILD_CLIF OFF CACHE BOOL "internal HDF5 download and build" FORCE)
 find_package(clif REQUIRED)
 message(STATUS "clif libraries: ${CLIF_LIBRARIES}")
 message(STATUS "clif lib dirs: ${CLIF_LIBRARY_DIRS}")
