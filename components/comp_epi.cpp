@@ -31,7 +31,10 @@
 #include "openlf/types.hpp"
 #include "openlf/comp_mav.hpp"
 
-#include <omp.h>
+#ifdef OPENLF_WITH_OPENMP
+	#include <omp.h>
+#endif
+
 #include <unordered_set>
 
 //for printprogress
@@ -445,7 +448,11 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   get_int_param(this, stop_line, P_IDX::StopLine);
   
   //setup circuit and threading
+#ifdef OPENLF_WITH_OPENMP
   int t_count = omp_get_max_threads();
+#else
+  int t_count = 1;
+#endif
   
   if (configOnly())
     return;
@@ -483,7 +490,11 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
       done++;
     }
     
-    int t = omp_get_thread_num();
+#ifdef OPENLF_WITH_OPENMP
+     int t = omp_get_thread_num();
+#else
+	 int t = 1;
+#endif
     
     proc_epi(
       t,
