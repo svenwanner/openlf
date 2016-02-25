@@ -40,8 +40,8 @@ OPENLF_VIGRA_OP_START(OP_Tensor2x2, 2, 3, 3, 3)
   *out[2] *= *out[2];*/
 
   //assume continuous array
-  __restrict__ T *inx, *iny;
-  __restrict__ T *outxx, *outxy, *outyy;
+  __restrict T *inx, *iny;
+  __restrict T *outxx, *outxy, *outyy;
   
   assert(in[0].isUnstrided());
   assert(in[1].isUnstrided());
