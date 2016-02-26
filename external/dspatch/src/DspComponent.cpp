@@ -42,7 +42,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 void Alias_List::add(DspComponent *c, int i, std::string alias)
 {    
-  std::vector<std::pair<DspComponent*,int> > *v = NULL;
+  std::vector<std::pair<DspComponent*,int>> *v = NULL;
   
   if (!alias.size())
     return;
@@ -50,7 +50,7 @@ void Alias_List::add(DspComponent *c, int i, std::string alias)
   if (_map.count(alias))
     v = _map[alias];
   else {
-    v = new std::vector<std::pair<DspComponent*,int> >();
+    v = new std::vector<std::pair<DspComponent*,int>>();
     _list.push_back(std::make_pair(alias,v));
     _map[alias] = v;
   }
@@ -90,7 +90,7 @@ void Alias_List::remove(DspComponent *c, int i)
 
 void Alias_List::remove(DspComponent *c, int index, std::string alias)
 {
-  std::vector<std::pair<DspComponent*,int> > *v;
+  std::vector<std::pair<DspComponent*,int>> *v;
   
   if (!_map.count(alias))
     abort();
@@ -130,7 +130,7 @@ std::string Alias_List::get(DspComponent *c, int i)
 
 void Alias_List::set(int index, const DspParameter &param)
 {
-  std::vector<std::pair<DspComponent*,int> > *v;
+  std::vector<std::pair<DspComponent*,int>> *v;
     
   v = _list[index].second;
   for(auto it : *v) {
@@ -140,7 +140,7 @@ void Alias_List::set(int index, const DspParameter &param)
 
 void Alias_List::unset(int index, int max_prio)
 {
-  std::vector<std::pair<DspComponent*,int> > *v;
+  std::vector<std::pair<DspComponent*,int>> *v;
     
   v = _list[index].second;
   for(auto it : *v) {
@@ -150,7 +150,7 @@ void Alias_List::unset(int index, int max_prio)
 
 const DspParameter* Alias_List::getFirst(int index) const
 {
-  std::vector<std::pair<DspComponent*,int> > *v;
+  std::vector<std::pair<DspComponent*,int>> *v;
   
   v = _list[index].second;
   for(auto it : *v)

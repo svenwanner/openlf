@@ -59,8 +59,8 @@ OPENLF_VIGRA_OP_START(OP_SaveImage, 1, 1, 3, 3)
         exportImage(out_im, *op->GetParameter(0)->GetString());
     }
     else if (in[0].shape()[2] == 3 || in[0].shape()[2] == 4){
-        vigra::MultiArray<2, vigra::RGBValue<T> > channel_in(in[0].shape()[0], in[0].shape()[1]);
-        vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8> > out_im(in[0].shape()[0], in[0].shape()[1]);
+        vigra::MultiArray<2, vigra::RGBValue<T>> channel_in(in[0].shape()[0], in[0].shape()[1]);
+        vigra::MultiArray<2, vigra::RGBValue<vigra::UInt8>> out_im(in[0].shape()[0], in[0].shape()[1]);
   
         vigra::MultiArrayView<2, T> r(channel_in.bindElementChannel(0));
         vigra::MultiArrayView<2, T> g(channel_in.bindElementChannel(1));

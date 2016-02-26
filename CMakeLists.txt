@@ -1,19 +1,18 @@
 cmake_minimum_required (VERSION 2.8)
 project(OpenLF)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC -g -O3 -fno-omit-frame-pointer")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O3 -fPIC")
+
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
   # using Clang
-  message(STATUS "compile with clang")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC -g -O3 -fno-omit-frame-pointer")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O3 -fPIC")
+  message(STATUS "compile with clang")  
   set(OPENLF_LIBRARIES dl)
   set(OPENLF_BUILD_TYPE "SHARED")
   set(CMAKE_MACOSX_RPATH 1)
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   # using GCC
   message(STATUS "compile with gcc")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC -g -O3 -fno-omit-frame-pointer")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O3 -fPIC")
   set(OPENLF_LIBRARIES dl)
   set(OPENLF_BUILD_TYPE "SHARED")
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
