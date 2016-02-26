@@ -16,9 +16,12 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 endif()
 
 
-if(UNIX)
+if(UNIX AND NOT APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -fPIC -pthread")
-endif(UNIX)
+elseif(APPLE)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -fPIC")
+endif(UNIX AND NOT APPLE)
+
 
 if(CYGWIN OR MINGW)
     string(REGEX REPLACE "-Wl,--out-implib,[^ ]+ " " " CMAKE_C_CREATE_SHARED_LIBRARY "${CMAKE_C_CREATE_SHARED_LIBRARY}")
