@@ -493,7 +493,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 #ifdef OPENLF_WITH_OPENMP
      int t = omp_get_thread_num();
 #else
-	 int t = 1;
+	 int t = 0;
 #endif
     
     proc_epi(

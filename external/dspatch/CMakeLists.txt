@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
   # using Clang
   message(STATUS "use clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wnon-virtual-dtor")
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   # using GCC
   message(STATUS "use gcc")
@@ -40,12 +41,20 @@ add_library(
     ${in_hdrs}
 )
 
+if(APPLE)
+target_link_libraries(
+    ${PROJECT_NAME}    
+    gml_parser
+)
+else()
 target_link_libraries(
     ${PROJECT_NAME}
     -static-libgcc
     -static-libstdc++
     gml_parser
 )
+endif(APPLE)
+
 
 # Link pthread and dl on Unix
 if(UNIX)
@@ -56,6 +65,14 @@ if(UNIX)
     )
 endif(UNIX)
 
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+    target_link_libraries(
+        ${PROJECT_NAME}
+        pthread
+        dl
+    )
+endif()
+	
 install(
     TARGETS ${PROJECT_NAME}
     DESTINATION lib

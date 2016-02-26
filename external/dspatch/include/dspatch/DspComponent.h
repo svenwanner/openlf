@@ -110,8 +110,8 @@ public:
   Alias_List operator=(Alias_List &arg);
   
 private:
-  std::vector<std::pair<std::string,std::vector<std::pair<DspComponent*,int>>*>> _list;
-  std::unordered_map<std::string,std::vector<std::pair<DspComponent*,int>>*> _map;
+  std::vector<std::pair<std::string,std::vector<std::pair<DspComponent*,int> >*> > _list;
+  std::unordered_map<std::string,std::vector<std::pair<DspComponent*,int> >*> _map;
 };
 
 class DLLEXPORT DspComponent
