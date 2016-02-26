@@ -41,12 +41,20 @@ add_library(
     ${in_hdrs}
 )
 
+if(APPLE)
+target_link_libraries(
+    ${PROJECT_NAME}    
+    gml_parser
+)
+else()
 target_link_libraries(
     ${PROJECT_NAME}
-#    -static-libgcc
+    -static-libgcc
     -static-libstdc++
     gml_parser
 )
+endif(APPLE)
+
 
 # Link pthread and dl on Unix
 if(UNIX)
