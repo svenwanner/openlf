@@ -618,16 +618,19 @@ find_package(clif REQUIRED)
 message(STATUS "clif libraries: ${CLIF_LIBRARIES}")
 message(STATUS "clif lib dirs: ${CLIF_LIBRARY_DIRS}")
 
+find_package(cliini QUIET)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${HDF5_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${Vigra_INCLUDE_DIRS})
 include_directories(${CLIF_INCLUDE_DIRS})
+include_directories(${CLIINI_INCLUDE_DIRS})
 
 link_directories(${CLIF_LIBRARY_DIRS})
+link_directories(${CLIINI_LIBRARY_DIRS})
 
-list(APPEND OPENLF_LIBRARIES ${CLIF_LIBRARIES} ${Boost_LIBRARIES})
+list(APPEND OPENLF_LIBRARIES ${CLIF_LIBRARIES} ${CLIINI_LIBRARIES} ${Boost_LIBRARIES})
 
 add_subdirectory(external/gml_parser)
 include_directories(external/gml_parser)
