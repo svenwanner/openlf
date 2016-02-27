@@ -44,6 +44,7 @@ protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 private:
   virtual bool ParameterUpdating_ (int i, DspParameter const &p);
+  Mesh _mesh;
 };
   
 component::component()
@@ -668,14 +669,13 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
   //if (obj_filename)
     //write_obj(obj_filename->c_str(), centerview, img, subset);
-  
-  Mesh mesh;
-  gen_mesh(mesh, centerview, img, subset);
 
-  //mesh.show();
+  gen_mesh(_mesh, centerview, img, subset);
+
+  _mesh.show();
 
   if (obj_filename)
-    mesh.writeOBJ(obj_filename->c_str());
+    _mesh.writeOBJ(obj_filename->c_str());
 
 
   
