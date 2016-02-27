@@ -578,7 +578,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   get_int_param(this, stop_line, P_IDX::StopLine);
   
   errorCond(start_line >= 0, "StartLine invalid value (%d < 0)!", stop_line, subset.EPICount()); RETURN_ON_ERROR
-  errorCond(stop_line < subset.EPICount(), "StopLine invalid value (%d >= %d)!", stop_line, subset.EPICount()); RETURN_ON_ERROR
+  errorCond(stop_line <= subset.EPICount(), "StopLine invalid value (%d > %d)!", stop_line, subset.EPICount()); RETURN_ON_ERROR
   
   //setup circuit and threading
 #ifdef OPENLF_WITH_OPENMP
