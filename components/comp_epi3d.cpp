@@ -650,7 +650,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     int act_stop = std::min(subset.EPICount(), curr_chunk_stop+integrate_r);
     
     for(float d=disp_start;d<=disp_stop;d+=disp_step) {
-//#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
       for(int i=act_start;i<act_stop;i++) {
         if (i >= curr_chunk && i < std::min(curr_chunk+chunk_size,stop_line))
     #pragma omp critical 
@@ -662,7 +662,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 #ifdef OPENLF_WITH_OPENMP
         int t = omp_get_thread_num();
 #else
-		int t = 1;
+	int t = 1;
 #endif
         proc_epi_tensor(
           t,
@@ -689,7 +689,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
           cv::GaussianBlur(src, dst, cv::Size(1, integrate_r*2+1), 0.0, integrate_sigma);
         }
       
-//#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
       for(int i=curr_chunk;i<curr_chunk_stop;i++) {
         if (i >= curr_chunk && i < std::min(curr_chunk+chunk_size,stop_line))
 #pragma omp critical 
@@ -701,7 +701,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 #ifdef OPENLF_WITH_OPENMP
         int t = omp_get_thread_num();
 #else
-		int t = 1;
+        int t = 1;
 #endif
         
         proc_epi_ori_merge(
