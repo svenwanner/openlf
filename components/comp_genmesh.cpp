@@ -103,6 +103,7 @@ void gen_mesh(Mesh &mesh, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d
   }
   
   mesh.size(point_count, face_count);
+  mesh.color(true);
   
   for(p[1]=0;p[1]<h;++p[1]) {
     valid_tmp = valid_last;
@@ -131,6 +132,10 @@ void gen_mesh(Mesh &mesh, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d
         }
         else
           col = cv::Vec3b(127,127,127);
+        
+        mesh.C(v_idx-1, 0) = col[0]/255.0;
+        mesh.C(v_idx-1, 1) = col[1]/255.0;
+        mesh.C(v_idx-1, 2) = col[2]/255.0;
         
         v_idx ++;
         
