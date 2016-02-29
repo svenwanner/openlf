@@ -53,7 +53,7 @@ component::component()
   AddInput_("input");
   AddParameter_("obj_filename", DspParameter(DspParameter::ParamType::String));
   AddParameter_("ply_filename", DspParameter(DspParameter::ParamType::String));
-  AddParameter_("viewer", DspParameter(DspParameter::ParamType::Bool, true));
+  AddParameter_("viewer", DspParameter(DspParameter::ParamType::Bool, false));
   AddParameter_("block", DspParameter(DspParameter::ParamType::Bool, true));
 }
 
@@ -713,11 +713,14 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 bool component::ParameterUpdating_ (int i, DspParameter const &p)
 {
-  //we only have two parameters
-  if (i >= 2)
+  //we only have four parameters
+  if (i >= 4)
     return false;
   
-  if (p.Type() != DspParameter::ParamType::String)
+  if (i < 2 && p.Type() != DspParameter::ParamType::String)
+    return false;
+  
+  if (i >= 2 && p.Type() != DspParameter::ParamType::Bool)
     return false;
   
   SetParameter_(i, p);
