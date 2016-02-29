@@ -51,11 +51,42 @@ QNEBlock::QNEBlock(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 	height = vertMargin;
 }
 
+static void printprogress(int curr, int max, int &last, const char *fmt = NULL, ...)
+{
+  last = (last + 1) % 4;
+  int pos = curr*60/max;
+  char unf[] = "                                                             ]";
+  char fin[] = "[============================================================]";
+  char buf[100];
+  
+  char cs[] = "-\\|/";
+  memcpy(buf, fin, pos+1);
+  buf[pos+1] = cs[last];
+  memcpy(buf+pos+2, unf+pos+2, 62-pos-2+1);
+  if (!fmt) {
+    printf("%s\r", buf);
+  }
+  else {
+    printf("%s", buf);
+    va_list arglist;
+    va_start(arglist, fmt);
+    vprintf(fmt, arglist);
+    va_end(arglist);
+    printf("\r");
+  }
+  fflush(NULL);
+}
+
 void _progress_f(DspComponent *c, float progress, void *data)
 {
-  printf("progress: %.2f%%\n", progress*100.0);
+  static int last = 0;
   QNEBlock *block = (QNEBlock*)data;
   block->_progress = progress;
+
+  if (progress == 1.0)
+    printprogress(progress*1000, 1000, last, " %s\n", block->component->GetComponentName().c_str());
+  else
+    printprogress(progress*1000, 1000, last, " %s", block->component->GetComponentName().c_str());
   
   QMetaObject::invokeMethod(block->scene(), "update", Qt::QueuedConnection);
 }
