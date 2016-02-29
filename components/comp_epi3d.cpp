@@ -128,11 +128,9 @@ void operator()(int line, int epi_w, int epi_h, Mat *sink_mat, Mat *disp_store)
     MultiArrayView<2,T> sink = vigraMAV<3,T>(*sink_mat).bindAt(2, c);
     MultiArrayView<3,T> store = vigraMAV<4,T>(*disp_store).bindAt(2, c);
     
-    for(int i=0;i<epi_h;i++) {
-      //bind store y to epi line
-      MultiArrayView<2,T> epi = store.bindAt(1, line);
-      epi = sink;
-    }
+    //bind store y to epi line
+    MultiArrayView<2,T> epi = store.bindAt(1, line);
+    epi = sink;
   }
 }
 };
@@ -674,12 +672,12 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         );
       }
       
-//#pragma omp parallel for
+#pragma omp parallel for
     //FIXME
       for(int c=0;c<3;c++)
         for(int i=0;i<epi_h;i++) {
           if (i >= curr_chunk && i < std::min(curr_chunk+chunk_size,stop_line))
-//#pragma omp critical 
+#pragma omp critical 
             {
               progress_((float)done/work);
               done++;
