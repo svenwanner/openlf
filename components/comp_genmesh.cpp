@@ -53,7 +53,8 @@ component::component()
   AddInput_("input");
   AddParameter_("obj_filename", DspParameter(DspParameter::ParamType::String));
   AddParameter_("ply_filename", DspParameter(DspParameter::ParamType::String));
-  //AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
+  AddParameter_("viewer", DspParameter(DspParameter::ParamType::Bool, true));
+  AddParameter_("block", DspParameter(DspParameter::ParamType::Bool, true));
 }
 
 void gen_mesh(Mesh &mesh, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d &subset)
@@ -596,12 +597,10 @@ void write_merge_obj(const char *name, MultiArrayView<3,float> &disp, MultiArray
 void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   LF *in = NULL;
-  const std::string *obj_filename;
-  const std::string *ply_filename;
-  
-  
-  obj_filename = GetParameter(0)->GetString();
-  ply_filename = GetParameter(1)->GetString();
+  const std::string *obj_filename = GetParameter(0)->GetString();
+  const std::string *ply_filename = GetParameter(1)->GetString();
+  bool use_viewer = GetParameter(2)->GetBool();
+  bool block_viewer = GetParameter(3)->GetBool();
   
   errorCond(obj_filename || ply_filename, "no output specified");
   RETURN_ON_ERROR
@@ -677,12 +676,16 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
   gen_mesh(_mesh, centerview, img, subset);
 
-  _mesh.show();
-
   if (obj_filename)
     _mesh.writeOBJ(obj_filename->c_str());
-
-
+  
+  if (use_viewer)
+#ifdef CLIF_WITH_LIBIGL_VIEWER
+  _mesh.show(block_viewer);
+#else
+  printf("ERROR could not launch viewer, clif compiled without libigl_viewer!\n");
+#endif
+  
   
   store->readImage(idx, &img3d, opts);
   clifMat2cv(&img3d,&img);
