@@ -44,7 +44,6 @@ void _load_existing_param(QGridLayout *layout, DspComponent *comp, int i, std::v
       const int *val = param->GetInt();
       if (val) {
         spinbox->setValue(*val);
-        printf("comb %p %d\n", comp, *val);
       }
       break;
     }
@@ -90,6 +89,12 @@ void _load_existing_param(QGridLayout *layout, DspComponent *comp, int i, std::v
         //combox->addItem(c->GetComponentName().c_str(), QVariant::fromValue((void*)c));
         combox->setCurrentIndex(combox->count()-1);
       }
+      break;
+    }
+    case DPPT::Bool : {
+      QCheckBox *chk = static_cast<QCheckBox*>(w);
+      const bool *val = param->GetBool();
+      chk->setChecked(*val);
       break;
     }
   } 
@@ -172,6 +177,16 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
           combox->setProperty("idx", i);
           
           connect(combox, SIGNAL(currentIndexChanged(int)), this, SLOT(circuitSelected(int)));
+
+          break;
+      }
+      case DPPT::Bool : {
+          QCheckBox *chk_box = new QCheckBox(_layout_w);
+          actual_layout->addWidget(chk_box, i+header_lines, xpos++);
+          chk_box->setProperty("component", QVariant::fromValue((void*)_component));
+          chk_box->setProperty("idx", i);
+          
+          connect(chk_box, SIGNAL(stateChanged(int)), this, SLOT(boolChanged(int)));
 
           break;
       }
@@ -259,6 +274,16 @@ void QNESettings::intSettingChanged(int val)
   int idx = sender()->property("idx").value<int>();
   
   comp->SetParameter(idx, DspParameter(DPPT::Int, val));
+  
+  emit settingChanged();
+}
+
+void QNESettings::boolChanged(int val)
+{
+  DspComponent *comp = (DspComponent*)sender()->property("component").value<void*>();
+  int idx = sender()->property("idx").value<int>();
+  
+  comp->SetParameter(idx, DspParameter(DPPT::Bool, val));
   
   emit settingChanged();
 }
