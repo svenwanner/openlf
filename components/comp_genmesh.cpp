@@ -601,6 +601,7 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   const std::string *ply_filename = GetParameter(1)->GetString();
   bool use_viewer = GetParameter(2)->GetBool();
   bool block_viewer = GetParameter(3)->GetBool();
+  cv::Mat img3d, img;
   
   errorCond(obj_filename || ply_filename, "no output specified");
   RETURN_ON_ERROR
@@ -610,32 +611,15 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   if (configOnly())
     return;
+
   
-  /*assert(in);
-  assert(filename->size());
-  
-  H5::H5File f_out(filename->c_str(), H5F_ACC_TRUNC);
-  Dataset out_set;
-  out_set.link(f_out, in->data);
-  out_set.writeAttributes();
-  f_out.close();*/
-  
+  //FIXME if disparity_root is empty use first available
   cpath disparity_root = in->path;
   
-  Mat disp0, disp, coh;
+  Mat disp;
   Datastore *disp_store = in->data->getStore(disparity_root/"data");
-  Datastore *coh_store = in->data->getStore(disparity_root/"coherence");
-
   disp_store->read(disp);
 
-  coh_store->read(coh);
-  
-  //disp.create(disp0.type(), disp0);
-  
-  /*for (int i=0; i < disp0[3]; ++i) {
-    cv::GaussianBlur(cvMat(disp0.bind(3, i).bind(2, 0)), cvMat(disp.bind(3, i).bind(2, 0)), cv::Size(7,19), 1, 3);
-  }*/
-  
   float scale = 1.0;
   
   Attribute *attr;
@@ -650,12 +634,11 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //FIXME read/pass actual datastore!
   Subset3d subset(in->data, disparity_root/"subset/source", opts);
   //FIXME add read function to subset3d
+  
   Datastore *store = in->data->getStore(subset.extrinsics_group()/"data");
   
-  cv::Mat img3d, img;
   //FIXME should add a readimage to subset3d!
   std::vector<int> idx(store->dims(), 0);
-  //FIXME flexmav!
   idx[3] = disp[3]/2;
   
   opts.set_flags(UNDISTORT | CVT_8U);
@@ -667,48 +650,22 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   MultiArrayView<2,float> centerview = vigraMAV<4,float>(disp).bindAt(3,disp[3]/2).bindAt(2,0);
   
   char* locale_old = setlocale(LC_NUMERIC, "C");
-  
-  //if (ply_filename)
-    //write_ply(ply_filename->c_str(), centerview, img, subset);
-
-  //if (obj_filename)
-    //write_obj(obj_filename->c_str(), centerview, img, subset);
 
   gen_mesh(_mesh, centerview, img, subset);
 
-  if (obj_filename)
+  if (obj_filename && obj_filename->size())
     _mesh.writeOBJ(obj_filename->c_str());
   
   if (use_viewer)
 #ifdef CLIF_WITH_LIBIGL_VIEWER
+    printf("show viewer, block %d\n", int(block_viewer));
   _mesh.show(block_viewer);
 #else
   printf("ERROR could not launch viewer, clif compiled without libigl_viewer!\n");
 #endif
   
   
-  store->readImage(idx, &img3d, opts);
-  clifMat2cv(&img3d,&img);
-  cv::Mat img_norm;
-  cv::normalize(img, img_norm, 0, 255, cv::NORM_MINMAX, CV_8UC1); 
-  
-  //cv::imwrite("norm.png", img);
-  
-  //if (obj_filename)
-    //write_obj("debug_regular.obj", centerview, img, subset);
-  
-
-  
-  //if (obj_filename)
-    //write_merge_obj(obj_filename->c_str(), disp_3d, coh_3d, img, subset);
-  
   setlocale(LC_NUMERIC, locale_old);
-  
-  /*ClifFile *debugfile = new ClifFile();
-  debugfile->create("debug.clif");
-  Dataset *debugset = debugfile->createDataset("default");
-  disp.write(debugset, "testimage");
-  delete debugfile;*/
 }
 
 bool component::ParameterUpdating_ (int i, DspParameter const &p)
