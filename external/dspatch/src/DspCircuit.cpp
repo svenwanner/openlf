@@ -575,6 +575,9 @@ void DspCircuit::_save_comp(FILE *f, int i)
           case DspParameter::ParamType::Int :
             fprintf(f, "%d\n", *p->GetInt());
             break;
+          case DspParameter::ParamType::Bool :
+            fprintf(f, "%d\n", int(*p->GetBool()));
+            break;
           case DspParameter::ParamType::Pointer : {
             DspComponent *comp = NULL;
             p->GetPointer(comp);
@@ -738,6 +741,19 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
             case DPPT::Int : {
               assert(part->kind = GML_INT);
               DspParameter p(DPPT::Int, (int)part->value.integer);
+              p.SetDefault(p);
+              comp->SetParameter(p_idx, p);
+              break;
+            }
+            case DPPT::Bool : {
+              assert(part->kind = GML_INT);
+              printf("parse bool: %d\n", part->value.integer);
+              //DspParameter p(DPPT::Bool, (bool)part->value.integer);
+              DspParameter p(DPPT::Bool);
+              if (part->value.integer)
+                p.SetBool(true);
+              else
+                p.SetBool(false);
               p.SetDefault(p);
               comp->SetParameter(p_idx, p);
               break;

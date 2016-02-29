@@ -65,6 +65,7 @@ private slots:
   void intSettingChanged(int val);
   void portCountChanged(int val);
   void circuitSelected(int val);
+  void boolChanged(int val);
 };
 
 #endif
