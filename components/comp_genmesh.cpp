@@ -603,7 +603,7 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   bool block_viewer = GetParameter(3)->GetBool();
   cv::Mat img3d, img;
   
-  errorCond(obj_filename || ply_filename, "no output specified");
+  errorCond(obj_filename || ply_filename || use_viewer, "no output specified");
   RETURN_ON_ERROR
   
   inputs.GetValue(0, in);
