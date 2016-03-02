@@ -748,12 +748,10 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
             case DPPT::Bool : {
               assert(part->kind = GML_INT);
               DspParameter p(DPPT::Bool);
-              if (part->value.integer)
-                p.SetBool(true);
-              else
-                p.SetBool(false);
+              p.SetBool(bool(part->value.integer));
               p.SetDefault(p);
               comp->SetParameter(p_idx, p);
+              
               break;
             }
             case DPPT::Pointer : {

@@ -604,8 +604,8 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   LF *in = NULL;
   const std::string *obj_filename = GetParameter(0)->GetString();
   const std::string *ply_filename = GetParameter(1)->GetString();
-  bool use_viewer = GetParameter(2)->GetBool();
-  bool block_viewer = GetParameter(3)->GetBool();
+  bool use_viewer = *GetParameter(2)->GetBool();
+  bool block_viewer = *GetParameter(3)->GetBool();
   cv::Mat img3d, img;
   
   errorCond(obj_filename || ply_filename || use_viewer, "no output specified");
@@ -663,7 +663,6 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   if (use_viewer)
 #ifdef CLIF_WITH_LIBIGL_VIEWER
-    printf("show viewer, block %d\n", int(block_viewer));
   _mesh.show(block_viewer);
 #else
   printf("ERROR could not launch viewer, clif compiled without libigl_viewer!\n");
