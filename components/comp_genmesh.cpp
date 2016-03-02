@@ -103,6 +103,11 @@ void gen_mesh(Mesh &mesh, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d
     }
   }
   
+  for(int i=0;i<w;i++) {
+    buf1[i] = 0;
+    buf2[i] = 0;
+  }
+  
   mesh.size(point_count, face_count);
   mesh.color(true);
   
