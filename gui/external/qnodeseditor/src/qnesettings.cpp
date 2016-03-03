@@ -154,6 +154,8 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
         }
       case DPPT::Float : {
           QDoubleSpinBox *spinbox = new QDoubleSpinBox(_layout_w);
+          spinbox->setMinimum(-100000000000);
+          spinbox->setMaximum(100000000000);
           actual_layout->addWidget(spinbox, i+header_lines, xpos++);
           spinbox->setProperty("component", QVariant::fromValue((void*)_component));
           spinbox->setProperty("idx", i);
@@ -165,6 +167,7 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
           actual_layout->addWidget(spinbox, i+header_lines, xpos++);
           spinbox->setProperty("component", QVariant::fromValue((void*)_component));
           spinbox->setProperty("idx", i);
+          spinbox->setMinimum(INT_MIN);
           spinbox->setMaximum(INT_MAX);
           connect(spinbox, SIGNAL(valueChanged(int)), this, SLOT(intSettingChanged(int)));
 
