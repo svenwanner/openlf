@@ -79,7 +79,7 @@ OPENLF_VIGRA_OP_START(OP_Tensor2Disparity, 3, 2, 3, 3)
     c_nom = xyd2 + 4 * in1[i]*in1[i];
     c_denom = (in0[i] + in2[i]);
     c_denom *= c_denom;
-    c_denom += FLT_MIN;;
+    c_denom += FLT_MIN;
     coherence = c_nom / c_denom;
     
     if (x <= 0) {
