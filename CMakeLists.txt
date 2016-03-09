@@ -309,7 +309,7 @@ message(STATUS "OpenCV lib dir: ${OpenCV_LIBS}")
 ###########################################################################################
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 	option(REBUILD_Eigen "internal HDF5 download and build" ON)
-	if(EIGEN_INCLUDE_DIR)
+	if(EIGEN3_INCLUDE_DIR)
 	  set(EIGEN_INTERNAL OFF)
 	  message(STATUS "EIGEN found")
 	else()
@@ -344,12 +344,12 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/build)
 
-		set(EIGEN_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install/include/eigen3 CACHE TYPE STRING)
+		set(EIGEN3_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install/include/eigen3 CACHE TYPE STRING)
 	endif()
 endif()
 
 SET(REBUILD_Eigen OFF CACHE BOOL "internal HDF5 download and build" FORCE)
-message(STATUS "EIGEN include dir: ${EIGEN_INCLUDE_DIR}")
+message(STATUS "EIGEN include dir: ${EIGEN3_INCLUDE_DIR}")
 
 
 option(WITH_PCL "compile PCL" OFF)
@@ -490,7 +490,7 @@ if (WITH_PCL)
 				PCL
 								PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_PCL
 								GIT_REPOSITORY https://github.com/PointCloudLibrary/pcl.git
-								CMAKE_ARGS -DEIGEN_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}
+								CMAKE_ARGS -DEIGEN_INCLUDE_DIR=${EIGEN3_INCLUDE_DIR}
 								CMAKE_ARGS -DFLANN_LIBRARY=${FLANN_S_LIBRARY}
 								CMAKE_ARGS -DFLANN_INCLUDE_DIR=${FLANN_INCLUDE_DIR}	
 								CMAKE_ARGS -DVTK_DIR=${CMAKE_CURRENT_BINARY_DIR}/force_VTK/src/VTK-build
@@ -595,7 +595,7 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 				CMAKE_ARGS -DHDF5_DIFF_EXECUTABLE=${HDF5_DIFF_EXECUTABLE}
 				#CMAKE_ARGS -DHDF5_CXX_INCLUDE_DIR=${HDF5_CXX_INCLUDE_DIR}
 				#CMAKE_ARGS -DHDF5_C_INCLUDE_DIR=${HDF5_C_INCLUDE_DIR}
-				CMAKE_ARGS -DEIGEN3_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}
+				CMAKE_ARGS -DEIGEN3_INCLUDE_DIR=${EIGEN3_INCLUDE_DIR}
 				CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
 				CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_clif/install
 				INSTALL_COMMAND ;
@@ -631,6 +631,10 @@ link_directories(${CLIF_LIBRARY_DIRS})
 link_directories(${CLIINI_LIBRARY_DIRS})
 
 list(APPEND OPENLF_LIBRARIES ${CLIF_LIBRARIES} ${CLIINI_LIBRARIES} ${Boost_LIBRARIES})
+
+message("${CLIF_LIBRARIES}")
+message("${CLIINI_LIBRARIES}")
+message("boost: ${Boost_LIBRARIES}")
 
 add_subdirectory(external/gml_parser)
 include_directories(external/gml_parser)
