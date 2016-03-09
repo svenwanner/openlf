@@ -71,7 +71,7 @@ private:
 };
   
 namespace {
-  enum P_IDX {Tensor_Circuit = 0,Orientation_Circuit,Merge_Circuit,DispStart,DispStop,DispStep,StartLine,StopLine,scale};
+	enum P_IDX { Tensor_Circuit = 0, Orientation_Circuit, Merge_Circuit, DispStart, DispStop, DispStep, StartLine, StopLine, scale, storage_name };
 }
 
 template<typename T> void COMP_Epi::openlf_add_param(const char *name, T val, DspParameter::ParamType type, int idx)
@@ -118,6 +118,8 @@ COMP_Epi::COMP_Epi()
   openlf_add_param("StopLine", DPPT::Int, P_IDX::StopLine);
   
   openlf_add_param("scale", DPPT::Float, P_IDX::scale);
+
+  openlf_add_param("storage_name", (DspComponent*)NULL, DPPT::String, P_IDX::storage_name);
 }
 
 template<typename T> class subarray_copy {
@@ -550,6 +552,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   float disp_stop = 7.0;
   int start_line = 0;
   int stop_line = subset.EPICount();
+  std::string storage_name = "disparity";
   
   
   //FIXME here automatically derive from input (horopter etc.)
@@ -560,7 +563,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   SetParameter_(P_IDX::StartLine, DspParameter(DPPT::Int, start_line));
   SetParameter_(P_IDX::StopLine, DspParameter(DPPT::Int, stop_line));
-  
+  SetParameter_(P_IDX::storage_name, DspParameter(DPPT::String, storage_name));
   
   //apply configs
   forward_config(this, in->data);
@@ -570,6 +573,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   disp_start = *GetParameter(P_IDX::DispStart)->GetFloat()*opts.scale();
   disp_step  = *GetParameter(P_IDX::DispStep)->GetFloat();
   disp_stop  = (*GetParameter(P_IDX::DispStop)->GetFloat()+(disp_step/opts.scale()-1))*opts.scale();
+  storage_name = *GetParameter(P_IDX::storage_name)->GetString();
   
   //FIXME set/get default!
   get_int_param(this, start_line, P_IDX::StartLine);
@@ -584,6 +588,31 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 #else
   int t_count = 1;
 #endif
+
+    //FIXME write!
+  std::string tmp_storage_name = storage_name;
+  tmp_storage_name.append("/default/data");
+  Datastore *disp_store = out->data->addStore(tmp_storage_name);
+
+  tmp_storage_name = storage_name;
+  tmp_storage_name.append("/default");
+  out->path = tmp_storage_name;
+
+  tmp_storage_name = storage_name;
+  tmp_storage_name.append("/default/coherence");
+  Datastore *coh_store = out->data->addStore(tmp_storage_name);
+
+  //out->path = "disparity/default/coherence";
+
+  //some meta data
+  tmp_storage_name = storage_name;
+  tmp_storage_name.append("/default/subset/source");
+  out->data->addLink(tmp_storage_name, subset.extrinsics_group());
+
+  tmp_storage_name = storage_name;
+  tmp_storage_name.append("/default/subset/scale");
+  out->data->setAttribute(tmp_storage_name, opts.scale());
+
   
   if (configOnly())
     return;
@@ -727,22 +756,17 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   assert(disp_mat);
 
-  
-  //FIXME write!
-  Datastore *disp_store = out->data->addStore("disparity/default/data");
+
   disp_store->write(disp_mat);
-  out->path = "disparity/default";
+
   delete disp_mat;
   
   
   //FIXME write!
-  Datastore *coh_store = out->data->addStore("disparity/default/coherence");
   coh_store->write(coh_mat);
-  //out->path = "disparity/default/coherence";
+  
   delete coh_mat;
   
-  out->data->addLink("disparity/default/subset/source", subset.extrinsics_group());
-  out->data->setAttribute("disparity/default/subset/scale", opts.scale());
   
 #pragma omp critical
   if (!cv_t_count)

@@ -42,7 +42,7 @@ private:
 
 COMP_LFWrite::COMP_LFWrite()
 {
-  setTypeName_("writeCLIF");
+  setTypeName_("COMP_writeCLIF");
   AddInput_("input");
   AddParameter_("filename", DspParameter(DspParameter::ParamType::String));
   AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
