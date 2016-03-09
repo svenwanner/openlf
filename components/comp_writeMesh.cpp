@@ -24,6 +24,7 @@
 #include "clif/clif_cv.hpp"
 #include "opencv2/core/core.hpp"
 #include "openlf/types.hpp"
+#include <opencv2/highgui/highgui.hpp>
 
 #include "clif/preproc.hpp"
 
@@ -51,7 +52,7 @@ COMP_writeMesh::COMP_writeMesh()
   AddInput_("input");
   AddParameter_("obj_filename", DspParameter(DspParameter::ParamType::String));
   AddParameter_("ply_filename", DspParameter(DspParameter::ParamType::String));
-  //AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
+  AddParameter_("dataset", DspParameter(DspParameter::ParamType::String,"2DTV"));
 }
 
 void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d &subset)
@@ -495,14 +496,14 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 	obj_filename = GetParameter(0)->GetString();
 	ply_filename = GetParameter(1)->GetString();
+	std::string dataset = *GetParameter(2)->GetString();
 
-	errorCond(obj_filename || ply_filename, "no output specified");
-	RETURN_ON_ERROR
+	errorCond(obj_filename || ply_filename, "no output specified"); RETURN_ON_ERROR
 
-		inputs.GetValue(0, in);
+	inputs.GetValue(0, in);
 	errorCond(in, "no input!"); RETURN_ON_ERROR
 
-	cpath data_root = "2DTV";
+	cpath data_root = dataset;
 
 	data_root.append("/default");
 	
@@ -512,9 +513,8 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	bool use_coherence = false;
 	int timer = 0;
 
-	//FIXME:Coherence needs to be found otherwise program crash. Program exception
 	while (breakCond == false){
-		tmp_data_root.append("/subset/in_data");
+		
 		searchPath = tmp_data_root;
 		searchPath.append("/coherence");
 		if (in->data->store(searchPath) != NULL)
@@ -523,27 +523,39 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 			std::cout << "Coherence path" << searchPath << std::endl;
 			use_coherence = true;
 			breakCond = true;
-		};
+		}
+		else
+		{
+			tmp_data_root.append("/subset/in_data");
+			use_coherence = false;
+		}
+		
 		timer++;
-		if (timer == 10)
+		if (timer == 10){
 			breakCond = true;
+			
+		}
 	}
+	errorCond(use_coherence, "no coherence measure found");
 
+	std::cout << "tmp_data_root: "<< tmp_data_root << std::endl;
+	std::cout << "searchPath: " << searchPath << std::endl;
+	std::cout << "data_root: " << data_root << std::endl;
 
 	if (configOnly())
 		return;
 
-	cpath disparity_root = "disparity/default";
+	cpath disparity_root = tmp_data_root;
 
-	std::cout << data_root << std::endl;
+	std::cout <<"disparity_root: "<< disparity_root << std::endl;
 
 	Mat disp0, disp, coh;
-	Datastore *disp_store = in->data->getStore(data_root/"data");
+	Datastore *disp_store = in->data->getStore(data_root / "data");
 	disp_store->read(disp);
 
 	Datastore *coh_store = in->data->getStore(disparity_root/"coherence");
 	coh_store->read(coh);
- 
+	
 	float scale = 1.0;
   
 	 Attribute *attr;
@@ -552,11 +564,13 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	if (attr)
 		attr->get(scale);
   
+	std::cout << "scale:" << scale << std::endl;
+
 	ProcData opts;
 	opts.set_scale(scale);
-  
+
   //FIXME read/pass actual datastore!
-	Subset3d subset(in->data, disparity_root / "subset/source", opts);
+  Subset3d subset(in->data, tmp_data_root / "subset/source", opts);
   //FIXME add read function to subset3d
   Datastore *store = in->data->getStore(subset.extrinsics_group()/"data");
  
@@ -564,15 +578,27 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //FIXME should add a readimage to subset3d!
   std::vector<int> idx(store->dims(), 0);
   //FIXME flexmav!
-  idx[3] = disp[3]/2;
+  idx[3] = coh[3]/2;
+
+  std::cout << "dimCoh:" << coh[3] / 2 << std::endl;
+  std::cout << "dimDisp:" << disp[3] / 2 << std::endl;
   
   opts.set_flags(UNDISTORT | CVT_8U);
   store->readImage(idx, &img3d, opts);
   clifMat2cv(&img3d,&img);
+  std::cout << "size:" << img.size() << std::endl;
   
   //centerview, channel 0
   //FIXME flexmav!
-  MultiArrayView<2, float> centerview = vigraMAV<4, float>(disp).bindAt(3, disp[3] / 2).bindAt(2, 0);
+  cv::Mat single_input = cvMat(disp.bind(3, disp[3] / 2).bind(2, 0));
+  cv::namedWindow("MergeInput", 0);
+  cv::resizeWindow("MergeInput", single_input.size[1] / 4, single_input.size[0] / 4);
+  cv::imshow("MergeInput", single_input);
+  cv::waitKey(1);
+
+
+  MultiArrayView<2, float> centerview = vigraMAV<4, float>(disp).bindAt(3, disp[3]/2).bindAt(2, 0);
+  std::cout << "size:" << centerview.shape() << std::endl;
   
   char* locale_old = setlocale(LC_NUMERIC, "C");
     
@@ -582,21 +608,21 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   if (obj_filename)
     write_obj(obj_filename->c_str(), centerview, img, subset);
 
-  
+  /*
   store->readImage(idx, &img3d, opts);
   clifMat2cv(&img3d,&img);
   cv::Mat img_norm;
   cv::normalize(img, img_norm, 0, 255, cv::NORM_MINMAX, CV_8UC1); 
-  
+  */ 
 
   setlocale(LC_NUMERIC, locale_old);
-  
+ 
 }
 
 bool COMP_writeMesh::ParameterUpdating_(int i, DspParameter const &p)
 {
-  //we only have two parameters
-  if (i >= 2)
+  //we only have three parameters
+  if (i >= 3)
     return false;
   
   if (p.Type() != DspParameter::ParamType::String)
