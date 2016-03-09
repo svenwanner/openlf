@@ -33,6 +33,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <cstdarg>
 #include <cstring>
 #include <ctime>
+#include <algorithm> 
 
 #ifdef __MACH__
 #include <mach/mach_time.h>
