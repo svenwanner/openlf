@@ -70,6 +70,7 @@ QGraphicsItem* QNodesEditor::itemAt(const QPointF &pos)
 	return 0;
 }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
 class _enableCompMove
 {
 public:
@@ -81,6 +82,7 @@ public:
 private:
   QGraphicsItem *_comp;
 };
+#endif
 
 
 
@@ -119,17 +121,16 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 			}
 			else if (item && item->type() == QNEBlock::Type)
                         {
-                          printf("call compSelected\n");
-                          
                           //avoid moves when view is resized due to added settings dock
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
                           item->setFlag(QGraphicsItem::ItemIsMovable, false);
                           QTimer::singleShot(0, _enableCompMove(item));
+#endif
                           
                           if ((dynamic_cast<QNEBlock*>(item))->blockType() == QNEBlock::BlockType::Regular)
                             emit compSelected((dynamic_cast<QNEBlock*>(item))->component);
                           else
                             emit compSelected((dynamic_cast<QNEBlock*>(item)));
-                          printf("done call compSelected\n");
                         }
 			break;
 		}

@@ -505,7 +505,7 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 	cpath data_root = dataset;
 
-	data_root.append("/default");
+	data_root /= "default";
 	
 	cpath tmp_data_root = data_root;
 	cpath searchPath = tmp_data_root;
@@ -516,7 +516,7 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	while (breakCond == false){
 		
 		searchPath = tmp_data_root;
-		searchPath.append("/coherence");
+		searchPath /= "coherence";
 		if (in->data->store(searchPath) != NULL)
 		{
 			std::cout << "Found Coherence!" << std::endl;
@@ -526,7 +526,7 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		}
 		else
 		{
-			tmp_data_root.append("/subset/in_data");
+			tmp_data_root /= "subset/in_data";
 			use_coherence = false;
 		}
 		
