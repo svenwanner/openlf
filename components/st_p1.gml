@@ -86,15 +86,6 @@ y_blur 5.000000
 ]
 node [
 id 8
-label "OP_Scharr_1"
-type "OP_Scharr"
-graphics [
-x -304.589928
-y -41.129496
-]
-]
-node [
-id 9
 label "OP_Gauss_0"
 type "OP_Gauss"
 graphics [
@@ -106,10 +97,19 @@ x_blur 0.000000
 y_blur 0.000000
 ]
 ]
+node [
+id 9
+label "OP_dx_0"
+type "OP_dx"
+graphics [
+x -296.000000
+y -24.000000
+]
+]
 edge [
-source 8
+source 9
 target 0
-source_pad 1
+source_pad 0
 target_pad 0
 ]
 edge [
@@ -161,8 +161,8 @@ source_pad 0
 target_pad 0
 ]
 edge [
-source 9
-target 8
+source 8
+target 9
 source_pad 0
 target_pad 0
 ]
@@ -182,7 +182,7 @@ source_pad 0
 target_pad 2
 ]
 inputedge [
-target 9
+target 8
 source_pad 0
 target_pad 0
 ]
@@ -218,12 +218,12 @@ parameter 1
 ]
 alias [
 label "pre_blur_x"
-component 9
+component 8
 parameter 0
 ]
 alias [
 label "pre_blur_y"
-component 9
+component 8
 parameter 1
 ]
 ]

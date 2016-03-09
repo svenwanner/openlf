@@ -24,34 +24,17 @@
 
 #include "openlf/operator_macro.hpp"
 
-//#ifdef OPENLF_COMPILER_MSVC
-//#define __restrict__
-//#endif
-
 #define OPENLF_OP_CONSTRUCT_PARAMS
 
 OPENLF_VIGRA_OP_START(OP_Tensor2x2, 2, 3, 3, 3)
 
-/**out[0] = *in[0];   // x*x
-*out[0] *= *out[0];
-*out[1] = *in[0];   // x*y
-*out[1] *= *in[1];
-*out[2] = *in[1];   // y*y
-*out[2] *= *out[2];*/
-
-//assume continuous array
-
-#ifdef _MSC_VER
   T * __restrict inx;
   T * __restrict iny;
   T * __restrict outxx;
   T * __restrict outxy;
   T * __restrict outyy;
-#else
-  __restrict T *inx, *iny;
-  __restrict T *outxx, *outxy, *outyy;
-#endif
 
+  //assume continuous array
   assert(in[0].isUnstrided());
   assert(in[1].isUnstrided());
   assert(out[0].isUnstrided());

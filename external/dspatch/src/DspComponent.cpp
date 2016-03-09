@@ -33,6 +33,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <cstdarg>
 #include <cstring>
 #include <ctime>
+#include <algorithm> 
 
 #ifdef __MACH__
 #include <mach/mach_time.h>
@@ -1192,7 +1193,7 @@ void DspComponent::setProgressCallback(void (*progress)(DspComponent *c, float p
 static void printprogress(int curr, int max, int &last, const char *fmt = NULL, ...)
 {
   last = (last + 1) % 4;
-  int pos = curr*60/max;
+  int pos = std::max(0,std::min(curr,max))*60/max;
   char unf[] = "                                                             ]";
   char fin[] = "[============================================================]";
   char buf[100];

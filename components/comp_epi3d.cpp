@@ -130,11 +130,9 @@ void operator()(int line, int epi_w, int epi_h, Mat *sink_mat, Mat *disp_store)
     MultiArrayView<2,T> sink = vigraMAV<3,T>(*sink_mat).bindAt(2, c);
     MultiArrayView<3,T> store = vigraMAV<4,T>(*disp_store).bindAt(2, c);
     
-    for(int i=0;i<epi_h;i++) {
-      //bind store y to epi line
-      MultiArrayView<2,T> epi = store.bindAt(1, line);
-      epi = sink;
-    }
+    //bind store y to epi line
+    MultiArrayView<2,T> epi = store.bindAt(1, line);
+    epi = sink;
   }
 }
 };
@@ -581,6 +579,9 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   get_int_param(this, start_line, P_IDX::StartLine);
   get_int_param(this, stop_line, P_IDX::StopLine);
   
+  errorCond(start_line >= 0, "StartLine invalid value (%d < 0)!", stop_line, subset.EPICount()); RETURN_ON_ERROR
+  errorCond(stop_line <= subset.EPICount(), "StopLine invalid value (%d > %d)!", stop_line, subset.EPICount()); RETURN_ON_ERROR
+  
   //setup circuit and threading
 #ifdef OPENLF_WITH_OPENMP
   int t_count = omp_get_max_threads();
@@ -676,7 +677,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     int act_stop = std::min(subset.EPICount(), curr_chunk_stop+integrate_r);
     
     for(float d=disp_start;d<=disp_stop;d+=disp_step) {
-//#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
       for(int i=act_start;i<act_stop;i++) {
         if (i >= curr_chunk && i < std::min(curr_chunk+chunk_size,stop_line))
     #pragma omp critical 
@@ -688,7 +689,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 #ifdef OPENLF_WITH_OPENMP
         int t = omp_get_thread_num();
 #else
-		int t = 1;
+	int t = 1;
 #endif
         proc_epi_tensor(
           t,
@@ -700,12 +701,12 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         );
       }
       
-//#pragma omp parallel for
+#pragma omp parallel for
     //FIXME
       for(int c=0;c<3;c++)
         for(int i=0;i<epi_h;i++) {
           if (i >= curr_chunk && i < std::min(curr_chunk+chunk_size,stop_line))
-//#pragma omp critical 
+#pragma omp critical 
             {
               progress_((float)done/work);
               done++;
@@ -715,7 +716,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
           cv::GaussianBlur(src, dst, cv::Size(1, integrate_r*2+1), 0.0, integrate_sigma);
         }
       
-//#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
       for(int i=curr_chunk;i<curr_chunk_stop;i++) {
         if (i >= curr_chunk && i < std::min(curr_chunk+chunk_size,stop_line))
 #pragma omp critical 
@@ -727,7 +728,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 #ifdef OPENLF_WITH_OPENMP
         int t = omp_get_thread_num();
 #else
-		int t = 1;
+        int t = 1;
 #endif
         
         proc_epi_ori_merge(

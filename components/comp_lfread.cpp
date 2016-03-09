@@ -20,16 +20,11 @@
 *
 */
 
-#include "clif/subset3d.hpp"
-#include "clif/clif_cv.hpp"
-
-#include "openlf.hpp"
 #include "openlf/types.hpp"
 
 #include "dspatch/DspPlugin.h"
 
 using namespace clif;
-using namespace vigra;
 using namespace openlf;
 
 class COMP_LFRead : public DspComponent {
