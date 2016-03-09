@@ -42,7 +42,7 @@ private:
 
 COMP_LFWrite::COMP_LFWrite()
 {
-  setTypeName_("writeCLIF");
+  setTypeName_("COMP_writeCLIF");
   AddInput_("input");
   AddParameter_("filename", DspParameter(DspParameter::ParamType::String));
   AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
@@ -65,11 +65,12 @@ void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   if (configOnly())
 	return;
   
-  ClifFile f_out;
-  f_out.create(filename->c_str());
+  ClifFile *f_out = new ClifFile;
+  f_out->create(filename->c_str());
   Dataset out_set;
-  out_set.link(f_out, in->data);
-  out_set.writeAttributes();
+  out_set.link(*f_out, in->data);
+  //out_set.writeAttributes();
+  delete f_out;
 }
 
 bool COMP_LFWrite::ParameterUpdating_ (int i, DspParameter const &p)

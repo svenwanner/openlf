@@ -33,6 +33,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <cstdarg>
 #include <cstring>
 #include <ctime>
+#include <algorithm> 
+
+#ifdef __MACH__
+#include <mach/mach_time.h>
+#define ORWL_NANO (+1.0E-9)
+#define ORWL_GIGA UINT64_C(1000000000)
+#endif
 
 void Alias_List::add(DspComponent *c, int i, std::string alias)
 {    
@@ -1186,7 +1193,7 @@ void DspComponent::setProgressCallback(void (*progress)(DspComponent *c, float p
 static void printprogress(int curr, int max, int &last, const char *fmt = NULL, ...)
 {
   last = (last + 1) % 4;
-  int pos = curr*60/max;
+  int pos = std::max(0,std::min(curr,max))*60/max;
   char unf[] = "                                                             ]";
   char fin[] = "[============================================================]";
   char buf[100];
@@ -1208,6 +1215,29 @@ static void printprogress(int curr, int max, int &last, const char *fmt = NULL, 
   }
   fflush(NULL);
 }
+
+#ifdef __MACH__
+// The Mac OS MACH Kernel does not include "clock_gettime", see below
+static double orwl_timebase = 0.0;
+static uint64_t orwl_timestart = 0;
+
+struct timespec orwl_gettime(void) {
+  // be more careful in a multithreaded environement
+  if (!orwl_timestart) {
+    mach_timebase_info_data_t tb = { 0 };
+    mach_timebase_info(&tb);
+    orwl_timebase = tb.numer;
+    orwl_timebase /= tb.denom;
+    orwl_timestart = mach_absolute_time();
+  }
+  struct timespec t;
+  double diff = (mach_absolute_time() - orwl_timestart) * orwl_timebase;
+  t.tv_sec = diff * ORWL_NANO;
+  t.tv_nsec = diff - (t.tv_sec * ORWL_GIGA);
+  return t;
+}
+#endif
+
 
 
 #ifdef _MSC_VER
@@ -1235,10 +1265,11 @@ void DspComponent::progress_(float p)
 
   now.tv_sec = count.QuadPart / frequency.QuadPart;
   now.tv_nsec = ns % 1000000000;
-
+  
+#elif __MACH__ 
+  now = orwl_gettime();	
 #else
   clock_gettime(CLOCK_MONOTONIC, &now);
-
 #endif
 
 #pragma omp critical (printprogress_timed)

@@ -176,7 +176,7 @@ void ConfigParser::__parse__(ifstream &cfgfile)
                 if(line.at(0)!='#' && line.at(0)!='[' && line.at(0)!='\n' && line.at(0)!=' ') {
 
                     // check for ":" char and split string in left and right from ":"
-                    typedef vector< boost::iterator_range<string::iterator> > find_vector_type;
+                    typedef vector< boost::iterator_range<string::iterator>> find_vector_type;
                     find_vector_type FindVec;
                     boost::ifind_all( FindVec, line, ":=" );
                     typedef vector< string > split_vector_type;

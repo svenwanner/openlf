@@ -33,6 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <QGraphicsSceneMouseEvent>
 #include <QProcess>
 #include <QTemporaryFile>
+#include <QTimer>
 
 #include "qneport.h"
 #include "qneconnection.h"
@@ -69,6 +70,20 @@ QGraphicsItem* QNodesEditor::itemAt(const QPointF &pos)
 	return 0;
 }
 
+class _enableCompMove
+{
+public:
+  _enableCompMove(QGraphicsItem *comp) : _comp(comp) {};
+  void operator()()
+  {
+    _comp->setFlag(QGraphicsItem::ItemIsMovable);
+  }
+private:
+  QGraphicsItem *_comp;
+};
+
+
+
 bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 {
 	QGraphicsSceneMouseEvent *me = (QGraphicsSceneMouseEvent*) e;
@@ -101,13 +116,21 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
                           }
                           
 				return true;
-			} else if (item && item->type() == QNEBlock::Type)
-			{
-                                if ((dynamic_cast<QNEBlock*>(item))->blockType() == QNEBlock::BlockType::Regular)
-                                  emit compSelected((dynamic_cast<QNEBlock*>(item))->component);
-                                else
-                                  emit compSelected((dynamic_cast<QNEBlock*>(item)));
 			}
+			else if (item && item->type() == QNEBlock::Type)
+                        {
+                          printf("call compSelected\n");
+                          
+                          //avoid moves when view is resized due to added settings dock
+                          item->setFlag(QGraphicsItem::ItemIsMovable, false);
+                          QTimer::singleShot(0, _enableCompMove(item));
+                          
+                          if ((dynamic_cast<QNEBlock*>(item))->blockType() == QNEBlock::BlockType::Regular)
+                            emit compSelected((dynamic_cast<QNEBlock*>(item))->component);
+                          else
+                            emit compSelected((dynamic_cast<QNEBlock*>(item)));
+                          printf("done call compSelected\n");
+                        }
 			break;
 		}
 		case Qt::RightButton:

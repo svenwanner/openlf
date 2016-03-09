@@ -60,6 +60,9 @@ OPENLF_VIGRA_OP_START_OUTTYPE(OP_Scharr, 1, 2, 3, 3, float)
     /*cv::Mat mask;
     
     cv::dilate(cv_in, mask, cv::Mat());
+    //missing types in OpenCV < 3.x
+    if (in_mat[0]->type() == BaseType::UINT16 && CV_MAJOR_VERSION < 3)
+      mask.convertTo(mask, CV_8U);
     cv::threshold(mask, mask, 0, 1, cv::THRESH_BINARY_INV);
     mask.convertTo(mask, CV_8U);*/
     

@@ -24,6 +24,7 @@
 #include "clif/clif_cv.hpp"
 #include "opencv2/core/core.hpp"
 #include "openlf/types.hpp"
+#include <opencv2/highgui/highgui.hpp>
 
 #include "clif/preproc.hpp"
 
@@ -35,23 +36,23 @@ using namespace clif;
 using namespace vigra;
 using namespace openlf;
 
-class COMP_DispWrite : public DspComponent {
+class COMP_writeMesh : public DspComponent {
 public:
-  COMP_DispWrite();
-  DSPCOMPONENT_TRIVIAL_CLONE(COMP_DispWrite);
+	COMP_writeMesh();
+	DSPCOMPONENT_TRIVIAL_CLONE(COMP_writeMesh);
 protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 private:
   virtual bool ParameterUpdating_ (int i, DspParameter const &p);
 };
   
-COMP_DispWrite::COMP_DispWrite()
+COMP_writeMesh::COMP_writeMesh()
 {
-  setTypeName_("writeMesh");
+  setTypeName_("COMP_writeMesh");
   AddInput_("input");
   AddParameter_("obj_filename", DspParameter(DspParameter::ParamType::String));
   AddParameter_("ply_filename", DspParameter(DspParameter::ParamType::String));
-  //AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
+  AddParameter_("dataset", DspParameter(DspParameter::ParamType::String,"2DTV"));
 }
 
 void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d &subset)
@@ -487,117 +488,141 @@ void write_merge_obj(const char *name, MultiArrayView<3,float> &disp, MultiArray
   fclose(pointfile);
 }
 
-void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
+void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
-  LF *in = NULL;
-  const std::string *obj_filename;
-  const std::string *ply_filename;
-  
-  
-  obj_filename = GetParameter(0)->GetString();
-  ply_filename = GetParameter(1)->GetString();
-  
-  errorCond(obj_filename || ply_filename, "no output specified");
-  RETURN_ON_ERROR
-  
-  inputs.GetValue(0, in);
-  errorCond(in, "no input!"); RETURN_ON_ERROR
-  
-  if (configOnly())
-    return;
-  
-  /*assert(in);
-  assert(filename->size());
-  
-  H5::H5File f_out(filename->c_str(), H5F_ACC_TRUNC);
-  Dataset out_set;
-  out_set.link(f_out, in->data);
-  out_set.writeAttributes();
-  f_out.close();*/
-  
-  cpath disparity_root = in->path;
-  
-  Mat disp0, disp, coh;
-  Datastore *disp_store = in->data->getStore(disparity_root/"data");
-  Datastore *coh_store = in->data->getStore(disparity_root/"coherence");
+	LF *in = NULL;
+	const std::string *obj_filename;
+	const std::string *ply_filename;
 
-  disp_store->read(disp);
+	obj_filename = GetParameter(0)->GetString();
+	ply_filename = GetParameter(1)->GetString();
+	std::string dataset = *GetParameter(2)->GetString();
 
-  coh_store->read(coh);
+	errorCond(obj_filename || ply_filename, "no output specified"); RETURN_ON_ERROR
+
+	inputs.GetValue(0, in);
+	errorCond(in, "no input!"); RETURN_ON_ERROR
+
+	cpath data_root = dataset;
+
+	data_root.append("/default");
+	
+	cpath tmp_data_root = data_root;
+	cpath searchPath = tmp_data_root;
+	bool breakCond = false;
+	bool use_coherence = false;
+	int timer = 0;
+
+	while (breakCond == false){
+		
+		searchPath = tmp_data_root;
+		searchPath.append("/coherence");
+		if (in->data->store(searchPath) != NULL)
+		{
+			std::cout << "Found Coherence!" << std::endl;
+			std::cout << "Coherence path" << searchPath << std::endl;
+			use_coherence = true;
+			breakCond = true;
+		}
+		else
+		{
+			tmp_data_root.append("/subset/in_data");
+			use_coherence = false;
+		}
+		
+		timer++;
+		if (timer == 10){
+			breakCond = true;
+			
+		}
+	}
+	errorCond(use_coherence, "no coherence measure found");
+
+	std::cout << "tmp_data_root: "<< tmp_data_root << std::endl;
+	std::cout << "searchPath: " << searchPath << std::endl;
+	std::cout << "data_root: " << data_root << std::endl;
+
+	if (configOnly())
+		return;
+
+	cpath disparity_root = tmp_data_root;
+
+	std::cout <<"disparity_root: "<< disparity_root << std::endl;
+
+	Mat disp0, disp, coh;
+	Datastore *disp_store = in->data->getStore(data_root / "data");
+	disp_store->read(disp);
+
+	Datastore *coh_store = in->data->getStore(disparity_root/"coherence");
+	coh_store->read(coh);
+	
+	float scale = 1.0;
   
-  //disp.create(disp0.type(), disp0);
+	 Attribute *attr;
   
-  /*for (int i=0; i < disp0[3]; ++i) {
-    cv::GaussianBlur(cvMat(disp0.bind(3, i).bind(2, 0)), cvMat(disp.bind(3, i).bind(2, 0)), cv::Size(7,19), 1, 3);
-  }*/
+	attr = in->data->get(disparity_root/"subset/scale");
+	if (attr)
+		attr->get(scale);
   
-  float scale = 1.0;
-  
-  Attribute *attr;
-  
-  attr = in->data->get(disparity_root/"subset/scale");
-  if (attr)
-    attr->get(scale);
-  
-  ProcData opts;
-  opts.set_scale(scale);
-  
+	std::cout << "scale:" << scale << std::endl;
+
+	ProcData opts;
+	opts.set_scale(scale);
+
   //FIXME read/pass actual datastore!
-  Subset3d subset(in->data, disparity_root/"subset/source", opts);
+  Subset3d subset(in->data, tmp_data_root / "subset/source", opts);
   //FIXME add read function to subset3d
   Datastore *store = in->data->getStore(subset.extrinsics_group()/"data");
-  
+ 
   cv::Mat img3d, img;
   //FIXME should add a readimage to subset3d!
   std::vector<int> idx(store->dims(), 0);
   //FIXME flexmav!
-  idx[3] = disp[3]/2;
+  idx[3] = coh[3]/2;
+
+  std::cout << "dimCoh:" << coh[3] / 2 << std::endl;
+  std::cout << "dimDisp:" << disp[3] / 2 << std::endl;
   
   opts.set_flags(UNDISTORT | CVT_8U);
   store->readImage(idx, &img3d, opts);
   clifMat2cv(&img3d,&img);
+  std::cout << "size:" << img.size() << std::endl;
   
   //centerview, channel 0
   //FIXME flexmav!
-  MultiArrayView<2,float> centerview = vigraMAV<4,float>(disp).bindAt(3,disp[3]/2).bindAt(2,0);
+  cv::Mat single_input = cvMat(disp.bind(3, disp[3] / 2).bind(2, 0));
+  cv::namedWindow("MergeInput", 0);
+  cv::resizeWindow("MergeInput", single_input.size[1] / 4, single_input.size[0] / 4);
+  cv::imshow("MergeInput", single_input);
+  cv::waitKey(1);
+
+
+  MultiArrayView<2, float> centerview = vigraMAV<4, float>(disp).bindAt(3, disp[3]/2).bindAt(2, 0);
+  std::cout << "size:" << centerview.shape() << std::endl;
   
   char* locale_old = setlocale(LC_NUMERIC, "C");
-  
+    
   if (ply_filename)
     write_ply(ply_filename->c_str(), centerview, img, subset);
 
   if (obj_filename)
     write_obj(obj_filename->c_str(), centerview, img, subset);
 
-  
+  /*
   store->readImage(idx, &img3d, opts);
   clifMat2cv(&img3d,&img);
   cv::Mat img_norm;
   cv::normalize(img, img_norm, 0, 255, cv::NORM_MINMAX, CV_8UC1); 
-  
-  //cv::imwrite("norm.png", img);
-  
-  //if (obj_filename)
-    //write_obj("debug_regular.obj", centerview, img, subset);
-  
+  */ 
 
-  
-  //if (obj_filename)
-    //write_merge_obj(obj_filename->c_str(), disp_3d, coh_3d, img, subset);
-  
   setlocale(LC_NUMERIC, locale_old);
-  
-  /*ClifFile *debugfile = new ClifFile();
-  debugfile->create("debug.clif");
-  Dataset *debugset = debugfile->createDataset("default");
-  disp.write(debugset, "testimage");
-  delete debugfile;*/
+ 
 }
 
-bool COMP_DispWrite::ParameterUpdating_ (int i, DspParameter const &p)
+bool COMP_writeMesh::ParameterUpdating_(int i, DspParameter const &p)
 {
-  //we only have two parameters
-  if (i >= 2)
+  //we only have three parameters
+  if (i >= 3)
     return false;
   
   if (p.Type() != DspParameter::ParamType::String)
@@ -609,7 +634,7 @@ bool COMP_DispWrite::ParameterUpdating_ (int i, DspParameter const &p)
 
 class Plugin : public DspPlugin
 {
-  virtual DspComponent* Create() const { return new COMP_DispWrite; }
-  virtual ~Plugin() {}
+	virtual DspComponent* Create() const { return new COMP_writeMesh; }
+    virtual ~Plugin() {}
 };
 EXPORT_DSPPLUGIN(Plugin);

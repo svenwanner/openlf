@@ -20,8 +20,11 @@
 *
 */
 
+#ifdef CLIF_WITH_LIBIGL
+
 #include "clif/subset3d.hpp"
 #include "clif/clif_cv.hpp"
+#include "clif/mesh.hpp"
 #include "opencv2/core/core.hpp"
 #include "openlf/types.hpp"
 
@@ -35,23 +38,134 @@ using namespace clif;
 using namespace vigra;
 using namespace openlf;
 
-class COMP_DispWrite : public DspComponent {
+class component : public DspComponent {
 public:
-  COMP_DispWrite();
-  DSPCOMPONENT_TRIVIAL_CLONE(COMP_DispWrite);
+  component();
+  DSPCOMPONENT_TRIVIAL_CLONE(component);
 protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 private:
   virtual bool ParameterUpdating_ (int i, DspParameter const &p);
+  Mesh _mesh;
 };
   
-COMP_DispWrite::COMP_DispWrite()
+component::component()
 {
-  setTypeName_("writeMesh");
+  setTypeName_("disp2mesh");
   AddInput_("input");
   AddParameter_("obj_filename", DspParameter(DspParameter::ParamType::String));
   AddParameter_("ply_filename", DspParameter(DspParameter::ParamType::String));
-  //AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
+  AddParameter_("viewer", DspParameter(DspParameter::ParamType::Bool, false));
+  AddParameter_("block", DspParameter(DspParameter::ParamType::Bool, true));
+}
+
+void gen_mesh(Mesh &mesh, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d &subset)
+{
+  int v_idx = 1;
+  
+  const int w = disp.shape(0);
+  const int h = disp.shape(1);
+  
+  int *buf1 = new int[w];
+  int *buf2 = new int[w];
+  int *valid = buf1;
+  int *valid_last = buf2;
+  int *valid_tmp;
+  Shape2 p;
+  
+  int point_count = 0;
+  int face_count = 0;
+  int face_idx = 0;
+  
+  for(int i=0;i<w;i++) {
+      buf1[i] = 0;
+      buf2[i] = 0;
+  }
+  
+  //walk center view points and count vertices and faces
+  for(p[1]=0;p[1]<h;++p[1]) {
+    valid_tmp = valid_last;
+    valid_last = valid;
+    valid = valid_tmp;
+    
+    for(p[0]=0;p[0]<w;++p[0]) {
+      if (std::isnan(disp[p]) || disp[p] <= 0)
+        valid[p[0]] = 0;
+      else {
+        valid[p[0]] = 1;
+        
+        point_count++;
+        
+        if (p[0]) {
+          if (valid[p[0]-1] && valid[p[0]] && valid_last[p[0]-1] && valid_last[p[0]]) {
+            face_count+=2;
+          }
+        }
+      }
+    }
+  }
+  
+  for(int i=0;i<w;i++) {
+    buf1[i] = 0;
+    buf2[i] = 0;
+  }
+  
+  mesh.size(point_count, face_count);
+  mesh.color(true);
+  
+  for(p[1]=0;p[1]<h;++p[1]) {
+    valid_tmp = valid_last;
+    valid_last = valid;
+    valid = valid_tmp;
+    
+    for(p[0]=0;p[0]<w;++p[0]) {
+      if (std::isnan(disp[p]) || disp[p] <= 0)
+        valid[p[0]] = 0;
+      else {
+        valid[p[0]] = v_idx;
+        
+        double depth = subset.disparity2depth(disp[p]);
+        cv::Point3d wp;
+        cv::Vec3b col;
+        
+        mesh.V(v_idx-1, 0) = depth*(p[0]-w/2)/subset.f(0);
+        mesh.V(v_idx-1, 1) = depth*(p[1]-h/2)/subset.f(1);
+        mesh.V(v_idx-1, 2) = depth;
+        
+        if (view.type() == CV_8UC3)
+          col = view.at<cv::Vec3b>(p[1],p[0]);
+        else if (view.type() == CV_8UC1) {
+          uchar px = view.at<uchar>(p[1],p[0]);
+          col = cv::Vec3b(px,px,px);
+        }
+        else
+          col = cv::Vec3b(127,127,127);
+        
+        mesh.C(v_idx-1, 0) = col[0]/255.0;
+        mesh.C(v_idx-1, 1) = col[1]/255.0;
+        mesh.C(v_idx-1, 2) = col[2]/255.0;
+        
+        v_idx ++;
+        
+        if (p[0]) {
+          if (valid[p[0]-1] && valid[p[0]] && valid_last[p[0]-1] && valid_last[p[0]]) {
+            mesh.F(face_idx, 0) = valid[p[0]-1]-1;
+            mesh.F(face_idx, 1) = valid[p[0]]-1;
+            mesh.F(face_idx, 2) = valid_last[p[0]]-1;
+            //FIXME add second face!
+            //fprintf(pointfile, "f %d %d %d %d\n", valid[p[0]-1], valid[p[0]], valid_last[p[0]], valid_last[p[0]-1]);
+            face_idx++;
+            mesh.F(face_idx, 0) = valid[p[0]-1]-1;
+            mesh.F(face_idx, 1) = valid_last[p[0]]-1;
+            mesh.F(face_idx, 2) = valid_last[p[0]-1]-1;
+            face_idx++;
+          }
+        }
+      }
+    }
+  }
+  delete buf1;
+  delete buf2;
 }
 
 void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d &subset)
@@ -487,17 +601,16 @@ void write_merge_obj(const char *name, MultiArrayView<3,float> &disp, MultiArray
   fclose(pointfile);
 }
 
-void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
+void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   LF *in = NULL;
-  const std::string *obj_filename;
-  const std::string *ply_filename;
+  const std::string *obj_filename = GetParameter(0)->GetString();
+  const std::string *ply_filename = GetParameter(1)->GetString();
+  bool use_viewer = *GetParameter(2)->GetBool();
+  bool block_viewer = *GetParameter(3)->GetBool();
+  cv::Mat img3d, img;
   
-  
-  obj_filename = GetParameter(0)->GetString();
-  ply_filename = GetParameter(1)->GetString();
-  
-  errorCond(obj_filename || ply_filename, "no output specified");
+  errorCond(obj_filename || ply_filename || use_viewer, "no output specified");
   RETURN_ON_ERROR
   
   inputs.GetValue(0, in);
@@ -505,32 +618,15 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   if (configOnly())
     return;
+
   
-  /*assert(in);
-  assert(filename->size());
-  
-  H5::H5File f_out(filename->c_str(), H5F_ACC_TRUNC);
-  Dataset out_set;
-  out_set.link(f_out, in->data);
-  out_set.writeAttributes();
-  f_out.close();*/
-  
+  //FIXME if disparity_root is empty use first available
   cpath disparity_root = in->path;
   
-  Mat disp0, disp, coh;
+  Mat disp;
   Datastore *disp_store = in->data->getStore(disparity_root/"data");
-  Datastore *coh_store = in->data->getStore(disparity_root/"coherence");
-
   disp_store->read(disp);
 
-  coh_store->read(coh);
-  
-  //disp.create(disp0.type(), disp0);
-  
-  /*for (int i=0; i < disp0[3]; ++i) {
-    cv::GaussianBlur(cvMat(disp0.bind(3, i).bind(2, 0)), cvMat(disp.bind(3, i).bind(2, 0)), cv::Size(7,19), 1, 3);
-  }*/
-  
   float scale = 1.0;
   
   Attribute *attr;
@@ -545,12 +641,11 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //FIXME read/pass actual datastore!
   Subset3d subset(in->data, disparity_root/"subset/source", opts);
   //FIXME add read function to subset3d
+  
   Datastore *store = in->data->getStore(subset.extrinsics_group()/"data");
   
-  cv::Mat img3d, img;
   //FIXME should add a readimage to subset3d!
   std::vector<int> idx(store->dims(), 0);
-  //FIXME flexmav!
   idx[3] = disp[3]/2;
   
   opts.set_flags(UNDISTORT | CVT_8U);
@@ -562,45 +657,33 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   MultiArrayView<2,float> centerview = vigraMAV<4,float>(disp).bindAt(3,disp[3]/2).bindAt(2,0);
   
   char* locale_old = setlocale(LC_NUMERIC, "C");
-  
-  if (ply_filename)
-    write_ply(ply_filename->c_str(), centerview, img, subset);
 
-  if (obj_filename)
-    write_obj(obj_filename->c_str(), centerview, img, subset);
+  gen_mesh(_mesh, centerview, img, subset);
 
+  if (obj_filename && obj_filename->size())
+    _mesh.writeOBJ(obj_filename->c_str());
   
-  store->readImage(idx, &img3d, opts);
-  clifMat2cv(&img3d,&img);
-  cv::Mat img_norm;
-  cv::normalize(img, img_norm, 0, 255, cv::NORM_MINMAX, CV_8UC1); 
+  if (use_viewer)
+#ifdef CLIF_WITH_LIBIGL_VIEWER
+  _mesh.show(block_viewer);
+#else
+  printf("ERROR could not launch viewer, clif compiled without libigl_viewer!\n");
+#endif
   
-  //cv::imwrite("norm.png", img);
-  
-  //if (obj_filename)
-    //write_obj("debug_regular.obj", centerview, img, subset);
-  
-
-  
-  //if (obj_filename)
-    //write_merge_obj(obj_filename->c_str(), disp_3d, coh_3d, img, subset);
   
   setlocale(LC_NUMERIC, locale_old);
-  
-  /*ClifFile *debugfile = new ClifFile();
-  debugfile->create("debug.clif");
-  Dataset *debugset = debugfile->createDataset("default");
-  disp.write(debugset, "testimage");
-  delete debugfile;*/
 }
 
-bool COMP_DispWrite::ParameterUpdating_ (int i, DspParameter const &p)
+bool component::ParameterUpdating_ (int i, DspParameter const &p)
 {
-  //we only have two parameters
-  if (i >= 2)
+  //we only have four parameters
+  if (i >= 4)
     return false;
   
-  if (p.Type() != DspParameter::ParamType::String)
+  if (i < 2 && p.Type() != DspParameter::ParamType::String)
+    return false;
+  
+  if (i >= 2 && p.Type() != DspParameter::ParamType::Bool)
     return false;
   
   SetParameter_(i, p);
@@ -609,7 +692,9 @@ bool COMP_DispWrite::ParameterUpdating_ (int i, DspParameter const &p)
 
 class Plugin : public DspPlugin
 {
-  virtual DspComponent* Create() const { return new COMP_DispWrite; }
+  virtual DspComponent* Create() const { return new component; }
   virtual ~Plugin() {}
 };
 EXPORT_DSPPLUGIN(Plugin);
+
+#endif
