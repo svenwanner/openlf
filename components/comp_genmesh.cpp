@@ -20,6 +20,8 @@
 *
 */
 
+#ifdef CLIF_WITH_LIBIGL
+
 #include "clif/subset3d.hpp"
 #include "clif/clif_cv.hpp"
 #include "clif/mesh.hpp"
@@ -694,3 +696,5 @@ class Plugin : public DspPlugin
   virtual ~Plugin() {}
 };
 EXPORT_DSPPLUGIN(Plugin);
+
+#endif
