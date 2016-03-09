@@ -84,11 +84,10 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	catch (const std::exception& e){
 		errorCond(false, "Dataset not found"); RETURN_ON_ERROR
 	}
-
+	
 	//define storages used for TV
 	Datastore *TV_store = in->data->getStore(TV_root / "data");
 	Datastore *lf_store = in->data->getStore(TV_root / "subset/source/data");
-
 
 	//Set some output Metadata
 	std::string tmp_dataset_name = out_dataset_name;
@@ -104,6 +103,10 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	tmp_dataset_name = out_dataset_name;
 	tmp_dataset_name.append("/default/subset/source");
 	out->data->addLink(tmp_dataset_name, "calibration/extrinsics/default");
+
+	tmp_dataset_name = out_dataset_name;
+	tmp_dataset_name.append("/default/subset/in_data");
+	out->data->addLink(tmp_dataset_name, TV_root);
 
 
 	if (configOnly())
@@ -136,7 +139,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	}
 
   store->write(result);
-
+  
 }
 
 bool COMP_warpToRefView::ParameterUpdating_(int i, DspParameter const &p)

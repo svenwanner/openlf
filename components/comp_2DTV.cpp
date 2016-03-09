@@ -49,7 +49,7 @@ private:
 
 COMP_2DTV::COMP_2DTV()
 {
-  setTypeName_("2DTV");
+  setTypeName_("COMP_2DTV");
   AddInput_("input");
   AddOutput_("ouput");
   AddParameter_("iterations", DspParameter(DspParameter::ParamType::Int, 1000));
@@ -138,9 +138,6 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	}
 	int TVposition = *GetParameter(12)->GetInt();																							//AddParameter_("TVposition", DspParameter(DspParameter::ParamType::Int, 0));
 
-	//std::cout << "Iterations: " << TV_time_total << std::endl;
-	//std::cout << "TV position: " << TVposition << std::endl;
-
 	//Set some Metadata
 	std::string tmp_dataset_name = out_dataset_name;
 	tmp_dataset_name.append("/default/data");
@@ -152,7 +149,12 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 	tmp_dataset_name = out_dataset_name;
 	tmp_dataset_name.append("/default/subset/source");
+	//FIXME:make this relative to the used datasets
 	out->data->addLink(tmp_dataset_name, "calibration/extrinsics/default");
+
+	tmp_dataset_name = out_dataset_name;
+	tmp_dataset_name.append("/default/subset/in_data");
+	out->data->addLink(tmp_dataset_name, disparity_root);
 	
 	//Initialize output store of module
 	tmp_dataset_name = out_dataset_name;
