@@ -17,6 +17,7 @@ file(GLOB Resources img/*.qrc)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHc /EHsc")
+	qt5_wrap_ui(hdrs src/lfcamconfigurator_windows.ui)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")

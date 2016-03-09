@@ -770,6 +770,7 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
       GML_pair *part;
       DspComponent *comp = NULL;
       const char *name = NULL;
+      const char *type = NULL;
       int id = -1;
       double x = std::numeric_limits<double>::quiet_NaN();
       double y = std::numeric_limits<double>::quiet_NaN();
@@ -781,7 +782,7 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
       while(part) {
         if (!strcmp(part->key, "type")) {
           assert(part->kind == GML_STRING);
-          const char *type = part->value.string;
+          type = part->value.string;
           comp = getComponentClone(type);
         }
         else if (!strcmp(part->key, "label")) {
@@ -804,6 +805,8 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
       }
       
       //FIXME make parsing errors from this!
+      if (!comp)
+	printf("could not load %s\n", type);
       assert(comp);
       assert(name);
       assert(id == c->GetComponentCount());

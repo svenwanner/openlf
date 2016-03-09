@@ -76,11 +76,12 @@ void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   Mat lf, raw_brdf;
   Mat_<float> disp;
   Datastore *disp_store = in->data->getStore(disparity_root/"data");
-  //fixme if subset/nano source/data not exists
+
+  //FIXME if subset/nano source/data not exists
   Datastore *lf_store = in->data->getStore(disparity_root/"subset/source/data");  
-	
+
   disp_store->read(disp);
-  lf_store->read(lf/*, ProcData(UNDISTORT)*/);
+  lf_store->read(lf, ProcData(UNDISTORT));
   
   raw_brdf.create(lf.type(), lf);
   
@@ -102,7 +103,6 @@ void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   out_set.link(f_out, in->data);
   Datastore *brdf_store = out_set.addStore("brdf/default/raw_brdf");
   brdf_store->write(raw_brdf);
-  std::cout << raw_brdf << "\n";
 }
 
 bool COMP_LFWrite::ParameterUpdating_ (int i, DspParameter const &p)

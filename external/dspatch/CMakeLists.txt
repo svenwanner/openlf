@@ -2,14 +2,14 @@ cmake_minimum_required(VERSION 2.8)
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
   # using Clang
-  message("use clang")
+  message(STATUS "use clang")
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   # using GCC
-  message("use gcc")
+  message(STATUS "use gcc")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wnon-virtual-dtor")
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   # using Visual Studio C++
-  message("use msvc")
+  message(STATUS "use msvc")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
   #see parameter list here https://cmake.org/pipermail/cmake/2006-July/010189.html
 endif()

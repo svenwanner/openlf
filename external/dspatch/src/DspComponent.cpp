@@ -1209,15 +1209,38 @@ static void printprogress(int curr, int max, int &last, const char *fmt = NULL, 
   fflush(NULL);
 }
 
+
+#ifdef _MSC_VER
+	struct timespec { long tv_sec; long tv_nsec; };    //header part
+#endif
+
 //TODO obviously not (really) threadsafe
 void DspComponent::progress_(float p)
 {
   static int last = 0;
   static struct timespec last_time = {0,0};
-  
   struct timespec now;
 
+#ifdef _MSC_VER   
+
+  static LARGE_INTEGER frequency;   
+  if (!frequency.QuadPart)
+		QueryPerformanceFrequency(&frequency);
+  LARGE_INTEGER count;
+  long long int ns;
+  QueryPerformanceCounter(&count); 
+
+  /* Total nano seconds from a starting point. */
+  ns = (double)count.QuadPart / frequency.QuadPart * 1000000000;
+
+  now.tv_sec = count.QuadPart / frequency.QuadPart;
+  now.tv_nsec = ns % 1000000000;
+
+#else
   clock_gettime(CLOCK_MONOTONIC, &now);
+
+#endif
+
 #pragma omp critical (printprogress_timed)
   if (p == 0.0 || p == 1.0 || now.tv_sec != last_time.tv_sec || now.tv_nsec - last_time.tv_nsec >= 1000000000/4) {
     last_time = now;
