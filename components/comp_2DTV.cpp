@@ -65,8 +65,8 @@ COMP_2DTV::COMP_2DTV()
   AddParameter_("initialValue", DspParameter(DspParameter::ParamType::Float, 0.0f));
   AddParameter_("Display", DspParameter(DspParameter::ParamType::Int, 1));
   AddParameter_("TVposition", DspParameter(DspParameter::ParamType::Int, 0));
-  AddParameter_("storage_name", DspParameter(DspParameter::ParamType::String, "2DTV"));
-  AddParameter_("use_dataset", DspParameter(DspParameter::ParamType::String, "disparity"));
+  AddParameter_("out_group", DspParameter(DspParameter::ParamType::String, "2DTV"));
+  AddParameter_("in_group", DspParameter(DspParameter::ParamType::String, "disparity"));
 }
 
 void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)

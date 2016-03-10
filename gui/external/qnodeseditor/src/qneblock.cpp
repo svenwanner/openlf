@@ -54,7 +54,7 @@ QNEBlock::QNEBlock(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 static void printprogress(int curr, int max, int &last, const char *fmt = NULL, ...)
 {
   last = (last + 1) % 4;
-  int pos = curr*60/max;
+  int pos = std::min(std::max(curr, 0), max)*60/max;
   char unf[] = "                                                             ]";
   char fin[] = "[============================================================]";
   char buf[100];
