@@ -332,7 +332,7 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 			eigen
 							PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_eigen
 							URL http://bitbucket.org/eigen/eigen/get/3.2.8.tar.bz2
-							CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install/include/eigen3
+							CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_eigen/install
 							CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
 							INSTALL_COMMAND ;
 			)
