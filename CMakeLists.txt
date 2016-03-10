@@ -260,7 +260,7 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 	  message(STATUS "OpenCV found")
 	else()
 	  set(OpenCV_INTERNAL ON)
-	  message(STATUS "OpenCV found")
+	  message(STATUS "OpenCV not found")
 	endif()
 
 	if (OpenCV_INTERNAL OR REBUILD_OpenCV)
@@ -352,104 +352,101 @@ SET(REBUILD_Eigen OFF CACHE BOOL "internal HDF5 download and build" FORCE)
 message(STATUS "EIGEN include dir: ${EIGEN3_INCLUDE_DIR}")
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
-	message(STATUS "Search glfw")
-	find_package(glfw QUIET)
-	option(REBUILD_glfw "internal glfw download and build" OFF)
-	if (glfw_FOUND)
-	  set(glfw_INTERNAL OFF)
-	  message(STATUS "glfw not found")
+	message(STATUS "Search glfw3")
+	find_package(glfw3 QUIET)
+	option(REBUILD_glfw3 "internal glfw3 download and build" OFF)
+	if (glfw3_FOUND)
+	  set(glfw3_INTERNAL OFF)
+	  message(STATUS "glfw3 not found")
 	else()
-	  set(glfw_INTERNAL ON)
-	  message(STATUS "glfw found")
+	  set(glfw3_INTERNAL ON)
+	  message(STATUS "glfw3 found")
 	endif()
 
-	if (glfw_INTERNAL OR REBUILD_glfw)
+	if (glfw3_INTERNAL OR REBUILD_glfw3)
 
-		message( STATUS "glfw will be downloaded and installed")
+		message( STATUS "glfw3 will be downloaded and installed")
 		
 		#generate auxiliary dependency project
-		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_glfw)
-		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_glfw/build)
+		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_glfw3)
+		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_glfw3/build)
 		set(CMAKE_LIST_CONTENT "
 			cmake_minimum_required(VERSION 2.8)
 
 			include(ExternalProject)
 			ExternalProject_Add(
-			opencv
-							PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_glfw
+							glfw3
+							PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_glfw3
 							GIT_REPOSITORY https://github.com/glfw/glfw.git
 							GIT_TAG 3.1.2
 							CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
-							CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_glfw/install
+							CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_glfw3/install
 							INSTALL_COMMAND ;
 			)
 		")
 		
-		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_glfw/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_glfw3/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
 
 		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_glfw/build)
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_glfw3/build)
 		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_glfw/build)
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_glfw3/build)
 
-		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_glfw/install)
+		file(COPY ${CMAKE_CURRENT_BINARY_DIR}/force_glfw3/install/lib/cmake/glfw/glfw3Config.cmake DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/force_glfw3/install/)
+		set(glfw3_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_glfw3/install CACHE TYPE STRING FORCE)
 	endif()
 endif()
 
-SET(REBUILD_glfw OFF CACHE BOOL "rebuild glfw" FORCE)
-find_package(glfw REQUIRED)
-message(STATUS "glfw include dir: ${GLEW_INCLUDE_DIRS}")
-message(STATUS "glfw lib dir: ${GLEW_LIBS}")
+SET(REBUILD_glfw3 OFF CACHE BOOL "rebuild glfw3" FORCE)
+message("glfw3: ${glfw3_DIR}")
+find_package(glfw3 REQUIRED)
+message(STATUS "glfw3 include dir: ${GLFW3_INCLUDE_DIR}")
+message(STATUS "glfw3 lib dir: ${GLFW3_LIBRARY}")
 
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
-	message(STATUS "Search GLEW")
-	find_package(GLEW QUIET)
-	option(REBUILD_GLEW "internal GLEW download and build" OFF)
-	if (GLEW_FOUND)
-	  set(GLEW_INTERNAL OFF)
-	  message(STATUS "GLEW not found")
-	else()
-	  set(GLEW_INTERNAL ON)
-	  message(STATUS "GLEW found")
-	endif()
+#from basic libs
+#set(GLEW_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include")
+#set(GLEW_LIB "${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/glew32.lib")
+#find_package(GLEW REQUIRED)
 
-	if (GLEW_INTERNAL OR REBUILD_GLEW)
+# if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+	# message(STATUS "Search GLEW")
+	# find_package(GLEW QUIET)
+	# option(REBUILD_GLEW "internal GLEW download and build" OFF)
+	# if (GLEW_FOUND)
+	  # set(GLEW_INTERNAL OFF)
+	  # message(STATUS "GLEW not found")
+	# else()
+	  # set(GLEW_INTERNAL ON)
+	  # message(STATUS "GLEW found")
+	# endif()
 
-		message( STATUS "GLEW will be downloaded and installed")
+	# if (GLEW_INTERNAL OR REBUILD_GLEW)
+
+		# message( STATUS "GLEW will be downloaded and installed")
 		
-		#generate auxiliary dependency project
-		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_glew)
-		file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_glew/build)
-		set(CMAKE_LIST_CONTENT "
-			cmake_minimum_required(VERSION 2.8)
-
-			include(ExternalProject)
-			ExternalProject_Add(
-			opencv
-							PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_glew
-							GIT_REPOSITORY https://github.com/nigels-com/glew.git
-							GIT_TAG glew-1.13.0
-							CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
-							CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_glew/install
-							INSTALL_COMMAND ;
-			)
-		")
+		# #generate auxiliary dependency project
+		# file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_glew)
+		# file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_glew/src)
 		
-		file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_glew/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+		
+		
+		# file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/force_glew/src/glew) 
 
-		execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_glew/build)
-		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_glew/build)
+		# find_package(Git REQUIRED)
+		# execute_process(COMMAND ${GIT_EXECUTABLE} clone https://github.com/nigels-com/glew.git ${CMAKE_CURRENT_BINARY_DIR}/force_glew/src/glew WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+		
+		# execute_process(COMMAND ${CMAKE_COMMAND} ../build/cmake -G "Visual Studio 12 2013 Win64"
+			# WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_glew/src/glew-build)
+		# execute_process(COMMAND ${CMAKE_COMMAND} --build cmake/ --config ${CompileAs}
+			# WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_glew/src/glew-build)
+	# endif()
+# endif()
 
-		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_glew/install)
-	endif()
-endif()
-
-SET(REBUILD_GLEW OFF CACHE BOOL "rebuild GLEW" FORCE)
-find_package(GLEW REQUIRED)
-message(STATUS "GLEW include dir: ${GLEW_INCLUDE_DIRS}")
-message(STATUS "GLEW lib dir: ${GLEW_LIBS}")
+# SET(REBUILD_GLEW OFF CACHE BOOL "rebuild GLEW" FORCE)
+# message("GLEW: ${GLEW_DIR}")
+# find_package(GLEW REQUIRED)
+# message(STATUS "GLEW include dir: ${GLEW_INCLUDE_DIR}")
+# message(STATUS "GLEW lib dir: ${GLEW_LIBRARY}")
 
 option(WITH_PCL "compile PCL" OFF)
 if (WITH_PCL)	
@@ -464,7 +461,7 @@ if (WITH_PCL)
 		  message(STATUS "FLANN found")
 		else()
 		  set(FLANN_INTERNAL ON)
-		  message(STATUS "FLANN found")
+		  message(STATUS "FLANN not found")
 		endif()
 	
 		if (FLANN_INTERNAL OR REBUILD_Flann)
@@ -520,7 +517,7 @@ if (WITH_PCL)
 		  message(STATUS "VTK found")
 		else()
 		  set(VTK_INTERNAL ON)
-		  message(STATUS "VTK found")
+		  message(STATUS "VTK not found")
 		endif()
 		if (VTK_INTERNAL OR REBUILD_VTK)
 		message( STATUS "VTK Version: latest will be downloaded and installed")
@@ -697,6 +694,11 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 				CMAKE_ARGS -DEIGEN3_INCLUDE_DIR=${EIGEN3_INCLUDE_DIR}
 				CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
 				CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_clif/install
+				CMAKE_ARGS -Dglfw3_DIR=${glfw3_DIR}
+				CMAKE_ARGS -DGLEW_INCLUDE_DIR=${GLEW_INCLUDE_DIR}
+				CMAKE_ARGS -DGLEW_LIB=${GLEW_LIB}
+				CMAKE_ARGS -DGLEW_LIBRARY=${GLEW_LIB}
+				BUILD_ALWAYS 1
 				INSTALL_COMMAND ;
 				)
 			")
