@@ -52,10 +52,11 @@ COMP_writeMesh::COMP_writeMesh()
   AddInput_("input");
   AddParameter_("obj_filename", DspParameter(DspParameter::ParamType::String));
   AddParameter_("ply_filename", DspParameter(DspParameter::ParamType::String));
-  AddParameter_("dataset", DspParameter(DspParameter::ParamType::String,"2DTV"));
+  AddParameter_("in_group", DspParameter(DspParameter::ParamType::String,"2DTV"));
+  AddParameter_("Depth_cutoff", DspParameter(DspParameter::ParamType::Float, 5000));
 }
 
-void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d &subset)
+void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d &subset, float &cutoff)
 {
   FILE *pointfile = fopen(name, "w");
   
@@ -64,12 +65,15 @@ void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
   int w = disp.shape(0);
   int h = disp.shape(1);
   
+  float maxValue = 0;
+
   Shape2 p;
   for(p[1] = 0; p[1] < h; ++p[1])
-    for (p[0] = 0; p[0] < w; ++p[0]) {
-      double depth;
-      if (!std::isnan(disp[p]) && disp[p] > 0) 
-        point_count++;
+	  for (p[0] = 0; p[0] < w; ++p[0]) {
+		  double depth;
+		  if (!std::isnan(disp[p]) && disp[p] > 0) {
+		  point_count++;
+	  }
     }
     
   printf("write ply: %d valid points\n", point_count);
@@ -90,9 +94,11 @@ void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
       double depth;
       if (std::isnan(disp[p]) || disp[p] <= 0)
         depth = -1;
-      else
+	  else{
         depth = subset.disparity2depth(disp[p]);
-      if (depth >= 0) {
+		if (depth > cutoff) depth = cutoff;
+	  }
+	  if (depth >= 0) {
         if (view.type() == CV_8UC3) {
           cv::Vec3b col = view.at<cv::Vec3b>(p[1],p[0]);
           fprintf(pointfile, "%.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f(0), depth*(p[1]-h/2)/subset.f(1), depth,col[0],col[1],col[2]);
@@ -106,12 +112,11 @@ void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
           
       }
     }
-    if (std::isnan(disp[p]) || disp[p] <= 0)
-  fprintf(pointfile,"\n");
+    //if (std::isnan(disp[p]) || disp[p] <= 0) fprintf(pointfile,"\n");
   fclose(pointfile);
 }
 
-void write_obj(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d &subset)
+void write_obj(const char *name, MultiArrayView<2, float> &disp, cv::Mat &view, Subset3d &subset, float &cutoff)
 {
   int v_idx = 1;
   
@@ -151,28 +156,30 @@ void write_obj(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
         valid[p[0]] = v_idx;
         
         double depth = subset.disparity2depth(disp[p]);
+		if (depth > cutoff) depth = cutoff;
+
+			if (view.type() == CV_8UC3) {
+			  cv::Vec3b col = view.at<cv::Vec3b>(p[1],p[0]);
+			  fprintf(pointfile, "v %.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f(0), depth*(p[1]-h/2)/subset.f(1), depth,col[0],col[1],col[2]);
+			}
+			else if (view.type() == CV_8UC1) {
+			  uchar col = view.at<uchar>(p[1],p[0]);
+			  fprintf(pointfile, "v %.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f(0), depth*(p[1]-h/2)/subset.f(1), depth,col,col,col);
+			}
+			else
+			  fprintf(pointfile, "v %.3f %.3f %.3f 127 127 127\n", depth*(p[0]-w/2)/subset.f(0), depth*(p[1]-h/2)/subset.f(1), depth);
         
-        if (view.type() == CV_8UC3) {
-          cv::Vec3b col = view.at<cv::Vec3b>(p[1],p[0]);
-          fprintf(pointfile, "v %.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f(0), depth*(p[1]-h/2)/subset.f(1), depth,col[0],col[1],col[2]);
-        }
-        else if (view.type() == CV_8UC1) {
-          uchar col = view.at<uchar>(p[1],p[0]);
-          fprintf(pointfile, "v %.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f(0), depth*(p[1]-h/2)/subset.f(1), depth,col,col,col);
-        }
-        else
-          fprintf(pointfile, "v %.3f %.3f %.3f 127 127 127\n", depth*(p[0]-w/2)/subset.f(0), depth*(p[1]-h/2)/subset.f(1), depth);
+			v_idx ++;
         
-        v_idx ++;
-        
-        if (p[0]) {
-          if (valid[p[0]-1] && valid[p[0]] && valid_last[p[0]-1] && valid_last[p[0]]) {
-            fprintf(pointfile, "f %d %d %d %d\n", valid[p[0]-1], valid[p[0]], valid_last[p[0]], valid_last[p[0]-1]);
-            //more correct in some way but whatever
-            //fprintf(pointfile, "f %d %d %d\n", valid[p[0]-1], valid_last[p[0]], valid_last[p[0]-1]);
-            //fprintf(pointfile, "f %d %d %d\n", valid[p[0]-1], valid[p[0]], valid_last[p[0]]);
-          }
-        }
+			if (p[0]) {
+				if (valid[p[0] - 1] && valid[p[0]] && valid_last[p[0] - 1] && valid_last[p[0]]) {
+					fprintf(pointfile, "f %d %d %d %d\n", valid[p[0] - 1], valid[p[0]], valid_last[p[0]], valid_last[p[0] - 1]);
+					//more correct in some way but whatever
+					//fprintf(pointfile, "f %d %d %d\n", valid[p[0]-1], valid_last[p[0]], valid_last[p[0]-1]);
+					//fprintf(pointfile, "f %d %d %d\n", valid[p[0]-1], valid[p[0]], valid_last[p[0]]);
+				}
+			}
+  
       }
     }
   }
@@ -497,6 +504,7 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	obj_filename = GetParameter(0)->GetString();
 	ply_filename = GetParameter(1)->GetString();
 	std::string dataset = *GetParameter(2)->GetString();
+	float cutoff = *GetParameter(3)->GetFloat();
 
 	errorCond(obj_filename || ply_filename, "no output specified"); RETURN_ON_ERROR
 
@@ -538,16 +546,16 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	}
 	errorCond(use_coherence, "no coherence measure found");
 
-	std::cout << "tmp_data_root: "<< tmp_data_root << std::endl;
-	std::cout << "searchPath: " << searchPath << std::endl;
-	std::cout << "data_root: " << data_root << std::endl;
+	//std::cout << "tmp_data_root: "<< tmp_data_root << std::endl;
+	//std::cout << "searchPath: " << searchPath << std::endl;
+	//std::cout << "data_root: " << data_root << std::endl;
 
 	if (configOnly())
 		return;
 
 	cpath disparity_root = tmp_data_root;
 
-	std::cout <<"disparity_root: "<< disparity_root << std::endl;
+	//std::cout <<"disparity_root: "<< disparity_root << std::endl;
 
 	Mat disp0, disp, coh;
 	Datastore *disp_store = in->data->getStore(data_root / "data");
@@ -580,8 +588,8 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //FIXME flexmav!
   idx[3] = coh[3]/2;
 
-  std::cout << "dimCoh:" << coh[3] / 2 << std::endl;
-  std::cout << "dimDisp:" << disp[3] / 2 << std::endl;
+  //std::cout << "dimCoh:" << coh[3] / 2 << std::endl;
+  //std::cout << "dimDisp:" << disp[3] / 2 << std::endl;
   
   opts.set_flags(UNDISTORT | CVT_8U);
   store->readImage(idx, &img3d, opts);
@@ -590,23 +598,28 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   //centerview, channel 0
   //FIXME flexmav!
+  /*
   cv::Mat single_input = cvMat(disp.bind(3, disp[3] / 2).bind(2, 0));
-  cv::namedWindow("MergeInput", 0);
-  cv::resizeWindow("MergeInput", single_input.size[1] / 4, single_input.size[0] / 4);
-  cv::imshow("MergeInput", single_input);
+  cv::namedWindow("Input", 0);
+  cv::resizeWindow("Input", single_input.size[1] / 4, single_input.size[0] / 4);
+  cv::imshow("Input", single_input);
   cv::waitKey(1);
-
-
+  cv::namedWindow("RGB", 0);
+  cv::resizeWindow("RGB", img.size[1] / 4, img.size[0] / 4);
+  cv::imshow("RGB", img);
+  cv::waitKey(1);
+  */
   MultiArrayView<2, float> centerview = vigraMAV<4, float>(disp).bindAt(3, disp[3]/2).bindAt(2, 0);
   std::cout << "size:" << centerview.shape() << std::endl;
   
   char* locale_old = setlocale(LC_NUMERIC, "C");
     
-  if (ply_filename)
-    write_ply(ply_filename->c_str(), centerview, img, subset);
+  //std::cout << "Stringsize:" << ply_filename->size() << std::endl;
+  if (ply_filename && ply_filename->size())
+	write_ply(ply_filename->c_str(), centerview, img, subset, cutoff);
 
-  if (obj_filename)
-    write_obj(obj_filename->c_str(), centerview, img, subset);
+  if (obj_filename && obj_filename->size())
+	write_obj(obj_filename->c_str(), centerview, img, subset, cutoff);
 
   /*
   store->readImage(idx, &img3d, opts);
@@ -621,11 +634,11 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 bool COMP_writeMesh::ParameterUpdating_(int i, DspParameter const &p)
 {
-  //we only have three parameters
-  if (i >= 3)
+  //we only have four parameters
+  if (i >= 4)
     return false;
   
-  if (p.Type() != DspParameter::ParamType::String)
+  if (p.Type() != DspParameter::ParamType::String && p.Type() != DspParameter::ParamType::Float)
     return false;
   
   SetParameter_(i, p);

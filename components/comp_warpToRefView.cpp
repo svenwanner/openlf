@@ -47,8 +47,8 @@ COMP_warpToRefView::COMP_warpToRefView()
   setTypeName_("warpToRefView");
   AddInput_("input");
   AddOutput_("ouput");
-  AddParameter_("use_dataset", DspParameter(DspParameter::ParamType::String, "2DTV"));
-  AddParameter_("storage_name", DspParameter(DspParameter::ParamType::String, "warped"));
+  AddParameter_("in_group", DspParameter(DspParameter::ParamType::String, "2DTV"));
+  AddParameter_("out_group", DspParameter(DspParameter::ParamType::String, "warped"));
 }
 
 void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)

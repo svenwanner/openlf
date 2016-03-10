@@ -114,7 +114,7 @@ COMP_Epi::COMP_Epi()
   
   openlf_add_param("scale", DPPT::Float, P_IDX::scale);
 
-  openlf_add_param("storage_name", (DspComponent*)NULL, DPPT::String, P_IDX::storage_name);
+  openlf_add_param("out_group", (DspComponent*)NULL, DPPT::String, P_IDX::storage_name);
 }
 
 template<typename T> class subarray_copy {
