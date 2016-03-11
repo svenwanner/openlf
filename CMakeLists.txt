@@ -363,7 +363,7 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 	  message(STATUS "glfw3 found")
 	endif()
 
-	if (glfw3_INTERNAL OR REBUILD_glfw3)
+	if (REBUILD_glfw3)
 
 		message( STATUS "glfw3 will be downloaded and installed")
 		
@@ -399,7 +399,7 @@ endif()
 
 SET(REBUILD_glfw3 OFF CACHE BOOL "rebuild glfw3" FORCE)
 message("glfw3: ${glfw3_DIR}")
-find_package(glfw3 REQUIRED)
+#find_package(glfw3 REQUIRED)
 message(STATUS "glfw3 include dir: ${GLFW3_INCLUDE_DIR}")
 message(STATUS "glfw3 lib dir: ${GLFW3_LIBRARY}")
 
