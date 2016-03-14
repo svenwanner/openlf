@@ -75,9 +75,17 @@ OPENLF_VIGRA_OP_START(OP_MergeDispByCoherence, 2, 2, 3, 3)
       int size = stop - start;
       
       if (copy) {
+        for(int i=0;i<start;i++) {
+          out0[i] = std::numeric_limits<float>::quiet_NaN();
+          out1[i] = -1;
+        }
         for(int i=start;i<start+size;i++) {
           out0[i] = in0[i-offset];
           out1[i] = in1[i-offset];
+        }
+        for(int i=start+size;i<stop;i++) {
+          out0[i] = std::numeric_limits<float>::quiet_NaN();
+          out1[i] = -1;
         }
       }
       else {
