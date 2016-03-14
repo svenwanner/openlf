@@ -44,6 +44,7 @@ protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 private:
   virtual bool ParameterUpdating_ (int i, DspParameter const &p);
+  bool initialize = false;
 };
   
 COMP_writeMesh::COMP_writeMesh()
@@ -506,8 +507,7 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	ply_filename = GetParameter(1)->GetString();
 	std::string dataset = *GetParameter(2)->GetString();
 	float cutoff = *GetParameter(3)->GetFloat();
-	int refView = *GetParameter(4)->GetInt();
-
+	
 	errorCond(obj_filename || ply_filename, "no output specified"); RETURN_ON_ERROR
 
 	inputs.GetValue(0, in);
@@ -546,27 +546,41 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 			
 		}
 	}
-	errorCond(use_coherence, "no coherence measure found");
+	errorCond(use_coherence, "no coherence measure found"); RETURN_ON_ERROR
 
-	//std::cout << "tmp_data_root: "<< tmp_data_root << std::endl;
-	//std::cout << "searchPath: " << searchPath << std::endl;
-	//std::cout << "data_root: " << data_root << std::endl;
+	Datastore *lf_store = in->data->getStore(data_root / "subset/source/data");
+
+	if (!initialize) {
+		std::cout << initialize << std::endl;
+		try{
+			int tmp;
+			in->data->get(data_root / "subset/refView", tmp);
+			SetParameter_(4, DspParameter(DspParameter::ParamType::Int, tmp));
+		}
+		catch (const std::exception& e) {
+			SetParameter_(4, DspParameter(DspParameter::ParamType::Int, ((lf_store->extent()[3] - 1) / 2)));
+		}
+		initialize = true;
+	}
+	errorCond(initialize, "no View selected"); RETURN_ON_ERROR
+
+	int refView = *GetParameter(4)->GetInt();
+
+	if (refView >= lf_store->extent()[3]){
+		refView = lf_store->extent()[3] - 1;
+		SetParameter_(4, DspParameter(DspParameter::ParamType::Int, lf_store->extent()[3] - 1));
+	}
+
 
 	if (configOnly())
 		return;
 
-	cpath disparity_root = tmp_data_root;
-
-	//std::cout <<"disparity_root: "<< disparity_root << std::endl;
-
 	Mat disp0, disp, coh;
 	Datastore *disp_store = in->data->getStore(data_root / "data");
-	disp_store->read(disp);
 
-	if (refView >= disp[2]){
-		refView == disp[2] - 1;
-		SetParameter_(4, DspParameter(DspParameter::ParamType::Int, disp[2] - 1));
-	}
+	cpath disparity_root = tmp_data_root;
+
+	disp_store->read(disp);
 
 
 	Datastore *coh_store = in->data->getStore(disparity_root/"coherence");
@@ -580,7 +594,7 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	if (attr)
 		attr->get(scale);
   
-	std::cout << "scale:" << scale << std::endl;
+	//std::cout << "scale:" << scale << std::endl;
 
 	ProcData opts;
 	opts.set_scale(scale);
@@ -617,8 +631,15 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   cv::imshow("RGB", img);
   cv::waitKey(1);
   */
+
+  if (refView >= disp_store->extent()[3]){
+	  refView = 0;
+	  SetParameter_(4, DspParameter(DspParameter::ParamType::Int, 0));
+	  errorCond(initialize, "invalid view selected, set to zero"); 
+  }
+
   MultiArrayView<2, float> centerview = vigraMAV<4, float>(disp).bindAt(3, refView).bindAt(2, 0);
-  std::cout << "size:" << centerview.shape() << std::endl;
+  //std::cout << "size:" << centerview.shape() << std::endl;
   
   char* locale_old = setlocale(LC_NUMERIC, "C");
     
