@@ -54,6 +54,7 @@ COMP_writeMesh::COMP_writeMesh()
   AddParameter_("ply_filename", DspParameter(DspParameter::ParamType::String));
   AddParameter_("in_group", DspParameter(DspParameter::ParamType::String,"2DTV"));
   AddParameter_("Depth_cutoff", DspParameter(DspParameter::ParamType::Float, 5000));
+  AddParameter_("Save_View", DspParameter(DspParameter::ParamType::Int, 0));
 }
 
 void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d &subset, float &cutoff)
@@ -505,6 +506,7 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	ply_filename = GetParameter(1)->GetString();
 	std::string dataset = *GetParameter(2)->GetString();
 	float cutoff = *GetParameter(3)->GetFloat();
+	int refView = *GetParameter(4)->GetInt();
 
 	errorCond(obj_filename || ply_filename, "no output specified"); RETURN_ON_ERROR
 
@@ -561,6 +563,12 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	Datastore *disp_store = in->data->getStore(data_root / "data");
 	disp_store->read(disp);
 
+	if (refView >= disp[2]){
+		refView == disp[2] - 1;
+		SetParameter_(4, DspParameter(DspParameter::ParamType::Int, disp[2] - 1));
+	}
+
+
 	Datastore *coh_store = in->data->getStore(disparity_root/"coherence");
 	coh_store->read(coh);
 	
@@ -586,7 +594,7 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //FIXME should add a readimage to subset3d!
   std::vector<int> idx(store->dims(), 0);
   //FIXME flexmav!
-  idx[3] = coh[3]/2;
+  idx[3] = refView;
 
   //std::cout << "dimCoh:" << coh[3] / 2 << std::endl;
   //std::cout << "dimDisp:" << disp[3] / 2 << std::endl;
@@ -609,7 +617,7 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   cv::imshow("RGB", img);
   cv::waitKey(1);
   */
-  MultiArrayView<2, float> centerview = vigraMAV<4, float>(disp).bindAt(3, disp[3]/2).bindAt(2, 0);
+  MultiArrayView<2, float> centerview = vigraMAV<4, float>(disp).bindAt(3, refView).bindAt(2, 0);
   std::cout << "size:" << centerview.shape() << std::endl;
   
   char* locale_old = setlocale(LC_NUMERIC, "C");
@@ -635,10 +643,10 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 bool COMP_writeMesh::ParameterUpdating_(int i, DspParameter const &p)
 {
   //we only have four parameters
-  if (i >= 4)
+  if (i >= 5)
     return false;
   
-  if (p.Type() != DspParameter::ParamType::String && p.Type() != DspParameter::ParamType::Float)
+  if (p.Type() != DspParameter::ParamType::String && p.Type() != DspParameter::ParamType::Float && p.Type() != DspParameter::ParamType::Int)
     return false;
   
   SetParameter_(i, p);
