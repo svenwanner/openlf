@@ -50,9 +50,9 @@ OPENLF_VIGRA_OP_START(OP_Tensor2x2, 2, 3, 3, 3)
   int total = in[0].size();
 
   for (int i=0;i<total;++i) {
-    outxx[i] = inx[i]*inx[i];
-    outxy[i] = inx[i]*iny[i];
-    outyy[i] = iny[i]*iny[i];
+    outxx[i] = inx[i] * inx[i];
+	outxy[i] = inx[i] * iny[i];
+	outyy[i] = iny[i] * iny[i];
   }
     
 OPENLF_OP_END

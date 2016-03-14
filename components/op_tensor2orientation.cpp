@@ -76,10 +76,10 @@ OPENLF_VIGRA_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
     
     float xyd2 = in2[i] - in0[i];
     xyd2 *= xyd2;
-    c_nom = xyd2 + 4 * in1[i]*in1[i];
-    c_denom = (in0[i] + in2[i]);
-    c_denom *= c_denom;
-    c_denom += FLT_MIN;
+	c_nom = xyd2 + 4 * in1[i] * in1[i]; // std::round(xyd2 + 4 * in1[i] * in1[i] * 10e10) / 10e10;
+	c_denom = (in0[i] + in2[i]); // std::round((in0[i] + in2[i])* 10e10) / 10e10;
+    c_denom *= c_denom ;
+	c_denom += FLT_MIN;  // 10e - 15; 
     coherence = c_nom / c_denom;
         
     if (x <= 0) {
@@ -87,7 +87,7 @@ OPENLF_VIGRA_OP_START(OP_Tensor2Orientation, 3, 2, 3, 3)
       out1[i] = -1;
     }
     else {
-      yx = y/x;
+		yx = (y / x); // std::round((y / x) * 10e10) / 10e10;
     
       if (x > 0.0) {
         if (coherence < threshold) {
