@@ -122,6 +122,7 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	coherence_store->read(coh);
 
 
+	int refView = disparity_store->extent()[2] / 2;
 
 
 
@@ -131,8 +132,8 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	Mat *coherence = new Mat(BaseType::FLOAT, Resultsize);
 	cv::Mat single_result_disparity = cvMat(result->bind(3, 0).bind(2, 0));
 	cv::Mat single_result_coherence = cvMat(coherence->bind(3, 0).bind(2, 0));
+	cv::Mat single_input_disparity = cvMat(disp.bind(3, 0).bind(2, 0));
 
-	cv::Mat single_input_disparity = cvMat(disp.bind(3, disparity_store->extent()[3] / 2).bind(2, 0));
 
 	//remove nan values from disp value
 	int count = 0;
@@ -149,6 +150,15 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 			}
 		}
 	}
+
+	/*
+	
+	for (int y = 0; y < disparity_store->extent()[0]; y++) {
+		for (int x = 0; x < 7; x++) {
+			std::cout << single_input_disparity.at<float>(y, x) << std::endl;
+		}
+	}
+	*/
 
 	//Put here stuff to average channels
 
@@ -172,8 +182,6 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	std::vector<int> output;
 	std::vector<int> CenterGrid;
 
-
-	int refView = disp_count[2] / 2;
 	std::cout << "refView: " << refView << std::endl;
 
 	for (int y = 0; y < disp_count[0]; y++){
@@ -193,23 +201,29 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	for (int x = 0; x < disp_count[1]; x++){
 		//std::cout << "x : " << x << std::endl;
 		// Loop over all EPI rows
-		for (int z = 0; z < disp_count[2]; z++){
+		int z = 0;// for (int z = 0; z < disp_count[2]; z++)
+		{
 			//Loop over each pixel
 			for (int y = 0; y < disp_count[0]; y++) {
 				output[y] = grid[y] + disp.at<float>(y, x, 0, z)*(z - refView); // Definiere wo jeder Disparitaetswert in der Centerview abgebildt werden soll
+				output[y] = std::round(output[y]);
 			}
 			//Check if interpolation positions are outside of the image border
 
 			if (std::abs(z - refView) <= Center - std::abs(Shift)){
 				for (int y = 0; y < disp_count[0]; y++){
-					if (output[y] > disp_count[0] || output[y] < 0)
-						output[y] = grid[y] - disp.at<float>(y, x, 0, z)*(z - refView);
+					if (output[y] > (disp_count[0]-1) || output[y] < 0){
+						output[y] = grid[y] -disp.at<float>(y, x, 0, z)*(z - refView);
+					}
+					output[y] = std::round(output[y]);
 				}
 			}
 			else{
 				for (int y = 0; y < disp_count[0]; y++){
-					if (output[y] > disp_count[0]  || output[y] < 0)
-						output[y] = grid[y] - disp.at<float>(y - 2 * Shift, x, 0, z)*(z - 2 * Shift - refView);
+					if (output[y] > (disp_count[0] - 1) || output[y] < 0){
+						output[y] = grid[y] -disp.at<float>(y - 2 * Shift, x, 0, z)*(z - 2 * Shift - refView);
+					}
+					output[y] = std::round(output[y]);
 				}
 			}
 
