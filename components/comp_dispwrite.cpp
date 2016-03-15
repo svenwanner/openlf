@@ -67,7 +67,7 @@ void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
   for(p[1] = 0; p[1] < h; ++p[1])
     for (p[0] = 0; p[0] < w; ++p[0]) {
       double depth;
-      if (!std::isnan(disp[p]) && disp[p] > 0) 
+      if (!std::isnan(disp[p]) && disp[p] != 0.0) 
         point_count++;
     }
     
@@ -87,7 +87,7 @@ void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
   for(p[1] = 0; p[1] < h; ++p[1])
     for (p[0] = 0; p[0] < w; ++p[0]) {
       double depth;
-      if (std::isnan(disp[p]) || disp[p] <= 0)
+      if (std::isnan(disp[p]) || disp[p] == 0.0)
         depth = -1;
       else
         depth = subset.disparity2depth(disp[p]);
@@ -144,7 +144,7 @@ void write_obj(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
     valid = valid_tmp;
     
     for(p[0]=0;p[0]<w;++p[0]) {
-      if (std::isnan(disp[p]) || disp[p] <= 0)
+      if (std::isnan(disp[p]) || disp[p] == 0.0)
         valid[p[0]] = 0;
       else {
         valid[p[0]] = v_idx;
@@ -570,15 +570,14 @@ void COMP_DispWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     write_obj(obj_filename->c_str(), centerview, img, subset);
 
   
-  store->readImage(idx, &img3d, opts);
+  store->readImage(idx, &img3d, Improc::UNDISTORT);
   clifMat2cv(&img3d,&img);
   cv::Mat img_norm;
   cv::normalize(img, img_norm, 0, 255, cv::NORM_MINMAX, CV_8UC1); 
   
   //cv::imwrite("norm.png", img);
   
-  //if (obj_filename)
-    //write_obj("debug_regular.obj", centerview, img, subset);
+  //write_obj("debug_regular.obj", centerview, img, subset);
   
 
   
