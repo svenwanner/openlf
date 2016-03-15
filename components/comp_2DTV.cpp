@@ -76,10 +76,10 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	LF *out = NULL;
 
 	// Check if inputs are connected
-    errorCond(inputs.GetValue(0, in), "Dataset not found / missing input"); RETURN_ON_ERROR
+	errorCond(inputs.GetValue(0, in), "Dataset not found / missing input"); RETURN_ON_ERROR
 
-	//Link memouy from input data to output
-	out = &_out;
+		//Link memouy from input data to output
+		out = &_out;
 	out->data = &_out_set;
 	out->data->memory_link(in->data);
 
@@ -122,52 +122,110 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	Datastore *disp_store = in->data->getStore(disparity_root / "data");
 	errorCond(disp_store, "no disp_store available"); RETURN_ON_ERROR
 
-	// Load Coherence store
-	Datastore *coh_store = in->data->getStore(disparity_root / "coherence");
-	errorCond(disp_store, "no coh_store available"); RETURN_ON_ERROR
+	cpath tmp_data_root = disparity_root;
+	cpath searchPath = tmp_data_root;
+	bool breakCond = false;
+	bool use_coherence = false;
+	int timer = 0;
 
-	// Load Light Field itself
-	Datastore *lf_store = in->data->getStore(disparity_root / "subset/source/data");
-	errorCond(lf_store, "no lf_store available"); RETURN_ON_ERROR
+	while (breakCond == false){
 
+		searchPath = tmp_data_root;
+		searchPath /= "coherence";
+		if (in->data->store(searchPath) != NULL)
+		{
+			std::cout << "Found Coherence!" << std::endl;
+			std::cout << "Coherence path" << searchPath << std::endl;
+			use_coherence = true;
+			breakCond = true;
+		}
+		else
+		{
+			tmp_data_root /= "source";
+			use_coherence = false;
+			std::cout << "Search path" << tmp_data_root << std::endl;
+		}
 
+		timer++;
+		if (timer == 10){
+			breakCond = true;
+
+		}
+	}
+	errorCond(use_coherence, "no coherence measure found"); RETURN_ON_ERROR
+
+	Datastore *coh_store;
+	try{
+		coh_store = in->data->getStore(tmp_data_root / "coherence");
+	}
+	catch (const std::exception& e){
+		errorCond(coh_store, "no coh_store available"); RETURN_ON_ERROR
+	}
+
+	Datastore *lf_store;
+	try{
+		lf_store = in->data->getStore(tmp_data_root / "source_LF/data");
+	}
+	catch (const std::exception& e){
+		errorCond(lf_store, "no lf_store available"); RETURN_ON_ERROR
+	}
+
+	std::cout << "lf_store Dims : " << lf_store->extent() << std::endl;
+	std::cout << "coh_store Dims : " << coh_store->extent() << std::endl;
+	std::cout << "disp_store Dims : " << disp_store->extent() << std::endl;
+
+	
+	int TVposition = 0;
 	//The TV should be adapted onto the center view image.
 	if (initialize) {
-		std::cout << initialize << std::endl;
-		SetParameter_(12, DspParameter(DspParameter::ParamType::Int, (lf_store->extent()[3] - 1) / 2)); initialize = false;
+		try{
+			in->data->get(tmp_data_root / "refView", TVposition);
+			SetParameter_(12, DspParameter(DspParameter::ParamType::Int, TVposition));
+		}
+		catch (const std::exception& e) {
+			SetParameter_(12, DspParameter(DspParameter::ParamType::Int, (lf_store->extent()[3] - 1) / 2)); initialize = false;
+		}
 	}
-	int TVposition = *GetParameter(12)->GetInt();																							//AddParameter_("TVposition", DspParameter(DspParameter::ParamType::Int, 0));
+	TVposition = *GetParameter(12)->GetInt();																							//AddParameter_("TVposition", DspParameter(DspParameter::ParamType::Int, 0));
 
+	if (TVposition >= lf_store->extent()[3] || TVposition < 0){
+		TVposition = lf_store->extent()[3]/2;
+	}
+	
 	//Set some Metadata
 	std::string tmp_dataset_name = out_dataset_name;
 	tmp_dataset_name.append("/default/data");
 	out->path = tmp_dataset_name;
 
 	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/refView");
+	tmp_dataset_name.append("/default/refView");
 	out->data->setAttribute(tmp_dataset_name, TVposition);
 
 	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/source");
-	//FIXME:make this relative to the used datasets
-	out->data->addLink(tmp_dataset_name, "calibration/extrinsics/default");
+	tmp_dataset_name.append("/default/source_LF");
+	cpath tmp = disparity_root;
+	tmp.append("/source_LF");
+	out->data->addLink(tmp_dataset_name, tmp);
 
 	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/in_data");
+	tmp_dataset_name.append("/default/source");
 	out->data->addLink(tmp_dataset_name, disparity_root);
-	
+
 	//Initialize output store of module
 	tmp_dataset_name = out_dataset_name;
 	tmp_dataset_name.append("/default/data");
 	Datastore *store = out->data->addStore(tmp_dataset_name);
 
-	//std::cout << "dataset_name: " << out_dataset_name << std::endl;
-	//std::cout << "tmp_dataset_name" << tmp_dataset_name << std::endl;
 
 	// Check parameters only
 	if (configOnly())
 		return;
 
+	/*****************************
+	Finish initialization
+	******************************
+	Start Processing section
+	******************************/
 
 	// Load Light Field itself
 	Mat_<float> lf;
@@ -180,11 +238,19 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	disp_store->read(disp);
 
 
-	//slice single disparity and coherence images as well as center view image to modify boundary movability
-	cv::Mat single_dispMap = cvMat(disp.bind(3, TVposition).bind(2, 0));
-	cv::Mat single_cohMap = cvMat(coh.bind(3, TVposition).bind(2, 0));
 	Mat single_Image = lf.bind(3, TVposition);
+	int refView = 0;
+	if (disp_store->extent()[3] < 2){
+		refView = 0;
+		SetParameter_(12, DspParameter(DspParameter::ParamType::Int, TVposition));
+	}	
+	std::cout << "TVposition reset to: " << refView << std::endl;
 
+	//slice single disparity and coherence images as well as center view image to modify boundary movability
+
+
+	cv::Mat single_dispMap = cvMat(disp.bind(3, refView).bind(2, 0));
+	cv::Mat single_cohMap = cvMat(coh.bind(3, refView).bind(2, 0));
 
 	//Generate result Storate of light field size and initialize it with a predefined starting value
 	Idx size = { single_dispMap.size[1], single_dispMap.size[0] };

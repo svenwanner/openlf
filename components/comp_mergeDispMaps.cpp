@@ -41,6 +41,7 @@ private:
   virtual bool ParameterUpdating_ (int i, DspParameter const &p);
   LF _out;
   clif::Dataset _out_set;
+  bool initialize = true;
 };
 
 COMP_mergeDispMaps::COMP_mergeDispMaps()
@@ -50,6 +51,9 @@ COMP_mergeDispMaps::COMP_mergeDispMaps()
   AddOutput_("ouput");
   AddParameter_("in_group", DspParameter(DspParameter::ParamType::String, "disparity"));
   AddParameter_("out_group", DspParameter(DspParameter::ParamType::String, "merged"));
+  AddParameter_("refView", DspParameter(DspParameter::ParamType::Int, 0));
+  AddParameter_("StartView", DspParameter(DspParameter::ParamType::Int, 0));
+  AddParameter_("EndView", DspParameter(DspParameter::ParamType::Int, 0));
 }
 
 
@@ -74,14 +78,13 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	//Check if output exists
 	errorCond(out, "output creation failed"); RETURN_ON_ERROR
 
-	const std::string in_dataset_name = *GetParameter(0)->GetString();
-	const std::string out_dataset_name = *GetParameter(1)->GetString();
+	std::string in_dataset_name = *GetParameter(0)->GetString();
+	std::string out_dataset_name = *GetParameter(1)->GetString();
 
 	//get location of disparity and coherence map
 	cpath disparity_root;
 	try{
 		disparity_root = in->data->getSubGroup(in_dataset_name);
-		std::cout << "Found disparity results!" << std::endl;
 	}
 	catch (const std::exception& e){
 		errorCond(false, "Dataset not found"); RETURN_ON_ERROR
@@ -97,22 +100,52 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	Datastore *store = out->data->addStore(tmp_dataset_name);
 	out->path = tmp_dataset_name;
 
-	//FIXME: Reference View is always the central view modify get_intensities function in clif
 	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/refView");
-	out->data->setAttribute(tmp_dataset_name, (disparity_store->extent()[3] - 1) / 2);
-
+	tmp_dataset_name.append("/default/coherence");
+	Datastore *store_coh = out->data->addStore(tmp_dataset_name);
+	out->path = tmp_dataset_name;
+	
 	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/source");
-	//FIXME:Ask Hendrik how to get extrinsics_group() without subset;
-	out->data->addLink(tmp_dataset_name, "calibration/extrinsics/default");
-
-	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/in_data");
+	tmp_dataset_name.append("/default/source");
 	out->data->addLink(tmp_dataset_name, disparity_root);
+
+	tmp_dataset_name = out_dataset_name;
+	tmp_dataset_name.append("/default/source_LF");
+	cpath tmp = disparity_root;
+	tmp.append("/source_LF");
+	out->data->addLink(tmp_dataset_name, tmp);
+
+	float data_max = 1;
+	in->data->get(disparity_root / "data_max", data_max);
+	std::cout << "data_max: " << data_max << std::endl;
+	
+
+	// Load Light Field itself
+	Datastore *lf_store = in->data->getStore(disparity_root / "subset/source/data");
+	errorCond(lf_store, "no lf_store available"); RETURN_ON_ERROR
+
+	if (initialize){
+		initialize = false;
+		SetParameter_(2, DspParameter(DspParameter::ParamType::Int, lf_store->extent()[3] / 2));
+		SetParameter_(4, DspParameter(DspParameter::ParamType::Int, lf_store->extent()[3] - 1));
+	}
+	int refView = *GetParameter(2)->GetInt();
+	int StartView = *GetParameter(3)->GetInt();
+	int EndView = *GetParameter(4)->GetInt();
+
+	tmp_dataset_name = out_dataset_name;
+	tmp_dataset_name.append("/default/refView");
+	out->data->setAttribute(tmp_dataset_name, refView);
 
 	if (configOnly())
 		return;
+
+/***************************** 
+Finish initialization 
+******************************
+Start Processing section 
+******************************/
+
 
 	//read data result
 	Mat_<float> disp;
@@ -122,25 +155,24 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	coherence_store->read(coh);
 
 
-	int refView = disparity_store->extent()[2] / 2;
-
-
-
 	// Allocate memory for output images
-	Idx Resultsize = { disparity_store->extent()[0], disparity_store->extent()[1], 1, 1 };
+	Idx Resultsize = { lf_store->extent()[0], lf_store->extent()[1], 1, 1 };
 	Mat *result = new Mat(BaseType::FLOAT, Resultsize);
 	Mat *coherence = new Mat(BaseType::FLOAT, Resultsize);
 	cv::Mat single_result_disparity = cvMat(result->bind(3, 0).bind(2, 0));
 	cv::Mat single_result_coherence = cvMat(coherence->bind(3, 0).bind(2, 0));
-	cv::Mat single_input_disparity = cvMat(disp.bind(3, 0).bind(2, 0));
+	cv::Mat single_input_disparity = cvMat(disp.bind(3, refView).bind(2, 0));
+
+	Idx size = { lf_store->extent()[0], lf_store->extent()[1] };
+	Mat *displayTmp = new Mat(BaseType::FLOAT, size);		cv::Mat forDisplay = cvMat(*displayTmp);
 
 
 	//remove nan values from disp value
 	int count = 0;
 #pragma parallel for
-	for (int y = 0; y < disparity_store->extent()[0]; y++) {
-		for (int x = 0; x < disparity_store->extent()[1]; x++) {
-			for (int z = 0; z < disparity_store->extent()[3]; z++) {
+	for (int y = 0; y < lf_store->extent()[0]; y++) {
+		for (int x = 0; x < lf_store->extent()[1]; x++) {
+			for (int z = 0; z < lf_store->extent()[3]; z++) {
 				if (std::isnan(disp.at<float>(y, x, z))){
 					disp.at<float>(y, x, 0 ,z) = 0;
 					coh.at<float>(y, x, 0, z) = 0;
@@ -151,30 +183,28 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		}
 	}
 
-	/*
-	
-	for (int y = 0; y < disparity_store->extent()[0]; y++) {
-		for (int x = 0; x < 7; x++) {
-			std::cout << single_input_disparity.at<float>(y, x) << std::endl;
-		}
-	}
-	*/
 
 	//Put here stuff to average channels
 
-	std::cout << "Dims 0 : " << disparity_store->extent()[0] << std::endl;
-	std::cout << "Dims 1 : " << disparity_store->extent()[1] << std::endl;
-	std::cout << "Dims 2 : " << disparity_store->extent()[3] << std::endl;
+	//std::cout << "Dims 0 : " << lf_store->extent()[0] << std::endl;
+	//std::cout << "Dims 1 : " << lf_store->extent()[1] << std::endl;
+	//std::cout << "Dims 2 : " << lf_store->extent()[3] << std::endl;
 
 	Shape3 disp_count;
 
-	disp_count[0] = disparity_store->extent()[0];
-	disp_count[1] = disparity_store->extent()[1];
-	disp_count[2] = disparity_store->extent()[3];
+	disp_count[0] = lf_store->extent()[0];
+	disp_count[1] = lf_store->extent()[1];
+	disp_count[2] = lf_store->extent()[3];
 
 	cv::namedWindow("MergeInput", 0);
 	cv::resizeWindow("MergeInput", single_input_disparity.size[1] / 4, single_input_disparity.size[0] / 4);
-	cv::imshow("MergeInput", single_input_disparity);
+#pragma omp parallel for schedule(dynamic,1)
+	for (int y = 0; y < single_input_disparity.size[0]; y++) {
+		for (int x = 0; x < single_input_disparity.size[1]; x++) {
+			forDisplay.at<float>(y, x) = single_input_disparity.at<float>(y, x) / data_max;
+		}
+	}
+	cv::imshow("MergeInput", forDisplay);
 	cv::waitKey(1);
 
 	//initialize regular grid
@@ -189,9 +219,9 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		output.push_back(0);												// Hier soll die Position gespeichert werden, wo der Disparitaetswert in die ReferenzView geschrieben werden soll "Initialisierung"
 		CenterGrid.push_back(0);
 	}
-	std::cout << "grid: " << grid.size() << std::endl;
-	std::cout << "output: " << output.size() << std::endl;
-	std::cout << "CenterGrid: " << CenterGrid.size() << std::endl;
+	//std::cout << "grid: " << grid.size() << std::endl;
+	//std::cout << "output: " << output.size() << std::endl;
+	//std::cout << "CenterGrid: " << CenterGrid.size() << std::endl;
 
 //loop over all EPI
 	int Center = disp_count[2] / 2;
@@ -200,8 +230,9 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 	for (int x = 0; x < disp_count[1]; x++){
 		//std::cout << "x : " << x << std::endl;
+		progress_((float)x / disp_count[1]);
 		// Loop over all EPI rows
-		int z = 0;// for (int z = 0; z < disp_count[2]; z++)
+		for (int z = StartView; z <= EndView; z++)
 		{
 			//Loop over each pixel
 			for (int y = 0; y < disp_count[0]; y++) {
@@ -213,7 +244,7 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 			if (std::abs(z - refView) <= Center - std::abs(Shift)){
 				for (int y = 0; y < disp_count[0]; y++){
 					if (output[y] > (disp_count[0]-1) || output[y] < 0){
-						output[y] = grid[y] -disp.at<float>(y, x, 0, z)*(z - refView);
+						output[y] = grid[y] - disp.at<float>(y, x, 0, z)*(z - refView);
 					}
 					output[y] = std::round(output[y]);
 				}
@@ -221,7 +252,7 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 			else{
 				for (int y = 0; y < disp_count[0]; y++){
 					if (output[y] > (disp_count[0] - 1) || output[y] < 0){
-						output[y] = grid[y] -disp.at<float>(y - 2 * Shift, x, 0, z)*(z - 2 * Shift - refView);
+						output[y] = grid[y] - disp.at<float>(y - 2 * Shift, x, 0, z)*(z - 2 * Shift - refView);
 					}
 					output[y] = std::round(output[y]);
 				}
@@ -253,11 +284,16 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 			}
 		}
 	}
-
-
+	
 	cv::namedWindow("MergeResult", 0);
 	cv::resizeWindow("MergeResult", single_result_disparity.size[1] / 4, single_result_disparity.size[0] / 4);
-	cv::imshow("MergeResult", single_result_disparity);
+#pragma omp parallel for schedule(dynamic,1)
+	for (int y = 0; y < single_result_disparity.size[0]; y++) {
+		for (int x = 0; x < single_result_disparity.size[1]; x++) {
+			forDisplay.at<float>(y, x) = single_result_disparity.at<float>(y, x) / data_max;
+		}
+	}
+	cv::imshow("MergeResult", forDisplay);
 	cv::waitKey(10);
 
 	// This is to set nan values in the point clouds where the measurements are bad
@@ -270,19 +306,19 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 			}
 		}
 	}
-	std::cout << "cout: " << count << std::endl;
 
 	store->write(result);
+	store_coh->write(coherence);
   
 }
 
 bool COMP_mergeDispMaps::ParameterUpdating_(int i, DspParameter const &p)
 {
   //we only have two parameters
-  if (i >= 3)
+  if (i >= 6)
     return false;
   
-  if (p.Type() != DspParameter::ParamType::String)
+  if (p.Type() != DspParameter::ParamType::String && p.Type() != DspParameter::ParamType::Int)
     return false;
   
   SetParameter_(i, p);

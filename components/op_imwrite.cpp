@@ -19,49 +19,47 @@
 * Author Sven Wanner, Maximilian Diebold, Hendrik Siedelmann 
 *
 */
+#include <vigra/imageinfo.hxx>
+#include <vigra/impex.hxx>
+#include <vigra/transformimage.hxx>
+#include <vigra/copyimage.hxx>
+#include <vigra/multi_array.hxx>
+
+#include <limits>
 
 #include "openlf/operator_macro.hpp"
 
-#include <opencv2/highgui/highgui.hpp>
+#define OPENLF_OP_CONSTRUCT_PARAMS \
+    AddParameter_("filename", DspParameter(DspParameter::ParamType::String, ""));
 
-using namespace clif;
-using namespace vigra;
-
-template<class FROM> struct _is_convertible_to_float : public std::is_convertible<FROM,float> {};
-
-class OP_Imwrite : public DspComponent {
-public:
-  OP_Imwrite();
-  DSPCOMPONENT_TRIVIAL_CLONE(OP_Imwrite);
-protected:
-  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
-private:
-};
-
-OP_Imwrite::OP_Imwrite()
-{
-  setTypeName_("OP_Imwrite"); 
-  AddInput_("input");
-  AddParameter_("filename", DspParameter(DspParameter::ParamType::String));
+OPENLF_VIGRA_OP_START(OP_Imwrite, 1, 1, 3, 3)
+if(in[0].shape()[2] == 1) {
+	vigra::MultiArrayView<2, T> out_im = in[0].bindAt(2, 0);
+	exportImage(out_im, *op->GetParameter(0)->GetString());
 }
+else if (in[0].shape()[2] == 3 || in[0].shape()[2] == 4) {
+    vigra::MultiArray<2, vigra::RGBValue<T> > out_im(in[0].shape()[0], in[0].shape()[1]);
 
-void OP_Imwrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
-{
-  bool stat;
-  Mat *in;
-  const std::string* filename;
-  
-  errorCond(inputs.GetValue(0, in), "OP_Imwrite : input not found - possible type mismatch?\n"); RETURN_ON_ERROR
-  
-  filename = GetParameter(0)->GetString();
-  errorCond(filename && filename->size(), "missing file name"); RETURN_ON_ERROR
-  
-  if (configOnly())
-    return;
-  
-  cv::Mat img;
-  cv::normalize(cvImg(*in), img, 0, 255, cv::NORM_MINMAX, CV_8UC1);
-  imwrite(filename->c_str(), img);
+    vigra::MultiArrayView<2, T> r(out_im.bindElementChannel(0));
+    vigra::MultiArrayView<2, T> g(out_im.bindElementChannel(1));
+    vigra::MultiArrayView<2, T> b(out_im.bindElementChannel(2));
+
+    vigra::MultiArrayView<2, T> r_in;
+    r_in = in[0].bindAt(2, 0);
+    vigra::MultiArrayView<2, T> g_in;
+    g_in = in[0].bindAt(2, 1);
+    vigra::MultiArrayView<2, T> b_in;
+    b_in = in[0].bindAt(2, 2);
+
+    r = r_in;
+    g = g_in;
+    b = b_in;
+
+	exportImage(out_im, *op->GetParameter(0)->GetString());
 }
+std::cout << "image saved!" <<std::endl;
+out[0] = in[0];
 
-EXPORT_DSPCOMPONENT(OP_Imwrite)
+OPENLF_OP_END
+
+#undef OPENLF_OP_CONSTRUCT_PARAMS

@@ -16,7 +16,7 @@
 * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 *
-* Author Sven Wanner, Maximilian Diebold, Hendrik Siedelmann 
+* Author Sven Wanner, Maximilian Diebold, Hendrik Siedelmann
 *
 */
 
@@ -32,58 +32,63 @@ using namespace openlf;
 
 class COMP_LFWrite : public DspComponent {
 public:
-  COMP_LFWrite();
-  DSPCOMPONENT_TRIVIAL_CLONE(COMP_LFWrite);
+	COMP_LFWrite();
+	DSPCOMPONENT_TRIVIAL_CLONE(COMP_LFWrite);
 protected:
-  virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+	virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 private:
-  virtual bool ParameterUpdating_ (int i, DspParameter const &p);
+	virtual bool ParameterUpdating_(int i, DspParameter const &p);
 };
 
 COMP_LFWrite::COMP_LFWrite()
 {
-  setTypeName_("COMP_writeCLIF");
-  AddInput_("input");
-  AddParameter_("filename", DspParameter(DspParameter::ParamType::String));
-  AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
+	setTypeName_("COMP_writeCLIF");
+	AddInput_("input");
+	AddParameter_("filename", DspParameter(DspParameter::ParamType::String));
+	AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
 }
 
 void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
-  LF *in = NULL;
-  const std::string *filename;
-  const std::string *dataset_name = NULL;
-  
-  errorCond(inputs.GetValue(0, in), "missing input"); RETURN_ON_ERROR
-  
-  filename = GetParameter(0)->GetString();
-  if (GetParameter(1))
-    dataset_name = GetParameter(1)->GetString();
-  
-  errorCond(filename, "missing filename"); RETURN_ON_ERROR
+	LF *in = NULL;
+	const std::string *filename;
+	const std::string *dataset_name = NULL;
 
-  if (configOnly())
-	return;
-  
-  ClifFile *f_out = new ClifFile;
-  f_out->create(filename->c_str());
-  Dataset out_set;
-  out_set.link(*f_out, in->data);
-  //out_set.writeAttributes();
-  delete f_out;
+	errorCond(inputs.GetValue(0, in), "missing input"); RETURN_ON_ERROR
+
+		filename = GetParameter(0)->GetString();
+	if (GetParameter(1))
+		dataset_name = GetParameter(1)->GetString();
+
+	errorCond(filename, "missing filename"); RETURN_ON_ERROR
+
+		if (configOnly())
+			return;
+
+	ClifFile *f_out = new ClifFile;
+	if (!boost::filesystem::exists(filename->c_str()))
+		f_out->create(filename->c_str());
+	else {
+		printf("FIXME opening existing file because it might already be open! Implement overwrite!\n");
+		f_out->open(filename->c_str(), H5F_ACC_RDWR);
+	}
+	Dataset out_set;
+	out_set.link(*f_out, in->data);
+	//out_set.writeAttributes();
+	delete f_out;
 }
 
-bool COMP_LFWrite::ParameterUpdating_ (int i, DspParameter const &p)
+bool COMP_LFWrite::ParameterUpdating_(int i, DspParameter const &p)
 {
-  //we only have two parameters
-  if (i >= 2)
-    return false;
-  
-  if (p.Type() != DspParameter::ParamType::String)
-    return false;
-  
-  SetParameter_(i, p);
-  return true;
+	//we only have two parameters
+	if (i >= 2)
+		return false;
+
+	if (p.Type() != DspParameter::ParamType::String)
+		return false;
+
+	SetParameter_(i, p);
+	return true;
 }
 
 EXPORT_DSPCOMPONENT(COMP_LFWrite)
