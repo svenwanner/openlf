@@ -40,15 +40,17 @@ private:
   virtual bool ParameterUpdating_ (int i, DspParameter const &p);
   LF _out;
   clif::Dataset _out_set;
+  bool initialize = true;
 };
 
 COMP_warpToRefView::COMP_warpToRefView()
 {
-  setTypeName_("warpToRefView");
+  setTypeName_("COMP_warpToRefView");
   AddInput_("input");
   AddOutput_("ouput");
   AddParameter_("in_group", DspParameter(DspParameter::ParamType::String, "2DTV"));
   AddParameter_("out_group", DspParameter(DspParameter::ParamType::String, "warped"));
+  AddParameter_("refView", DspParameter(DspParameter::ParamType::Int, 0));
 }
 
 void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
@@ -87,7 +89,30 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	
 	//define storages used for TV
 	Datastore *TV_store = in->data->getStore(TV_root / "data");
-	Datastore *lf_store = in->data->getStore(TV_root / "subset/source/data");
+	Datastore *lf_store = in->data->getStore(TV_root / "source_LF/data");
+
+	std::cout << "lf_store Dims : " << lf_store->extent() << std::endl;
+	std::cout << "disp_store Dims : " << TV_store->extent() << std::endl;
+
+	int refView = 0;
+	//The TV should be adapted onto the center view image.
+	if (initialize) {
+		try{
+			in->data->get(TV_root / "refView", refView);
+			SetParameter_(2, DspParameter(DspParameter::ParamType::Int, refView));
+		}
+		catch (const std::exception& e) {
+			SetParameter_(2, DspParameter(DspParameter::ParamType::Int, (lf_store->extent()[3] - 1) / 2)); initialize = false;
+		}
+	}
+	refView = *GetParameter(2)->GetInt();																							//AddParameter_("TVposition", DspParameter(DspParameter::ParamType::Int, 0));
+
+	if (refView >= lf_store->extent()[3] || refView < 0){
+		refView = lf_store->extent()[3] / 2;
+	}
+
+
+
 
 	//Set some output Metadata
 	std::string tmp_dataset_name = out_dataset_name;
@@ -97,15 +122,17 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 	//FIXME: Reference View is always the central view modify get_intensities function in clif
 	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/refView");
-	out->data->setAttribute(tmp_dataset_name, (lf_store->extent()[3] - 1) / 2);
+	tmp_dataset_name.append("/default/refView");
+	out->data->setAttribute(tmp_dataset_name, refView);
 
 	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/source");
-	out->data->addLink(tmp_dataset_name, "calibration/extrinsics/default");
+	tmp_dataset_name.append("/default/source_LF");
+	cpath tmp = TV_root;
+	tmp.append("/source_LF");
+	out->data->addLink(tmp_dataset_name, tmp);
 
 	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/in_data");
+	tmp_dataset_name.append("/default/source");
 	out->data->addLink(tmp_dataset_name, TV_root);
 
 
@@ -145,10 +172,10 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 bool COMP_warpToRefView::ParameterUpdating_(int i, DspParameter const &p)
 {
   //we only have two parameters
-  if (i >= 3)
+  if (i >= 4)
     return false;
   
-  if (p.Type() != DspParameter::ParamType::String)
+  if (p.Type() != DspParameter::ParamType::String && p.Type() != DspParameter::ParamType::Int)
     return false;
   
   SetParameter_(i, p);

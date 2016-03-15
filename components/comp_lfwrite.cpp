@@ -67,10 +67,14 @@ void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   ClifFile *f_out = new ClifFile;
   f_out->create(filename->c_str());
-  Dataset out_set;
-  out_set.link(*f_out, in->data);
+  Dataset *out_set = new Dataset;
+  out_set->link(*f_out, in->data);
   //out_set.writeAttributes();
+  
+  out_set->flush();
+  delete out_set;
   delete f_out;
+
 }
 
 bool COMP_LFWrite::ParameterUpdating_ (int i, DspParameter const &p)
