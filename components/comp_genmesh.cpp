@@ -20,6 +20,8 @@
 *
 */
 
+#include "clif/config.h"
+
 #ifdef CLIF_WITH_LIBIGL
 
 #include "clif/subset3d.hpp"
@@ -669,7 +671,6 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 #else
   printf("ERROR could not launch viewer, clif compiled without libigl_viewer!\n");
 #endif
-  
   
   setlocale(LC_NUMERIC, locale_old);
 }
