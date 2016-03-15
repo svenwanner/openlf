@@ -66,7 +66,12 @@ void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	return;
   
   ClifFile *f_out = new ClifFile;
-  f_out->create(filename->c_str());
+  if (!boost::filesystem::exists(filename->c_str()))
+    f_out->create(filename->c_str());
+  else {
+    printf("FIXME opening existing file because it might already be open! Implement overwrite!\n");
+    f_out->open(filename->c_str(), H5F_ACC_RDWR);
+  }
   Dataset out_set;
   out_set.link(*f_out, in->data);
   //out_set.writeAttributes();
