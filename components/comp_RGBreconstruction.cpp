@@ -100,27 +100,35 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	//define storages used for TV
 	Datastore *TV_store = in->data->getStore(TV_root / "data");
 	Datastore *warped_store = in->data->getStore(warped_root / "data");
-	Datastore *lf_store = in->data->getStore(TV_root / "subset/source/data");
+	Datastore *lf_store = in->data->getStore(TV_root / "source_LF/data");
 
 	//Set some output Metadata
 	std::string tmp_dataset_name = out_dataset_name;
+	tmp_dataset_name.append("/default/xyz");
+	Datastore *store_xyz = out->data->addStore(tmp_dataset_name);
+	out->path = tmp_dataset_name;
+
+	tmp_dataset_name = out_dataset_name;
 	tmp_dataset_name.append("/default/data");
-	Datastore *store = out->data->addStore(tmp_dataset_name);
+	Datastore *store_rgb = out->data->addStore(tmp_dataset_name);
 	out->path = tmp_dataset_name;
 
 	//FIXME: Reference View is always the central view modify get_intensities function in clif
 	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/refView");
+	tmp_dataset_name.append("/default/refView");
 	int tmp;
-	in->data->get(warped_root / "subset/refView", tmp);
+	in->data->get(warped_root / "refView", tmp);
 	out->data->setAttribute(tmp_dataset_name, tmp);
 
 	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/source");
-	out->data->addLink(tmp_dataset_name, "calibration/extrinsics/default");
+	tmp_dataset_name.append("/source_LF");
+	cpath tmpSource = warped_root;
+	tmpSource.append("/source_LF");
+	out->data->addLink(tmp_dataset_name, tmpSource);
+	//out->data->addLink(tmp_dataset_name, "calibration/extrinsics/default");
 
 	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/in_data");
+	tmp_dataset_name.append("/default/source");
 	out->data->addLink(tmp_dataset_name, TV_root);
 
 	std::cout << "Size TV storage: " << TV_store->extent() << std::endl;
@@ -142,9 +150,12 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 //External Data
 	cv::Mat XYZ2RGB = (cv::Mat_<float>(3, 3) << 3.2406, -1.5372, -0.4986, -0.9689, 1.8758, 0.0415, 0.0557, -0.2040, 1.0570);
 	//X first, Y second and Z third.
-	cv::Mat _M = (cv::Mat_<float>(3,11) <<  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, \
-											1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, \
-											1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+	//FOr PCO DATASET
+	cv::Mat _M = (cv::Mat_<float>(3,21) <<  0.0466, 0.4376, -0.0073, 0.0389, 0.1881,  0.4412, 0.6265, 0.8842,    0.9900,  0.2659,  0.0158,    0.3166,  0.9811,     0.8447,  0.6334, 0.5044, 0.2094, 0.0084, 0.0090, 0.4149, -0.0042, \
+											0.0016, 0.0681,  0.3226, 0.6270, 0.8864,    1.06, 0.9824, 0.6204,    0.5910,  0.1351, -0.0066,      0.08,  0.5614,     0.6326,  0.9678, 1.0370, 0.8759, 0.6175, 0.3497, 0.0187, -0.0238, \
+											0.1297, 3.0483,  0.3217, 0.1255, 0.0172, -0.0077, 0.0067, 0.0074, -0.000404, -0.0099, -0.0099, -0.000404, -0.0073, 0.00076751, -0.0098, 0.0174, 0.039,  0.1031, 0.3277, 3.0421,  0.1564);
+
+
 
 	float gamma = 1;
 
@@ -199,7 +210,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 
 	//display
-
+	/*
 	bool display = true;
 	if (display){
 		cv::Mat displayMat = cv::Mat::zeros(TV_store->extent()[1], TV_store->extent()[0], CV_8UC3);
@@ -209,6 +220,10 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		cv::imshow("RGB_recon", displayMat);
 		cv::waitKey(1);
 	}
+	*/
+
+	store_rgb->write(result_RGB);
+	store_xyz->write(result_XYZ);
 }
 
 bool COMP_warpToRefView::ParameterUpdating_(int i, DspParameter const &p)

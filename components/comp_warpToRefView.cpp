@@ -112,8 +112,6 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	}
 
 
-
-
 	//Set some output Metadata
 	std::string tmp_dataset_name = out_dataset_name;
 	tmp_dataset_name.append("/default/data");
