@@ -66,7 +66,7 @@ COMP_2DTV::COMP_2DTV()
   AddParameter_("Display", DspParameter(DspParameter::ParamType::Int, 1));
   AddParameter_("TVposition", DspParameter(DspParameter::ParamType::Int, 0));
   AddParameter_("out_group", DspParameter(DspParameter::ParamType::String, "2DTV"));
-  AddParameter_("in_group", DspParameter(DspParameter::ParamType::String, "disparity"));
+  AddParameter_("in_group", DspParameter(DspParameter::ParamType::String, "merged"));
 }
 
 void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
