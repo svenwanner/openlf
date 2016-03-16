@@ -150,14 +150,20 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 //External Data
 	cv::Mat XYZ2RGB = (cv::Mat_<float>(3, 3) << 3.2406, -1.5372, -0.4986, -0.9689, 1.8758, 0.0415, 0.0557, -0.2040, 1.0570);
 	//X first, Y second and Z third.
-	//FOr PCO DATASET
-	cv::Mat _M = (cv::Mat_<float>(3,21) <<  0.0466, 0.4376, -0.0073, 0.0389, 0.1881,  0.4412, 0.6265, 0.8842,    0.9900,  0.2659,  0.0158,    0.3166,  0.9811,     0.8447,  0.6334, 0.5044, 0.2094, 0.0084, 0.0090, 0.4149, -0.0042, \
+	//For PCO DATASET
+	//cv::Mat _M = (cv::Mat_<float>(3,21) <<  0.0466, 0.4376, -0.0073, 0.0389, 0.1881,  0.4412, 0.6265, 0.8842,    0.9900,  0.2659,  0.0158,    0.3166,  0.9811,     0.8447,  0.6334, 0.5044, 0.2094, 0.0084, 0.0090, 0.4149, -0.0042, \
 											0.0016, 0.0681,  0.3226, 0.6270, 0.8864,    1.06, 0.9824, 0.6204,    0.5910,  0.1351, -0.0066,      0.08,  0.5614,     0.6326,  0.9678, 1.0370, 0.8759, 0.6175, 0.3497, 0.0187, -0.0238, \
 											0.1297, 3.0483,  0.3217, 0.1255, 0.0172, -0.0077, 0.0067, 0.0074, -0.000404, -0.0099, -0.0099, -0.000404, -0.0073, 0.00076751, -0.0098, 0.0174, 0.039,  0.1031, 0.3277, 3.0421,  0.1564);
+	//For Demonstrator Synthetic DATASET
+	cv::Mat _M = (cv::Mat_<float>(3, 11) <<    0.1390, 0.1772,    0.2, 0.000663, 0.0841, 0.4215, 0.8421, 1.0618, 0.7489,  0.2686, 0.1419, \
+											-0.000127, 0.0107, 0.0739,   0.3210, 0.7899,  0.995, 0.9154, 0.6252, 0.3047,  0.0978, 0.0061, \
+											   0.6859, 0.8440, 1.3173,   0.2713, 0.0465,  0.006, 0.0018, 0.0008 ,0.0001, 0.00001, 0.7172);
+	//For Heterogeneous light field array
+	//cv::Mat _M = (cv::Mat_<float>(3, 11) <<  0.4505, 0.3875, 0.2730, 0.0042, 0.1780, 0.7205, 1.5813, 1.6807,  1.6010, 0.6885,   0.307, \
+											 0.0171, 0.0372, 0.1431, 0.5333, 1.2180, 1.4932, 1.5406, 0.9461,  0.6894, 0.2598, 0.00977, \
+											 2.2078, 1.9758, 2.0134, 0.4474, 0.0611, 0.0023, 0.0031, 0.0016, 0.00038,      0,       0);
 
-
-
-	float gamma = 1;
+	float gamma = 0.6;
 
 //Result Storage
 	Idx Resultsize = { TV_store->extent()[0], TV_store->extent()[1], 3, 1 };
@@ -173,9 +179,9 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	for (int x = 0; x < single_result_XYZ.size[0]; x++) {
 		for (int y = 0; y < single_result_XYZ.size[1]; y++) {
 			for (int z = 0; z < _M.size[1]; z++) {
-				single_result_XYZ.at<float>(x, y, 0) += _M.at<float>(0, z) * warped.at<float>(x, y, 0, 0);
-				single_result_XYZ.at<float>(x, y, 1) += _M.at<float>(1, z) * warped.at<float>(x, y, 0, 0);
-				single_result_XYZ.at<float>(x, y, 2) += _M.at<float>(2, z) * warped.at<float>(x, y, 0, 0);
+				single_result_XYZ.at<float>(x, y, 0) += _M.at<float>(0, z) * warped.at<float>(x, y, 0, z);
+				single_result_XYZ.at<float>(x, y, 1) += _M.at<float>(1, z) * warped.at<float>(x, y, 0, z);
+				single_result_XYZ.at<float>(x, y, 2) += _M.at<float>(2, z) * warped.at<float>(x, y, 0, z);
 			}
 		}
 	}
