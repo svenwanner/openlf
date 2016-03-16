@@ -49,7 +49,6 @@ COMP_warpToRefView::COMP_warpToRefView()
   AddInput_("input");
   AddOutput_("output");
   AddParameter_("in_group_warped", DspParameter(DspParameter::ParamType::String, "warped"));
-  AddParameter_("in_group_TV", DspParameter(DspParameter::ParamType::String, "2DTV"));
   AddParameter_("out_group", DspParameter(DspParameter::ParamType::String, "RGBrecon"));
 }
 
@@ -74,8 +73,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	errorCond(out, "output creation failed"); RETURN_ON_ERROR
 
 	const std::string in_dataset_name = *GetParameter(0)->GetString();
-	const std::string in2_dataset_name = *GetParameter(1)->GetString();
-	const std::string out_dataset_name = *GetParameter(2)->GetString();
+	const std::string out_dataset_name = *GetParameter(1)->GetString();
 
 
 	//get location of disparity and coherence map
@@ -128,7 +126,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 //read warped result
 	Mat_<uint16_t> warped;
-	warped_store->read(warped, ProcData(UNDISTORT));
+	warped_store->read(warped);
 
 //External Data
 	cv::Mat XYZ2RGB = (cv::Mat_<float>(3, 3) << 3.2406, -1.5372, -0.4986, -0.9689, 1.8758, 0.0415, 0.0557, -0.2040, 1.0570);
@@ -175,9 +173,9 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	//std::cout << "Dim2: " << warped_store->extent()[3] << std::endl;
 
 	float InputMaxValue = 0;
-	for (int z = 0; z < warped_store->extent()[3]; z++) {
-		for (int x = 0; x < warped_store->extent()[0]; x++) {
-				for (int y = 0; y < warped_store->extent()[1]; y++) {
+	for (int z = 0; z < lf_store->extent()[3]; z++) {
+		for (int x = 0; x < lf_store->extent()[0]; x++) {
+			for (int y = 0; y < lf_store->extent()[1]; y++) {
 					warped(x, y, 0, z) = warped(x, y, 0, z)	* exposure.at<float>(0, z);
 					if (InputMaxValue < warped(x, y, 0, z)) InputMaxValue = warped(x, y, 0, z);
 			}
@@ -289,7 +287,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		cv::namedWindow("RGB_recon", 0);
 		cv::cvtColor(output, output, CV_RGB2BGR);
 		cv::imshow("RGB_recon", output);
-		cv::waitKey(0);
+		cv::waitKey(1);
 	}
 	
 
