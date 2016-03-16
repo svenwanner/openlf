@@ -1,7 +1,13 @@
 file(GLOB COMPONENTS "*.cpp")
 foreach(COMP ${COMPONENTS})
   get_filename_component(COMPONENT_NAME ${COMP} NAME_WE)
-  add_library(${COMPONENT_NAME} MODULE ${COMP})
+  
+  if (${COMP} STREQUAL "comp_camarray.cpp")
+    add_library(${COMPONENT_NAME} MODULE ${COMP} camarray/)
+  else()
+    add_library(${COMPONENT_NAME} MODULE ${COMP})
+  endif()
+  
   target_link_libraries(${COMPONENT_NAME} DSPatch openlf debug;clifd optimized;clif ${Boost_LIBRARIES})
 endforeach()
 
