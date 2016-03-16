@@ -53,9 +53,11 @@ COMP_writeMesh::COMP_writeMesh()
   AddInput_("input");
   AddParameter_("obj_filename", DspParameter(DspParameter::ParamType::String));
   AddParameter_("ply_filename", DspParameter(DspParameter::ParamType::String));
-  AddParameter_("in_group", DspParameter(DspParameter::ParamType::String,"2DTV"));
+  AddParameter_("in_group_dispMap", DspParameter(DspParameter::ParamType::String,"2DTV"));
+  AddParameter_("in_group_colorMap", DspParameter(DspParameter::ParamType::String, ""));
   AddParameter_("Depth_cutoff", DspParameter(DspParameter::ParamType::Float, 5000));
-  AddParameter_("Save_View", DspParameter(DspParameter::ParamType::Int, 0));
+  AddParameter_("dispMap_View", DspParameter(DspParameter::ParamType::Int, 0));
+  AddParameter_("ColorMap_View", DspParameter(DspParameter::ParamType::Int, 0));
 }
 
 void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d &subset, float &cutoff)
@@ -506,7 +508,8 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	obj_filename = GetParameter(0)->GetString();
 	ply_filename = GetParameter(1)->GetString();
 	std::string dataset = *GetParameter(2)->GetString();
-	float cutoff = *GetParameter(3)->GetFloat();
+	std::string datasetView = *GetParameter(3)->GetString();
+	float cutoff = *GetParameter(4)->GetFloat();
 	
 	errorCond(obj_filename || ply_filename, "no output specified"); RETURN_ON_ERROR
 
@@ -536,7 +539,7 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		}
 		else
 		{
-			tmp_data_root /= "subset/in_data";
+			tmp_data_root /= "source";
 			use_coherence = false;
 		}
 		
@@ -548,28 +551,34 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	}
 	errorCond(use_coherence, "no coherence measure found"); RETURN_ON_ERROR
 
-	Datastore *lf_store = in->data->getStore(data_root / "subset/source/data");
+	bool foundView = false;
+	cpath View_data = datasetView;
+	if (in->data->store(View_data / "data") != NULL) foundView = true;
+	if (in->data->store(View_data / "default/data") != NULL){
+		foundView = true;
+		View_data = View_data / "default/";
+	}
+	errorCond(foundView, "no image data found"); RETURN_ON_ERROR
+
+
+	Datastore *lf_store = in->data->store(View_data / "data");
 
 	if (!initialize) {
 		std::cout << initialize << std::endl;
 		try{
 			int tmp;
-			in->data->get(data_root / "subset/refView", tmp);
-			SetParameter_(4, DspParameter(DspParameter::ParamType::Int, tmp));
+			in->data->get(data_root / "refView", tmp);
+			SetParameter_(5, DspParameter(DspParameter::ParamType::Int, tmp));
+			SetParameter_(6, DspParameter(DspParameter::ParamType::Int, tmp));
 		}
 		catch (const std::exception& e) {
-			SetParameter_(4, DspParameter(DspParameter::ParamType::Int, ((lf_store->extent()[3] - 1) / 2)));
+			SetParameter_(5, DspParameter(DspParameter::ParamType::Int, ((lf_store->extent()[3] - 1) / 2)));
+			SetParameter_(6, DspParameter(DspParameter::ParamType::Int, ((lf_store->extent()[3] - 1) / 2)));
 		}
 		initialize = true;
 	}
 	errorCond(initialize, "no View selected"); RETURN_ON_ERROR
 
-	int refView = *GetParameter(4)->GetInt();
-
-	if (refView >= lf_store->extent()[3]){
-		refView = lf_store->extent()[3] - 1;
-		SetParameter_(4, DspParameter(DspParameter::ParamType::Int, lf_store->extent()[3] - 1));
-	}
 
 
 	if (configOnly())
@@ -582,39 +591,47 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 	disp_store->read(disp);
 
-
-	Datastore *coh_store = in->data->getStore(disparity_root/"coherence");
-	coh_store->read(coh);
-	
 	float scale = 1.0;
   
 	 Attribute *attr;
   
-	attr = in->data->get(disparity_root/"subset/scale");
+	attr = in->data->get(disparity_root/"scale");
 	if (attr)
 		attr->get(scale);
   
-	//std::cout << "scale:" << scale << std::endl;
 
 	ProcData opts;
 	opts.set_scale(scale);
 
   //FIXME read/pass actual datastore!
-  Subset3d subset(in->data, tmp_data_root / "subset/source", opts);
+  Subset3d subset(in->data, tmp_data_root / "source_LF", opts);
   //FIXME add read function to subset3d
-  Datastore *store = in->data->getStore(subset.extrinsics_group()/"data");
- 
+  
+
+
+int refView = *GetParameter(5)->GetInt();
+if (refView >= disp_store->extent()[3]){
+	refView = disp_store->extent()[3] - 1;
+	SetParameter_(5, DspParameter(DspParameter::ParamType::Int, disp_store->extent()[3] - 1));
+}
+
+int refView2 = *GetParameter(6)->GetInt();
+  if (refView2 >= lf_store->extent()[3]){
+	  refView2 = lf_store->extent()[3] - 1;
+	  SetParameter_(6, DspParameter(DspParameter::ParamType::Int, lf_store->extent()[3] - 1));
+  }
+
   cv::Mat img3d, img;
   //FIXME should add a readimage to subset3d!
-  std::vector<int> idx(store->dims(), 0);
+  std::vector<int> idx(lf_store->dims(), 0);
   //FIXME flexmav!
-  idx[3] = refView;
+  idx[3] = refView2;
 
   //std::cout << "dimCoh:" << coh[3] / 2 << std::endl;
   //std::cout << "dimDisp:" << disp[3] / 2 << std::endl;
   
   opts.set_flags(UNDISTORT | CVT_8U);
-  store->readImage(idx, &img3d, opts);
+  lf_store->readImage(idx, &img3d, opts);
   clifMat2cv(&img3d,&img);
   std::cout << "size:" << img.size() << std::endl;
   
@@ -632,11 +649,6 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   cv::waitKey(1);
   */
 
-  if (refView >= disp_store->extent()[3]){
-	  refView = 0;
-	  SetParameter_(4, DspParameter(DspParameter::ParamType::Int, 0));
-	  errorCond(initialize, "invalid view selected, set to zero"); 
-  }
 
   MultiArrayView<2, float> centerview = vigraMAV<4, float>(disp).bindAt(3, refView).bindAt(2, 0);
   //std::cout << "size:" << centerview.shape() << std::endl;
@@ -664,7 +676,7 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 bool COMP_writeMesh::ParameterUpdating_(int i, DspParameter const &p)
 {
   //we only have four parameters
-  if (i >= 5)
+  if (i >= 7)
     return false;
   
   if (p.Type() != DspParameter::ParamType::String && p.Type() != DspParameter::ParamType::Float && p.Type() != DspParameter::ParamType::Int)

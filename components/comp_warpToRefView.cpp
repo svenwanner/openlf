@@ -23,6 +23,7 @@
 #include "clif/subset3d.hpp"
 #include "clif/mat_helpers.hpp"
 #include "openlf/types.hpp"
+#include <opencv2/highgui/highgui.hpp>
 
 #include "dspatch/DspPlugin.h"
 
@@ -139,7 +140,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
 	
 //Load Light Field itself
-	Mat_<float> lf;
+	Mat_<uint16_t> lf;
 	lf_store->read(lf, ProcData(UNDISTORT));
 
 //read TV result
@@ -147,7 +148,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	TV_store->read(TV);
 
 //Allocate memory for warped output images
-	Mat_<float> result;
+	Mat_<uint16_t> result;
 	result.create(lf.type(), lf);
 
 	for (int x = 0; x < lf_store->extent()[0]; x++) {
