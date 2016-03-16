@@ -167,21 +167,20 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 			}
 		}
 	}
-
 	//std::cout << "Dim0: " << warped_store->extent()[0] << std::endl;
 	//std::cout << "Dim1: " << warped_store->extent()[1] << std::endl;
 	//std::cout << "Dim2: " << warped_store->extent()[3] << std::endl;
 
-	float InputMaxValue = 0;
-	for (int z = 0; z < lf_store->extent()[3]; z++) {
-		for (int x = 0; x < lf_store->extent()[0]; x++) {
-			for (int y = 0; y < lf_store->extent()[1]; y++) {
-					warped(x, y, 0, z) = warped(x, y, 0, z)	* exposure.at<float>(0, z);
-					if (InputMaxValue < warped(x, y, 0, z)) InputMaxValue = warped(x, y, 0, z);
-			}
-		}
-	}
-	std::cout << "InputMaxValue: " << InputMaxValue << std::endl;
+	//uint16_t InputMaxValue = 0;
+	//for (int z = 0; z < lf_store->extent()[3]; z++) {
+	//	for (int x = 0; x < lf_store->extent()[0]; x++) {
+	//		for (int y = 0; y < lf_store->extent()[1]; y++) {
+	//				warped(x, y, 0, z) = warped(x, y, 0, z)	* exposure.at<float>(0, z);
+	//				if (InputMaxValue < warped(x, y, 0, z)) InputMaxValue = warped(x, y, 0, z);
+	//		}
+	//	}
+	//}
+	//std::cout << "InputMaxValue: " << InputMaxValue << std::endl;
 
 	//Mat single_result_XYZ = result_XYZ->bind(3, 0);
 	//Mat single_result_RGB = result_RGB->bind(3, 0);
@@ -198,7 +197,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	//	std::cout << tmpImage.size() << std::endl;
 	//	cv::namedWindow("warped", 0);
 	//	cv::imshow("warped", tmpImage);
-	//	cv::waitKey(30);
+	//	cv::waitKey(0);
 	//}
 
 	//First step is the reconstruction of the XYZ space
@@ -206,9 +205,9 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	for (int x = 0; x < lf_store->extent()[0]; x++) {
 		for (int y = 0; y < lf_store->extent()[1]; y++) {
 			for (int z = 0; z < _M.size[1]; z++) {
-					result_XYZ->at<float>(x, y, 0, 0) = result_XYZ->at<float>(x, y, 0, 0) + (_M.at<float>(0, z) * (float)warped.at<float>(x, y, 0, z) );
-					result_XYZ->at<float>(x, y, 1, 0) = result_XYZ->at<float>(x, y, 1, 0) + (_M.at<float>(1, z) * (float)warped.at<float>(x, y, 0, z) );
-					result_XYZ->at<float>(x, y, 2, 0) = result_XYZ->at<float>(x, y, 2, 0) + (_M.at<float>(2, z) * (float)warped.at<float>(x, y, 0, z) );
+				result_XYZ->at<float>(x, y, 0, 0) = result_XYZ->at<float>(x, y, 0, 0) + (_M.at<float>(0, z) * (float)warped.at<float>(x, y, 0, z) * exposure.at<float>(0, z));
+				result_XYZ->at<float>(x, y, 1, 0) = result_XYZ->at<float>(x, y, 1, 0) + (_M.at<float>(1, z) * (float)warped.at<float>(x, y, 0, z) * exposure.at<float>(0, z));
+				result_XYZ->at<float>(x, y, 2, 0) = result_XYZ->at<float>(x, y, 2, 0) + (_M.at<float>(2, z) * (float)warped.at<float>(x, y, 0, z) * exposure.at<float>(0, z));
 					if (result_XYZ->at<float>(x, y, 0, 0) > maxValue) maxValue = result_XYZ->at<float>(x, y, 0, 0);
 					if (result_XYZ->at<float>(x, y, 1, 0) > maxValue) maxValue = result_XYZ->at<float>(x, y, 1, 0);
 					if (result_XYZ->at<float>(x, y, 2, 0) > maxValue) maxValue = result_XYZ->at<float>(x, y, 2, 0);
