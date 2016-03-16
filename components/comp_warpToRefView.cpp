@@ -150,6 +150,16 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	Mat_<float> result;
 	result.create(lf.type(), lf);
 
+	for (int x = 0; x < lf_store->extent()[0]; x++) {
+		for (int y = 0; y < lf_store->extent()[1]; y++) {
+			for (int z = 0; z < lf_store->extent()[2]; z++) {
+				for (int a = 0; a < lf_store->extent()[3]; a++) {
+					result(x, y, z, a) = 0;
+				}
+			}
+		}
+	}
+
 
   for(int y= 0; y<lf[1]; y++)	
   {

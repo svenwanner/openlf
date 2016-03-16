@@ -194,10 +194,6 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	
 	//Set some Metadata
 	std::string tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/data");
-	out->path = tmp_dataset_name;
-
-	tmp_dataset_name = out_dataset_name;
 	tmp_dataset_name.append("/default/refView");
 	out->data->setAttribute(tmp_dataset_name, TVposition);
 
@@ -214,6 +210,7 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	//Initialize output store of module
 	tmp_dataset_name = out_dataset_name;
 	tmp_dataset_name.append("/default/data");
+	out->path = tmp_dataset_name;
 	Datastore *store = out->data->addStore(tmp_dataset_name);
 
 

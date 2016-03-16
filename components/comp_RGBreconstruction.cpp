@@ -48,8 +48,8 @@ COMP_warpToRefView::COMP_warpToRefView()
   setTypeName_("COMP_RGBrecon");
   AddInput_("input");
   AddOutput_("output");
-  AddParameter_("in_group", DspParameter(DspParameter::ParamType::String, "warped"));
-  AddParameter_("in_group", DspParameter(DspParameter::ParamType::String, "2DTV"));
+  AddParameter_("in_group_warped", DspParameter(DspParameter::ParamType::String, "warped"));
+  AddParameter_("in_group_TV", DspParameter(DspParameter::ParamType::String, "2DTV"));
   AddParameter_("out_group", DspParameter(DspParameter::ParamType::String, "RGBrecon"));
 }
 
@@ -82,25 +82,16 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	cpath warped_root;
 	try{
 		warped_root = in->data->getSubGroup(in_dataset_name);
-		std::cout << "Found warped results!" << std::endl;
+		std::cout << "Found warped results: " << warped_root << std::endl;
 	}
 	catch (const std::exception& e){
 		errorCond(false, "Dataset warped not found"); RETURN_ON_ERROR
 	}
 
-	cpath TV_root;
-	try{
-		TV_root = in->data->getSubGroup(in2_dataset_name);
-		std::cout << "Found TV results!" << std::endl;
-	}
-	catch (const std::exception& e){
-		errorCond(false, "Dataset TV not found"); RETURN_ON_ERROR
-	}
 	
 	//define storages used for TV
-	Datastore *TV_store = in->data->getStore(TV_root / "data");
 	Datastore *warped_store = in->data->getStore(warped_root / "data");
-	Datastore *lf_store = in->data->getStore(TV_root / "source_LF/data");
+	Datastore *lf_store = in->data->getStore(warped_root / "source_LF/data");
 
 	//Set some output Metadata
 	std::string tmp_dataset_name = out_dataset_name;
@@ -127,11 +118,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	out->data->addLink(tmp_dataset_name, tmpSource);
 	//out->data->addLink(tmp_dataset_name, "calibration/extrinsics/default");
 
-	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/source");
-	out->data->addLink(tmp_dataset_name, TV_root);
 
-	std::cout << "Size TV storage: " << TV_store->extent() << std::endl;
 	std::cout << "Size warped storage: " << warped_store->extent() << std::endl;
 	std::cout << "Size LF storage: " << lf_store->extent() << std::endl;
 
@@ -139,23 +126,26 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	if (configOnly())
 		return;
 
-//read TV result
-	Mat_<float> TV;
-	TV_store->read(TV);
-
 //read warped result
-	Mat_<float> warped;
-	warped_store->read(warped);
+	Mat_<uint16_t> warped;
+	warped_store->read(warped, ProcData(UNDISTORT));
 
 //External Data
 	cv::Mat XYZ2RGB = (cv::Mat_<float>(3, 3) << 3.2406, -1.5372, -0.4986, -0.9689, 1.8758, 0.0415, 0.0557, -0.2040, 1.0570);
 	//X first, Y second and Z third.
-	//For PCO DATASET
-	//cv::Mat _M = (cv::Mat_<float>(3,21) <<  0.0466, 0.4376, -0.0073, 0.0389, 0.1881,  0.4412, 0.6265, 0.8842,    0.9900,  0.2659,  0.0158,    0.3166,  0.9811,     0.8447,  0.6334, 0.5044, 0.2094, 0.0084, 0.0090, 0.4149, -0.0042, \
-											0.0016, 0.0681,  0.3226, 0.6270, 0.8864,    1.06, 0.9824, 0.6204,    0.5910,  0.1351, -0.0066,      0.08,  0.5614,     0.6326,  0.9678, 1.0370, 0.8759, 0.6175, 0.3497, 0.0187, -0.0238, \
-											0.1297, 3.0483,  0.3217, 0.1255, 0.0172, -0.0077, 0.0067, 0.0074, -0.000404, -0.0099, -0.0099, -0.000404, -0.0073, 0.00076751, -0.0098, 0.0174, 0.039,  0.1031, 0.3277, 3.0421,  0.1564);
+	//For PCO DATASET Pirate Worm Horse Butterfly
+	cv::Mat _M = (cv::Mat_<float>(3, 21) <<  0.0368, 0.4677, -0.0043, 0.0297, 0.1804,  0.4501, 0.6272,  0.8639,  0.9826,  0.2641,  0.0164,  0.3290, 0.9895,  0.8679,  0.6320, 0.4999, 0.2312, 0.0185, 0.0085, 0.3797,  0.0062,\
+											-0.0033, 0.0332,  0.3436, 0.5891, 0.8603,  1.0543, 0.9478,  0.5906,  0.5626,  0.1051, -0.0046,  0.1140, 0.5928,  0.6707,  0.9958, 1.0374, 0.9017, 0.6528, 0.3276, 0.0436, -0.0225, \
+											 0.1441, 2.2404,  0.2925, 0.1245, 0.0288, -0.0009, 0.0075, -0.0002, -0.0060, -0.0041, -0.0111, -0.0027, 0.0015, -0.0055, -0.0101, 0.0131, 0.0351, 0.1134, 0.3608, 2.2894,  0.1417);
+	//Pirate
+	cv::Mat exposure = (cv::Mat_<float>(1, 21) << 0.0007, 0.0007, 0.0010, 0.0011, 0.0013, 0.0020, 0.0020, 0.0033, 0.0033, 0.0040, 0.0050, 0.0040, 0.0033, 0.0033, 0.0020, 0.0020, 0.0013, 0.0011, 0.0010, 0.0007, 0.0007);
+	//for (int z = 0; z < exposure.size[1]; z++) {
+	//	exposure.at<float>(0, z) = exposure.at<float>(0, z) * 200;
+	//	std::cout << exposure.at<float>(0, z) << std::endl;
+	//}
+
 	//For Demonstrator Synthetic DATASET
-	cv::Mat _M = (cv::Mat_<float>(3, 11) <<    0.1390, 0.1772,    0.2, 0.000663, 0.0841, 0.4215, 0.8421, 1.0618, 0.7489,  0.2686, 0.1419, \
+	//cv::Mat _M = (cv::Mat_<float>(3, 11) <<    0.1390, 0.1772,    0.2, 0.000663, 0.0841, 0.4215, 0.8421, 1.0618, 0.7489,  0.2686, 0.1419, \
 											-0.000127, 0.0107, 0.0739,   0.3210, 0.7899,  0.995, 0.9154, 0.6252, 0.3047,  0.0978, 0.0061, \
 											   0.6859, 0.8440, 1.3173,   0.2713, 0.0465,  0.006, 0.0018, 0.0008 ,0.0001, 0.00001, 0.7172);
 	//For Heterogeneous light field array
@@ -163,70 +153,145 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 											 0.0171, 0.0372, 0.1431, 0.5333, 1.2180, 1.4932, 1.5406, 0.9461,  0.6894, 0.2598, 0.00977, \
 											 2.2078, 1.9758, 2.0134, 0.4474, 0.0611, 0.0023, 0.0031, 0.0016, 0.00038,      0,       0);
 
-	float gamma = 0.6;
+	float gamma = 0.82;
 
 //Result Storage
-	Idx Resultsize = { TV_store->extent()[0], TV_store->extent()[1], 3, 1 };
-	Mat *result_XYZ = new Mat(BaseType::FLOAT, Resultsize);		
-	Mat *result_RGB = new Mat(BaseType::FLOAT, Resultsize);
+	Idx Resultsize = { lf_store->extent()[0], lf_store->extent()[1], 3, 1 };
+	Mat_<float> *result_XYZ = new Mat_<float>(BaseType::FLOAT, Resultsize);
+	Mat_<float> *result_RGB = new Mat_<float>(BaseType::FLOAT, Resultsize);
 
-	cv::Mat single_result_XYZ = cvMat(result_XYZ->bind(3, 0));
-	cv::Mat single_result_RGB = cvMat(result_RGB->bind(3, 0));
 	
-
-
-	//First step is the reconstruction of the XYZ space
-	for (int x = 0; x < single_result_XYZ.size[0]; x++) {
-		for (int y = 0; y < single_result_XYZ.size[1]; y++) {
-			for (int z = 0; z < _M.size[1]; z++) {
-				single_result_XYZ.at<float>(x, y, 0) += _M.at<float>(0, z) * warped.at<float>(x, y, 0, z);
-				single_result_XYZ.at<float>(x, y, 1) += _M.at<float>(1, z) * warped.at<float>(x, y, 0, z);
-				single_result_XYZ.at<float>(x, y, 2) += _M.at<float>(2, z) * warped.at<float>(x, y, 0, z);
+	for (int x = 0; x < lf_store->extent()[0]; x++) {
+		for (int y = 0; y < lf_store->extent()[1]; y++) {
+			for (int z = 0; z < 3; z++) {
+				result_XYZ->at<float>(x, y, z, 0) = 0;
+				result_RGB->at<float>(x, y, z, 0) = 0;
 			}
 		}
+	}
+
+	//std::cout << "Dim0: " << warped_store->extent()[0] << std::endl;
+	//std::cout << "Dim1: " << warped_store->extent()[1] << std::endl;
+	//std::cout << "Dim2: " << warped_store->extent()[3] << std::endl;
+
+	float InputMaxValue = 0;
+	for (int z = 0; z < warped_store->extent()[3]; z++) {
+		for (int x = 0; x < warped_store->extent()[0]; x++) {
+				for (int y = 0; y < warped_store->extent()[1]; y++) {
+					warped(x, y, 0, z) = warped(x, y, 0, z)	* exposure.at<float>(0, z);
+					if (InputMaxValue < warped(x, y, 0, z)) InputMaxValue = warped(x, y, 0, z);
+			}
+		}
+	}
+	std::cout << "InputMaxValue: " << InputMaxValue << std::endl;
+
+	//Mat single_result_XYZ = result_XYZ->bind(3, 0);
+	//Mat single_result_RGB = result_RGB->bind(3, 0);
+
+	//std::cout << "single_result_XYZ storage: " << single_result_XYZ.size() << std::endl;
+	//std::cout << "single_result_RGB storage: " << single_result_RGB.size() << std::endl;
+	
+	//for (int z = 0; z < _M.size[1]; z++) {
+	//	std::cout << _M.at<float>(0, z)  << std::endl;
+	//}
+
+	//for (int x = 0; x < _M.size[1]; x++) {
+	//	cv::Mat tmpImage = cvMat(warped.bind(3, x).bind(2, 0));
+	//	std::cout << tmpImage.size() << std::endl;
+	//	cv::namedWindow("warped", 0);
+	//	cv::imshow("warped", tmpImage);
+	//	cv::waitKey(30);
+	//}
+
+	//First step is the reconstruction of the XYZ space
+	float maxValue = 0;
+	for (int x = 0; x < lf_store->extent()[0]; x++) {
+		for (int y = 0; y < lf_store->extent()[1]; y++) {
+			for (int z = 0; z < _M.size[1]; z++) {
+					result_XYZ->at<float>(x, y, 0, 0) = result_XYZ->at<float>(x, y, 0, 0) + (_M.at<float>(0, z) * (float)warped.at<float>(x, y, 0, z) );
+					result_XYZ->at<float>(x, y, 1, 0) = result_XYZ->at<float>(x, y, 1, 0) + (_M.at<float>(1, z) * (float)warped.at<float>(x, y, 0, z) );
+					result_XYZ->at<float>(x, y, 2, 0) = result_XYZ->at<float>(x, y, 2, 0) + (_M.at<float>(2, z) * (float)warped.at<float>(x, y, 0, z) );
+					if (result_XYZ->at<float>(x, y, 0, 0) > maxValue) maxValue = result_XYZ->at<float>(x, y, 0, 0);
+					if (result_XYZ->at<float>(x, y, 1, 0) > maxValue) maxValue = result_XYZ->at<float>(x, y, 1, 0);
+					if (result_XYZ->at<float>(x, y, 2, 0) > maxValue) maxValue = result_XYZ->at<float>(x, y, 2, 0);
+			}
+		}
+	}
+
+	std::cout << "MaxValue of result_XYZ: " << maxValue << std::endl;
+
+	for (int x = 0; x < lf_store->extent()[0]; x++) {
+		for (int y = 0; y < lf_store->extent()[1]; y++) {
+			result_XYZ->at<float>(x, y, 0, 0) = result_XYZ->at<float>(x, y, 0, 0) / maxValue;
+			result_XYZ->at<float>(x, y, 1, 0) = result_XYZ->at<float>(x, y, 1, 0) / maxValue;
+			result_XYZ->at<float>(x, y, 2, 0) = result_XYZ->at<float>(x, y, 2, 0) / maxValue;
+		}
+	}
+
+	for (int z = 0; z < 3; z++) {
+		std::cout << XYZ2RGB.at<float>(0, z) << std::endl;
+	}
+	for (int z = 0; z < 3; z++) {
+		std::cout << XYZ2RGB.at<float>(1, z) << std::endl;
+	}
+	for (int z = 0; z < 3; z++) {
+		std::cout << XYZ2RGB.at<float>(2, z) << std::endl;
 	}
 
 	//Convert to RGB and scale result between 0 and 1
-	int maxValue = 10;
-	for (int x = 0; x < single_result_XYZ.size[0]; x++) {
-		for (int y = 0; y < single_result_XYZ.size[1]; y++) {
+	float maxValue0 = 0;
+	float minValue0 = 10;
+	for (int x = 0; x < lf_store->extent()[0]; x++) {
+		for (int y = 0; y < lf_store->extent()[1]; y++) {
 			for (int z = 0; z < 3; z++) {
-				single_result_RGB.at<float>(x, y, 0) += XYZ2RGB.at<float>(0, z) * single_result_XYZ.at<float>(x, y, z);
-				single_result_RGB.at<float>(x, y, 1) += XYZ2RGB.at<float>(1, z) * single_result_XYZ.at<float>(x, y, z);
-				single_result_RGB.at<float>(x, y, 2) += XYZ2RGB.at<float>(2, z) * single_result_XYZ.at<float>(x, y, z);
-				if (single_result_RGB.at<float>(x, y, 0) > maxValue) single_result_RGB.at<float>(x, y, 0) = maxValue;
-				if (single_result_RGB.at<float>(x, y, 1) > maxValue) single_result_RGB.at<float>(x, y, 1) = maxValue;
-				if (single_result_RGB.at<float>(x, y, 2) > maxValue) single_result_RGB.at<float>(x, y, 2) = maxValue;
+				result_RGB->at<float>(x, y, 0, 0) = result_RGB->at<float>(x, y, 0, 0) + (XYZ2RGB.at<float>(0, z) * result_XYZ->at<float>(x, y, z, 0));
+				result_RGB->at<float>(x, y, 1, 0) = result_RGB->at<float>(x, y, 1, 0) + (XYZ2RGB.at<float>(1, z) * result_XYZ->at<float>(x, y, z, 0));
+				result_RGB->at<float>(x, y, 2, 0) = result_RGB->at<float>(x, y, 2, 0) + (XYZ2RGB.at<float>(2, z) * result_XYZ->at<float>(x, y, z, 0));
+				if (result_RGB->at<float>(x, y, 0, 0) > maxValue0) maxValue0 = result_RGB->at<float>(x, y, 0, 0);
+				if (result_RGB->at<float>(x, y, 1, 0) > maxValue0) maxValue0 = result_RGB->at<float>(x, y, 1, 0);
+				if (result_RGB->at<float>(x, y, 2, 0) > maxValue0) maxValue0 = result_RGB->at<float>(x, y, 2, 0);
+				if (result_RGB->at<float>(x, y, 0, 0) < minValue0) minValue0 = result_RGB->at<float>(x, y, 0, 0);
+				if (result_RGB->at<float>(x, y, 1, 0) < minValue0) minValue0 = result_RGB->at<float>(x, y, 1, 0);
+				if (result_RGB->at<float>(x, y, 2, 0) < minValue0) minValue0 = result_RGB->at<float>(x, y, 2, 0);
 			}
 		}
 	}
-
+	std::cout << "MaxValue0: " << maxValue0 << std::endl;
+	std::cout << "minValue0: " << minValue0 << std::endl;
 
 	//Apply gamma correction to normalized distribution
-	for (int x = 0; x < single_result_XYZ.size[0]; x++) {
-		for (int y = 0; y < single_result_XYZ.size[1]; y++) {
-			if (single_result_RGB.at<float>(x, y, 0) < 0) single_result_RGB.at<float>(x, y, 0) = 0;
-			if (single_result_RGB.at<float>(x, y, 1) < 0) single_result_RGB.at<float>(x, y, 1) = 0;
-			if (single_result_RGB.at<float>(x, y, 2) < 0) single_result_RGB.at<float>(x, y, 2) = 0;
-			single_result_RGB.at<float>(x, y, 0) = std::pow(single_result_RGB.at<float>(x, y, 0) / maxValue, gamma);
-			single_result_RGB.at<float>(x, y, 1) = std::pow(single_result_RGB.at<float>(x, y, 1) / maxValue, gamma);
-			single_result_RGB.at<float>(x, y, 2) = std::pow(single_result_RGB.at<float>(x, y, 2) / maxValue, gamma);
+	for (int x = 0; x < lf_store->extent()[0]; x++) {
+		for (int y = 0; y < lf_store->extent()[1]; y++) {
+			if (result_RGB->at<float>(x, y, 0, 0) < 0) result_RGB->at<float>(x, y, 0, 0) = 0;
+			if (result_RGB->at<float>(x, y, 1, 0) < 0) result_RGB->at<float>(x, y, 1, 0) = 0;
+			if (result_RGB->at<float>(x, y, 2, 0) < 0) result_RGB->at<float>(x, y, 2, 0) = 0;
+			result_RGB->at<float>(x, y, 0, 0) = std::pow(result_RGB->at<float>(x, y, 0, 0) / maxValue, gamma);
+			result_RGB->at<float>(x, y, 1, 0) = std::pow(result_RGB->at<float>(x, y, 1, 0) / maxValue, gamma);
+			result_RGB->at<float>(x, y, 2, 0) = std::pow(result_RGB->at<float>(x, y, 2, 0) / maxValue, gamma);
 		}
 	}
 
-
+	
 	//display
-	/*
+	for (int x = 0; x < lf_store->extent()[0]; x++) {
+		for (int y = 0; y < lf_store->extent()[1]; y++) {
+			result_RGB->at<float>(x, y, 0, 0) *= (255);
+			result_RGB->at<float>(x, y, 1, 0) *= (255);
+			result_RGB->at<float>(x, y, 2, 0) *= (255);
+		}
+	}
+
 	bool display = true;
 	if (display){
-		cv::Mat displayMat = cv::Mat::zeros(TV_store->extent()[1], TV_store->extent()[0], CV_8UC3);
-		//cv2ClifMat(&single_result_RGB, &displayMat);
+		cv::Mat _tmp = cvMat(result_RGB->bind(3, 0));
+		cv::Mat output;
+		clifMat2cv(&_tmp, &output);
 		cv::namedWindow("RGB_recon", 0);
-		cv::resizeWindow("RGB_recon", single_result_RGB.size[0] / 4, single_result_RGB.size[1] / 4);
-		cv::imshow("RGB_recon", displayMat);
-		cv::waitKey(1);
+		cv::cvtColor(output, output, CV_RGB2BGR);
+		cv::imshow("RGB_recon", output);
+		cv::waitKey(0);
 	}
-	*/
+	
 
 	store_rgb->write(result_RGB);
 	store_xyz->write(result_XYZ);
