@@ -1251,6 +1251,8 @@ void DspComponent::progress_(float p)
   static struct timespec last_time = {0,0};
   struct timespec now;
 
+  p = std::min(std::max(p, 1.0f), 0.0f);
+  
 #ifdef _MSC_VER   
 
   static LARGE_INTEGER frequency;   

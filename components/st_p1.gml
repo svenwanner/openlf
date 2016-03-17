@@ -100,24 +100,15 @@ y_blur 0.000000
 ]
 node [
 id 9
-label "OP_Scharr_1"
-type "OP_Scharr"
+label "OP_dx_0"
+type "OP_dx"
 graphics [
-x -481.000000
-y -295.000000
-]
-]
-node [
-id 10
-label "OP_Scharr_2"
-type "OP_Scharr"
-graphics [
-x -343.000000
-y -220.000000
+x -439.000000
+y -203.000000
 ]
 ]
 edge [
-source 10
+source 9
 target 0
 source_pad 0
 target_pad 0
@@ -173,12 +164,6 @@ target_pad 0
 edge [
 source 8
 target 9
-source_pad 0
-target_pad 0
-]
-edge [
-source 9
-target 10
 source_pad 0
 target_pad 0
 ]
