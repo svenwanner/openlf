@@ -1251,7 +1251,7 @@ void DspComponent::progress_(float p)
   static struct timespec last_time = {0,0};
   struct timespec now;
 
-  p = std::min(std::max(p, 0.0f), 1.0f);
+  p = std::max(std::min(p, 1.0f), 0.0f);
   
 #ifdef _MSC_VER   
 

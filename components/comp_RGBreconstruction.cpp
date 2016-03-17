@@ -50,6 +50,7 @@ COMP_warpToRefView::COMP_warpToRefView()
   AddOutput_("output");
   AddParameter_("in_group_warped", DspParameter(DspParameter::ParamType::String, "warped"));
   AddParameter_("out_group", DspParameter(DspParameter::ParamType::String, "RGBrecon"));
+  AddParameter_("gamma", DspParameter(DspParameter::ParamType::Float, 0.5f));
 }
 
 void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
@@ -74,7 +75,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 	const std::string in_dataset_name = *GetParameter(0)->GetString();
 	const std::string out_dataset_name = *GetParameter(1)->GetString();
-
+	float gamma = *GetParameter(2)->GetFloat();
 
 	//get location of disparity and coherence map
 	cpath warped_root;
@@ -137,7 +138,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		return;
 
 //read warped result
-	Mat_<uint16_t> warped;
+	Mat_<uint8_t> warped;
 	warped_store->read(warped);
 
 //External Data
@@ -162,10 +163,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	cv::Mat _M = (cv::Mat_<float>(3, 11) <<  0.4505, 0.3875, 0.2730, 0.0042, 0.1780, 0.7205, 1.5813, 1.6807,  1.6010, 0.6885,   0.307, \
 											 0.0171, 0.0372, 0.1431, 0.5333, 1.2180, 1.4932, 1.5406, 0.9461,  0.6894, 0.2598, 0.00977, \
 											 2.2078, 1.9758, 2.0134, 0.4474, 0.0611, 0.0023, 0.0031, 0.0016, 0.00038,      0,       0);
-	cv::Mat exposure = (cv::Mat_<float>(1, 11) << 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-
-
-	float gamma = 0.82;
+	cv::Mat exposure = (cv::Mat_<float>(1, 11) << 320, 113, 80, 80, 80, 113, 160, 160, 320, 160, 320);
 
 //Result Storage
 	Idx Resultsize = { subset.EPIWidth(), subset.EPICount(), 3, 1 };
@@ -187,9 +185,9 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	for (int x = 0; x < subset.EPIWidth(); x++) {
 		for (int y = 0; y < subset.EPICount(); y++) {
 			for (int z = 0; z < subset.EPIHeight(); z++) {
-				result_XYZ->at<float>(x, y, 0, 0) = result_XYZ->at<float>(x, y, 0, 0) + (_M.at<float>(0, z) * (float)warped.at<float>(x, y, 0, z) * exposure.at<float>(0, z));
-				result_XYZ->at<float>(x, y, 1, 0) = result_XYZ->at<float>(x, y, 1, 0) + (_M.at<float>(1, z) * (float)warped.at<float>(x, y, 0, z) * exposure.at<float>(0, z));
-				result_XYZ->at<float>(x, y, 2, 0) = result_XYZ->at<float>(x, y, 2, 0) + (_M.at<float>(2, z) * (float)warped.at<float>(x, y, 0, z) * exposure.at<float>(0, z));
+				result_XYZ->at<float>(x, y, 0, 0) = result_XYZ->at<float>(x, y, 0, 0) + (_M.at<float>(0, z) * (float)warped.at<float>(x, y, 0, z) / exposure.at<float>(0, 10 - z));
+				result_XYZ->at<float>(x, y, 1, 0) = result_XYZ->at<float>(x, y, 1, 0) + (_M.at<float>(1, z) * (float)warped.at<float>(x, y, 0, z) / exposure.at<float>(0, 10 - z));
+				result_XYZ->at<float>(x, y, 2, 0) = result_XYZ->at<float>(x, y, 2, 0) + (_M.at<float>(2, z) * (float)warped.at<float>(x, y, 0, z) / exposure.at<float>(0, 10 - z));
 					if (result_XYZ->at<float>(x, y, 0, 0) > maxValue) maxValue = result_XYZ->at<float>(x, y, 0, 0);
 					if (result_XYZ->at<float>(x, y, 1, 0) > maxValue) maxValue = result_XYZ->at<float>(x, y, 1, 0);
 					if (result_XYZ->at<float>(x, y, 2, 0) > maxValue) maxValue = result_XYZ->at<float>(x, y, 2, 0);
@@ -244,21 +242,21 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 			if (result_RGB->at<float>(x, y, 0, 0) < 0) result_RGB->at<float>(x, y, 0, 0) = 0;
 			if (result_RGB->at<float>(x, y, 1, 0) < 0) result_RGB->at<float>(x, y, 1, 0) = 0;
 			if (result_RGB->at<float>(x, y, 2, 0) < 0) result_RGB->at<float>(x, y, 2, 0) = 0;
-			result_RGB->at<float>(x, y, 0, 0) = std::pow(result_RGB->at<float>(x, y, 0, 0) / maxValue, gamma);
-			result_RGB->at<float>(x, y, 1, 0) = std::pow(result_RGB->at<float>(x, y, 1, 0) / maxValue, gamma);
-			result_RGB->at<float>(x, y, 2, 0) = std::pow(result_RGB->at<float>(x, y, 2, 0) / maxValue, gamma);
+			result_RGB->at<float>(x, y, 0, 0) = std::pow((result_RGB->at<float>(x, y, 0, 0)) / (maxValue0), gamma);
+			result_RGB->at<float>(x, y, 1, 0) = std::pow((result_RGB->at<float>(x, y, 1, 0)) / (maxValue0), gamma);
+			result_RGB->at<float>(x, y, 2, 0) = std::pow((result_RGB->at<float>(x, y, 2, 0)) / (maxValue0), gamma);
 		}
 	}
 
 	
 	//display
-	for (int x = 0; x < subset.EPIWidth(); x++) {
-		for (int y = 0; y < subset.EPICount(); y++) {
-			result_RGB->at<float>(x, y, 0, 0) *= (255);
-			result_RGB->at<float>(x, y, 1, 0) *= (255);
-			result_RGB->at<float>(x, y, 2, 0) *= (255);
-		}
-	}
+	//for (int x = 0; x < subset.EPIWidth(); x++) {
+	//	for (int y = 0; y < subset.EPICount(); y++) {
+	//		result_RGB->at<float>(x, y, 0, 0) *= (255);
+	//		result_RGB->at<float>(x, y, 1, 0) *= (255);
+	//		result_RGB->at<float>(x, y, 2, 0) *= (255);
+	//	}
+	//}
 
 	bool display = true;
 	if (display){
@@ -282,10 +280,10 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 bool COMP_warpToRefView::ParameterUpdating_(int i, DspParameter const &p)
 {
   //we only have two parameters
-  if (i >= 4)
+  if (i >= 5)
     return false;
   
-  if (p.Type() != DspParameter::ParamType::String)
+  if (p.Type() != DspParameter::ParamType::String && p.Type() != DspParameter::ParamType::Float)
     return false;
   
   SetParameter_(i, p);
