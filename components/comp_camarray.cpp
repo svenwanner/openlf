@@ -70,6 +70,7 @@ component::component()
   AddInput_("input");
   AddOutput_("output");
   AddParameter_("camera_config", DspParameter(DspParameter::ParamType::String));
+  AddParameter_("exposure", DspParameter(DspParameter::ParamType::Float, 1.0f));
 }
 
 //FIXME automatic/from config?
@@ -80,6 +81,7 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   LF *in = NULL;
   LF *out = NULL;
   std::vector<float> exposures(cam_count);
+  std::vector<float> eff_exps(cam_count);
   
   errorCond(GetParameter(0) && 
             GetParameter(0)->GetString() &&
@@ -89,6 +91,7 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   RETURN_ON_ERROR
   
   std::string camera_config = *GetParameter(0)->GetString();
+  float exp = *GetParameter(1)->GetFloat();
   
   printf("cam config: %s\n", camera_config.c_str());
   
@@ -110,6 +113,9 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   else
     in->data->get("acquisition/exposure", exposures);
   
+  for (int i=0;i<cam_count;i++)
+		eff_exps[i] = exposures[i]*exp;
+  
 printf("start init\n");  
   
   if (!cams) {
@@ -117,6 +123,7 @@ printf("start init\n");
     cams->PrintConnectedCameras();
     cams->SetTriggerMode(0);
     cams->Acquire();
+    cams->WaitToImage(1);
   }
   
   if (configOnly())
@@ -135,7 +142,7 @@ printf("start init\n");
   for(int i=0;i<cam_count;i++)
     imgs[i].copyTo(cvMat(imgs_mat.bind(3, i).bind(2, 0)));
   
-  Datastore *store = out->data->addStore("data");
+  Datastore *store = out->data->addStore("calibration/extrinsics/default/data");
   store->write(imgs_mat);
 }
 
