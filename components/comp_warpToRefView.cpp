@@ -74,7 +74,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	//Check if output exists
 	errorCond(out, "output creation failed"); RETURN_ON_ERROR
 
-		const std::string in_dataset_name = *GetParameter(0)->GetString();
+	const std::string in_dataset_name = *GetParameter(0)->GetString();
 	const std::string out_dataset_name = *GetParameter(1)->GetString();
 	float ref_disp = *GetParameter(3)->GetFloat();
 
@@ -106,7 +106,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	Datastore *lf_store = in->data->getStore(TV_root / "source_LF/data");
 	errorCond(lf_store, "no lf_store available"); RETURN_ON_ERROR
 
-		cpath tmp_data_root = out_dataset_name;
+	cpath tmp_data_root = out_dataset_name;
 	tmp_data_root.append("/default/subset/scale");
 	out->data->setAttribute(tmp_data_root, scale);
 
@@ -191,7 +191,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		for (int x = 0; x < lf[0]; x++)
 		{
 			Mat IntensityStack = result.bind(1, y).bind(0, x);
-			get_intensities(lf, IntensityStack, x, y, TV(x, y, 0, refView) - ref_disp*scale);
+			get_intensities(lf, IntensityStack, x, y, TV(x, y, 0, refView) - ref_disp * scale - 12);
 		}
 	}
 
@@ -205,7 +205,7 @@ bool COMP_warpToRefView::ParameterUpdating_(int i, DspParameter const &p)
   if (i >= 5)
     return false;
   
-  if (p.Type() != DspParameter::ParamType::String && p.Type() != DspParameter::ParamType::Int)
+  if (p.Type() != DspParameter::ParamType::String && p.Type() != DspParameter::ParamType::Int && p.Type() != DspParameter::ParamType::Float)
     return false;
   
   SetParameter_(i, p);
