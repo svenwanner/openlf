@@ -123,7 +123,7 @@ printf("start init\n");
     cams->PrintConnectedCameras();
     cams->SetTriggerMode(0);
     cams->Acquire();
-    cams->WaitToImage(1);
+    //cams->WaitToImage(1);
   }
   
   if (configOnly())

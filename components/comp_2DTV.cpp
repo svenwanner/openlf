@@ -240,10 +240,9 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 
 	Mat single_Image = lf.bind(3, TVposition);
-	int refView = 0;
+	int refView = TVposition;
 	if (disp_store->extent()[3] < 2){
 		refView = 0;
-		SetParameter_(12, DspParameter(DspParameter::ParamType::Int, TVposition));
 	}	
 	std::cout << disp_store->extent()[3] << refView << std::endl;
 	std::cout << "TVposition reset to: " << refView << std::endl;
@@ -364,6 +363,10 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 			gradient_x.at<float>(y, x) = (float)0.0;
 			gradient_y.at<float>(y, x) = (float)0.0;
 			if (std::isnan(single_dispMap.at<float>(y, x))){
+				single_dispMap.at<float>(y, x) = 0;
+				single_cohMap.at<float>(y, x) = 0;
+			}
+			if (std::isnan(single_cohMap.at<float>(y, x))){
 				single_dispMap.at<float>(y, x) = 0;
 				single_cohMap.at<float>(y, x) = 0;
 			}
