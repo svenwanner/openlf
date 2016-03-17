@@ -90,8 +90,8 @@ id 8
 label "OP_Gauss_0"
 type "OP_Gauss"
 graphics [
-x -560.640288
-y -303.000000
+x -647.640288
+y -299.000000
 ]
 params [
 x_blur 0.000000
@@ -103,8 +103,8 @@ id 9
 label "OP_Scharr_1"
 type "OP_Scharr"
 graphics [
-x -431.000000
-y -367.000000
+x -481.000000
+y -295.000000
 ]
 ]
 node [
@@ -112,14 +112,14 @@ id 10
 label "OP_Scharr_2"
 type "OP_Scharr"
 graphics [
-x -317.000000
-y -267.000000
+x -343.000000
+y -220.000000
 ]
 ]
 edge [
 source 10
 target 0
-source_pad 1
+source_pad 0
 target_pad 0
 ]
 edge [
@@ -179,7 +179,7 @@ target_pad 0
 edge [
 source 9
 target 10
-source_pad 1
+source_pad 0
 target_pad 0
 ]
 outputedge [

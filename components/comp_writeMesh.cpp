@@ -588,7 +588,7 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	float scale = 1.0;
 
 	Attribute *attr;
-	attr = in->data->get(disparity_root/"scale");
+	attr = in->data->get(disparity_root/"subset/scale");
 	if (attr)  attr->get(scale);
   
 	ProcData opts;

@@ -696,10 +696,8 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         if (i >= curr_chunk && i < std::min(curr_chunk+chunk_size,stop_line))
     #pragma omp critical 
         {
-			float progressValue = (float)done / work;
-			if (progressValue > 1) progressValue = 1;
-			progress_(progressValue);
-			done++;
+          progress_((float)done/work);
+          done++;
         }
         
 #ifdef OPENLF_WITH_OPENMP
