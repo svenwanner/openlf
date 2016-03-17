@@ -162,15 +162,23 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		errorCond(coh_store, "no coh_store available"); RETURN_ON_ERROR
 	}
 
-	Datastore *lf_store;
-	try{
-		lf_store = in->data->getStore(tmp_data_root / "source_LF/data");
-	}
-	catch (const std::exception& e){
-		errorCond(lf_store, "no lf_store available"); RETURN_ON_ERROR
-	}
+	// Load scaled Light Field
+	float scale = 1.0;
+	Attribute *attr;
+	attr = in->data->get(tmp_data_root / "subset/scale");
+	if (attr)  attr->get(scale);
+	ProcData opts(UNDISTORT);
+	opts.set_scale(scale);
+	Subset3d subset(in->data, tmp_data_root / "source_LF", opts);
 
-	std::cout << "lf_store Dims : " << lf_store->extent() << std::endl;
+	Datastore *lf_store = in->data->getStore(tmp_data_root / "source_LF/data");
+	errorCond(lf_store, "no lf_store available"); RETURN_ON_ERROR
+
+	tmp_data_root = out_dataset_name;
+	tmp_data_root.append("/default/subset/scale");
+	out->data->setAttribute(tmp_data_root, scale);
+
+	std::cout << "lf_store Dims : " << subset.EPIWidth() << " " << subset.EPICount() << " " << subset.EPIHeight() << " " << subset.EPIDepth() << " " << std::endl;
 	std::cout << "coh_store Dims : " << coh_store->extent() << std::endl;
 	std::cout << "disp_store Dims : " << disp_store->extent() << std::endl;
 
@@ -183,13 +191,13 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 			SetParameter_(12, DspParameter(DspParameter::ParamType::Int, TVposition));
 		}
 		catch (const std::exception& e) {
-			SetParameter_(12, DspParameter(DspParameter::ParamType::Int, (lf_store->extent()[3] - 1) / 2)); initialize = false;
+			SetParameter_(12, DspParameter(DspParameter::ParamType::Int, (subset.EPIHeight() - 1) / 2)); initialize = false;
 		}
 	}
 	TVposition = *GetParameter(12)->GetInt();																							//AddParameter_("TVposition", DspParameter(DspParameter::ParamType::Int, 0));
 
-	if (TVposition >= lf_store->extent()[3] || TVposition < 0){
-		TVposition = lf_store->extent()[3]/2;
+	if (TVposition >= subset.EPIHeight() || TVposition < 0){
+		TVposition = subset.EPIHeight() / 2;
 	}
 	
 	//Set some Metadata
@@ -226,7 +234,7 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 	// Load Light Field itself
 	Mat_<float> lf;
-	lf_store->read(lf, ProcData(UNDISTORT));
+	lf_store->read(lf, opts);
 	// Load Coherence store
 	Mat_<float> coh;
 	coh_store->read(coh);

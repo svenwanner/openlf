@@ -120,14 +120,24 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	std::cout << "data_max: " << data_max << std::endl;
 	
 
-	// Load Light Field itself
-	Datastore *lf_store = in->data->getStore(disparity_root / "subset/source/data");
-	errorCond(lf_store, "no lf_store available"); RETURN_ON_ERROR
+	// Load scaled Light Field
+	float scale = 1.0;
+	Attribute *attr;
+	attr = in->data->get(disparity_root / "subset/scale");
+	if (attr)  attr->get(scale);
+	ProcData opts;
+	opts.set_scale(scale);
+	Subset3d subset(in->data, disparity_root / "source_LF", opts);
+
+	tmp_dataset_name = out_dataset_name;
+	tmp_dataset_name.append("/default/subset/scale");
+	out->data->setAttribute(tmp_dataset_name, scale);
+	
 
 	if (initialize){
 		initialize = false;
-		SetParameter_(2, DspParameter(DspParameter::ParamType::Int, lf_store->extent()[3] / 2));
-		SetParameter_(4, DspParameter(DspParameter::ParamType::Int, lf_store->extent()[3] - 1));
+		SetParameter_(2, DspParameter(DspParameter::ParamType::Int, subset.EPIHeight() / 2));
+		SetParameter_(4, DspParameter(DspParameter::ParamType::Int, subset.EPIHeight() - 1));
 	}
 	int refView = *GetParameter(2)->GetInt();
 	int StartView = *GetParameter(3)->GetInt();
@@ -156,23 +166,23 @@ Start Processing section
 
 
 	// Allocate memory for output images
-	Idx Resultsize = { lf_store->extent()[0], lf_store->extent()[1], 1, 1 };
+	Idx Resultsize = { subset.EPIWidth(), subset.EPICount(), 1, 1 };
 	Mat *result = new Mat(BaseType::FLOAT, Resultsize);
 	Mat *coherence = new Mat(BaseType::FLOAT, Resultsize);
 	cv::Mat single_result_disparity = cvMat(result->bind(3, 0).bind(2, 0));
 	cv::Mat single_result_coherence = cvMat(coherence->bind(3, 0).bind(2, 0));
 	cv::Mat single_input_disparity = cvMat(disp.bind(3, refView).bind(2, 0));
 
-	Idx size = { lf_store->extent()[0], lf_store->extent()[1] };
+	Idx size = { subset.EPIWidth(), subset.EPICount() };
 	Mat *displayTmp = new Mat(BaseType::FLOAT, size);		cv::Mat forDisplay = cvMat(*displayTmp);
 
 
 	//remove nan values from disp value
 	int count = 0;
 #pragma parallel for
-	for (int y = 0; y < lf_store->extent()[0]; y++) {
-		for (int x = 0; x < lf_store->extent()[1]; x++) {
-			for (int z = 0; z < lf_store->extent()[3]; z++) {
+	for (int y = 0; y < subset.EPIWidth(); y++) {
+		for (int x = 0; x < subset.EPICount(); x++) {
+			for (int z = 0; z < subset.EPIHeight(); z++) {
 				if (std::isnan(disp.at<float>(y, x, z))){
 					disp.at<float>(y, x, 0 ,z) = 0;
 					coh.at<float>(y, x, 0, z) = 0;
@@ -186,15 +196,23 @@ Start Processing section
 
 	//Put here stuff to average channels
 
-	//std::cout << "Dims 0 : " << lf_store->extent()[0] << std::endl;
-	//std::cout << "Dims 1 : " << lf_store->extent()[1] << std::endl;
-	//std::cout << "Dims 2 : " << lf_store->extent()[3] << std::endl;
+	Datastore *lf_store = in->data->getStore(disparity_root / "subset/source/data");
+	errorCond(lf_store, "no lf_store available"); RETURN_ON_ERROR
+
+	std::cout << "Dims 0 : " << lf_store->extent()[0] << std::endl;
+	std::cout << "Dims 1 : " << lf_store->extent()[1] << std::endl;
+	std::cout << "Dims 2 : " << lf_store->extent()[3] << std::endl;
 
 	Shape3 disp_count;
 
-	disp_count[0] = lf_store->extent()[0];
-	disp_count[1] = lf_store->extent()[1];
-	disp_count[2] = lf_store->extent()[3];
+	disp_count[0] = subset.EPIWidth();
+	disp_count[1] = subset.EPICount();
+	disp_count[2] = subset.EPIHeight();
+
+	std::cout << "Dims 0 : " << disp_count[0] << std::endl;
+	std::cout << "Dims 1 : " << disp_count[1] << std::endl;
+	std::cout << "Dims 2 : " << disp_count[2] << std::endl;
+
 
 	cv::namedWindow("MergeInput", 0);
 	cv::resizeWindow("MergeInput", single_input_disparity.size[1] / 4, single_input_disparity.size[0] / 4);

@@ -527,26 +527,21 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	int timer = 0;
 
 	while (breakCond == false){
-		
 		searchPath = tmp_data_root;
 		searchPath /= "coherence";
-		if (in->data->store(searchPath) != NULL)
-		{
+		if (in->data->store(searchPath) != NULL){
 			std::cout << "Found Coherence!" << std::endl;
 			std::cout << "Coherence path" << searchPath << std::endl;
 			use_coherence = true;
 			breakCond = true;
 		}
-		else
-		{
+		else{
 			tmp_data_root /= "source";
 			use_coherence = false;
 		}
-		
 		timer++;
 		if (timer == 10){
 			breakCond = true;
-			
 		}
 	}
 	errorCond(use_coherence, "no coherence measure found"); RETURN_ON_ERROR
@@ -560,13 +555,12 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	}
 	errorCond(foundView, "no image data found"); RETURN_ON_ERROR
 
-
 	Datastore *lf_store = in->data->store(View_data / "data");
 
 	if (!initialize) {
 		std::cout << initialize << std::endl;
 		try{
-			int tmp;
+			int tmp=0;
 			in->data->get(data_root / "refView", tmp);
 			SetParameter_(5, DspParameter(DspParameter::ParamType::Int, tmp));
 			SetParameter_(6, DspParameter(DspParameter::ParamType::Int, tmp));
@@ -579,8 +573,6 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	}
 	errorCond(initialize, "no View selected"); RETURN_ON_ERROR
 
-
-
 	if (configOnly())
 		return;
 
@@ -591,27 +583,24 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 	disp_store->read(disp);
 
-	float scale = 1.0;
-  
-	 Attribute *attr;
-  
-	attr = in->data->get(disparity_root/"scale");
-	if (attr)
-		attr->get(scale);
-  
 
+
+	float scale = 1.0;
+
+	Attribute *attr;
+	attr = in->data->get(disparity_root/"scale");
+	if (attr)  attr->get(scale);
+  
 	ProcData opts;
 	opts.set_scale(scale);
 
   //FIXME read/pass actual datastore!
-  Subset3d subset(in->data, tmp_data_root / "source_LF", opts);
+	//
   //FIXME add read function to subset3d
-  
-
-
+ 
 int refView = *GetParameter(5)->GetInt();
-if (refView >= disp_store->extent()[3]){
-	refView = disp_store->extent()[3] - 1;
+if (refView >= lf_store->extent()[3]){
+	refView = lf_store->extent()[3] - 1;
 	SetParameter_(5, DspParameter(DspParameter::ParamType::Int, disp_store->extent()[3] - 1));
 }
 
@@ -649,7 +638,7 @@ int refView2 = *GetParameter(6)->GetInt();
   cv::waitKey(1);
   */
 
-
+  Subset3d subset(in->data, tmp_data_root / "source_LF", opts);
   MultiArrayView<2, float> centerview = vigraMAV<4, float>(disp).bindAt(3, refView).bindAt(2, 0);
   //std::cout << "size:" << centerview.shape() << std::endl;
   

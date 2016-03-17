@@ -90,9 +90,24 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	
 	//define storages used for TV
 	Datastore *TV_store = in->data->getStore(TV_root / "data");
-	Datastore *lf_store = in->data->getStore(TV_root / "source_LF/data");
 
-	std::cout << "lf_store Dims : " << lf_store->extent() << std::endl;
+	// Load scaled Light Field
+	float scale = 1.0;
+	Attribute *attr;
+	attr = in->data->get(TV_root / "subset/scale");
+	if (attr)  attr->get(scale);
+	ProcData opts;
+	opts.set_scale(scale);
+	Subset3d subset(in->data, TV_root / "source_LF", opts);
+
+	Datastore *lf_store = in->data->getStore(TV_root / "source_LF/data");
+	errorCond(lf_store, "no lf_store available"); RETURN_ON_ERROR
+
+	cpath tmp_data_root = out_dataset_name;
+	tmp_data_root.append("/default/subset/scale");
+	out->data->setAttribute(tmp_data_root, scale);
+
+	std::cout << "lf_store Dims : " << subset.EPIWidth() << " " << subset.EPICount() << " " << subset.EPIHeight() << " " << subset.EPIDepth() << " " << std::endl;
 	std::cout << "disp_store Dims : " << TV_store->extent() << std::endl;
 
 	int refView = 0;
@@ -103,15 +118,14 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 			SetParameter_(2, DspParameter(DspParameter::ParamType::Int, refView));
 		}
 		catch (const std::exception& e) {
-			SetParameter_(2, DspParameter(DspParameter::ParamType::Int, (lf_store->extent()[3] - 1) / 2)); initialize = false;
+			SetParameter_(2, DspParameter(DspParameter::ParamType::Int, (subset.EPIHeight() - 1) / 2)); initialize = false;
 		}
 	}
 	refView = *GetParameter(2)->GetInt();																							//AddParameter_("TVposition", DspParameter(DspParameter::ParamType::Int, 0));
 
-	if (refView >= lf_store->extent()[3] || refView < 0){
-		refView = lf_store->extent()[3] / 2;
+	if (refView >= subset.EPIHeight() || refView < 0){
+		refView = subset.EPIHeight() / 2;
 	}
-
 
 	//Set some output Metadata
 	std::string tmp_dataset_name = out_dataset_name;
@@ -134,14 +148,12 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	tmp_dataset_name.append("/default/source");
 	out->data->addLink(tmp_dataset_name, TV_root);
 
-
 	if (configOnly())
 		return;
   
-	
 //Load Light Field itself
 	Mat_<uint16_t> lf;
-	lf_store->read(lf, ProcData(UNDISTORT));
+	lf_store->read(lf, opts);
 
 //read TV result
 	Mat_<float> TV;
@@ -151,10 +163,10 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	Mat_<uint16_t> result;
 	result.create(lf.type(), lf);
 
-	for (int x = 0; x < lf_store->extent()[0]; x++) {
-		for (int y = 0; y < lf_store->extent()[1]; y++) {
-			for (int z = 0; z < lf_store->extent()[2]; z++) {
-				for (int a = 0; a < lf_store->extent()[3]; a++) {
+	for (int x = 0; x < subset.EPIWidth(); x++) {
+		for (int y = 0; y < subset.EPICount(); y++) {
+			for (int z = 0; z < subset.EPIHeight(); z++) {
+				for (int a = 0; a < subset.EPIDepth(); a++) {
 					result(x, y, z, a) = 0;
 				}
 			}
