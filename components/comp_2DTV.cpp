@@ -76,8 +76,8 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	// Check if inputs are connected
 	errorCond(inputs.GetValue(0, in), "Dataset not found / missing input"); RETURN_ON_ERROR
 
-		//Link memouy from input data to output
-		out = &_out;
+	//Link memouy from input data to output
+	out = &_out;
 	out->data = &_out_set;
 	out->data->memory_link(in->data);
 
@@ -245,6 +245,7 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		refView = 0;
 		SetParameter_(12, DspParameter(DspParameter::ParamType::Int, TVposition));
 	}	
+	std::cout << disp_store->extent()[3] << refView << std::endl;
 	std::cout << "TVposition reset to: " << refView << std::endl;
 
 	//slice single disparity and coherence images as well as center view image to modify boundary movability

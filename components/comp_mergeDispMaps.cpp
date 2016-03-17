@@ -294,11 +294,10 @@ Start Processing section
 			
 			//This is the final merging
 			for (int y = 0; y < disp_count[0]; y++) {
-				
 				if (single_result_coherence.at<float>(x, CenterGrid[y]) < coh.at<float>(y, x, z)){
 					if (single_result_disparity.at<float>(x, CenterGrid[y]) < disp.at<float>(y, x, z)){
 						single_result_disparity.at<float>(x, CenterGrid[y]) = disp.at<float>(y, x, z);
-						single_result_coherence.at<float>(x, CenterGrid[y]) = coh.at<float>(y, x, z) * (1 - std::abs(refView - z)*0.05);
+						single_result_coherence.at<float>(x, CenterGrid[y]) = coh.at<float>(y, x, z) * (1 - std::abs(refView - z)*0.005);
 					}
 				}
 			}

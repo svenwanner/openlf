@@ -51,6 +51,7 @@ COMP_warpToRefView::COMP_warpToRefView()
   AddParameter_("in_group", DspParameter(DspParameter::ParamType::String, "2DTV"));
   AddParameter_("out_group", DspParameter(DspParameter::ParamType::String, "warped"));
   AddParameter_("refView", DspParameter(DspParameter::ParamType::Int, 0));
+  AddParameter_("refDisp", DspParameter(DspParameter::ParamType::Float, 200.0f));
 }
 
 void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
@@ -62,8 +63,8 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	// Check if inputs are connected
 	errorCond(inputs.GetValue(0, in), "missing input"); RETURN_ON_ERROR
 
-	//Link memouy from input data to output
-	out = &_out;
+		//Link memouy from input data to output
+		out = &_out;
 	out->data = &_out_set;
 	out->data->memory_link(in->data);
 
@@ -73,8 +74,9 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	//Check if output exists
 	errorCond(out, "output creation failed"); RETURN_ON_ERROR
 
-	const std::string in_dataset_name = *GetParameter(0)->GetString();
+		const std::string in_dataset_name = *GetParameter(0)->GetString();
 	const std::string out_dataset_name = *GetParameter(1)->GetString();
+	float ref_disp = *GetParameter(3)->GetFloat();
 
 
 	//get location of disparity and coherence map
@@ -86,7 +88,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	catch (const std::exception& e){
 		errorCond(false, "Dataset not found"); RETURN_ON_ERROR
 	}
-	
+
 	//define storages used for TV
 	Datastore *TV_store = in->data->getStore(TV_root / "data");
 
@@ -95,14 +97,16 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	Attribute *attr;
 	attr = in->data->get(TV_root / "subset/scale");
 	if (attr)  attr->get(scale);
-	ProcData opts;
+	ProcData opts(UNDISTORT);
 	opts.set_scale(scale);
 	Subset3d subset(in->data, TV_root / "source_LF", opts);
+
+	opts.set_depth(subset.disparity2depth(ref_disp));
 
 	Datastore *lf_store = in->data->getStore(TV_root / "source_LF/data");
 	errorCond(lf_store, "no lf_store available"); RETURN_ON_ERROR
 
-	cpath tmp_data_root = out_dataset_name;
+		cpath tmp_data_root = out_dataset_name;
 	tmp_data_root.append("/default/subset/scale");
 	out->data->setAttribute(tmp_data_root, scale);
 
@@ -116,13 +120,15 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		SetParameter_(2, DspParameter(DspParameter::ParamType::Int, refView));
 	}
 	catch (const std::exception& e) {
-		SetParameter_(2, DspParameter(DspParameter::ParamType::Int, (subset.EPIHeight() - 1) / 2)); 
+		SetParameter_(2, DspParameter(DspParameter::ParamType::Int, (subset.EPIHeight() - 1) / 2));
 	}
 	refView = *GetParameter(2)->GetInt();																							//AddParameter_("TVposition", DspParameter(DspParameter::ParamType::Int, 0));
 
 	if (refView >= subset.EPIHeight() || refView < 0){
 		refView = subset.EPIHeight() / 2;
 	}
+
+	std::cout << "RefView: " << refView << std::endl;
 
 	//Set some output Metadata
 	std::string tmp_dataset_name = out_dataset_name;
@@ -147,16 +153,22 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 	if (configOnly())
 		return;
-  
-//Load Light Field itself
+
+	//Load Light Field itself
 	Mat_<uint16_t> lf;
 	lf_store->read(lf, opts);
 
-//read TV result
+	//read TV result
 	Mat_<float> TV;
 	TV_store->read(TV);
 
-//Allocate memory for warped output images
+	if (refView >= TV_store->extent()[3] || refView < 0){
+		refView = TV_store->extent()[3] / 2;
+	}
+	std::cout << "Extention: " << TV_store->extent()[3] << " reset refView to: " << refView << std::endl;
+	std::cout << "Scale: " << scale;
+
+	//Allocate memory for warped output images
 	Mat_<uint16_t> result;
 	result.create(lf.type(), lf);
 
@@ -171,15 +183,15 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	}
 
 
-  for(int y= 0; y<lf[1]; y++)	
-  {
-    progress_((float)y/lf[1]);
+	for (int y = 0; y < lf[1]; y++)
+	{
+		progress_((float)y / lf[1]);
 
-	#pragma omp parallel for
-    for(int x = 0; x < lf[0]; x++ )
+#pragma omp parallel for
+		for (int x = 0; x < lf[0]; x++)
 		{
 			Mat IntensityStack = result.bind(1, y).bind(0, x);
-			get_intensities(lf, IntensityStack, x, y, TV(x, y, 0, 0));
+			get_intensities(lf, IntensityStack, x, y, TV(x, y, 0, refView) - ref_disp*scale);
 		}
 	}
 
@@ -190,7 +202,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 bool COMP_warpToRefView::ParameterUpdating_(int i, DspParameter const &p)
 {
   //we only have two parameters
-  if (i >= 4)
+  if (i >= 5)
     return false;
   
   if (p.Type() != DspParameter::ParamType::String && p.Type() != DspParameter::ParamType::Int)
