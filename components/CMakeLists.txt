@@ -1,7 +1,18 @@
 file(GLOB COMPONENTS "*.cpp")
 foreach(COMP ${COMPONENTS})
   get_filename_component(COMPONENT_NAME ${COMP} NAME_WE)
-  add_library(${COMPONENT_NAME} MODULE ${COMP})
+  
+  if (${COMPONENT_NAME} STREQUAL "comp_camarray")
+    message("manual component ${COMPONENT_NAME}")
+    include_directories("C:/Program Files/SiliconSoftware/Runtime5.4.1.2/include")
+    link_directories("C:/Program Files/SiliconSoftware/Runtime5.4.1.2/lib/visualc")
+    add_library(${COMPONENT_NAME} MODULE ${COMP} comp_camarray/cameraarray.cpp)
+    target_link_libraries(${COMPONENT_NAME} clsersis.lib fglib5.lib gbelib.lib)
+  else()
+    message("compile component ${COMPONENT_NAME}")
+    add_library(${COMPONENT_NAME} MODULE ${COMP})
+  endif()
+  
   target_link_libraries(${COMPONENT_NAME} DSPatch openlf debug;clifd optimized;clif ${Boost_LIBRARIES})
 endforeach()
 
