@@ -402,7 +402,9 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	// initialize display
 	if (display){
 		cv::namedWindow("TV_result", 0);
-		cv::resizeWindow("TV_result", single_result.size[1] / 4, single_result.size[0] / 4);
+		int reduceSize = 1;
+		if (single_result.size[0] > 1200 || single_result.size[1] > 1200) reduceSize = 4;
+		cv::resizeWindow("MergeInput", single_result.size[1] / reduceSize, single_result.size[0] / reduceSize);
 	}
 	
 	for (unsigned int time = 0; time < TV_time_total; time++)

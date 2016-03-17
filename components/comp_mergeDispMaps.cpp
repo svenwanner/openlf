@@ -215,7 +215,9 @@ Start Processing section
 
 
 	cv::namedWindow("MergeInput", 0);
-	cv::resizeWindow("MergeInput", single_input_disparity.size[1] / 4, single_input_disparity.size[0] / 4);
+	int reduceSize = 1;
+	if (single_result_disparity.size[0] > 1200 || single_result_disparity.size[1] > 1200) reduceSize = 4;
+	cv::resizeWindow("MergeInput", single_input_disparity.size[1] / reduceSize, single_input_disparity.size[0] / reduceSize);
 #pragma omp parallel for schedule(dynamic,1)
 	for (int y = 0; y < single_input_disparity.size[0]; y++) {
 		for (int x = 0; x < single_input_disparity.size[1]; x++) {
@@ -304,7 +306,7 @@ Start Processing section
 	}
 	
 	cv::namedWindow("MergeResult", 0);
-	cv::resizeWindow("MergeResult", single_result_disparity.size[1] / 4, single_result_disparity.size[0] / 4);
+	cv::resizeWindow("MergeResult", single_result_disparity.size[1] / reduceSize, single_result_disparity.size[0] / reduceSize);
 #pragma omp parallel for schedule(dynamic,1)
 	for (int y = 0; y < single_result_disparity.size[0]; y++) {
 		for (int x = 0; x < single_result_disparity.size[1]; x++) {

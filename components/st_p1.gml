@@ -1,12 +1,13 @@
 graph [
+label "StructureTensor_Max"
 type "StructureTensor_Part1"
 node [
 id 0
 label "OP_Scharr_0"
 type "OP_Scharr"
 graphics [
-x -143.000000
-y -42.000000
+x -210.000000
+y -128.000000
 ]
 ]
 node [
@@ -14,8 +15,8 @@ id 1
 label "OP_Tensor2x2_0"
 type "OP_Tensor2x2"
 graphics [
-x 22.000000
-y -2.000000
+x -67.000000
+y -102.000000
 ]
 ]
 node [
@@ -23,8 +24,8 @@ id 2
 label "OP_AverageChannels_0"
 type "OP_AverageChannels"
 graphics [
-x 228.000000
-y -32.000000
+x 204.000000
+y -186.000000
 ]
 ]
 node [
@@ -32,8 +33,8 @@ id 3
 label "OP_AverageChannels_1"
 type "OP_AverageChannels"
 graphics [
-x 228.000000
-y 48.000000
+x 210.000000
+y -83.000000
 ]
 ]
 node [
@@ -41,8 +42,8 @@ id 4
 label "OP_AverageChannels_2"
 type "OP_AverageChannels"
 graphics [
-x 219.000000
-y 130.000000
+x 216.000000
+y 33.000000
 ]
 ]
 node [
@@ -50,8 +51,8 @@ id 5
 label "OP_Gauss_1"
 type "OP_Gauss"
 graphics [
-x 450.000000
-y -18.000000
+x 432.000000
+y -171.000000
 ]
 params [
 x_blur 5.000000
@@ -63,8 +64,8 @@ id 6
 label "OP_Gauss_2"
 type "OP_Gauss"
 graphics [
-x 455.000000
-y 74.000000
+x 435.000000
+y -70.000000
 ]
 params [
 x_blur 5.000000
@@ -76,8 +77,8 @@ id 7
 label "OP_Gauss_3"
 type "OP_Gauss"
 graphics [
-x 452.000000
-y 172.000000
+x 441.000000
+y 48.000000
 ]
 params [
 x_blur 5.000000
@@ -89,8 +90,8 @@ id 8
 label "OP_Gauss_0"
 type "OP_Gauss"
 graphics [
-x -451.640288
-y -40.000000
+x -560.640288
+y -303.000000
 ]
 params [
 x_blur 0.000000
@@ -99,17 +100,26 @@ y_blur 0.000000
 ]
 node [
 id 9
-label "OP_dx_0"
-type "OP_dx"
+label "OP_Scharr_1"
+type "OP_Scharr"
 graphics [
-x -296.000000
-y -24.000000
+x -431.000000
+y -367.000000
+]
+]
+node [
+id 10
+label "OP_Scharr_2"
+type "OP_Scharr"
+graphics [
+x -317.000000
+y -267.000000
 ]
 ]
 edge [
-source 9
+source 10
 target 0
-source_pad 0
+source_pad 1
 target_pad 0
 ]
 edge [
@@ -164,6 +174,12 @@ edge [
 source 8
 target 9
 source_pad 0
+target_pad 0
+]
+edge [
+source 9
+target 10
+source_pad 1
 target_pad 0
 ]
 outputedge [
