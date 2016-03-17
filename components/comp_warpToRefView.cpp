@@ -41,7 +41,6 @@ private:
   virtual bool ParameterUpdating_ (int i, DspParameter const &p);
   LF _out;
   clif::Dataset _out_set;
-  bool initialize = true;
 };
 
 COMP_warpToRefView::COMP_warpToRefView()
@@ -112,14 +111,12 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 	int refView = 0;
 	//The TV should be adapted onto the center view image.
-	if (initialize) {
-		try{
-			in->data->get(TV_root / "refView", refView);
-			SetParameter_(2, DspParameter(DspParameter::ParamType::Int, refView));
-		}
-		catch (const std::exception& e) {
-			SetParameter_(2, DspParameter(DspParameter::ParamType::Int, (subset.EPIHeight() - 1) / 2)); initialize = false;
-		}
+	try{
+		in->data->get(TV_root / "refView", refView);
+		SetParameter_(2, DspParameter(DspParameter::ParamType::Int, refView));
+	}
+	catch (const std::exception& e) {
+		SetParameter_(2, DspParameter(DspParameter::ParamType::Int, (subset.EPIHeight() - 1) / 2)); 
 	}
 	refView = *GetParameter(2)->GetInt();																							//AddParameter_("TVposition", DspParameter(DspParameter::ParamType::Int, 0));
 

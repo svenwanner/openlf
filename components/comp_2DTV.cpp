@@ -43,8 +43,6 @@ private:
   virtual bool ParameterUpdating_ (int i, DspParameter const &p);
   LF _out;
   clif::Dataset _out_set;
-  bool initialize = true;
-
 };
 
 COMP_2DTV::COMP_2DTV()
@@ -184,16 +182,14 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 	
 	int TVposition = 0;
-	//The TV should be adapted onto the center view image.
-	if (initialize) {
-		try{
-			in->data->get(tmp_data_root / "refView", TVposition);
-			SetParameter_(12, DspParameter(DspParameter::ParamType::Int, TVposition));
-		}
-		catch (const std::exception& e) {
-			SetParameter_(12, DspParameter(DspParameter::ParamType::Int, (subset.EPIHeight() - 1) / 2)); initialize = false;
-		}
+	try{
+		in->data->get(tmp_data_root / "refView", TVposition);
+		SetParameter_(12, DspParameter(DspParameter::ParamType::Int, TVposition));
 	}
+	catch (const std::exception& e) {
+		SetParameter_(12, DspParameter(DspParameter::ParamType::Int, (subset.EPIHeight() - 1) / 2));
+	}
+
 	TVposition = *GetParameter(12)->GetInt();																							//AddParameter_("TVposition", DspParameter(DspParameter::ParamType::Int, 0));
 
 	if (TVposition >= subset.EPIHeight() || TVposition < 0){

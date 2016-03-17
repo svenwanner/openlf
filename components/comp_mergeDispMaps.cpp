@@ -41,7 +41,6 @@ private:
   virtual bool ParameterUpdating_ (int i, DspParameter const &p);
   LF _out;
   clif::Dataset _out_set;
-  bool initialize = true;
 };
 
 COMP_mergeDispMaps::COMP_mergeDispMaps()
@@ -133,12 +132,9 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	tmp_dataset_name.append("/default/subset/scale");
 	out->data->setAttribute(tmp_dataset_name, scale);
 	
+	SetParameter_(2, DspParameter(DspParameter::ParamType::Int, subset.EPIHeight() / 2));
+	SetParameter_(4, DspParameter(DspParameter::ParamType::Int, subset.EPIHeight() - 1));
 
-	if (initialize){
-		initialize = false;
-		SetParameter_(2, DspParameter(DspParameter::ParamType::Int, subset.EPIHeight() / 2));
-		SetParameter_(4, DspParameter(DspParameter::ParamType::Int, subset.EPIHeight() - 1));
-	}
 	int refView = *GetParameter(2)->GetInt();
 	int StartView = *GetParameter(3)->GetInt();
 	int EndView = *GetParameter(4)->GetInt();
@@ -155,6 +151,10 @@ Finish initialization
 ******************************
 Start Processing section 
 ******************************/
+
+
+
+
 
 
 	//read data result
@@ -298,7 +298,7 @@ Start Processing section
 				if (single_result_coherence.at<float>(x, CenterGrid[y]) < coh.at<float>(y, x, z)){
 					if (single_result_disparity.at<float>(x, CenterGrid[y]) < disp.at<float>(y, x, z)){
 						single_result_disparity.at<float>(x, CenterGrid[y]) = disp.at<float>(y, x, z);
-						single_result_coherence.at<float>(x, CenterGrid[y]) = coh.at<float>(y, x, z) * (1 - std::abs(refView - z)*0.005);
+						single_result_coherence.at<float>(x, CenterGrid[y]) = coh.at<float>(y, x, z) * (1 - std::abs(refView - z)*0.05);
 					}
 				}
 			}
