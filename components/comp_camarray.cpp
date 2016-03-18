@@ -116,6 +116,7 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   for (int i=0;i<cam_count;i++)
 		eff_exps[i] = exposures[i]*exp;
   
+  
 printf("start init\n");  
   
   if (!cams) {
@@ -125,6 +126,10 @@ printf("start init\n");
     cams->Acquire();
     //cams->WaitToImage(1);
   }
+  
+  
+  for (int i=0;i<cam_count;i++)
+		cams->GetCamera(i)->SetExposureTime(eff_exps[i]);
   
   if (configOnly())
     return;
