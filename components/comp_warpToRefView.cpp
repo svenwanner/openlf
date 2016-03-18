@@ -107,7 +107,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	errorCond(lf_store, "no lf_store available"); RETURN_ON_ERROR
 
 	cpath tmp_data_root = out_dataset_name;
-	tmp_data_root.append("/default/subset/scale");
+	tmp_data_root /= "default/subset/scale";
 	out->data->setAttribute(tmp_data_root, scale);
 
 	std::cout << "lf_store Dims : " << subset.EPIWidth() << " " << subset.EPICount() << " " << subset.EPIHeight() << " " << subset.EPIDepth() << " " << std::endl;
@@ -166,7 +166,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		refView = TV_store->extent()[3] / 2;
 	}
 	std::cout << "Extention: " << TV_store->extent()[3] << " reset refView to: " << refView << std::endl;
-	std::cout << "Scale: " << scale;
+	std::cout << "Scale: " << scale << "\n";
 
 	//Allocate memory for warped output images
 	Mat_<uint8_t> result;
@@ -191,7 +191,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		for (int x = 0; x < lf[0]; x++)
 		{
 			Mat IntensityStack = result.bind(1, y).bind(0, x);
-			get_intensities(lf, IntensityStack, x, y, TV(x, y, 0, refView) - ref_disp * scale - 12);
+			get_intensities(lf, IntensityStack, x, y, TV(x, y, 0, refView) - ref_disp*scale - 23.5);
 		}
 	}
 

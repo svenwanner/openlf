@@ -131,6 +131,8 @@ printf("start init\n");
   for (int i=0;i<cam_count;i++)
 		cams->GetCamera(i)->SetExposureTime(eff_exps[i]);
   
+  out->data->setAttribute("acquisition/exposure", exposures);
+  
   if (configOnly())
     return;
   
@@ -146,6 +148,7 @@ printf("start init\n");
   clif::Mat imgs_mat(CvDepth2BaseType(imgs[0].depth()), {imgs[0].size().width, imgs[0].size().height, 1, cam_count});
   for(int i=0;i<cam_count;i++)
     imgs[i].copyTo(cvMat(imgs_mat.bind(3, i).bind(2, 0)));
+  
   
   Datastore *store = out->data->addStore("calibration/extrinsics/default/data");
   store->write(imgs_mat);

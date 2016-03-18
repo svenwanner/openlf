@@ -606,10 +606,10 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //FIXME add read function to subset3d
  
 int refView = *GetParameter(5)->GetInt();
-if (refView >= lf_store->extent()[3]){
+/*if (refView >= lf_store->extent()[3]){
 	refView = lf_store->extent()[3] - 1;
 	SetParameter_(5, DspParameter(DspParameter::ParamType::Int, disp_store->extent()[3] - 1));
-}
+}*/
 
 int refView2 = *GetParameter(6)->GetInt();
   if (refView2 >= lf_store->extent()[3]){
@@ -648,7 +648,7 @@ int refView2 = *GetParameter(6)->GetInt();
   cv::imshow("RGB", img);
   cv::waitKey(1);
   */
-
+  opts.set_scale(0.5);
   Subset3d subset(in->data, tmp_data_root / "source_LF", opts);
   MultiArrayView<2, float> centerview = vigraMAV<4, float>(disp).bindAt(3, refView).bindAt(2, 0);
   //std::cout << "size:" << centerview.shape() << std::endl;
