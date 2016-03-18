@@ -306,6 +306,7 @@ public:
 		void			Acquire(unsigned int inN);
 		void			StopAcquire();
 		void			Wait();
+		void			WaitToImage(unsigned int inImg);
 		unsigned int	GetStatus();
 		Mat				GetImageFromBuffer(unsigned int inCam, unsigned int inImgIdx);
 
@@ -314,7 +315,6 @@ public:
 private:
 		CameraArray();
 
-		void	WaitToImage(unsigned int inImg);
 
 		float						mFPS;
 		float						mExp;

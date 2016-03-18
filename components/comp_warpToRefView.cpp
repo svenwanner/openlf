@@ -155,7 +155,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		return;
 
 	//Load Light Field itself
-	Mat_<uint16_t> lf;
+	Mat_<uint8_t> lf;
 	lf_store->read(lf, opts);
 
 	//read TV result
@@ -169,7 +169,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	std::cout << "Scale: " << scale;
 
 	//Allocate memory for warped output images
-	Mat_<uint16_t> result;
+	Mat_<uint8_t> result;
 	result.create(lf.type(), lf);
 
 	for (int x = 0; x < subset.EPIWidth(); x++) {

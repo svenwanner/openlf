@@ -590,9 +590,10 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	Attribute *attr;
 	attr = in->data->get(disparity_root/"subset/scale");
 	if (attr)  attr->get(scale);
-  
+
 	ProcData opts;
-	opts.set_scale(scale);
+	//HACK FIXME 
+	//opts.set_scale(scale);
 
   //FIXME read/pass actual datastore!
 	//
@@ -619,7 +620,9 @@ int refView2 = *GetParameter(6)->GetInt();
   //std::cout << "dimCoh:" << coh[3] / 2 << std::endl;
   //std::cout << "dimDisp:" << disp[3] / 2 << std::endl;
   
-  opts.set_flags(UNDISTORT | CVT_8U);
+  //HACK FIXME 
+  opts.set_flags(CVT_8U);
+  //opts.set_flags(UNDISTORT | CVT_8U);
   lf_store->readImage(idx, &img3d, opts);
   clifMat2cv(&img3d,&img);
   std::cout << "size:" << img.size() << std::endl;

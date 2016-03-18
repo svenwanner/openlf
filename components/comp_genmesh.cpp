@@ -59,6 +59,7 @@ component::component()
   AddParameter_("ply_filename", DspParameter(DspParameter::ParamType::String));
   AddParameter_("viewer", DspParameter(DspParameter::ParamType::Bool, false));
   AddParameter_("block", DspParameter(DspParameter::ParamType::Bool, true));
+  AddParameter_("in_group", DspParameter(DspParameter::ParamType::String));
 }
 
 void gen_mesh(Mesh &mesh, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d &subset)
@@ -617,13 +618,19 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   inputs.GetValue(0, in);
   errorCond(in, "no input!"); RETURN_ON_ERROR
-  
-  if (configOnly())
-    return;
 
-  
-  //FIXME if disparity_root is empty use first available
   cpath disparity_root = in->path;
+
+  //FIXME if disparity_root is empty use first available
+  if (GetParameter(4)->GetString()) {
+    disparity_root = *GetParameter(4)->GetString();
+  }
+  else {
+    SetParameter_(4, DspParameter(DspParameter::String, disparity_root.generic_string()));
+  }
+
+  if (configOnly())
+	  return;
   
   Mat disp;
   Datastore *disp_store = in->data->getStore(disparity_root/"data");
@@ -677,16 +684,6 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 bool component::ParameterUpdating_ (int i, DspParameter const &p)
 {
-  //we only have four parameters
-  if (i >= 4)
-    return false;
-  
-  if (i < 2 && p.Type() != DspParameter::ParamType::String)
-    return false;
-  
-  if (i >= 2 && p.Type() != DspParameter::ParamType::Bool)
-    return false;
-  
   SetParameter_(i, p);
   return true;
 }
