@@ -547,8 +547,14 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	errorCond(use_coherence, "no coherence measure found"); RETURN_ON_ERROR
 
 	bool foundView = false;
+	bool setOpts = false;
 	cpath View_data = datasetView;
-	if (in->data->store(View_data / "data") != NULL) foundView = true;
+	if (in->data->store(View_data / "data") != NULL)
+	{
+		foundView = true;
+		std::cout << "Use opts" << std::endl;
+		setOpts = true;
+	}
 	if (in->data->store(View_data / "default/data") != NULL){
 		foundView = true;
 		View_data = View_data / "default/";
@@ -583,17 +589,17 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 	disp_store->read(disp);
 
-
-
 	float scale = 1.0;
 
 	Attribute *attr;
-	attr = in->data->get(disparity_root/"subset/scale");
-	if (attr)  attr->get(scale);
+	attr = in->data->get(data_root / "subset/scale");
+	if (attr && setOpts)  attr->get(scale);
+
+	std::cout << "scale: " << scale << std::endl;
 
 	ProcData opts;
 	//HACK FIXME 
-	//opts.set_scale(scale);
+	opts.set_scale(scale);
 
   //FIXME read/pass actual datastore!
 	//
@@ -620,10 +626,12 @@ int refView2 = *GetParameter(6)->GetInt();
   //std::cout << "dimCoh:" << coh[3] / 2 << std::endl;
   //std::cout << "dimDisp:" << disp[3] / 2 << std::endl;
   
-  //HACK FIXME 
-  opts.set_flags(CVT_8U);
-  //opts.set_flags(UNDISTORT | CVT_8U);
+
+  if (setOpts) opts.set_flags(UNDISTORT | CVT_8U);
+  else opts.set_flags(CVT_8U);
   lf_store->readImage(idx, &img3d, opts);
+
+
   clifMat2cv(&img3d,&img);
   std::cout << "size:" << img.size() << std::endl;
   

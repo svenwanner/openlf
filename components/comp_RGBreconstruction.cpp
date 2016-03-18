@@ -131,7 +131,13 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	out->data->addLink(tmp_dataset_name, tmpSource);
 	//out->data->addLink(tmp_dataset_name, "calibration/extrinsics/default");
 
+	tmp_dataset_name = out_dataset_name;
+	tmp_dataset_name.append("/default/subset/scale");
+	out->data->setAttribute(tmp_dataset_name, scale);
 
+	tmp_dataset_name = out_dataset_name;
+	tmp_dataset_name.append("/default/source");
+	out->data->addLink(tmp_dataset_name, warped_root);
 
 
 	if (configOnly())
@@ -258,7 +264,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	//	}
 	//}
 
-	bool display = true;
+	//bool display = true;
 	/*if (display){
 		cv::Mat _tmp = cvMat(result_RGB->bind(3, 0));
 		cv::Mat output;
