@@ -241,10 +241,14 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 	Mat single_Image = lf.bind(3, TVposition);
 	int refView = TVposition;
-	if (disp_store->extent()[3] < 2){
-		refView = 0;
-	}	
-	std::cout << disp_store->extent()[3] << refView << std::endl;
+
+//FIXME Crashes if TVPos is larger than array
+	//if (disp_store->extent()[3] < 2){
+	//	refView = 0;
+	//	SetParameter_(12, DspParameter(DspParameter::ParamType::Int, TVposition));
+	//}	
+	std::cout << disp_store->extent()[3] << " "<< refView << std::endl;
+
 	std::cout << "TVposition reset to: " << refView << std::endl;
 
 	//slice single disparity and coherence images as well as center view image to modify boundary movability
