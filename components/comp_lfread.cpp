@@ -36,7 +36,7 @@ protected:
 private:
   LF _out;
   clif::Dataset _out_set;
-  
+  std::string filename_old = "tmp";
   virtual bool ParameterUpdating_ (int i, DspParameter const &p);
 };
   
@@ -44,17 +44,29 @@ COMP_LFRead::COMP_LFRead()
 {
   setTypeName_("COMP_readCLIF");
   AddOutput_("output");
-  AddParameter_("filename", DspParameter(DspParameter::ParamType::String));
+  AddParameter_("filename", DspParameter(DspParameter::ParamType::String,""));
   AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
 }
 
 void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   LF *out = NULL;
-  const std::string *filename = NULL;
-  const std::string *dataset_name = NULL;
+   const std::string *filename = NULL;
+   const std::string *dataset_name = NULL;
   
   filename = GetParameter(0)->GetString();
+
+  if (filename->compare(filename_old) == 0){
+	  std::cout << "String hasnt changed!" << std::endl;
+	  out = &_out;
+	  out->data = &_out_set;
+	  outputs.SetValue(0, out);
+	  if (configOnly())
+	  return;
+  }
+  filename_old = *filename;
+
+  std::cout << "String changed!" << std::endl;
   if (GetParameter(1))
     dataset_name = GetParameter(1)->GetString();
   
@@ -63,7 +75,8 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   out = &_out;
   out->data = &_out_set;
   _out_set.reset();
-  
+ 
+
   if (!strcmp(cpath(*filename).extension().generic_string().c_str(), ".ini")) {
     out->data->Attributes::open(filename->c_str());
     out->path = std::string();
