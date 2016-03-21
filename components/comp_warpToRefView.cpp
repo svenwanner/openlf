@@ -191,7 +191,8 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		for (int x = 0; x < lf[0]; x++)
 		{
 			Mat IntensityStack = result.bind(1, y).bind(0, x);
-			get_intensities(lf, IntensityStack, x, y, TV(x, y, 0, refView) - ref_disp*scale - 23.5);
+//			get_intensities(lf, IntensityStack, x, y, TV(x, y, 0, refView) - ref_disp*scale - 23.5);
+			get_intensities(lf, IntensityStack, x, y, TV(x, y, 0, refView) - ref_disp*scale - 23);
 		}
 	}
 

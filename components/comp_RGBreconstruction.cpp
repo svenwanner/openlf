@@ -169,10 +169,10 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	cv::Mat _M = (cv::Mat_<float>(3, 11) <<  0.4505, 0.3875, 0.2730, 0.0042, 0.1780, 0.7205, 1.5813, 1.6807,  1.6010, 0.6885,   0.307, \
 											 0.0171, 0.0372, 0.1431, 0.5333, 1.2180, 1.4932, 1.5406, 0.9461,  0.6894, 0.2598, 0.00977, \
 											 2.2078, 1.9758, 2.0134, 0.4474, 0.0611, 0.0023, 0.0031, 0.0016, 0.00038,      0,       0);
-	//cv::Mat exposure = (cv::Mat_<float>(1, 11) << 320, 113, 80, 80, 80, 113, 160, 160, 320, 160, 320);
-  std::vector<float> exposure(11);
+ cv::Mat exposure = (cv::Mat_<float>(1, 11) << 320, 113, 80, 80, 80, 113, 160, 160, 320, 160, 320);
+  /*std::vector<float> exposure(11);
   
-  in->data->get("acquisition/exposure", exposure);
+  in->data->get("acquisition/exposure", exposure);*/
 
 //Result Storage
 	Idx Resultsize = { subset.EPIWidth(), subset.EPICount(), 3, 1 };
@@ -194,9 +194,12 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	for (int x = 0; x < subset.EPIWidth(); x++) {
 		for (int y = 0; y < subset.EPICount(); y++) {
 			for (int z = 0; z < subset.EPIHeight(); z++) {
-				result_XYZ->at<float>(x, y, 0, 0) = result_XYZ->at<float>(x, y, 0, 0) + (_M.at<float>(0, z) * (float)warped.at(x, y, 0, z) / exposure[10-z]);
+				/*result_XYZ->at<float>(x, y, 0, 0) = result_XYZ->at<float>(x, y, 0, 0) + (_M.at<float>(0, z) * (float)warped.at(x, y, 0, z) / exposure[10-z]);
 				result_XYZ->at<float>(x, y, 1, 0) = result_XYZ->at<float>(x, y, 1, 0) + (_M.at<float>(1, z) * (float)warped.at(x, y, 0, z) / exposure[10-z]);
-				result_XYZ->at<float>(x, y, 2, 0) = result_XYZ->at<float>(x, y, 2, 0) + (_M.at<float>(2, z) * (float)warped.at(x, y, 0, z) / exposure[10-z]);
+				result_XYZ->at<float>(x, y, 2, 0) = result_XYZ->at<float>(x, y, 2, 0) + (_M.at<float>(2, z) * (float)warped.at(x, y, 0, z) / exposure[10-z]);*/
+				result_XYZ->at<float>(x, y, 0, 0) = result_XYZ->at<float>(x, y, 0, 0) + (_M.at<float>(0, 10 - z) * (float)warped.at(x, y, 0, z) / exposure.at<float>(0, 10 - z));
+				result_XYZ->at<float>(x, y, 1, 0) = result_XYZ->at<float>(x, y, 1, 0) + (_M.at<float>(1, 10 - z) * (float)warped.at(x, y, 0, z) / exposure.at<float>(0, 10 - z));
+				result_XYZ->at<float>(x, y, 2, 0) = result_XYZ->at<float>(x, y, 2, 0) + (_M.at<float>(2, 10 - z) * (float)warped.at(x, y, 0, z) / exposure.at<float>(0, 10 - z));
 					if (result_XYZ->at<float>(x, y, 0, 0) > maxValue) maxValue = result_XYZ->at<float>(x, y, 0, 0);
 					if (result_XYZ->at<float>(x, y, 1, 0) > maxValue) maxValue = result_XYZ->at<float>(x, y, 1, 0);
 					if (result_XYZ->at<float>(x, y, 2, 0) > maxValue) maxValue = result_XYZ->at<float>(x, y, 2, 0);
@@ -281,6 +284,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		if (subset.EPIWidth() > 1200 || subset.EPICount() > 1200) reduceSize = 4;
 		cv::resizeWindow("MergeInput", subset.EPICount() / reduceSize, subset.EPIWidth() / reduceSize);
 		cv::cvtColor(output, output, CV_RGB2BGR);
+		cv::normalize(output, output, 0, 1, cv::NORM_MINMAX);
 		cv::imshow("RGB_recon", output);
 		cv::waitKey(1);
 	}

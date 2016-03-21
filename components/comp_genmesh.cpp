@@ -652,14 +652,15 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     attr->get(scale);
   
   ProcData opts;
-  opts.set_scale(scale);
+  printf("genmesh scale: %f\n", scale);
+  opts.set_scale(0.5);
   
   //FIXME read/pass actual datastore!
   //Subset3d subset(in->data, disparity_root/"subset/source", opts);
   //FIXME add read function to subset3d
   
   
-  Subset3d subset(in->data, disparity_root/"subset/source");
+  Subset3d subset(in->data, disparity_root/"subset/source", opts);
   
   Datastore *store = in->data->getStore(subset.extrinsics_group()/"data");
   
