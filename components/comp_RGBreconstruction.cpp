@@ -274,7 +274,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	//	}
 	//}
 
-	bool display = true;
+	/*bool display = true;
 	if (display){
 		cv::Mat _tmp = cvMat(result_RGB->bind(3, 0));
 		cv::Mat output;
@@ -287,7 +287,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		cv::normalize(output, output, 0, 1, cv::NORM_MINMAX);
 		cv::imshow("RGB_recon", output);
 		cv::waitKey(1);
-	}
+	}*/
 	
 
 	store_rgb->write(result_RGB);

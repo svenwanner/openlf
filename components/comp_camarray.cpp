@@ -150,7 +150,8 @@ printf("start init\n");
     imgs[i].copyTo(cvMat(imgs_mat.bind(3, i).bind(2, 0)));
   
   
-  Datastore *store = out->data->addStore("calibration/extrinsics/default/data");
+  Datastore *store = out->data->getStore("calibration/extrinsics/default/data");
+  store->cache_flush();
   store->write(imgs_mat);
 }
 

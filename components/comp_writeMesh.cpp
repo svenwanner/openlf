@@ -516,7 +516,7 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	inputs.GetValue(0, in);
 	errorCond(in, "no input!"); RETURN_ON_ERROR
 
-	cpath data_root = dataset;
+	/*cpath data_root = dataset;
 
 	data_root /= "default";
 	
@@ -559,11 +559,11 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		foundView = true;
 		View_data = View_data / "default/";
 	}
-	errorCond(foundView, "no image data found"); RETURN_ON_ERROR
+	errorCond(foundView, "no image data found"); RETURN_ON_ERROR*/
 
-	Datastore *lf_store = in->data->store(View_data / "data");
+	Datastore *lf_store = in->data->store("RGBrecon/default/data");
 
-	if (!initialize) {
+	/*if (!initialize) {
 		std::cout << initialize << std::endl;
 		try{
 			int tmp=0;
@@ -578,28 +578,28 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		initialize = true;
 	}
 	errorCond(initialize, "no View selected"); RETURN_ON_ERROR
-
+*/
 	if (configOnly())
 		return;
 
 	Mat disp0, disp, coh;
-	Datastore *disp_store = in->data->getStore(data_root / "data");
+	Datastore *disp_store = in->data->getStore("2DTV/default/data");
 
-	cpath disparity_root = tmp_data_root;
+	//cpath disparity_root = tmp_data_root;
 
 	disp_store->read(disp);
 
 	float scale = 1.0;
 
 	Attribute *attr;
-	attr = in->data->get(data_root / "subset/scale");
-	if (attr && setOpts)  attr->get(scale);
+	attr = in->data->get("disparity/default/subset/scale");
+	if (attr)  attr->get(scale);
 
 	std::cout << "scale: " << scale << std::endl;
 
 	ProcData opts;
 	//HACK FIXME 
-	opts.set_scale(scale);
+	//opts.set_scale(scale);
 
   //FIXME read/pass actual datastore!
 	//
@@ -612,23 +612,22 @@ int refView = *GetParameter(5)->GetInt();
 }*/
 
 int refView2 = *GetParameter(6)->GetInt();
-  if (refView2 >= lf_store->extent()[3]){
+  /*if (refView2 >= lf_store->extent()[3]){
 	  refView2 = lf_store->extent()[3] - 1;
 	  SetParameter_(6, DspParameter(DspParameter::ParamType::Int, lf_store->extent()[3] - 1));
-  }
+  }*/
 
   cv::Mat img3d, img;
   //FIXME should add a readimage to subset3d!
   std::vector<int> idx(lf_store->dims(), 0);
   //FIXME flexmav!
-  idx[3] = refView2;
+  idx[3] = 0;
 
   //std::cout << "dimCoh:" << coh[3] / 2 << std::endl;
   //std::cout << "dimDisp:" << disp[3] / 2 << std::endl;
   
 
-  if (setOpts) opts.set_flags(UNDISTORT | CVT_8U);
-  else opts.set_flags(CVT_8U);
+  opts.set_flags(CVT_8U);
   lf_store->readImage(idx, &img3d, opts);
 
 
@@ -649,8 +648,8 @@ int refView2 = *GetParameter(6)->GetInt();
   cv::waitKey(1);
   */
   opts.set_scale(0.5);
-  Subset3d subset(in->data, tmp_data_root / "source_LF", opts);
-  MultiArrayView<2, float> centerview = vigraMAV<4, float>(disp).bindAt(3, refView).bindAt(2, 0);
+  Subset3d subset(in->data, "calibration/extrinsics/default", opts);
+  MultiArrayView<2, float> centerview = vigraMAV<4, float>(disp).bindAt(3, 0).bindAt(2, 0);
   //std::cout << "size:" << centerview.shape() << std::endl;
   
   char* locale_old = setlocale(LC_NUMERIC, "C");
