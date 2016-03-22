@@ -176,9 +176,9 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	tmp_data_root.append("/default/subset/scale");
 	out->data->setAttribute(tmp_data_root, scale);
 
-	std::cout << "lf_store Dims : " << subset.EPIWidth() << " " << subset.EPICount() << " " << subset.EPIHeight() << " " << subset.EPIDepth() << " " << std::endl;
-	std::cout << "coh_store Dims : " << coh_store->extent() << std::endl;
-	std::cout << "disp_store Dims : " << disp_store->extent() << std::endl;
+	//std::cout << "lf_store Dims : " << subset.EPIWidth() << " " << subset.EPICount() << " " << subset.EPIHeight() << " " << subset.EPIDepth() << " " << std::endl;
+	//std::cout << "coh_store Dims : " << coh_store->extent() << std::endl;
+	//std::cout << "disp_store Dims : " << disp_store->extent() << std::endl;
 
 	
 	int TVposition = 0;

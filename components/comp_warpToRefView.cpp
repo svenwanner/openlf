@@ -110,8 +110,8 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	tmp_data_root /= "default/subset/scale";
 	out->data->setAttribute(tmp_data_root, scale);
 
-	std::cout << "lf_store Dims : " << subset.EPIWidth() << " " << subset.EPICount() << " " << subset.EPIHeight() << " " << subset.EPIDepth() << " " << std::endl;
-	std::cout << "disp_store Dims : " << TV_store->extent() << std::endl;
+	//std::cout << "lf_store Dims : " << subset.EPIWidth() << " " << subset.EPICount() << " " << subset.EPIHeight() << " " << subset.EPIDepth() << " " << std::endl;
+	//std::cout << "disp_store Dims : " << TV_store->extent() << std::endl;
 
 	int refView = 0;
 	//The TV should be adapted onto the center view image.

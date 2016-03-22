@@ -103,8 +103,8 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	//Datastore *lf_store = in->data->getStore(warped_root / "source_LF/data");
 	//errorCond(lf_store, "no lf_store available"); RETURN_ON_ERROR
 
-	std::cout << "lf_store Dims : " << subset.EPIWidth() << " " << subset.EPICount() << " " << subset.EPIHeight() << " " << subset.EPIDepth() << " " << std::endl;
-	std::cout << "Size warped storage: " << warped_store->extent() << std::endl;
+	//std::cout << "lf_store Dims : " << subset.EPIWidth() << " " << subset.EPICount() << " " << subset.EPIHeight() << " " << subset.EPIDepth() << " " << std::endl;
+	//std::cout << "Size warped storage: " << warped_store->extent() << std::endl;
 
 	//Set some output Metadata
 	std::string tmp_dataset_name = out_dataset_name;

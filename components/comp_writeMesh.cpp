@@ -50,17 +50,16 @@ private:
 COMP_writeMesh::COMP_writeMesh()
 {
   setTypeName_("COMP_writeMesh");
-  AddInput_("input");
+  AddInput_("disparity");
+  AddInput_("color");
   AddParameter_("obj_filename", DspParameter(DspParameter::ParamType::String));
   AddParameter_("ply_filename", DspParameter(DspParameter::ParamType::String));
-  AddParameter_("in_group_dispMap", DspParameter(DspParameter::ParamType::String,"2DTV"));
-  AddParameter_("in_group_colorMap", DspParameter(DspParameter::ParamType::String, ""));
-  AddParameter_("Depth_cutoff", DspParameter(DspParameter::ParamType::Float, 5000));
-  AddParameter_("dispMap_View", DspParameter(DspParameter::ParamType::Int, 0));
-  AddParameter_("ColorMap_View", DspParameter(DspParameter::ParamType::Int, 0));
+  AddParameter_("max_depth", DspParameter(DspParameter::ParamType::Float, 5000));
+  AddParameter_("disparity_idx", DspParameter(DspParameter::ParamType::Int, 0));
+  AddParameter_("color_idx", DspParameter(DspParameter::ParamType::Int, 0));
 }
 
-void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d &subset, float &cutoff)
+void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat *view, Subset3d &subset, float &cutoff)
 {
   FILE *pointfile = fopen(name, "w");
   
@@ -103,12 +102,12 @@ void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
 		if (depth > cutoff) depth = cutoff;
 	  }
 	  if (depth >= 0) {
-        if (view.type() == CV_8UC3) {
-          cv::Vec3b col = view.at<cv::Vec3b>(p[1],p[0]);
+        if (view && view->type() == CV_8UC3) {
+          cv::Vec3b col = view->at<cv::Vec3b>(p[1],p[0]);
           fprintf(pointfile, "%.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f(0), depth*(p[1]-h/2)/subset.f(1), depth,col[0],col[1],col[2]);
         }
-        else if (view.type() == CV_8UC1) {
-          uchar col = view.at<uchar>(p[1],p[0]);
+        else if (view && view->type() == CV_8UC1) {
+          uchar col = view->at<uchar>(p[1],p[0]);
           fprintf(pointfile, "%.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f(0), depth*(p[1]-h/2)/subset.f(1), depth,col,col,col);
         }
         else
@@ -120,7 +119,7 @@ void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat &view, S
   fclose(pointfile);
 }
 
-void write_obj(const char *name, MultiArrayView<2, float> &disp, cv::Mat &view, Subset3d &subset, float &cutoff)
+void write_obj(const char *name, MultiArrayView<2, float> &disp, cv::Mat *view, Subset3d &subset, float &cutoff)
 {
   int v_idx = 1;
   
@@ -160,30 +159,30 @@ void write_obj(const char *name, MultiArrayView<2, float> &disp, cv::Mat &view, 
         valid[p[0]] = v_idx;
         
         double depth = subset.disparity2depth(disp[p]);
-		if (depth > cutoff) depth = cutoff;
-
-			if (view.type() == CV_8UC3) {
-			  cv::Vec3b col = view.at<cv::Vec3b>(p[1],p[0]);
-			  fprintf(pointfile, "v %.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f(0), depth*(p[1]-h/2)/subset.f(1), depth,col[0],col[1],col[2]);
-			}
-			else if (view.type() == CV_8UC1) {
-			  uchar col = view.at<uchar>(p[1],p[0]);
-			  fprintf(pointfile, "v %.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f(0), depth*(p[1]-h/2)/subset.f(1), depth,col,col,col);
-			}
-			else
-			  fprintf(pointfile, "v %.3f %.3f %.3f 127 127 127\n", depth*(p[0]-w/2)/subset.f(0), depth*(p[1]-h/2)/subset.f(1), depth);
+        if (depth > cutoff) depth = cutoff;
         
-			v_idx ++;
+        if (view && view->type() == CV_8UC3) {
+          cv::Vec3b col = view->at<cv::Vec3b>(p[1],p[0]);
+          fprintf(pointfile, "v %.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f(0), depth*(p[1]-h/2)/subset.f(1), depth,col[0],col[1],col[2]);
+        }
+        else if (view && view->type() == CV_8UC1) {
+          uchar col = view->at<uchar>(p[1],p[0]);
+          fprintf(pointfile, "v %.3f %.3f %.3f %d %d %d\n", depth*(p[0]-w/2)/subset.f(0), depth*(p[1]-h/2)/subset.f(1), depth,col,col,col);
+        }
+        else
+          fprintf(pointfile, "v %.3f %.3f %.3f 127 127 127\n", depth*(p[0]-w/2)/subset.f(0), depth*(p[1]-h/2)/subset.f(1), depth);
         
-			if (p[0]) {
-				if (valid[p[0] - 1] && valid[p[0]] && valid_last[p[0] - 1] && valid_last[p[0]]) {
-					fprintf(pointfile, "f %d %d %d %d\n", valid[p[0] - 1], valid[p[0]], valid_last[p[0]], valid_last[p[0] - 1]);
-					//more correct in some way but whatever
-					//fprintf(pointfile, "f %d %d %d\n", valid[p[0]-1], valid_last[p[0]], valid_last[p[0]-1]);
-					//fprintf(pointfile, "f %d %d %d\n", valid[p[0]-1], valid[p[0]], valid_last[p[0]]);
-				}
-			}
-  
+        v_idx ++;
+        
+        if (p[0]) {
+          if (valid[p[0] - 1] && valid[p[0]] && valid_last[p[0] - 1] && valid_last[p[0]]) {
+            fprintf(pointfile, "f %d %d %d %d\n", valid[p[0] - 1], valid[p[0]], valid_last[p[0]], valid_last[p[0] - 1]);
+            //more correct in some way but whatever
+            //fprintf(pointfile, "f %d %d %d\n", valid[p[0]-1], valid_last[p[0]], valid_last[p[0]-1]);
+            //fprintf(pointfile, "f %d %d %d\n", valid[p[0]-1], valid[p[0]], valid_last[p[0]]);
+          }
+        }
+        
       }
     }
   }
@@ -501,175 +500,89 @@ void write_merge_obj(const char *name, MultiArrayView<3,float> &disp, MultiArray
 
 void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
-	LF *in = NULL;
-	const std::string *obj_filename;
-	const std::string *ply_filename;
-
-	obj_filename = GetParameter(0)->GetString();
-	ply_filename = GetParameter(1)->GetString();
-	std::string dataset = *GetParameter(2)->GetString();
-	std::string datasetView = *GetParameter(3)->GetString();
-	float cutoff = *GetParameter(4)->GetFloat();
-	
-	errorCond(obj_filename || ply_filename, "no output specified"); RETURN_ON_ERROR
-
-	inputs.GetValue(0, in);
-	errorCond(in, "no input!"); RETURN_ON_ERROR
-
-	/*cpath data_root = dataset;
-
-	data_root /= "default";
-	
-	cpath tmp_data_root = data_root;
-	cpath searchPath = tmp_data_root;
-	bool breakCond = false;
-	bool use_coherence = false;
-	int timer = 0;
-
-	while (breakCond == false){
-		searchPath = tmp_data_root;
-		searchPath /= "coherence";
-		if (in->data->store(searchPath) != NULL){
-			std::cout << "Found Coherence!" << std::endl;
-			std::cout << "Coherence path" << searchPath << std::endl;
-			use_coherence = true;
-			breakCond = true;
-		}
-		else{
-			tmp_data_root /= "source";
-			use_coherence = false;
-		}
-		timer++;
-		if (timer == 10){
-			breakCond = true;
-		}
-	}
-	errorCond(use_coherence, "no coherence measure found"); RETURN_ON_ERROR
-
-	bool foundView = false;
-	bool setOpts = false;
-	cpath View_data = datasetView;
-	if (in->data->store(View_data / "data") != NULL)
-	{
-		foundView = true;
-		std::cout << "Use opts" << std::endl;
-		setOpts = true;
-	}
-	if (in->data->store(View_data / "default/data") != NULL){
-		foundView = true;
-		View_data = View_data / "default/";
-	}
-	errorCond(foundView, "no image data found"); RETURN_ON_ERROR*/
-
-	Datastore *lf_store = in->data->store("RGBrecon/default/data");
-
-	/*if (!initialize) {
-		std::cout << initialize << std::endl;
-		try{
-			int tmp=0;
-			in->data->get(data_root / "refView", tmp);
-			SetParameter_(5, DspParameter(DspParameter::ParamType::Int, tmp));
-			SetParameter_(6, DspParameter(DspParameter::ParamType::Int, tmp));
-		}
-		catch (const std::exception& e) {
-			SetParameter_(5, DspParameter(DspParameter::ParamType::Int, ((lf_store->extent()[3] - 1) / 2)));
-			SetParameter_(6, DspParameter(DspParameter::ParamType::Int, ((lf_store->extent()[3] - 1) / 2)));
-		}
-		initialize = true;
-	}
-	errorCond(initialize, "no View selected"); RETURN_ON_ERROR
-*/
-	if (configOnly())
-		return;
-
-	Mat disp0, disp, coh;
-	Datastore *disp_store = in->data->getStore("2DTV/default/data");
-
-	//cpath disparity_root = tmp_data_root;
-
-	disp_store->read(disp);
-
-	float scale = 1.0;
-
-	Attribute *attr;
-	attr = in->data->get("disparity/default/subset/scale");
-	if (attr)  attr->get(scale);
-
-	std::cout << "scale: " << scale << std::endl;
-
-	ProcData opts;
-	//HACK FIXME 
-	//opts.set_scale(scale);
-
-  //FIXME read/pass actual datastore!
-	//
-  //FIXME add read function to subset3d
- 
-int refView = *GetParameter(5)->GetInt();
-/*if (refView >= lf_store->extent()[3]){
-	refView = lf_store->extent()[3] - 1;
-	SetParameter_(5, DspParameter(DspParameter::ParamType::Int, disp_store->extent()[3] - 1));
-}*/
-
-int refView2 = *GetParameter(6)->GetInt();
-  /*if (refView2 >= lf_store->extent()[3]){
-	  refView2 = lf_store->extent()[3] - 1;
-	  SetParameter_(6, DspParameter(DspParameter::ParamType::Int, lf_store->extent()[3] - 1));
-  }*/
-
-  cv::Mat img3d, img;
-  //FIXME should add a readimage to subset3d!
-  std::vector<int> idx(lf_store->dims(), 0);
-  //FIXME flexmav!
-  idx[3] = 0;
-
-  //std::cout << "dimCoh:" << coh[3] / 2 << std::endl;
-  //std::cout << "dimDisp:" << disp[3] / 2 << std::endl;
+  LF *in_disp = NULL;
+  LF *in_col = NULL;
+  const std::string *obj_filename;
+  const std::string *ply_filename;
+  bool use_col = false;
   
-
-  opts.set_flags(CVT_8U);
-  lf_store->readImage(idx, &img3d, opts);
-
-
-  clifMat2cv(&img3d,&img);
-  std::cout << "size:" << img.size() << std::endl;
+  obj_filename = GetParameter(0)->GetString();
+  ply_filename = GetParameter(1)->GetString();
+  float cutoff = *GetParameter(2)->GetFloat();
   
-  //centerview, channel 0
-  //FIXME flexmav!
-  /*
-  cv::Mat single_input = cvMat(disp.bind(3, disp[3] / 2).bind(2, 0));
-  cv::namedWindow("Input", 0);
-  cv::resizeWindow("Input", single_input.size[1] / 4, single_input.size[0] / 4);
-  cv::imshow("Input", single_input);
-  cv::waitKey(1);
-  cv::namedWindow("RGB", 0);
-  cv::resizeWindow("RGB", img.size[1] / 4, img.size[0] / 4);
-  cv::imshow("RGB", img);
-  cv::waitKey(1);
-  */
-  opts.set_scale(0.5);
-  Subset3d subset(in->data, "calibration/extrinsics/default", opts);
+  inputs.GetValue(0, in_disp);
+  errorCond(in_disp && in_disp->path.size(), "disparity input missing!"); RETURN_ON_ERROR
+  
+  inputs.GetValue(1, in_col);
+  if (in_col && in_col->path.size())
+    use_col = true;
+  
+  errorCond(obj_filename || ply_filename, "no output specified"); RETURN_ON_ERROR
+  
+  
+  if (configOnly())
+    return;
+  
+  Mat disp, col;
+  Datastore *disp_store = in_disp->data->store(in_disp->path / "data");  
+  disp_store->read(disp);
+  
+  Datastore *col_store = NULL;
+  if (use_col)
+    col_store = in_col->data->store(in_col->path);  
+  
+  //FIXME rework according to new subset handling
+  float scale = 1.0;
+  Attribute *attr;
+  attr = in_disp->data->get(in_disp->path / "subset/scale");
+  if (attr)
+    attr->get(scale);
+  
+  //FIXME set default according to input store size! Needs to look at store ?! 
+  int disp_n = max(min(*GetParameter(3)->GetInt(), disp[4]), 0);
+  int col_n = 0;
+  if (use_col)
+    col_n = max(min(*GetParameter(4)->GetInt(), col[4]), 0);
+  
+  cv::Mat *img = NULL;
+  std::vector<int> idx(disp_store->dims(), 0);
+  
+  ProcData opts;
+  opts.set_scale(scale);
+  
+  if (use_col) {
+    cv::Mat img3d;
+    std::vector<int> col_idx(col_store->dims(), 0);
+    //FIXME flexmav!
+    idx[3] = disp_n;
+    
+    ProcData opts_img = opts;
+    //FIXME scale?
+    opts_img.set_flags(CVT_8U);
+    col_store->readImage(idx, &img3d, opts);
+    
+    img = new cv::Mat;
+    clifMat2cv(&img3d,img);
+  }
+
+  //FIXME rework according to new subset handling
+  //FIXME path has no meaning?
+  Subset3d subset(in_disp->data, in_disp->path / "subset/source", opts);
+  
   MultiArrayView<2, float> centerview = vigraMAV<4, float>(disp).bindAt(3, 0).bindAt(2, 0);
-  //std::cout << "size:" << centerview.shape() << std::endl;
   
   char* locale_old = setlocale(LC_NUMERIC, "C");
-    
-  //std::cout << "Stringsize:" << ply_filename->size() << std::endl;
+  
   if (ply_filename && ply_filename->size())
-	write_ply(ply_filename->c_str(), centerview, img, subset, cutoff);
-
+    write_ply(ply_filename->c_str(), centerview, img, subset, cutoff);
+  
   if (obj_filename && obj_filename->size())
-	write_obj(obj_filename->c_str(), centerview, img, subset, cutoff);
-
-  /*
-  store->readImage(idx, &img3d, opts);
-  clifMat2cv(&img3d,&img);
-  cv::Mat img_norm;
-  cv::normalize(img, img_norm, 0, 255, cv::NORM_MINMAX, CV_8UC1); 
-  */ 
-
+    write_obj(obj_filename->c_str(), centerview, img, subset, cutoff);
+  
   setlocale(LC_NUMERIC, locale_old);
- 
+  
+  if (img)
+    delete img;
 }
 
 bool COMP_writeMesh::ParameterUpdating_(int i, DspParameter const &p)

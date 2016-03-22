@@ -2,13 +2,13 @@ graph [
 node [
 id 0
 label "readCLIF_0"
-type "readCLIF"
+type "COMP_readCLIF"
 graphics [
 x -244.000000
 y 21.000000
 ]
 params [
-filename "demo.clif"
+filename "demo_small.clif"
 dataset "(UNSET)"
 ]
 ]
@@ -36,7 +36,7 @@ disparity_S_pre_blur_y 0.0
 node [
 id 2
 label "writeMesh_0"
-type "writeMesh"
+type "COMP_writeMesh"
 graphics [
 x 171.000000
 y 8.000000
@@ -49,7 +49,7 @@ ply_filename "demo_i3.ply"
 node [
 id 3
 label "writeCLIF_0"
-type "writeCLIF"
+type "COMP_writeCLIF"
 graphics [
 x 189.000000
 y 122.000000
