@@ -539,10 +539,10 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     attr->get(scale);
   
   //FIXME set default according to input store size! Needs to look at store ?! 
-  int disp_n = max(min(*GetParameter(3)->GetInt(), disp[4]), 0);
+  int disp_n = max(min(disp[3]/2 + *GetParameter(3)->GetInt(), disp[3]-1), 0);
   int col_n = 0;
   if (use_col)
-    col_n = max(min(*GetParameter(4)->GetInt(), col[4]), 0);
+    col_n = max(min(col[3]/2 + *GetParameter(4)->GetInt(), col[3]-1), 0);
   
   cv::Mat *img = NULL;
   std::vector<int> idx(disp_store->dims(), 0);
@@ -554,7 +554,7 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     cv::Mat img3d;
     std::vector<int> col_idx(col_store->dims(), 0);
     //FIXME flexmav!
-    idx[3] = disp_n;
+    idx[3] = col_n;
     
     ProcData opts_img = opts;
     //FIXME scale?
@@ -569,7 +569,7 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   //FIXME path has no meaning?
   Subset3d subset(in_disp->data, in_disp->path / "subset/source", opts);
   
-  MultiArrayView<2, float> centerview = vigraMAV<4, float>(disp).bindAt(3, 0).bindAt(2, 0);
+  MultiArrayView<2, float> centerview = vigraMAV<4, float>(disp).bindAt(3, disp_n).bindAt(2, 0);
   
   char* locale_old = setlocale(LC_NUMERIC, "C");
   
