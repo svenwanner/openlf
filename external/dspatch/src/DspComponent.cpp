@@ -1314,8 +1314,8 @@ void DspComponent::errorCond(bool cond, const char *msg, ...)
     if (buf) {
       printf("ERROR: %s\n", buf); 
       
-      
       _errorMsg = std::string(buf);
+      free(buf);
     }
     else {
       printf("config error!\n");
