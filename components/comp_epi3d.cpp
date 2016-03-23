@@ -71,7 +71,7 @@ private:
 };
   
 namespace {
-	enum P_IDX { Tensor_Circuit = 0, Orientation_Circuit, Merge_Circuit, DispStart, DispStop, DispStep, StartLine, StopLine, scale, storage_name };
+	enum P_IDX { Tensor_Circuit = 0, Orientation_Circuit, Merge_Circuit, DispStart, DispStop, DispStep, StartLine, StopLine, out_group };
 }
 
 template<typename T> void COMP_Epi::openlf_add_param(const char *name, T val, DspParameter::ParamType type, int idx)
@@ -102,9 +102,8 @@ void expose_params(DspComponent *parent, cpath path, DspComponent *child, const 
 COMP_Epi::COMP_Epi()
 {
   setTypeName_("procEPI2.5D");
-  AddInput_("input");
-  AddInput_("config");
-  AddOutput_("output");
+  AddInput_("subset");
+  AddOutput_("disparity");
   
   openlf_add_param("tensorCircuit", (DspComponent*)NULL, DPPT::Pointer, P_IDX::Tensor_Circuit);
   openlf_add_param("orientaionCircuit", (DspComponent*)NULL, DPPT::Pointer, P_IDX::Orientation_Circuit);
@@ -116,10 +115,8 @@ COMP_Epi::COMP_Epi()
   
   openlf_add_param("StartLine", DPPT::Int, P_IDX::StartLine);
   openlf_add_param("StopLine", DPPT::Int, P_IDX::StopLine);
-  
-  openlf_add_param("scale", DPPT::Float, P_IDX::scale);
 
-  openlf_add_param("out_group", (DspComponent*)NULL, DPPT::String, P_IDX::storage_name);
+  openlf_add_param("disparity_name", "default", DPPT::String, P_IDX::out_group);
 }
 
 template<typename T> class subarray_copy {
@@ -471,7 +468,6 @@ void proc_epi_ori_merge(int t, Subset3d *subset, float d, int line, vigra::Multi
 void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
   LF *in = NULL;
-  LF *config = NULL;
   LF *out = NULL;
   DspComponent *tensor_circuit;
   DspComponent *orientation_circuit;
@@ -483,26 +479,22 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   if (!cv_t_count)
     cv::setNumThreads(0);
   
-  errorCond(inputs.GetValue(0, in) && in, "missing input"); RETURN_ON_ERROR
+  inputs.GetValue(0, in);
   
-  //default
-  SetParameter_(P_IDX::scale, DspParameter(DPPT::Float, 1.0f));
+  errorCond(in && in->path.size(), "missing input"); RETURN_ON_ERROR
   
-  inputs.GetValue(1, config);
+  Subset3d subset;
+  
+  errorCond(subset.create(in->data, in->path), "invalid subset"); RETURN_ON_ERROR
+  
+  cpath out_group = *GetParameter(P_IDX::out_group)->GetString();
   
   out = &_out;
   out->data = &_out_set;
+  out->path = "disparity"/out_group;
   out->data->memory_link(in->data);
   
-  outputs.SetValue(0, out);
-  
-  errorCond(out, "output creation failed"); RETURN_ON_ERROR
-    
-  ProcData opts;
-  opts.set_scale(*GetParameter(P_IDX::scale)->GetFloat());
-    
-  //subset_idx -- extrinsics path
-  Subset3d subset(in->data, cpath(), opts);
+  outputs.SetValue(0, out);  
   
   Mat *disp_mat = NULL;
   Mat *coh_mat = NULL;
@@ -552,7 +544,6 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   float disp_stop = 7.0;
   int start_line = 0;
   int stop_line = subset.EPICount();
-  std::string storage_name = "disparity";
   
   
   //FIXME here automatically derive from input (horopter etc.)
@@ -563,17 +554,10 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   SetParameter_(P_IDX::StartLine, DspParameter(DPPT::Int, start_line));
   SetParameter_(P_IDX::StopLine, DspParameter(DPPT::Int, stop_line));
-  SetParameter_(P_IDX::storage_name, DspParameter(DPPT::String, storage_name));
   
-  //apply configs
-  forward_config(this, in->data);
-  if (config)
-    forward_config(this, config->data);
-  
-  disp_start = *GetParameter(P_IDX::DispStart)->GetFloat()*opts.scale();
+  disp_start = *GetParameter(P_IDX::DispStart)->GetFloat()*subset.proc().scale();
   disp_step  = *GetParameter(P_IDX::DispStep)->GetFloat();
-  disp_stop  = (*GetParameter(P_IDX::DispStop)->GetFloat()+(disp_step/opts.scale()-1))*opts.scale();
-  storage_name = *GetParameter(P_IDX::storage_name)->GetString();
+  disp_stop  = (*GetParameter(P_IDX::DispStop)->GetFloat()+(disp_step/subset.proc().scale()-1))*subset.proc().scale();
   
   //FIXME set/get default!
   get_int_param(this, start_line, P_IDX::StartLine);
@@ -589,12 +573,11 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   int t_count = 1;
 #endif
 
-    //FIXME write!
-  std::string tmp_storage_name = storage_name;
-  tmp_storage_name.append("/default/data");
-  Datastore *disp_store = out->data->addStore(tmp_storage_name);
+  out->data->addLink("disparity"/out_group/"subset", in->path);
+  Datastore *disp_store = out->data->addStore("disparity"/out_group/"data");
+  Datastore *coh_store = out->data->addStore("disparity"/out_group/"coherence");
 
-  tmp_storage_name = storage_name;
+  /*tmp_storage_name = storage_name;
   tmp_storage_name.append("/default");
   out->path = tmp_storage_name;
 
@@ -625,7 +608,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   tmp_storage_name.append("/default/source_LF");
   std::string tmpString = storage_name;
   tmpString.append("/default/subset/source");
-  out->data->addLink(tmp_storage_name, tmpString);
+  out->data->addLink(tmp_storage_name, tmpString);*/
 
   
   if (configOnly())
@@ -773,7 +756,6 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   
   assert(disp_mat);
-
 
   disp_store->write(disp_mat);
 

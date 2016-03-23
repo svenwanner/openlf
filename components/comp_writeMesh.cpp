@@ -519,6 +519,9 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   errorCond(obj_filename || ply_filename, "no output specified"); RETURN_ON_ERROR
   
+  Subset3d subset;
+  
+  errorCond(subset.create(in_disp->data, in_disp->path/"subset"), "invalid subset"); RETURN_ON_ERROR
   
   if (configOnly())
     return;
@@ -531,13 +534,6 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   if (use_col)
     col_store = in_col->data->store(in_col->path);  
   
-  //FIXME rework according to new subset handling
-  float scale = 1.0;
-  Attribute *attr;
-  attr = in_disp->data->get(in_disp->path / "subset/scale");
-  if (attr)
-    attr->get(scale);
-  
   //FIXME set default according to input store size! Needs to look at store ?! 
   int disp_n = max(min(disp[3]/2 + *GetParameter(3)->GetInt(), disp[3]-1), 0);
   int col_n = 0;
@@ -547,18 +543,16 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   cv::Mat *img = NULL;
   std::vector<int> idx(disp_store->dims(), 0);
   
-  ProcData opts;
-  opts.set_scale(scale);
-  
   if (use_col) {
     cv::Mat img3d;
     std::vector<int> col_idx(col_store->dims(), 0);
     //FIXME flexmav!
     idx[3] = col_n;
     
-    ProcData opts_img = opts;
+    //FIXME add read function to subset?
+    ProcData opts = subset.proc();
     //FIXME scale?
-    opts_img.set_flags(CVT_8U);
+    opts.set_flags(CVT_8U);
     col_store->readImage(idx, &img3d, opts);
     
     img = new cv::Mat;
@@ -567,7 +561,6 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
   //FIXME rework according to new subset handling
   //FIXME path has no meaning?
-  Subset3d subset(in_disp->data, in_disp->path / "subset/source", opts);
   
   MultiArrayView<2, float> centerview = vigraMAV<4, float>(disp).bindAt(3, disp_n).bindAt(2, 0);
   
