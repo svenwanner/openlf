@@ -344,19 +344,23 @@ void QNEBlock::checkError()
   if (!component)
     return;
   
-  if (component->hasError() && !_error_label) {
+  if (component->hasError()) {
     std::string msg = component->errorMsg();
-    if (msg.size())
+    if (!msg.size())
+      msg = "<UNKNOWN ERROR>";
+    if (!_error_label) {
       _error_label = new QGraphicsTextItem(msg.c_str(), this);
+      scene()->addItem(_error_label);
+    }
     else
-      _error_label = new QGraphicsTextItem("<UNKNOWN ERROR>", this);
+      _error_label->setPlainText(msg.c_str());
+    
     text_w = _error_label->boundingRect().width();
     _error_label->setTextWidth(2*boundingRect().width());
     if (text_w <= 2*boundingRect().width())
       _error_label->setPos(-text_w/2, height/2);
     else 
       _error_label->setPos(-width, height/2);
-    scene()->addItem(_error_label);
     update(boundingRect());
   }
   else if (!component->hasError() && _error_label) {
