@@ -57,6 +57,7 @@ COMP_writeMesh::COMP_writeMesh()
   AddParameter_("max_depth", DspParameter(DspParameter::ParamType::Float, 5000));
   AddParameter_("disparity_idx", DspParameter(DspParameter::ParamType::Int, 0));
   AddParameter_("color_idx", DspParameter(DspParameter::ParamType::Int, 0));
+  AddParameter_("normalize", DspParameter(DspParameter::ParamType::Bool, true));
 }
 
 void write_ply(const char *name, MultiArrayView<2,float> &disp, cv::Mat *view, Subset3d &subset, float &cutoff)
@@ -505,10 +506,12 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   const std::string *obj_filename;
   const std::string *ply_filename;
   bool use_col = false;
+  bool proc_col = true;
   
   obj_filename = GetParameter(0)->GetString();
   ply_filename = GetParameter(1)->GetString();
   float cutoff = *GetParameter(2)->GetFloat();
+  bool normalize = *GetParameter(5)->GetBool();
   
   inputs.GetValue(0, in_disp);
   errorCond(in_disp && in_disp->path.size(), "disparity input missing!"); RETURN_ON_ERROR
@@ -531,14 +534,22 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   disp_store->read(disp);
   
   Datastore *col_store = NULL;
-  if (use_col)
-    col_store = in_col->data->store(in_col->path);  
+  if (use_col) {
+    col_store = in_col->data->store(in_col->path);
+    if (col_store)
+      proc_col = false;
+    else {
+      //path points to subset - use undistortion and scale according to subset
+      col_store = in_col->data->store(in_col->path / "extrinsics/data");
+      proc_col = true;
+    }
+  }
   
   //FIXME set default according to input store size! Needs to look at store ?! 
   int disp_n = max(min(disp[3]/2 + *GetParameter(3)->GetInt(), disp[3]-1), 0);
   int col_n = 0;
   if (use_col)
-    col_n = max(min(col[3]/2 + *GetParameter(4)->GetInt(), col[3]-1), 0);
+    col_n = max(min(col_store->extent()[3]/2 + *GetParameter(4)->GetInt(), col_store->extent()[3]-1), 0);
   
   cv::Mat *img = NULL;
   std::vector<int> idx(disp_store->dims(), 0);
@@ -546,17 +557,23 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   if (use_col) {
     cv::Mat img3d;
     std::vector<int> col_idx(col_store->dims(), 0);
-    //FIXME flexmav!
     idx[3] = col_n;
     
-    //FIXME add read function to subset?
-    ProcData opts = subset.proc();
-    //FIXME scale?
-    opts.set_flags(CVT_8U);
+    ProcData opts;
+    opts.set_store(col_store);
+    if (proc_col)
+      opts = subset.proc();
+    opts.set_flags(opts.flags());
     col_store->readImage(idx, &img3d, opts);
     
     img = new cv::Mat;
     clifMat2cv(&img3d,img);
+  }
+  
+  if (img) {
+    if (normalize)
+      cv::normalize(*img, *img, 0, 255, cv::NORM_MINMAX);
+    img->convertTo(*img, CV_8U);
   }
 
   //FIXME rework according to new subset handling
