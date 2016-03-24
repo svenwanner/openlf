@@ -42,8 +42,8 @@ id 3
 label "procEPI2.5D_0"
 type "procEPI2.5D"
 graphics [
-x 600.000000
-y -1.000000
+x 593.000000
+y 8.000000
 ]
 params [
 tensorCircuit "StructureTensor_Part1"
@@ -53,7 +53,7 @@ DispStart 3.000000
 DispStop 7.000000
 DispStep 1.000000
 StartLine 0
-StopLine 2160
+StopLine 1080
 disparity_name "default"
 disparity_S_integrate 5.000000
 disparity_S_pre_blur_x 0.000000
@@ -88,6 +88,7 @@ ply_filename "(UNSET)"
 max_depth 5000.000000
 disparity_idx 0
 color_idx 0
+normalize 1
 ]
 ]
 node [
