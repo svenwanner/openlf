@@ -124,16 +124,10 @@ void OP_LoadImage::Process_(DspSignalBus& inputs, DspSignalBus& outputs) {
 		abort();
 	}
 
-
-	std::cout << "Image information:\n";
-	std::cout << "  file format: " << imageInfo.getFileType() << std::endl;
-	std::cout << "  width:       " << imageInfo.width() << std::endl;
-	std::cout << "  height:      " << imageInfo.height() << std::endl;
-	std::cout << "  pixel type:  " << imageInfo.getPixelType() << std::endl;
-	std::cout << "  color image: ";
-	if (imageInfo.isColor()) std::cout << "yes (";
-	else std::cout << "no  (";
-	std::cout << "number of channels: " << imageInfo.numBands() << ")\n";
+	std::cout << "Loaded image: ";
+	std::cout << imageInfo.width() << "x" << imageInfo.height() << "x"
+			<< imageInfo.numBands() << " " << imageInfo.getPixelType() << " "
+			<< imageInfo.getFileType() << std::endl;
 
 	clif::callIf<OP_LoadImage_dispatcher,_is_valid>(type, &imageInfo, &out_ptr, &inputs, &outputs);
 
