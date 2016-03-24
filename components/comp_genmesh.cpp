@@ -20,6 +20,8 @@
 *
 */
 
+#include "clif/config.h"
+
 #ifdef CLIF_WITH_LIBIGL
 
 #include "clif/subset3d.hpp"
@@ -57,6 +59,8 @@ component::component()
   AddParameter_("ply_filename", DspParameter(DspParameter::ParamType::String));
   AddParameter_("viewer", DspParameter(DspParameter::ParamType::Bool, false));
   AddParameter_("block", DspParameter(DspParameter::ParamType::Bool, true));
+  AddParameter_("disp_group", DspParameter(DspParameter::ParamType::String));
+  AddParameter_("img_group", DspParameter(DspParameter::ParamType::String));
 }
 
 void gen_mesh(Mesh &mesh, MultiArrayView<2,float> &disp, cv::Mat &view, Subset3d &subset)
@@ -610,21 +614,33 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   bool block_viewer = *GetParameter(3)->GetBool();
   cv::Mat img3d, img;
   
-  errorCond(obj_filename || ply_filename || use_viewer, "no output specified");
+  errorCond(obj_filename || ply_filename || use_viewer, "no output or viewer specified");
   RETURN_ON_ERROR
   
   inputs.GetValue(0, in);
   errorCond(in, "no input!"); RETURN_ON_ERROR
-  
-  if (configOnly())
-    return;
 
-  
   //FIXME if disparity_root is empty use first available
-  cpath disparity_root = in->path;
+  
+  errorCond(GetParameter(4)->GetString(), "not disp group specified");
+  RETURN_ON_ERROR
+	  errorCond(GetParameter(5)->GetString(), "not img group specified");
+  RETURN_ON_ERROR
+  
+  cpath disparity_root = *GetParameter(4)->GetString();
+  cpath img_root = *GetParameter(4)->GetString();
+
+  if (configOnly())
+	  return;
   
   Mat disp;
-  Datastore *disp_store = in->data->getStore(disparity_root/"data");
+  Datastore *disp_store = in->data->store(disparity_root/"data");
+  //Datastore *img_store = in->data->store(img_root);
+  
+  errorCond(disp_store, "disp store invalid");
+  //errorCond(img_store, "img store invalid");
+  
+  
   disp_store->read(disp);
 
   float scale = 1.0;
@@ -636,11 +652,15 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     attr->get(scale);
   
   ProcData opts;
-  opts.set_scale(scale);
+  printf("genmesh scale: %f\n", scale);
+  opts.set_scale(0.5);
   
   //FIXME read/pass actual datastore!
-  Subset3d subset(in->data, disparity_root/"subset/source", opts);
+  //Subset3d subset(in->data, disparity_root/"subset/source", opts);
   //FIXME add read function to subset3d
+  
+  
+  Subset3d subset(in->data, disparity_root/"subset/source", opts);
   
   Datastore *store = in->data->getStore(subset.extrinsics_group()/"data");
   
@@ -648,7 +668,7 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   std::vector<int> idx(store->dims(), 0);
   idx[3] = disp[3]/2;
   
-  opts.set_flags(UNDISTORT | CVT_8U);
+  opts.set_flags(UNDISTORT | CVT_8U | CVT_GRAY);
   store->readImage(idx, &img3d, opts);
   clifMat2cv(&img3d,&img);
   
@@ -670,22 +690,11 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   printf("ERROR could not launch viewer, clif compiled without libigl_viewer!\n");
 #endif
   
-  
   setlocale(LC_NUMERIC, locale_old);
 }
 
 bool component::ParameterUpdating_ (int i, DspParameter const &p)
 {
-  //we only have four parameters
-  if (i >= 4)
-    return false;
-  
-  if (i < 2 && p.Type() != DspParameter::ParamType::String)
-    return false;
-  
-  if (i >= 2 && p.Type() != DspParameter::ParamType::Bool)
-    return false;
-  
   SetParameter_(i, p);
   return true;
 }

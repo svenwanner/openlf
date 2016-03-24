@@ -1251,6 +1251,8 @@ void DspComponent::progress_(float p)
   static struct timespec last_time = {0,0};
   struct timespec now;
 
+  p = std::max(std::min(p, 1.0f), 0.0f);
+  
 #ifdef _MSC_VER   
 
   static LARGE_INTEGER frequency;   
@@ -1312,8 +1314,8 @@ void DspComponent::errorCond(bool cond, const char *msg, ...)
     if (buf) {
       printf("ERROR: %s\n", buf); 
       
-      
       _errorMsg = std::string(buf);
+      free(buf);
     }
     else {
       printf("config error!\n");

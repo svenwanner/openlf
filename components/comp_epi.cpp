@@ -480,9 +480,22 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   out->data->addLink(tmp_storage_name, subset.extrinsics_group());
 
   tmp_storage_name = storage_name;
-  tmp_storage_name.append("disparity/default/subset/scale");
+  tmp_storage_name.append("/default/subset/scale");
   out->data->setAttribute(tmp_storage_name, opts.scale());
 
+  tmp_storage_name = storage_name;
+  tmp_storage_name.append("/default/data_min");
+  out->data->setAttribute(tmp_storage_name, disp_start-1);
+
+  tmp_storage_name = storage_name;
+  tmp_storage_name.append("/default/data_max");
+  out->data->setAttribute(tmp_storage_name, disp_stop+1);
+
+  tmp_storage_name = storage_name;
+  tmp_storage_name.append("/default/source_LF");
+  std::string tmpString = storage_name;
+  tmpString.append("/default/subset/source");
+  out->data->addLink(tmp_storage_name, tmpString);
   
   if (configOnly())
     return;

@@ -1,8 +1,24 @@
+option(OPENLF_WITH_CAMARRAY "build camarray component" OFF)
+
 file(GLOB COMPONENTS "*.cpp")
 foreach(COMP ${COMPONENTS})
   get_filename_component(COMPONENT_NAME ${COMP} NAME_WE)
-  add_library(${COMPONENT_NAME} MODULE ${COMP})
-  target_link_libraries(${COMPONENT_NAME} DSPatch openlf debug;clifd optimized;clif ${Boost_LIBRARIES})
+  
+  if (${COMPONENT_NAME} STREQUAL "comp_camarray")
+    if (OPENLF_WITH_CAMARRAY)
+      message("special component ${COMPONENT_NAME}")
+      include_directories("C:/Program Files/SiliconSoftware/Runtime5.4.1.2/include")
+      link_directories("C:/Program Files/SiliconSoftware/Runtime5.4.1.2/lib/visualc")
+      add_library(${COMPONENT_NAME} MODULE ${COMP} comp_camarray/cameraarray.cpp)
+      target_link_libraries(${COMPONENT_NAME} clsersis.lib fglib5.lib gbelib.lib)
+      target_link_libraries(${COMPONENT_NAME} DSPatch openlf debug;clifd optimized;clif ${Boost_LIBRARIES})
+    endif()
+  else()
+    message("compile component ${COMPONENT_NAME}")
+    add_library(${COMPONENT_NAME} MODULE ${COMP})
+    target_link_libraries(${COMPONENT_NAME} DSPatch openlf debug;clifd optimized;clif ${Boost_LIBRARIES})
+  endif()
+  
 endforeach()
 
 file(GLOB CIRCUITS "*.gml")

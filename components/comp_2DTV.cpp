@@ -43,8 +43,6 @@ private:
   virtual bool ParameterUpdating_ (int i, DspParameter const &p);
   LF _out;
   clif::Dataset _out_set;
-  bool initialize = true;
-
 };
 
 COMP_2DTV::COMP_2DTV()
@@ -66,7 +64,7 @@ COMP_2DTV::COMP_2DTV()
   AddParameter_("Display", DspParameter(DspParameter::ParamType::Int, 1));
   AddParameter_("TVposition", DspParameter(DspParameter::ParamType::Int, 0));
   AddParameter_("out_group", DspParameter(DspParameter::ParamType::String, "2DTV"));
-  AddParameter_("in_group", DspParameter(DspParameter::ParamType::String, "disparity"));
+  AddParameter_("in_group", DspParameter(DspParameter::ParamType::String, "merged"));
 }
 
 void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
@@ -78,8 +76,8 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	// Check if inputs are connected
 	errorCond(inputs.GetValue(0, in), "Dataset not found / missing input"); RETURN_ON_ERROR
 
-		//Link memouy from input data to output
-		out = &_out;
+	//Link memouy from input data to output
+	out = &_out;
 	out->data = &_out_set;
 	out->data->memory_link(in->data);
 
@@ -90,8 +88,8 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	errorCond(out, "output creation failed"); RETURN_ON_ERROR
 
 
-		//Define some test parameter
-		int TV_time_total = *GetParameter(0)->GetInt();																							//AddParameter_("iterations", DspParameter(DspParameter::ParamType::Int, 100));
+	//Define some test parameter
+	int TV_time_total = *GetParameter(0)->GetInt();																							//AddParameter_("iterations", DspParameter(DspParameter::ParamType::Int, 100));
 	float tau = *GetParameter(1)->GetFloat();																								//AddParameter_("tau", DspParameter(DspParameter::ParamType::Float, 0.012f));
 	float sigma = *GetParameter(2)->GetFloat();																								//AddParameter_("sigma", DspParameter(DspParameter::ParamType::Float, 0.5f));
 	float delta = *GetParameter(3)->GetFloat();																								//AddParameter_("delta", DspParameter(DspParameter::ParamType::Float, 0.2f));
@@ -141,7 +139,7 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 		}
 		else
 		{
-			tmp_data_root /= "subset/in_data";
+			tmp_data_root /= "source";
 			use_coherence = false;
 			std::cout << "Search path" << tmp_data_root << std::endl;
 		}
@@ -154,64 +152,85 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	}
 	errorCond(use_coherence, "no coherence measure found"); RETURN_ON_ERROR
 
-		// Load Coherence store
-		Datastore *coh_store = in->data->getStore(tmp_data_root / "coherence");
-	errorCond(coh_store, "no coh_store available"); RETURN_ON_ERROR
+	Datastore *coh_store;
+	try{
+		coh_store = in->data->getStore(tmp_data_root / "coherence");
+	}
+	catch (const std::exception& e){
+		errorCond(coh_store, "no coh_store available"); RETURN_ON_ERROR
+	}
 
-		// Load Light Field itself
-		Datastore *lf_store = in->data->getStore(disparity_root / "subset/source/data");
+	// Load scaled Light Field
+	float scale = 1.0;
+	Attribute *attr;
+	attr = in->data->get(tmp_data_root / "subset/scale");
+	if (attr)  attr->get(scale);
+	ProcData opts(UNDISTORT);
+	opts.set_scale(scale);
+	Subset3d subset(in->data, tmp_data_root / "source_LF", opts);
+
+	Datastore *lf_store = in->data->getStore(tmp_data_root / "source_LF/data");
 	errorCond(lf_store, "no lf_store available"); RETURN_ON_ERROR
 
+	tmp_data_root = out_dataset_name;
+	tmp_data_root.append("/default/subset/scale");
+	out->data->setAttribute(tmp_data_root, scale);
 
-		//The TV should be adapted onto the center view image.
-		if (initialize) {
-			std::cout << initialize << std::endl;
-			try{
-				int tmp;
-				in->data->get(disparity_root / "subset/refView", tmp);
-				//std::cout << "try to set parameter: " << tmp;
-				SetParameter_(12, DspParameter(DspParameter::ParamType::Int, tmp));
-			}
-			catch (const std::exception& e) {
-				SetParameter_(12, DspParameter(DspParameter::ParamType::Int, (lf_store->extent()[3] - 1) / 2)); initialize = false;
-			}
-		}
-	int TVposition = *GetParameter(12)->GetInt();																							//AddParameter_("TVposition", DspParameter(DspParameter::ParamType::Int, 0));
+	//std::cout << "lf_store Dims : " << subset.EPIWidth() << " " << subset.EPICount() << " " << subset.EPIHeight() << " " << subset.EPIDepth() << " " << std::endl;
+	//std::cout << "coh_store Dims : " << coh_store->extent() << std::endl;
+	//std::cout << "disp_store Dims : " << disp_store->extent() << std::endl;
 
+	
+	int TVposition = 0;
+	try{
+		in->data->get(tmp_data_root / "refView", TVposition);
+		SetParameter_(12, DspParameter(DspParameter::ParamType::Int, TVposition));
+	}
+	catch (const std::exception& e) {
+		SetParameter_(12, DspParameter(DspParameter::ParamType::Int, (subset.EPIHeight() - 1) / 2));
+	}
+
+	TVposition = *GetParameter(12)->GetInt();																							//AddParameter_("TVposition", DspParameter(DspParameter::ParamType::Int, 0));
+
+	if (TVposition >= subset.EPIHeight() || TVposition < 0){
+		TVposition = subset.EPIHeight() / 2;
+	}
+	
 	//Set some Metadata
 	std::string tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/data");
-	out->path = tmp_dataset_name;
-
-	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/refView");
+	tmp_dataset_name.append("/default/refView");
 	out->data->setAttribute(tmp_dataset_name, TVposition);
 
 	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/source");
-	//FIXME:make this relative to the used datasets
-	out->data->addLink(tmp_dataset_name, "calibration/extrinsics/default");
+	tmp_dataset_name.append("/default/source_LF");
+	cpath tmp = disparity_root;
+	tmp.append("/source_LF");
+	out->data->addLink(tmp_dataset_name, tmp);
 
 	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/in_data");
+	tmp_dataset_name.append("/default/source");
 	out->data->addLink(tmp_dataset_name, disparity_root);
 
 	//Initialize output store of module
 	tmp_dataset_name = out_dataset_name;
 	tmp_dataset_name.append("/default/data");
+	out->path = tmp_dataset_name;
 	Datastore *store = out->data->addStore(tmp_dataset_name);
 
-	//std::cout << "dataset_name: " << out_dataset_name << std::endl;
-	//std::cout << "tmp_dataset_name" << tmp_dataset_name << std::endl;
 
 	// Check parameters only
 	if (configOnly())
 		return;
 
+	/*****************************
+	Finish initialization
+	******************************
+	Start Processing section
+	******************************/
 
 	// Load Light Field itself
 	Mat_<float> lf;
-	lf_store->read(lf, ProcData(UNDISTORT));
+	lf_store->read(lf, opts);
 	// Load Coherence store
 	Mat_<float> coh;
 	coh_store->read(coh);
@@ -220,16 +239,23 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	disp_store->read(disp);
 
 
+	Mat single_Image = lf.bind(3, TVposition);
+	int refView = TVposition;
+
+//FIXME Crashes if TVPos is larger than array
+	//if (disp_store->extent()[3] < 2){
+	//	refView = 0;
+	//	SetParameter_(12, DspParameter(DspParameter::ParamType::Int, TVposition));
+	//}	
+	std::cout << disp_store->extent()[3] << " "<< refView << std::endl;
+
+	std::cout << "TVposition reset to: " << refView << std::endl;
+
 	//slice single disparity and coherence images as well as center view image to modify boundary movability
 
-	
-	Mat single_Image = lf.bind(3, TVposition);
 
-	if (TVposition >= disp_store->extent()[3]){
-		TVposition = 0;
-	}
-	cv::Mat single_dispMap = cvMat(disp.bind(3, TVposition).bind(2, 0));
-    cv::Mat single_cohMap = cvMat(coh.bind(3, TVposition).bind(2, 0));
+	cv::Mat single_dispMap = cvMat(disp.bind(3, refView).bind(2, 0));
+	cv::Mat single_cohMap = cvMat(coh.bind(3, refView).bind(2, 0));
 
 	//Generate result Storate of light field size and initialize it with a predefined starting value
 	Idx size = { single_dispMap.size[1], single_dispMap.size[0] };
@@ -344,6 +370,10 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 				single_dispMap.at<float>(y, x) = 0;
 				single_cohMap.at<float>(y, x) = 0;
 			}
+			if (std::isnan(single_cohMap.at<float>(y, x))){
+				single_dispMap.at<float>(y, x) = 0;
+				single_cohMap.at<float>(y, x) = 0;
+			}
 			if (maxDispValue < single_dispMap.at<float>(y, x))
 				maxDispValue = single_dispMap.at<float>(y, x);
 		}
@@ -376,7 +406,9 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	// initialize display
 	if (display){
 		cv::namedWindow("TV_result", 0);
-		cv::resizeWindow("TV_result", single_result.size[1] / 4, single_result.size[0] / 4);
+		int reduceSize = 1;
+		if (single_result.size[0] > 1200 || single_result.size[1] > 1200) reduceSize = 4;
+		cv::resizeWindow("MergeInput", single_result.size[1] / reduceSize, single_result.size[0] / reduceSize);
 	}
 	
 	for (unsigned int time = 0; time < TV_time_total; time++)

@@ -23,6 +23,7 @@
 #include "clif/subset3d.hpp"
 #include "clif/mat_helpers.hpp"
 #include "openlf/types.hpp"
+#include <opencv2/highgui/highgui.hpp>
 
 #include "dspatch/DspPlugin.h"
 
@@ -44,11 +45,13 @@ private:
 
 COMP_warpToRefView::COMP_warpToRefView()
 {
-  setTypeName_("warpToRefView");
+  setTypeName_("COMP_warpToRefView");
   AddInput_("input");
   AddOutput_("ouput");
   AddParameter_("in_group", DspParameter(DspParameter::ParamType::String, "2DTV"));
   AddParameter_("out_group", DspParameter(DspParameter::ParamType::String, "warped"));
+  AddParameter_("refView", DspParameter(DspParameter::ParamType::Int, 0));
+  AddParameter_("refDisp", DspParameter(DspParameter::ParamType::Float, 200.0f));
 }
 
 void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
@@ -60,8 +63,8 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	// Check if inputs are connected
 	errorCond(inputs.GetValue(0, in), "missing input"); RETURN_ON_ERROR
 
-	//Link memouy from input data to output
-	out = &_out;
+		//Link memouy from input data to output
+		out = &_out;
 	out->data = &_out_set;
 	out->data->memory_link(in->data);
 
@@ -73,6 +76,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 	const std::string in_dataset_name = *GetParameter(0)->GetString();
 	const std::string out_dataset_name = *GetParameter(1)->GetString();
+	float ref_disp = *GetParameter(3)->GetFloat();
 
 
 	//get location of disparity and coherence map
@@ -84,10 +88,47 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	catch (const std::exception& e){
 		errorCond(false, "Dataset not found"); RETURN_ON_ERROR
 	}
-	
+
 	//define storages used for TV
 	Datastore *TV_store = in->data->getStore(TV_root / "data");
-	Datastore *lf_store = in->data->getStore(TV_root / "subset/source/data");
+
+	// Load scaled Light Field
+	float scale = 1.0;
+	Attribute *attr;
+	attr = in->data->get(TV_root / "subset/scale");
+	if (attr)  attr->get(scale);
+	ProcData opts(UNDISTORT);
+	opts.set_scale(scale);
+	Subset3d subset(in->data, TV_root / "source_LF", opts);
+
+	opts.set_depth(subset.disparity2depth(ref_disp));
+
+	Datastore *lf_store = in->data->getStore(TV_root / "source_LF/data");
+	errorCond(lf_store, "no lf_store available"); RETURN_ON_ERROR
+
+	cpath tmp_data_root = out_dataset_name;
+	tmp_data_root /= "default/subset/scale";
+	out->data->setAttribute(tmp_data_root, scale);
+
+	//std::cout << "lf_store Dims : " << subset.EPIWidth() << " " << subset.EPICount() << " " << subset.EPIHeight() << " " << subset.EPIDepth() << " " << std::endl;
+	//std::cout << "disp_store Dims : " << TV_store->extent() << std::endl;
+
+	int refView = 0;
+	//The TV should be adapted onto the center view image.
+	try{
+		in->data->get(TV_root / "refView", refView);
+		SetParameter_(2, DspParameter(DspParameter::ParamType::Int, refView));
+	}
+	catch (const std::exception& e) {
+		SetParameter_(2, DspParameter(DspParameter::ParamType::Int, (subset.EPIHeight() - 1) / 2));
+	}
+	refView = *GetParameter(2)->GetInt();																							//AddParameter_("TVposition", DspParameter(DspParameter::ParamType::Int, 0));
+
+	if (refView >= subset.EPIHeight() || refView < 0){
+		refView = subset.EPIHeight() / 2;
+	}
+
+	std::cout << "RefView: " << refView << std::endl;
 
 	//Set some output Metadata
 	std::string tmp_dataset_name = out_dataset_name;
@@ -97,44 +138,61 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 	//FIXME: Reference View is always the central view modify get_intensities function in clif
 	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/refView");
-	out->data->setAttribute(tmp_dataset_name, (lf_store->extent()[3] - 1) / 2);
+	tmp_dataset_name.append("/default/refView");
+	out->data->setAttribute(tmp_dataset_name, refView);
 
 	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/source");
-	out->data->addLink(tmp_dataset_name, "calibration/extrinsics/default");
+	tmp_dataset_name.append("/default/source_LF");
+	cpath tmp = TV_root;
+	tmp.append("/source_LF");
+	out->data->addLink(tmp_dataset_name, tmp);
 
 	tmp_dataset_name = out_dataset_name;
-	tmp_dataset_name.append("/default/subset/in_data");
+	tmp_dataset_name.append("/default/source");
 	out->data->addLink(tmp_dataset_name, TV_root);
-
 
 	if (configOnly())
 		return;
-  
-	
-//Load Light Field itself
-	Mat_<float> lf;
-	lf_store->read(lf, ProcData(UNDISTORT));
 
-//read TV result
+	//Load Light Field itself
+	Mat_<uint8_t> lf;
+	lf_store->read(lf, opts);
+
+	//read TV result
 	Mat_<float> TV;
 	TV_store->read(TV);
 
-//Allocate memory for warped output images
-	Mat_<float> result;
+	if (refView >= TV_store->extent()[3] || refView < 0){
+		refView = TV_store->extent()[3] / 2;
+	}
+	std::cout << "Extention: " << TV_store->extent()[3] << " reset refView to: " << refView << std::endl;
+	std::cout << "Scale: " << scale << "\n";
+
+	//Allocate memory for warped output images
+	Mat_<uint8_t> result;
 	result.create(lf.type(), lf);
 
+	for (int x = 0; x < subset.EPIWidth(); x++) {
+		for (int y = 0; y < subset.EPICount(); y++) {
+			for (int z = 0; z < subset.EPIHeight(); z++) {
+				for (int a = 0; a < subset.EPIDepth(); a++) {
+					result(x, y, z, a) = 0;
+				}
+			}
+		}
+	}
 
-  for(int y= 0; y<lf[1]; y++)	
-  {
-    progress_((float)y/lf[1]);
 
-	#pragma omp parallel for
-    for(int x = 0; x < lf[0]; x++ )
+	for (int y = 0; y < lf[1]; y++)
+	{
+		progress_((float)y / lf[1]);
+
+#pragma omp parallel for
+		for (int x = 0; x < lf[0]; x++)
 		{
 			Mat IntensityStack = result.bind(1, y).bind(0, x);
-			get_intensities(lf, IntensityStack, x, y, TV(x, y, 0, 0));
+//			get_intensities(lf, IntensityStack, x, y, TV(x, y, 0, refView) - ref_disp*scale - 23.5);
+			get_intensities(lf, IntensityStack, x, y, TV(x, y, 0, refView) - ref_disp*scale - 23);
 		}
 	}
 
@@ -145,10 +203,10 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 bool COMP_warpToRefView::ParameterUpdating_(int i, DspParameter const &p)
 {
   //we only have two parameters
-  if (i >= 3)
+  if (i >= 5)
     return false;
   
-  if (p.Type() != DspParameter::ParamType::String)
+  if (p.Type() != DspParameter::ParamType::String && p.Type() != DspParameter::ParamType::Int && p.Type() != DspParameter::ParamType::Float)
     return false;
   
   SetParameter_(i, p);
