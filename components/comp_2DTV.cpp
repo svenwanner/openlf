@@ -173,7 +173,7 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	errorCond(lf_store, "no lf_store available"); RETURN_ON_ERROR
 
 	tmp_data_root = out_dataset_name;
-	tmp_data_root.append("/default/subset/scale");
+	tmp_data_root /= "/default/subset/scale";
 	out->data->setAttribute(tmp_data_root, scale);
 
 	//std::cout << "lf_store Dims : " << subset.EPIWidth() << " " << subset.EPICount() << " " << subset.EPIHeight() << " " << subset.EPIDepth() << " " << std::endl;
@@ -204,7 +204,7 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	tmp_dataset_name = out_dataset_name;
 	tmp_dataset_name.append("/default/source_LF");
 	cpath tmp = disparity_root;
-	tmp.append("/source_LF");
+	tmp /= "/source_LF";
 	out->data->addLink(tmp_dataset_name, tmp);
 
 	tmp_dataset_name = out_dataset_name;

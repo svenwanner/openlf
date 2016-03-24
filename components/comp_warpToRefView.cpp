@@ -144,7 +144,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	tmp_dataset_name = out_dataset_name;
 	tmp_dataset_name.append("/default/source_LF");
 	cpath tmp = TV_root;
-	tmp.append("/source_LF");
+	tmp /= "/source_LF";
 	out->data->addLink(tmp_dataset_name, tmp);
 
 	tmp_dataset_name = out_dataset_name;

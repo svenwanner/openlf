@@ -111,7 +111,7 @@ void COMP_mergeDispMaps::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	tmp_dataset_name = out_dataset_name;
 	tmp_dataset_name.append("/default/source_LF");
 	cpath tmp = disparity_root;
-	tmp.append("/source_LF");
+	tmp /= "/source_LF";
 	out->data->addLink(tmp_dataset_name, tmp);
 
 	float data_max = 1;

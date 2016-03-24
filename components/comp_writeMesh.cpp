@@ -514,10 +514,10 @@ void COMP_writeMesh::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   bool normalize = *GetParameter(5)->GetBool();
   
   inputs.GetValue(0, in_disp);
-  errorCond(in_disp && in_disp->path.size(), "disparity input missing!"); RETURN_ON_ERROR
+  errorCond(in_disp && !in_disp->path.empty(), "disparity input missing!"); RETURN_ON_ERROR
   
   inputs.GetValue(1, in_col);
-  if (in_col && in_col->path.size())
+  if (in_col && !in_col->path.empty())
     use_col = true;
   
   errorCond(obj_filename || ply_filename, "no output specified"); RETURN_ON_ERROR
