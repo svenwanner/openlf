@@ -30,92 +30,104 @@ using namespace clif;
 using namespace vigra;
 using namespace openlf;
 
-class COMP_LFWrite : public DspComponent {
+class component : public DspComponent {
 public:
-  COMP_LFWrite();
-  DSPCOMPONENT_TRIVIAL_CLONE(COMP_LFWrite);
+  component();
+  DSPCOMPONENT_TRIVIAL_CLONE(component);
 protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 private:
-  virtual bool ParameterUpdating_ (int i, DspParameter const &p);
+  LF _out;
+  Dataset _out_set;
 };
 
-COMP_LFWrite::COMP_LFWrite()
+component::component()
 {
   setTypeName_("calcIntensity");
-  AddInput_("input");
-  AddParameter_("filename", DspParameter(DspParameter::ParamType::String));
-  AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
+  AddInput_("disparity");
+  AddInput_("data");
+  AddOutput_("shifted");
+  AddParameter_("disparity_idx", DspParameter(DspParameter::ParamType::Int, 0));
+  AddParameter_("output_group_name", DspParameter(DspParameter::ParamType::String, "default"));
 }
 
-void COMP_LFWrite::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
+void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
-  LF *in = NULL;
-  
+  LF *in_disp = NULL;
+  LF *in_col = NULL;
   LF *out = NULL;
+  bool proc_col = true;
+  
+  cpath output_group = *GetParameter(1)->GetString();
   
   
+  inputs.GetValue(0, in_disp);
+  errorCond(in_disp && !in_disp->path.empty(), "disparity input missing!"); RETURN_ON_ERROR
   
-  const std::string *filename;
-  const std::string *dataset_name = NULL;
+  inputs.GetValue(1, in_col);
+  errorCond(in_col && !in_col->path.empty(), "color input missing!"); RETURN_ON_ERROR
   
-  errorCond(inputs.GetValue(0, in), "missing input"); RETURN_ON_ERROR
-  cpath disparity_root = in->path;
-  if (disparity_root.empty())
-	disparity_root = in->data->getSubGroup("disparity");
-  filename = GetParameter(0)->GetString();
-  if (GetParameter(1))
-    dataset_name = GetParameter(1)->GetString();
+  Subset3d subset;
   
-  errorCond(filename, "missing filename"); RETURN_ON_ERROR
-
+  errorCond(subset.create(in_disp->data, in_disp->path/"subset"), "invalid subset"); RETURN_ON_ERROR
+  
+  out = &_out;
+  out->data = &_out_set;
+  out->data->memory_link(in_disp->data);
+  outputs.SetValue(0, out);
+  
+  out->path =  "disparity_shifted" / output_group / "data";
+  
+  Datastore *brdf_store = _out_set.addStore(out->path);
+  
   if (configOnly())
-	return;
+    return;
   
-  
-  Mat lf, raw_brdf;
-  Mat_<float> disp;
-  Datastore *disp_store = in->data->getStore(disparity_root/"data");
-
-  //FIXME if subset/nano source/data not exists
-  Datastore *lf_store = in->data->getStore(disparity_root/"subset/source/data");  
-
+  Mat_<float> disp; 
+  Mat col, raw_brdf;
+  Datastore *disp_store = in_disp->data->store(in_disp->path / "data");  
   disp_store->read(disp);
-  lf_store->read(lf, ProcData(UNDISTORT));
   
-  raw_brdf.create(lf.type(), lf);
+  Datastore *col_store = NULL;
+  col_store = in_col->data->store(in_col->path);
+  if (col_store)
+    proc_col = false;
+  else {
+    //path points to subset - use undistortion and scale according to subset
+    col_store = in_col->data->store(in_col->path / "extrinsics/data");
+    proc_col = true;
+  }
+
+  //FIXME set default according to input store size! Needs to look at store ?! 
+  int disp_n = max(min(disp[3]/2 + *GetParameter(0)->GetInt(), disp[3]-1), 0);
   
-  for(int y= 0; y<lf[1]; y++)	
+  std::vector<int> idx(disp_store->dims(), 0);
+  
+  ProcData opts;
+  opts.set_store(col_store);
+  if (proc_col)
+    opts = subset.proc();
+  opts.set_flags(opts.flags());
+  col_store->read(col, opts);
+  ///////////////////////////////////
+ 
+  
+  raw_brdf.create(col.type(), col);
+  
+  for(int y= 0; y<col[1]; y++)	
   {
-    progress_((float)y/lf[1]);
+    progress_((float)y/col[1]);
 #pragma omp parallel for
-    for(int x = 0; x<lf[0]; x++ )
+    for(int x = 0; x<col[0]; x++ )
+      
+    {
+      Mat brdf = raw_brdf.bind(1,y).bind(0,x);
+      if (!std::isnan( disp(x,y,0,disp_n)))
+	get_intensities(col, brdf,  x, y, disp(x,y,0,disp_n));
+    }
+  }
   
-		{
-		  Mat brdf = raw_brdf.bind(1,y).bind(0,x);
-		  if (!std::isnan( disp(x,y,0,lf[3]/2)))
-			get_intensities(lf, brdf,  x, y, disp(x,y,0,lf[3]/2));
-		}
-	}
-  ClifFile f_out;
-  f_out.create(filename->c_str());
-  Dataset out_set;
-  out_set.link(f_out, in->data);
-  Datastore *brdf_store = out_set.addStore("brdf/default/raw_brdf");
   brdf_store->write(raw_brdf);
 }
 
-bool COMP_LFWrite::ParameterUpdating_ (int i, DspParameter const &p)
-{
-  //we only have two parameters
-  if (i >= 2)
-    return false;
-  
-  if (p.Type() != DspParameter::ParamType::String)
-    return false;
-  
-  SetParameter_(i, p);
-  return true;
-}
-
-EXPORT_DSPCOMPONENT(COMP_LFWrite)
+EXPORT_DSPCOMPONENT(component)
