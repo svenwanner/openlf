@@ -127,7 +127,7 @@ void COMP_warpToRefView::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	tmp_dataset_name = out_dataset_name;
 	tmp_dataset_name.append("/source_LF");
 	cpath tmpSource = warped_root;
-	tmpSource.append("/source_LF");
+	tmpSource /= "/source_LF";
 	out->data->addLink(tmp_dataset_name, tmpSource);
 	//out->data->addLink(tmp_dataset_name, "calibration/extrinsics/default");
 

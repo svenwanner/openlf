@@ -65,7 +65,7 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   float scale = *GetParameter(1)->GetFloat();
   
   inputs.GetValue(0, in);
-  errorCond(in && in->path.size(), "input missing!"); RETURN_ON_ERROR
+  errorCond(in && !in->path.empty(), "input missing!"); RETURN_ON_ERROR
   
   out = &_out;
   out->data = &_out_set;

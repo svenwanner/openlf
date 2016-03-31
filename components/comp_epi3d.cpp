@@ -481,7 +481,7 @@ void COMP_Epi::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   
   inputs.GetValue(0, in);
   
-  errorCond(in && in->path.size(), "missing input"); RETURN_ON_ERROR
+  errorCond(in && !in->path.empty(), "missing input"); RETURN_ON_ERROR
   
   Subset3d subset;
   
