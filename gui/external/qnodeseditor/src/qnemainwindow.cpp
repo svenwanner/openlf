@@ -48,8 +48,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 QNEMainWindow::QNEMainWindow(QWidget *parent)  :  QMainWindow(parent)
 {
   setAttribute(Qt::WA_DeleteOnClose);
-  setWindowTitle(tr("Circuit Toolbox"));
-  
+  setWindowTitle(tr("Light-Field Node Editor"));
   
   mdiArea = new QMdiArea;
   mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -76,41 +75,40 @@ QNEMainWindow::~QNEMainWindow()
 void QNEMainWindow::createMenus()
 {
   fileMenu = new QMenu(tr("&File"), this);
-  //fileMenu->addAction(loadAct);
-  //fileMenu->addAction(saveAct);
   fileMenu->addAction(newAct);
+  fileMenu->addAction(loadAct);
+  fileMenu->addAction(saveAct);
+  
   fileMenu->addSeparator();
   fileMenu->addAction(quitAct);
   
   viewMenu = new QMenu(tr("&View"), this);
   viewMenu->addAction(tabViewAct);
+
+  circuitMenu = new QMenu(tr("&Circuit"), this);
+  circuitMenu->addAction(saveAsAct);
   
   //helpMenu = new QMenu(tr("&Help"), this);
+
+
   
   menuBar()->addMenu(fileMenu);
   menuBar()->addMenu(viewMenu);
+  menuBar()->addMenu(circuitMenu);
   //menuBar()->addMenu(helpMenu);
-  //menuBar()->addMenu(viewMenu);
+
 }
 
 
 void QNEMainWindow::createToolBars()
 {
   //ToolBar defined in source code
-  /*fileToolBar = addToolBar(tr("File"));
-  fileToolBar->addAction(loadAct);
-  fileToolBar->addAction(saveAct);
+  fileToolBar = addToolBar(tr("File"));
   fileToolBar->addAction(newAct);
-  fileToolBar->addSeparator();
+  fileToolBar->addAction(loadAct);
+  fileToolBar->addAction(saveAsAct);
+  /*fileToolBar->addSeparator();
   fileToolBar->addAction(quitAct);*/
   //fileToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 }
 
-/*void QNEMainWindow::createToolBars()
-printf("start client\n");
-      _client_socket = new QLocalSocket(this);
-      
-      connect(_client_socket, SIGNAL(connected()), this, SLOT(showFileClientConnected()));
-      connect(_client_socket, SIGNAL(error(QLocalSocket::LocalSocketError)), this, SLOT(showFileClientError(QLocalSocket::LocalSocketError)));
-      
-      _client_socket->connectToServer("clifview_showfile", QIODevice::ReadWrite);*/

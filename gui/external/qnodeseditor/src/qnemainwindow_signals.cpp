@@ -41,16 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void QNEMainWindow::createActions()
 {
-  /*loadAct = new QAction(QIcon(":/open.png"), tr("&Load Circuit in new Window"), this);
-  loadAct->setShortcuts(QKeySequence::Open);
-  loadAct->setStatusTip(tr("Open a file"));
-  connect(loadAct, SIGNAL(triggered()), this, SLOT(loadFile()));
-  
-  saveAct = new QAction(QIcon(":/save.png"), tr("&Save"), this);
-  saveAct->setShortcuts(QKeySequence::Save);
-  saveAct->setStatusTip(tr("Save a file"));
-  connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));*/
-  
+ 
   newAct = new QAction(QIcon(":/circuit.png"), tr("&New Circuit"), this);
   //saveAct->setShortcuts(QKeySequence::Save);
   newAct->setStatusTip(tr("New circuit"));
@@ -60,4 +51,13 @@ void QNEMainWindow::createActions()
   tabViewAct->setCheckable(true);
   tabViewAct->setChecked(true);
   connect(tabViewAct, SIGNAL(toggled(bool)), this, SLOT(view_mode_changed(bool)));
+
+//For Circuit Viewer
+  loadAct = new QAction(QIcon(":/open.png"), tr("&Load Circuit in new Window"), this);
+  loadAct->setShortcuts(QKeySequence::Open);
+  loadAct->setStatusTip(tr("Open a file"));
+
+  saveAsAct = new QAction(QIcon(":/save.png"), tr("Save &As..."), this);
+  saveAsAct->setShortcuts(QKeySequence::SaveAs);
+  saveAsAct->setStatusTip(tr("Save the document under a new name"));
 }

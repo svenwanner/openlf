@@ -50,6 +50,7 @@ component::component()
   AddInput_("dataset");
   AddOutput_("output");
   AddParameter_("path", DspParameter(DspParameter::ParamType::String));
+  AddParameter_("ClifTree", DspParameter(DspParameter::ParamType::Pointer, (LF*)NULL));
 }
 
 
@@ -62,8 +63,12 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   inputs.GetValue(0, in);
   errorCond(in, "input missing!"); RETURN_ON_ERROR
   
+  SetParameter(1, DspParameter(DspParameter::ParamType::Pointer,in));
+
   errorCond(GetParameter(0)->GetString() && GetParameter(0)->GetString()->size(), "invalid path"); RETURN_ON_ERROR
   path = *GetParameter(0)->GetString();
+
+  
   
   out = &_out;
   out->data = in->data;

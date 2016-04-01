@@ -103,6 +103,7 @@ private:
   QMenu *fileMenu = std::nullptr_t();
   QMenu *helpMenu = std::nullptr_t();
   QMenu *viewMenu = std::nullptr_t();
+  QMenu *circuitMenu = std::nullptr_t();
   
   QToolBar *fileToolBar = std::nullptr_t();
   
@@ -117,15 +118,19 @@ private:
   
   QAction *quitAct = std::nullptr_t();
   QAction *loadAct = std::nullptr_t();
-  QAction *saveAct = std::nullptr_t();
   QAction *newAct = std::nullptr_t();
   QAction *tabViewAct = NULL;
+
+  QAction *saveAct = std::nullptr_t();
+  QAction *saveAsAct = std::nullptr_t();
+
   
   QListWidget *List1 = std::nullptr_t();
   QListWidget *List2 = std::nullptr_t();
   
   QDockWidget *_comp_list_dock = NULL;
-  QDockWidget *_settings_dock = NULL;
+  QDockWidget *_settings_dock_old = NULL;
+  QScrollArea *_settings_dock = NULL;
   QDockWidget *_circuit_dock = NULL;
   QDockWidget *_circuit_list_dock = NULL;
   QDockWidget *_port_dock = NULL;

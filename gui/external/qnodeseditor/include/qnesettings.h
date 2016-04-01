@@ -66,6 +66,7 @@ private slots:
   void portCountChanged(int val);
   void circuitSelected(int val);
   void boolChanged(int val);
+  void slot_treedoubleclicked(QTreeWidgetItem *item, int column);
 };
 
 #endif
