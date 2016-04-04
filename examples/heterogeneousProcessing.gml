@@ -44,8 +44,8 @@ id 3
 label "procEPI2.5D_0"
 type "procEPI2.5D"
 graphics [
-x 283.000000
-y -42.000000
+x 285.000000
+y -105.000000
 ]
 params [
 tensorCircuit "StructureTensor_Part1"
@@ -61,6 +61,19 @@ disparity_S_integrate 5.000000
 disparity_S_pre_blur_x 0.000000
 disparity_S_pre_blur_y 0.000000
 orientation_S_min_coherence 0.500000
+]
+]
+node [
+id 4
+label "COMP_WarpByRefDisparity_0"
+type "COMP_WarpByRefDisparity"
+graphics [
+x 442.000000
+y -48.000000
+]
+params [
+disparity_idx 0
+shifted_name "default"
 ]
 ]
 edge [
@@ -80,5 +93,17 @@ source 2
 target 3
 source_pad 0
 target_pad 0
+]
+edge [
+source 3
+target 4
+source_pad 0
+target_pad 0
+]
+edge [
+source 2
+target 4
+source_pad 0
+target_pad 1
 ]
 ]
