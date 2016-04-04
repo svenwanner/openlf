@@ -23,7 +23,7 @@
 
 // SiSo stuff
 
-#include "fgrab_Struct.h"
+#include "fgrab_struct.h"
 #include "fgrab_prototyp.h"
 #include "fgrab_define.h"
 #include "gbe.h"
@@ -39,11 +39,6 @@
 
 using namespace std;
 using namespace cv;
-
-void cvShowManyImages(char* title, int nArgs, ...);
-void cvGetManyViews(char* title, int inN, Mat* outMats, unsigned int inNX, unsigned int inNY, unsigned int inType = CV_8UC3, int row_break = 0);
-void cvUpdateManyViews(char* inTitle);
-
 
 namespace camerarray {
 
@@ -76,6 +71,8 @@ enum {
 // Class for Framegrabber
 //
 //
+
+class SiSoGigECamera;
 
 class Framegrabber {
 public:
@@ -287,7 +284,7 @@ private:
 
 class CameraArray {
 public:
-		CameraArray(string inConfig, unsigned int inNT, int NoOfFramegrabber);		// load all cameras, with default settings
+		CameraArray(string inConfig, unsigned int inNT = 8, int NoOfFramegrabber = 0);		// load all cameras, with default settings
 		CameraArray(string inConfig, unsigned int inNT, float inEXP, float inFPS, vector<int> inUsedFGs, vector<int> usedCameras);
 		~CameraArray();
 
