@@ -42,7 +42,7 @@ private:
   
 COMP_LFRead::COMP_LFRead()
 {
-  setTypeName_("COMP_readCLIF");
+  setTypeName_("COMP_readCLIF");//this name is static otherwise qnesettings.cpp needs to be adapted as well.
   AddOutput_("output");
   AddParameter_("filename", DspParameter(DspParameter::ParamType::String,""));
   AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));

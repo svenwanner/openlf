@@ -42,7 +42,7 @@ private:
 
 COMP_LFWrite::COMP_LFWrite()
 {
-	setTypeName_("COMP_writeCLIF");
+	setTypeName_("COMP_writeCLIF");//this name is static otherwise qnesettings.cpp needs to be adapted as well.
 	AddInput_("input");
 	AddParameter_("filename", DspParameter(DspParameter::ParamType::String));
 	AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
