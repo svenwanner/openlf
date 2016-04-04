@@ -46,6 +46,7 @@ COMP_LFRead::COMP_LFRead()
   AddOutput_("output");
   AddParameter_("filename", DspParameter(DspParameter::ParamType::String,""));
   AddParameter_("dataset", DspParameter(DspParameter::ParamType::String));
+  AddParameter_("Clif_Dataset", DspParameter(DspParameter::ParamType::Pointer, (ClifFile*)NULL));
 }
 
 void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
@@ -84,9 +85,11 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   else {
     //FIXME error handling
     ClifFile f(*filename, H5F_ACC_RDONLY);
-    
+   
     errorCond(f.valid(), "invalid file \"%s\"", filename->c_str()); RETURN_ON_ERROR
-    
+	SetParameter(2, DspParameter(DspParameter::ParamType::Pointer, &f));
+	
+
     //FIXME error handling
     if (dataset_name)
       out->data->open(f, *dataset_name);

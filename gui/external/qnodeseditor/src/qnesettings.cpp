@@ -156,20 +156,25 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
   _layout_w->setLayout(actual_layout);
       
   _component = comp;
+  std::string CompName = _component->GetComponentName();
   
   for(int i=0;i<_component->GetParameterCount();i++) {
     int xpos = 0;
     const DspParameter *param = _component->GetParameter(i);
-    
-    QPushButton *chk = new QPushButton("reset");
-    chk->setProperty("row", i+header_lines);
-    chk->setProperty("idx", i);
-    chk->setProperty("component", QVariant::fromValue((void*)_component));
-	chk->setMinimumWidth(40);
-	chk->setMaximumWidth(40);
-    connect(chk, SIGNAL(clicked()), this, SLOT(settingOnOffReset()));
-    actual_layout->addWidget(chk, i+header_lines, xpos++);
-    actual_layout->addWidget(new QLabel(comp->GetParameterName(i).c_str()), i+header_lines, xpos++);
+	
+		QPushButton *chk = new QPushButton("reset");
+		chk->setProperty("row", i+header_lines);
+		chk->setProperty("idx", i);
+		chk->setProperty("component", QVariant::fromValue((void*)_component));
+		chk->setMinimumWidth(40);
+		chk->setMaximumWidth(40);
+		connect(chk, SIGNAL(clicked()), this, SLOT(settingOnOffReset()));
+		actual_layout->addWidget(chk, i+header_lines, xpos++);
+		actual_layout->addWidget(new QLabel(comp->GetParameterName(i).c_str()), i+header_lines, xpos++);
+		if (CompName.compare(0, 16, "COMP_select_path") == 0){
+			chk->setHidden(true);
+		}
+		
     
     switch (param->Type()) {
         case DPPT::String : {
@@ -180,14 +185,16 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
 		  ed->setMinimumWidth(180);
 		  ed->setMaximumWidth(180);
           connect(ed, SIGNAL(textChanged(QString)), this, SLOT(textSettingChanged(QString)));
-          
-		  QPushButton *btn = new QPushButton(_layout_w);
-		  btn->setText("...");
-		  btn->setMinimumWidth(25);
-		  btn->setMaximumWidth(25);
-          actual_layout->addWidget(btn, i+header_lines, xpos++);		  
-          btn->setProperty("ed", QVariant::fromValue(ed));
-          connect(btn, SIGNAL(clicked()), this, SLOT(selFileClicked()));
+
+		  if (CompName.compare(0, 16, "COMP_select_path") != 0){
+			  QPushButton *btn = new QPushButton(_layout_w);
+			  btn->setText("...");
+			  btn->setMinimumWidth(25);
+			  btn->setMaximumWidth(25);
+			  actual_layout->addWidget(btn, i + header_lines, xpos++);
+			  btn->setProperty("ed", QVariant::fromValue(ed));
+			  connect(btn, SIGNAL(clicked()), this, SLOT(selFileClicked()));
+		  }
           break;
         }
       case DPPT::Float : {
@@ -219,6 +226,7 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
 
 		openlf::LF *d;
 		param->GetPointer(d);
+
 		if (d){
 			QTreeWidget *treeWidget = new QTreeWidget();
 			treeWidget->setProperty("component", QVariant::fromValue((void*)_component));
@@ -230,7 +238,15 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
 			treeWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 		    actual_layout->addWidget(treeWidget, i + header_lines, xpos++);
 			connect(treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(slot_treedoubleclicked(QTreeWidgetItem*, int)));
+			break;
 		}
+
+		clif::ClifFile *f;
+		param->GetPointer(f);
+		if (f){
+			printf("test1");
+		}
+
 
 		DspComponent *c;
 		param->GetPointer(c);
@@ -242,17 +258,16 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
 			combox->setProperty("component", QVariant::fromValue((void*)_component));
 			combox->setProperty("idx", i);
 			connect(combox, SIGNAL(currentIndexChanged(int)), this, SLOT(circuitSelected(int)));
+			break;
 		}
 
-		else{
-			QLineEdit *combox = new QLineEdit(_layout_w);
-			combox->setMinimumWidth(180);
-			combox->setMaximumWidth(180);
-			combox->setEnabled(false);
-			actual_layout->addWidget(combox, i + header_lines, xpos++);
-			combox->setProperty("component", QVariant::fromValue((void*)_component));
-			combox->setProperty("idx", i);
-		}
+		QLineEdit *combox = new QLineEdit(_layout_w);
+		combox->setMinimumWidth(180);
+		combox->setMaximumWidth(180);
+		combox->setEnabled(false);
+		actual_layout->addWidget(combox, i + header_lines, xpos++);
+		combox->setProperty("component", QVariant::fromValue((void*)_component));
+		combox->setProperty("idx", i);
 
 		break;
       }
@@ -269,16 +284,16 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
     
     //FIXME this emits setting changed signals!
     _load_existing_param(actual_layout, _component, i, _circuits);
-    
-    QLineEdit *ed = new QLineEdit(_layout_w);
-    actual_layout->addWidget(ed, i+header_lines, xpos++);
-    ed->setProperty("component", QVariant::fromValue((void*)_component));
-    ed->setProperty("idx", i);
-	ed->setMinimumWidth(120);
-	ed->setMaximumWidth(120);
-    ed->setText(QString(_component->GetParentCircuit()->GetComponentParameterAlias(_component, i).c_str()));
-    connect(ed, SIGNAL(textChanged(QString)), this, SLOT(aliasChanged(QString)));
-
+	if (CompName.compare(0, 16, "COMP_select_path") != 0){
+		QLineEdit *ed = new QLineEdit(_layout_w);
+		actual_layout->addWidget(ed, i + header_lines, xpos++);
+		ed->setProperty("component", QVariant::fromValue((void*)_component));
+		ed->setProperty("idx", i);
+		ed->setMinimumWidth(120);
+		ed->setMaximumWidth(120);
+		ed->setText(QString(_component->GetParentCircuit()->GetComponentParameterAlias(_component, i).c_str()));
+		connect(ed, SIGNAL(textChanged(QString)), this, SLOT(aliasChanged(QString)));
+	}
     /*for(int n=1;n<actual_layout->columnCount();n++) {
       QLayoutItem *l = actual_layout->itemAtPosition(i+header_lines, n);
       if (l && l->widget())

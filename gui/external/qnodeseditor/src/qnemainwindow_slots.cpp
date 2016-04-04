@@ -405,3 +405,10 @@ void QNEMainWindow::check_viewer_state(Circuit_Viewer *v)
     _circuit_dock->setDisabled(false);
   }
 }
+
+void QNEMainWindow::OpenLFCamConfigurator(){
+
+	printf("tesset");
+	LFCamConfigurator *LFCC = new LFCamConfigurator();
+	LFCC->show();
+}

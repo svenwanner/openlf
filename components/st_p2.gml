@@ -1,4 +1,5 @@
 graph [
+label "ST_Part2"
 type "StructureTensor_Part2"
 node [
 id 0

@@ -60,4 +60,12 @@ void QNEMainWindow::createActions()
   saveAsAct = new QAction(QIcon(":/save.png"), tr("Save &As..."), this);
   saveAsAct->setShortcuts(QKeySequence::SaveAs);
   saveAsAct->setStatusTip(tr("Save the document under a new name"));
+
+  LFCamConfiguratorAct = new QAction(QIcon(":/LFCConfig.png"),tr("LFCamConfigurator"), this);
+  LFCamConfiguratorAct->setStatusTip(tr("Open Light Field Setup Configurator"));
+  connect(LFCamConfiguratorAct, SIGNAL(triggered()), this, SLOT(OpenLFCamConfigurator()));
+
+
+
+
 }

@@ -46,7 +46,7 @@ private:
   
 component::component()
 {
-  setTypeName_("COMP_select_path");
+  setTypeName_("COMP_select_path");//this name is static otherwise qnesettings.cpp needs to be adapted as well.
   AddInput_("dataset");
   AddOutput_("output");
   AddParameter_("path", DspParameter(DspParameter::ParamType::String));

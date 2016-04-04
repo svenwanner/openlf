@@ -87,14 +87,16 @@ void QNEMainWindow::createMenus()
 
   circuitMenu = new QMenu(tr("&Circuit"), this);
   circuitMenu->addAction(saveAsAct);
+
+  ToolsMenu = new QMenu(tr("&Tools"), this);
+  ToolsMenu->addAction(LFCamConfiguratorAct);
   
   //helpMenu = new QMenu(tr("&Help"), this);
 
-
-  
   menuBar()->addMenu(fileMenu);
   menuBar()->addMenu(viewMenu);
   menuBar()->addMenu(circuitMenu);
+  menuBar()->addMenu(ToolsMenu);
   //menuBar()->addMenu(helpMenu);
 
 }
@@ -107,6 +109,8 @@ void QNEMainWindow::createToolBars()
   fileToolBar->addAction(newAct);
   fileToolBar->addAction(loadAct);
   fileToolBar->addAction(saveAsAct);
+  fileToolBar->addSeparator();
+  fileToolBar->addAction(LFCamConfiguratorAct);
   /*fileToolBar->addSeparator();
   fileToolBar->addAction(quitAct);*/
   //fileToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
