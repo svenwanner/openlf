@@ -67,7 +67,7 @@ void component::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
   errorCond(GetParameter(0)->GetString() && GetParameter(0)->GetString()->size(), "invalid path"); RETURN_ON_ERROR
   path = *GetParameter(0)->GetString();
-
+  std::cout << path << std::endl;
   
   
   out = &_out;

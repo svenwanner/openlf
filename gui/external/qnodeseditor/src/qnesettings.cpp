@@ -316,6 +316,7 @@ void QNESettings::slot_treedoubleclicked(QTreeWidgetItem* item, int column){
 	//FIXME:Dynamically detection of correct widget!?
 	comp->SetParameter(0, DspParameter(DPPT::String, tmp33.toStdString()));
 	emit settingChanged();
+	reload();
 
 }
 
