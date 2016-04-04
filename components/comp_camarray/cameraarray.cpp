@@ -21,20 +21,26 @@ Framegrabber::Framegrabber(int inBoardNumber, string inConfig)
 {
 	int result;
 	
-	mHandle = Fg_Init("QuadAreaGray8.dll", mBoardNumber);
+//	mHandle = Fg_Init("QuadAreaGray8.dll", mBoardNumber);
+	mHandle = Fg_Init("libQuadAreaGray8.so", mBoardNumber);
 
 	if(mHandle == NULL)
 		throw(ERROR_FG_INIT);
 
 	result = Fg_loadConfig(mHandle, mConfig.c_str()); 
-
-	if(result)
+        
+	if(result) {
+                printf("error loading config: \"%s\"\n", Gbe_getErrorDescription(result));
 		throw(result);
+        }
 
+        mGBEHandle = NULL;
 	result = Gbe_initBoard(mBoardNumber, 0, &mGBEHandle);
 
-	if(result)
+	if(result) {
+                printf("error initializing board %d: \"%s\"\n", mBoardNumber, Gbe_getErrorDescription(result));
 		throw(result);
+        }
 }
 
 Framegrabber::~Framegrabber() {
@@ -128,7 +134,7 @@ Mat	FileStreamCamera::GetImageFromBuffer(unsigned int inPos) {
 
     if( idx < (int) mMaxFrame && mVirtualCamNum < mFiles.size()) {
 			char out[2048];
-			sprintf_s(out, mFiles[mVirtualCamNum].c_str(), idx);
+			sprintf(out, mFiles[mVirtualCamNum].c_str(), idx);
 			try {
 				cout << "reading to camera " << mVirtualCamNum << " : " << out << endl; 
 				tmp = imread(out, CV_LOAD_IMAGE_COLOR);//CV_LOAD_IMAGE_UNCHANGED
@@ -565,24 +571,32 @@ CameraArray::CameraArray(string inConfig, unsigned int inNT, int NoOfFramegrabbe
 	/*********************************************************************************************/
 	std::cout << "Load all framegrabbers" << std::endl;
 	i = 0;
-	try {
-		while (i < NoOfFramegrabber) {
-			
-			Framegrabber* fg = new Framegrabber(i, mConfig.c_str());
-			cout << "Load Board: " << i << endl;
-			mFGs.push_back(fg);
-			i++;
-		}
-		
-	} 
-	catch(ERR err) {
+        
+        bool failure = false;
+        while (!failure && (!NoOfFramegrabber || i < NoOfFramegrabber)) {
+            try {
+                Framegrabber* fg = new Framegrabber(i, mConfig.c_str());
+		cout << "Load Board: " << i << endl;
+		mFGs.push_back(fg);
+		i++;
+            }
+            catch (int err) {
+                cout << "Error " << err << "loading board" << i << endl;
+                failure = true;
+            }
+            catch(ERR err) {
 		cout << "Number of Boards loaded: " << i;
-	} 
-	catch(int err) {
+                failure = true;
+            }
+        }
+	/*catch(ERR err) {
+		cout << "Number of Boards loaded: " << i;
+	} */
+	/*catch(int err) {
 		cout << "Error " << err << endl;
-	}
+	}*/
 	std::cout << " ---->   Done!" << std::endl;
-	/*********************************************************************************************/
+	/********************************************************allocating*************************************/
 	/*********************************************************************************************/
 	/*********************************************************************************************/
 
@@ -590,19 +604,19 @@ CameraArray::CameraArray(string inConfig, unsigned int inNT, int NoOfFramegrabbe
 	// load all cameras of framegrabber
 	/*********************************************************************************************/
 	std::cout << "Load all cameras" << std::endl;
-	for(int i = 0; i < mFGs.size(); i++) {
-		try {
-			for(int i_cam = 0; i_cam < H_CAMS; i_cam++) {
-				std::cout << "Load camera:" << i_cam << std::endl;
-				SiSoGigECamera* cam = new SiSoGigECamera(*mFGs[i], i_cam, mNT);
-				mCameras.push_back(cam);
-			}
-		} catch(ERR err) {
-			cout << "Error allocating camera " << i << ": " << err << endl;
-		} catch(int err) {
-			cout << "Error " << err << endl;
-		}
-	}
+        for(int i = 0; i < mFGs.size(); i++) {
+            for(int i_cam = 0; i_cam < H_CAMS; i_cam++) {
+                try {
+                    std::cout << "Load camera:" << i_cam << std::endl;
+                    SiSoGigECamera* cam = new SiSoGigECamera(*mFGs[i], i_cam, mNT);
+                    mCameras.push_back(cam);
+                } catch(ERR err) {
+                    cout << "Error allocating camera " << i << ": " << err << endl;
+                } catch(int err) {
+                    cout << "Error " << err << endl;
+                }
+            }
+        }
 	cout << "Loaded " << mCameras.size() << " cameras" << endl;
 
 	// set all cameras to exp, fps of first camera
