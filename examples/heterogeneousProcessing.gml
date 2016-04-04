@@ -76,6 +76,19 @@ disparity_idx 0
 shifted_name "default"
 ]
 ]
+node [
+id 5
+label "COMP_spectral2RGB_XYZ_0"
+type "COMP_spectral2RGB_XYZ"
+graphics [
+x 644.000000
+y -21.000000
+]
+params [
+rgb_name "RGBrecon"
+gamma 0.500000
+]
+]
 edge [
 source 0
 target 1
@@ -105,5 +118,11 @@ source 2
 target 4
 source_pad 0
 target_pad 1
+]
+edge [
+source 4
+target 5
+source_pad 0
+target_pad 0
 ]
 ]
