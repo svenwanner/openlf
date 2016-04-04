@@ -9,12 +9,21 @@
 #include "types.hpp"
 #include "clif/datastore.hpp"
 #include "clif/core.hpp"
+#include <QHeaderView>
 
 #include "circuitviewer.h"
 
 #define DPPT DspParameter::ParamType
 
 static const int header_lines = 1;
+
+void attachTreeItem(QTreeWidgetItem *w, clif::StringTree<clif::Attribute*, clif::Datastore*> *t)
+{
+	for (int i = 0; i<t->childCount(); i++) {
+		QTreeWidgetItem *item = new QTreeWidgetItem(w, QStringList(QString(t->childs[i].val.first.c_str())));
+		attachTreeItem(item, &t->childs[i]);
+	}
+}
 
 void _load_existing_param(QGridLayout *layout, DspComponent *comp, int i, std::vector<DspCircuit*> &circuits)
 {
@@ -52,6 +61,23 @@ void _load_existing_param(QGridLayout *layout, DspComponent *comp, int i, std::v
     }
     case DPPT::Pointer : {
       
+		openlf::LF *d;
+		param->GetPointer(d);
+		if (d){
+			QTreeWidget *treeWidget = static_cast<QTreeWidget*>(w);
+			QHeaderView * pHeader = treeWidget->header();
+			pHeader->setSectionResizeMode(QHeaderView::ResizeToContents);
+			pHeader->setStretchLastSection(false);
+
+			clif::StringTree<clif::Attribute*, clif::Datastore*> tree = d->data->getTree();
+			for (int i = 0; i<tree.childCount(); i++) {
+				QTreeWidgetItem *item = new QTreeWidgetItem(treeWidget, QStringList(QString(tree.childs[i].val.first.c_str())));
+				item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+				attachTreeItem(item, &tree.childs[i]);
+			}
+		}
+
+
       DspComponent *c;
       param->GetPointer(c);
 	  if (c){
@@ -112,14 +138,6 @@ void QNESettings::reload()
   attach(_viewer, _component, _circuits);
 }
 
-void attachTreeItem(QTreeWidgetItem *w, clif::StringTree<clif::Attribute*, clif::Datastore*> *t)
-{
-	for (int i = 0; i<t->childCount(); i++) {
-		QTreeWidgetItem *item = new QTreeWidgetItem(w, QStringList(QString(t->childs[i].val.first.c_str())));
-		attachTreeItem(item, &t->childs[i]);
-	}
-}
-
 
 void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector<DspCircuit*> &circuits)
 {
@@ -159,8 +177,8 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
           actual_layout->addWidget(ed, i+header_lines, xpos++);
           ed->setProperty("component", QVariant::fromValue((void*)_component));
           ed->setProperty("idx", i);
-		  ed->setMinimumWidth(120);
-		  ed->setMaximumWidth(120);
+		  ed->setMinimumWidth(180);
+		  ed->setMaximumWidth(180);
           connect(ed, SIGNAL(textChanged(QString)), this, SLOT(textSettingChanged(QString)));
           
 		  QPushButton *btn = new QPushButton(_layout_w);
@@ -177,8 +195,8 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
           spinbox->setMinimum(-100000000000);
           spinbox->setMaximum(100000000000);
 		  spinbox->setDecimals(5);
-		  spinbox->setMinimumWidth(120);
-		  spinbox->setMaximumWidth(120);
+		  spinbox->setMinimumWidth(180);
+		  spinbox->setMaximumWidth(180);
           actual_layout->addWidget(spinbox, i+header_lines, xpos++);
           spinbox->setProperty("component", QVariant::fromValue((void*)_component));
           spinbox->setProperty("idx", i);
@@ -189,8 +207,8 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
           QSpinBox *spinbox = new QSpinBox(_layout_w);
           actual_layout->addWidget(spinbox, i+header_lines, xpos++);
           spinbox->setProperty("component", QVariant::fromValue((void*)_component));
-		  spinbox->setMinimumWidth(120);
-		  spinbox->setMaximumWidth(120);
+		  spinbox->setMinimumWidth(180);
+		  spinbox->setMaximumWidth(180);
           spinbox->setProperty("idx", i);
           spinbox->setMinimum(INT_MIN);
           spinbox->setMaximum(INT_MAX);
@@ -206,13 +224,11 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
 			treeWidget->setProperty("component", QVariant::fromValue((void*)_component));
 			treeWidget->setProperty("idx", i);
 			treeWidget->setHeaderHidden(true);
-			actual_layout->addWidget(treeWidget, i + header_lines, xpos++);
-			clif::StringTree<clif::Attribute*, clif::Datastore*> tree = d->data->getTree();
-			for (int i = 0; i<tree.childCount(); i++) {
-				QTreeWidgetItem *item = new QTreeWidgetItem(treeWidget,QStringList(QString(tree.childs[i].val.first.c_str())));
-				item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
-				attachTreeItem(item, &tree.childs[i]);
-			}
+			treeWidget->setMinimumWidth(180);
+			treeWidget->setMaximumWidth(180);
+			treeWidget->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+			treeWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+		    actual_layout->addWidget(treeWidget, i + header_lines, xpos++);
 			connect(treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(slot_treedoubleclicked(QTreeWidgetItem*, int)));
 		}
 
@@ -220,8 +236,8 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
 		param->GetPointer(c);
 		if (c){
 			QComboBox *combox = new QComboBox(_layout_w);
-			combox->setMinimumWidth(120);
-			combox->setMaximumWidth(120);
+			combox->setMinimumWidth(180);
+			combox->setMaximumWidth(180);
 			actual_layout->addWidget(combox, i + header_lines, xpos++);
 			combox->setProperty("component", QVariant::fromValue((void*)_component));
 			combox->setProperty("idx", i);
@@ -230,8 +246,8 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
 
 		else{
 			QLineEdit *combox = new QLineEdit(_layout_w);
-			combox->setMinimumWidth(120);
-			combox->setMaximumWidth(120);
+			combox->setMinimumWidth(180);
+			combox->setMaximumWidth(180);
 			combox->setEnabled(false);
 			actual_layout->addWidget(combox, i + header_lines, xpos++);
 			combox->setProperty("component", QVariant::fromValue((void*)_component));
@@ -382,7 +398,7 @@ void QNESettings::boolChanged(int val)
 
 void QNESettings::selFileClicked()
 {
-  QString path = QFileDialog::getSaveFileName(this, tr("select file or directory"));
+  QString path = QFileDialog::getOpenFileName(this, tr("select file or directory"));
   
   QLineEdit *ed = sender()->property("ed").value<QLineEdit*>();
   
