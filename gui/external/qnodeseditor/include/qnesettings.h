@@ -60,7 +60,8 @@ private slots:
   void settingOnOffReset();
   void textSettingChanged(QString text);
   void aliasChanged(QString text);
-  void selFileClicked();
+  void selFileClicked_open();
+  void selFileClicked_save();
   void floatSettingChanged(double val);
   void intSettingChanged(int val);
   void portCountChanged(int val);

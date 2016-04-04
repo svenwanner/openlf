@@ -193,7 +193,10 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
 			  btn->setMaximumWidth(25);
 			  actual_layout->addWidget(btn, i + header_lines, xpos++);
 			  btn->setProperty("ed", QVariant::fromValue(ed));
-			  connect(btn, SIGNAL(clicked()), this, SLOT(selFileClicked()));
+			  if (CompName.compare(0, 14, "COMP_writeCLIF") == 0){
+				  connect(btn, SIGNAL(clicked()), this, SLOT(selFileClicked_save()));
+			  }
+			  else connect(btn, SIGNAL(clicked()), this, SLOT(selFileClicked_open()));
 		  }
           break;
         }
@@ -284,16 +287,16 @@ void QNESettings::attach(Circuit_Viewer *viewer, DspComponent *comp, std::vector
     
     //FIXME this emits setting changed signals!
     _load_existing_param(actual_layout, _component, i, _circuits);
-	if (CompName.compare(0, 16, "COMP_select_path") != 0){
-		QLineEdit *ed = new QLineEdit(_layout_w);
-		actual_layout->addWidget(ed, i + header_lines, xpos++);
-		ed->setProperty("component", QVariant::fromValue((void*)_component));
-		ed->setProperty("idx", i);
-		ed->setMinimumWidth(120);
-		ed->setMaximumWidth(120);
-		ed->setText(QString(_component->GetParentCircuit()->GetComponentParameterAlias(_component, i).c_str()));
-		connect(ed, SIGNAL(textChanged(QString)), this, SLOT(aliasChanged(QString)));
-	}
+
+	QLineEdit *ed = new QLineEdit(_layout_w);
+	actual_layout->addWidget(ed, i + header_lines, xpos++);
+	ed->setProperty("component", QVariant::fromValue((void*)_component));
+	ed->setProperty("idx", i);
+	ed->setMinimumWidth(120);
+	ed->setMaximumWidth(120);
+	ed->setText(QString(_component->GetParentCircuit()->GetComponentParameterAlias(_component, i).c_str()));
+	connect(ed, SIGNAL(textChanged(QString)), this, SLOT(aliasChanged(QString)));
+	
     /*for(int n=1;n<actual_layout->columnCount();n++) {
       QLayoutItem *l = actual_layout->itemAtPosition(i+header_lines, n);
       if (l && l->widget())
@@ -412,13 +415,22 @@ void QNESettings::boolChanged(int val)
   emit settingChanged();
 }
 
-void QNESettings::selFileClicked()
+void QNESettings::selFileClicked_open()
 {
   QString path = QFileDialog::getOpenFileName(this, tr("select file or directory"));
   
   QLineEdit *ed = sender()->property("ed").value<QLineEdit*>();
   
   ed->setText(path);
+}
+
+void QNESettings::selFileClicked_save()
+{
+	QString path = QFileDialog::getSaveFileName(this, tr("select file or directory"));
+
+	QLineEdit *ed = sender()->property("ed").value<QLineEdit*>();
+
+	ed->setText(path);
 }
 
 //FIXME change circuit input count on delete input port item!
