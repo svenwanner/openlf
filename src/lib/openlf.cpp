@@ -11,7 +11,10 @@
 #include "dspatch/DspCircuit.h"
 #include "dspatch/DspPluginLoader.h"
 
-
+bool comp_comps(DspComponent *a, DspComponent *b)
+{
+  return a->getTypeName() < b->getTypeName();
+}
 
 const std::vector<DspComponent*> OpenLF::componentList()
 {
@@ -61,12 +64,10 @@ const std::vector<DspComponent*> OpenLF::componentList()
         comp_paths.push_back(plugin_paths[i] / d_it->d_name);
       closedir (dir);
     }
-
+    
     DspComponent *comp;
     //first load component dll's
     for(int i=0;i<comp_paths.size();i++) {
-
-      
       DspPluginLoader *loader = new DspPluginLoader(comp_paths[i].string());
       if (!loader->IsLoaded()) {
         //FIXME error msg
@@ -94,7 +95,10 @@ const std::vector<DspComponent*> OpenLF::componentList()
       }
       _comp_list.push_back(comp);
     }
+    
+    std::sort(_comp_list.begin(), _comp_list.end(), comp_comps);
   }
+  
   
   return _comp_list;
 }
