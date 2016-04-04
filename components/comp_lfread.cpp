@@ -77,7 +77,6 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
   out->data = &_out_set;
   _out_set.reset();
  
-
   if (!strcmp(cpath(*filename).extension().generic_string().c_str(), ".ini")) {
     out->data->Attributes::open(filename->c_str());
     out->path = std::string();
@@ -89,7 +88,6 @@ void COMP_LFRead::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     errorCond(f.valid(), "invalid file \"%s\"", filename->c_str()); RETURN_ON_ERROR
 	SetParameter(2, DspParameter(DspParameter::ParamType::Pointer, &f));
 	
-
     //FIXME error handling
     if (dataset_name)
       out->data->open(f, *dataset_name);
