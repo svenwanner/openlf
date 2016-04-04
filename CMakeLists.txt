@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.8)
 project(OpenLF)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC -g -O3 -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC -g -O0 -fno-omit-frame-pointer")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O3 -fPIC")
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
