@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 2.8)
 project(OpenLF)
 
+option(GPL_BUILD "create GPL'ed binaries" OFF)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC -g -O0 -fno-omit-frame-pointer")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O3 -fPIC")
 
@@ -617,13 +619,76 @@ if (WITH_PCL)
 	
 endif()
 
+function(build_external_now NAME GIT_PATH GIT_TAG)
+
+  cmake_parse_arguments(build_external_now "BUILD_ONLY" "URL" "CMAKE_ARGS;PATCH" ${ARGN})
+
+  if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+    string(TOUPPER ${NAME} NU)
+    string(TOLOWER ${NAME} NL)
+        
+    #search for system packages
+    message(STATUS "search ${NAME}")
+    find_package(${NAME} QUIET)
+    option(REBUILD_${NU} "internal ${NAME} download and build" OFF)
+    if (${NAME}_FOUND OR ${NL}_FOUND OR ${NU}_FOUND)
+      set(${NU}_INTERNAL OFF)
+      message(STATUS "${NAME} not found")
+    else()
+      set(${NU}_INTERNAL ON)
+      message(STATUS "${NAME} found")
+    endif()
+
+    if (REBUILD_${NU})
+      message( STATUS "${NAME} will be downloaded and installed")
+          
+      #generate auxiliary dependency project
+      file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_${NL})
+      file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_${NL}/build)
+      set(CMAKE_LIST_CONTENT "
+                  cmake_minimum_required(VERSION 2.8)
+
+                  include(ExternalProject)
+                  ExternalProject_Add(
+                                                  ${NL}
+                                                  PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_${NL}
+                                                  GIT_REPOSITORY ${GIT_PATH}
+                                                  GIT_TAG ${GIT_TAG}
+                                                  URL ${build_external_now_URL}
+                                                  CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs} ${build_external_now_CMAKE_ARGS}
+                                                  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_${NL}/install
+                                                  PATCH_COMMAND ${build_external_now_PATCH}
+                                                  INSTALL_COMMAND ;
+                                                  UPDATE_COMMAND ;
+                  )
+          ")
+          
+      file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/force_${NL}/CMakeLists.txt "${CMAKE_LIST_CONTENT}")
+
+      execute_process(COMMAND ${CMAKE_COMMAND} .. -G "Visual Studio 12 2013 Win64"
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_${NL}/build)
+      execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs} -- /m
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_${NL}/build)
+
+      set(${NAME}_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_${NL}/install CACHE TYPE STRING FORCE)
+      set(REBUILD_${NU} FALSE PARENT_SCOPE)
+    endif()
+  endif()
+endfunction(build_external_now)
+
+build_external_now(Ceres https://ceres-solver.googlesource.com/ceres-solver "9665e099022bd06e53b0779550e9aebded7f274d"
+                   CMAKE_ARGS "-DEIGEN_INCLUDE_DIR=${EIGEN3_INCLUDE_DIR}"
+                              "-DMINIGLOG=on"
+                              PATCH "\"${CMAKE_COMMAND}\" -DFILENAME=${CMAKE_CURRENT_BINARY_DIR}/force_ceres/src/ceres/internal/ceres/miniglog/glog/logging.h -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/miniglog_patch_msvc12.cmake"
+                              )
+
 ###########################################################################################
 ## Below is a CMake command to locate or download and build clif                                             
 ###########################################################################################
 
 message(STATUS "Search clif")
 find_package(clif QUIET)
-option(REBUILD_CLIF "internal HDF5 download and build" OFF)
+option(REBUILD_CLIF "internal clif download and build" OFF)
 if (clif_FOUND)
   set(CLIF_INTERNAL OFF)
   message(STATUS "clif found")
@@ -698,6 +763,7 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 				CMAKE_ARGS -DGLEW_INCLUDE_DIR=${GLEW_INCLUDE_DIR}
 				CMAKE_ARGS -DGLEW_LIB=${GLEW_LIB}
 				CMAKE_ARGS -DGLEW_LIBRARY=${GLEW_LIB}
+				CMAKE_ARGS -DGPL_BUILD=${GPL_BUILD}
 				BUILD_ALWAYS 1
 				INSTALL_COMMAND ;
 				)
