@@ -1,6 +1,6 @@
 #include "gui_toolbox.h"
 
-#include "clif/clifviewcaller.hpp"
+#include "clif-qt/clifviewcaller.hpp"
 
 //#ifdef _MSC_VER
 //#include "ui_gui_windows.h"

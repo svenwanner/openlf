@@ -782,6 +782,7 @@ endif()
 
 SET(REBUILD_CLIF OFF CACHE BOOL "internal HDF5 download and build" FORCE)
 find_package(clif REQUIRED)
+find_package(clif-qt REQUIRED)
 message(STATUS "clif libraries: ${CLIF_LIBRARIES}")
 message(STATUS "clif lib dirs: ${CLIF_LIBRARY_DIRS}")
 
@@ -792,12 +793,14 @@ include_directories(${HDF5_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${Vigra_INCLUDE_DIRS})
 include_directories(${CLIF_INCLUDE_DIRS})
+include_directories(${CLIF-QT_INCLUDE_DIRS})
 include_directories(${CLIINI_INCLUDE_DIRS})
 
 link_directories(${CLIF_LIBRARY_DIRS})
+link_directories(${CLIF-QT_LIBRARY_DIRS})
 link_directories(${CLIINI_LIBRARY_DIRS})
 
-list(APPEND OPENLF_LIBRARIES ${CLIF_LIBRARIES} ${CLIINI_LIBRARIES} ${Boost_LIBRARIES})
+list(APPEND OPENLF_LIBRARIES ${CLIF_LIBRARIES} ${CLIF-QT_LIBRARIES} ${CLIINI_LIBRARIES} ${Boost_LIBRARIES})
 
 message("${CLIF_LIBRARIES}")
 message("${CLIINI_LIBRARIES}")
