@@ -21,8 +21,9 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   # using Visual Studio C++
   message(STATUS "Compile with msvc")
   #execute_process(COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/dependencies/HDF5_include.tar WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/external/hdf5/src/HDF5-build)
-  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/dependencies/basic_libs.tar 
-	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+  # FIXME checkout from a new repo!
+  #execute_process(COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_SOURCE_DIR}/dependencies/basic_libs.tar 
+#	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
   include_directories(${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/)
   include_directories(${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include)
   set(OPENLF_COMPILER_MSVC true)
