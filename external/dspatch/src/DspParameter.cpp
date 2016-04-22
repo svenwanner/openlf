@@ -266,7 +266,7 @@ std::string const* DspParameter::GetString() const
         return NULL;
     }
 
-    if (_type == String || _type == FilePath)
+	if (_type == String || _type == LoadPath || _type == SavePath)
     {
         return &_stringValue;
     }
@@ -443,7 +443,7 @@ int DspParameter::GetPriority()
 
 bool DspParameter::SetString(std::string const& value)
 {
-    if (_type == String || _type == FilePath)
+	if (_type == String || _type == LoadPath || _type == SavePath)
     {
         _stringValue = value;
         _isSet = true;
@@ -574,7 +574,7 @@ bool DspParameter::SetParam(DspParameter const& param)
             return SetFloat(*param.GetFloat());
         }
     }
-    else if (param.Type() == String || param.Type() == FilePath)
+	else if (param.Type() == String || param.Type() == LoadPath || _type == SavePath)
     {
         if (param.GetString())
         {

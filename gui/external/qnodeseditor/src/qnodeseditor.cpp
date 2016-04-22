@@ -42,7 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include "openlf.hpp"
 #include "openlf/types.hpp"
 #include "clif/clif.hpp"
-#include "clif-qt/clifviewcaller.hpp"
+#include "clif/clifviewcaller.hpp"
 
 using namespace clif;
 using namespace openlf;

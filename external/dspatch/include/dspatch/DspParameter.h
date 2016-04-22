@@ -58,7 +58,8 @@ public:
         Int,
         Float,
         String,
-        FilePath, // this is essentially just a string, but helps when determining an appropriate user input method
+        LoadPath, 
+		SavePath,
         List,     // this type acts as a vector (available items), an int (index selected), and a string (item selected)
         Trigger,   // this type has no value, SetParam(triggerParam) simply represents a trigger. E.g. a button press
         Pointer

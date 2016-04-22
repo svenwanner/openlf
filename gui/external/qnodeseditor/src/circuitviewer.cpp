@@ -89,20 +89,20 @@ Circuit_Viewer::~Circuit_Viewer(){
 
 void Circuit_Viewer::createActions()
 {
-  saveAct = new QAction(QIcon(":/circuit_save.png"), tr("&Save"), this);
-  saveAct->setShortcuts(QKeySequence::Save);
-  saveAct->setStatusTip(tr("Save Circuit to disk"));
-  connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
+//  saveAct = new QAction(QIcon(":/circuit_save.png"), tr("&Save"), this);
+//  saveAct->setShortcuts(QKeySequence::Save);
+//  saveAct->setStatusTip(tr("Save Circuit to disk"));
+//  connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
   
-  saveAsAct = new QAction(QIcon(":/circuit_save.png"), tr("Save &As..."), this);
-  saveAsAct->setShortcuts(QKeySequence::SaveAs);
-  saveAsAct->setStatusTip(tr("Save the document under a new name"));
-  connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
+//  saveAsAct = new QAction(QIcon(":/circuit_save.png"), tr("Save &As..."), this);
+//  saveAsAct->setShortcuts(QKeySequence::SaveAs);
+//  saveAsAct->setStatusTip(tr("Save the document under a new name"));
+//  connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
   
-  loadAct = new QAction(QIcon(":/circuit_load.png"), tr("&Load"), this);
-  loadAct->setShortcuts(QKeySequence::Open);
-  loadAct->setStatusTip(tr("Load Circuit from disk"));
-  connect(loadAct, SIGNAL(triggered()), this, SLOT(load()));
+ // loadAct = new QAction(QIcon(":/circuit_load.png"), tr("&Load"), this);
+//  loadAct->setShortcuts(QKeySequence::Open);
+//  loadAct->setStatusTip(tr("Load Circuit from disk"));
+//  connect(loadAct, SIGNAL(triggered()), this, SLOT(load()));
   
   zoomInAct = new QAction(QIcon(":/Zoom-In.png"), tr("Zoom &In (25%)"), this);
   zoomInAct->setShortcut(tr("Ctrl++"));
@@ -164,8 +164,10 @@ void Circuit_Viewer::createToolbar()
 {
   ToolBar = addToolBar(tr("File"));
   //toolBar->setFixedHeight(ToolBar_Height);
-  ToolBar->addAction(loadAct);
-  ToolBar->addAction(saveAct);
+  //ToolBar->addAction(loadAct);
+  //ToolBar->addAction(saveAct);
+  //ToolBar->addSeparator();
+  ToolBar->addAction(tickAct);
   ToolBar->addSeparator();
   ToolBar->addAction(zoomInAct);
   ToolBar->addAction(zoomOutAct);
@@ -173,8 +175,7 @@ void Circuit_Viewer::createToolbar()
   ToolBar->addSeparator();
   ToolBar->addAction(popInAct);
   ToolBar->addAction(popOutAct);
-  ToolBar->addSeparator();
-  ToolBar->addAction(tickAct);
+
   //ToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
   
 }
@@ -184,10 +185,12 @@ void Circuit_Viewer::createMenus()
   
   circuitMenu = new QMenu(tr("&Circuit"), this);
   circuitMenu->addAction(tickAct);
-  circuitMenu->addAction(saveAct);
+  circuitMenu->addSeparator();
+  //circuitMenu->addAction(saveAct);
   circuitMenu->addAction(zoomInAct);
   circuitMenu->addAction(zoomOutAct);
   circuitMenu->addAction(fitToWindowAct);
+  circuitMenu->addSeparator();
   circuitMenu->addAction(popInAct);
   circuitMenu->addAction(popOutAct);
   
@@ -481,14 +484,14 @@ void Circuit_Viewer::on_action_Pop_Out_triggered()
 
 void Circuit_Viewer::on_action_Pop_In_triggered()
 {
-  if (! mdiArea->activeSubWindow()){
+  //if (! mdiArea->activeSubWindow()){
     mdiArea->addSubWindow(popInpopOutWidget);
     popInpopOutWidget->showMaximized();
     mdiArea->update();
     _extra_window = false;
     popInAct->setDisabled(true);
     popOutAct->setDisabled(false);
-  }
+  //}
 }
 
 
