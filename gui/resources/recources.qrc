@@ -6,22 +6,21 @@
         <file>save.png</file>
         <file>print.png</file>
         <file>open.png</file>
-        <file>lenna.png</file>
         <file>info.png</file>
         <file>exit.png</file>
         <file>Show.png</file>
         <file>main.png</file>
-		<file>Hilfe.png</file>
+        <file>Hilfe.png</file>
         <file>blender.png</file>
         <file>help.png</file>
         <file>reset.png</file>
-		<file>arrow_up.png</file>
-		<file>arrow_down.png</file>
-		<file>circuit.png</file>
-		<file>circuit_save.png</file>
-		<file>circuit_load.png</file>
-		<file>fittowindow.png</file>
-		<file>normalView.png</file>
-		<file>clock.png</file>
+        <file>arrow_up.png</file>
+        <file>arrow_down.png</file>
+        <file>circuit.png</file>
+        <file>circuit_save.png</file>
+        <file>circuit_load.png</file>
+        <file>fittowindow.png</file>
+        <file>normalView.png</file>
+        <file>clock.png</file>
     </qresource>
 </RCC>
