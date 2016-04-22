@@ -77,9 +77,6 @@ void QNEMainWindow::new_circuit_viewer(DspCircuit *c)
   connect(v, SIGNAL(compSelected(QNEBlock*)), this, SLOT(showCompSettings(QNEBlock*)));
   connect(v, SIGNAL(portSelected(QNEPort*)), this, SLOT(showPortProps(QNEPort*)));
   connect(v, SIGNAL(state_changed(Circuit_Viewer*)), this, SLOT(check_viewer_state(Circuit_Viewer*)));
-// Circuit Viewer Tools Bar
-  connect(loadAct, SIGNAL(triggered()), v, SLOT(load()));
-  connect(saveAsAct, SIGNAL(triggered()), v, SLOT(saveAs()));
   
   if (!_viewers.count(v->circuit()))
     newCircuit(v->circuit(), v);
@@ -193,8 +190,6 @@ void QNEMainWindow::createDockWindows()
   
   _comp_list_dock = new QDockWidget(tr("Component list:"), this);
   _comp_list_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  _comp_list_dock->setMaximumWidth(800);
-  _comp_list_dock->setMinimumWidth(350);
   _comp_list = new QListWidget(_comp_list_dock);
   _comp_list_dock->setWidget(_comp_list);
   addDockWidget(Qt::RightDockWidgetArea, _comp_list_dock);
@@ -216,21 +211,14 @@ void QNEMainWindow::createDockWindows()
   // ******************************************************************
   
   
-  _settings_dock_old = new QDockWidget(tr("Component Settings:"), this);
-  _settings_dock_old->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  _settings_dock_old->setMaximumWidth(800);
-  _settings_dock_old->setMinimumWidth(350);
-  _settings_dock = new QScrollArea();
-  _settings_dock_old->setWidget(_settings_dock);
-  _settings_dock->setWidgetResizable(true);
-  _settings = new QNESettings(_settings_dock_old);
+  _settings_dock = new QDockWidget(tr("Component Settings:"), this);
+  _settings_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+  _settings = new QNESettings(_settings_dock);
   _settings_dock->setWidget(_settings);
-  addDockWidget(Qt::RightDockWidgetArea, _settings_dock_old);
+  addDockWidget(Qt::RightDockWidgetArea, _settings_dock);
   
   _circuit_dock = new QDockWidget(tr("Circuit Settings:"), this);
   _circuit_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  _circuit_dock->setMaximumWidth(800);
-  _circuit_dock->setMinimumWidth(300);
   QWidget *box = new QWidget(_circuit_dock);
   _circuit_dock->setWidget(box);
   QFormLayout *layout = new QFormLayout(_circuit_dock);
@@ -251,8 +239,6 @@ void QNEMainWindow::createDockWindows()
   
   _circuit_list_dock = new QDockWidget(tr("Circuit list:"), this);
   _circuit_list_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  _circuit_list_dock->setMaximumWidth(800);
-  _circuit_list_dock->setMinimumWidth(350);
   _circuit_list_w = new QListWidget(_circuit_list_dock);
   _circuit_list_dock->setWidget(_circuit_list_w);
   addDockWidget(Qt::LeftDockWidgetArea, _circuit_list_dock);
@@ -261,8 +247,6 @@ void QNEMainWindow::createDockWindows()
   
   _port_dock = new QDockWidget(tr("Component Output:"), this);
   _port_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  _port_dock->setMaximumWidth(800);
-  _port_dock->setMinimumWidth(350);
   QWidget *w = new QWidget(this);
   QVBoxLayout *vbox = new QVBoxLayout(this);
   _port_dock->setWidget(w);
@@ -409,10 +393,4 @@ void QNEMainWindow::check_viewer_state(Circuit_Viewer *v)
     _settings_dock->setDisabled(false);
     _circuit_dock->setDisabled(false);
   }
-}
-
-void QNEMainWindow::OpenLFCamConfigurator(){
-
-	LFCamConfigurator *LFCC = new LFCamConfigurator();
-	LFCC->show();
 }

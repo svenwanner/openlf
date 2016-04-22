@@ -569,12 +569,6 @@ void DspCircuit::_save_comp(FILE *f, int i)
           case DspParameter::ParamType::String :
             fprintf(f, "\"%s\"\n", p->GetString()->c_str());
             break;
-		  case DspParameter::ParamType::LoadPath:
-			  fprintf(f, "\"%s\"\n", p->GetString()->c_str());
-			  break;
-		  case DspParameter::ParamType::SavePath:
-			  fprintf(f, "\"%s\"\n", p->GetString()->c_str());
-			  break;
           case DspParameter::ParamType::Float :
             fprintf(f, "%f\n", *p->GetFloat());
             break;
@@ -737,22 +731,6 @@ DspCircuit* DspCircuit::load(std::string filename, DspComponent *(*getComponentC
               assert(res);
               break;
             }
-			case DPPT::LoadPath: {
-				assert(part->kind = GML_STRING);
-				DspParameter p(DPPT::String, std::string(part->value.string));
-				p.SetDefault(p);
-				res = comp->SetParameter(p_idx, p);
-				assert(res);
-				break;
-			}
-			case DPPT::SavePath: {
-				assert(part->kind = GML_STRING);
-				DspParameter p(DPPT::String, std::string(part->value.string));
-				p.SetDefault(p);
-				res = comp->SetParameter(p_idx, p);
-				assert(res);
-				break;
-			}
             case DPPT::Float : {
               assert(part->kind = GML_DOUBLE);
               DspParameter p(DPPT::Float, (float)part->value.floating);

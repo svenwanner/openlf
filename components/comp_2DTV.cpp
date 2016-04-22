@@ -41,17 +41,15 @@ protected:
   virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 private:
   virtual bool ParameterUpdating_ (int i, DspParameter const &p);
-  clif::Dataset _out_set;
-  bool use_col = false;
   LF _out;
+  clif::Dataset _out_set;
 };
 
 COMP_2DTV::COMP_2DTV()
 {
   setTypeName_("COMP_2DTV");
-  AddInput_("disparity");
-  AddInput_("image");
-  AddOutput_("2DTV");
+  AddInput_("input");
+  AddOutput_("ouput");
   AddParameter_("iterations", DspParameter(DspParameter::ParamType::Int, 1000));
   AddParameter_("tau", DspParameter(DspParameter::ParamType::Float, 0.012f));
   AddParameter_("sigma", DspParameter(DspParameter::ParamType::Float, 0.5f));
@@ -65,27 +63,23 @@ COMP_2DTV::COMP_2DTV()
   AddParameter_("initialValue", DspParameter(DspParameter::ParamType::Float, 0.0f));
   AddParameter_("Display", DspParameter(DspParameter::ParamType::Int, 1));
   AddParameter_("TVposition", DspParameter(DspParameter::ParamType::Int, 0));
+  AddParameter_("out_group", DspParameter(DspParameter::ParamType::String, "2DTV"));
+  AddParameter_("in_group", DspParameter(DspParameter::ParamType::String, "merged"));
 }
 
 void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 {
 	//generate IOs
-	LF *in_disp = NULL;
-	LF *in_col = NULL;
+	LF *in = NULL;
 	LF *out = NULL;
 
 	// Check if inputs are connected
-	inputs.GetValue(0, in_disp);
-	errorCond(in_disp && !in_disp->path.empty(), "disparity input missing!"); RETURN_ON_ERROR
+	errorCond(inputs.GetValue(0, in), "Dataset not found / missing input"); RETURN_ON_ERROR
 
-	inputs.GetValue(1, in_col);
-	if (in_col && !in_col->path.empty())
-		use_col = true;
-	
 	//Link memouy from input data to output
 	out = &_out;
 	out->data = &_out_set;
-	out->data->memory_link(in_disp->data);
+	out->data->memory_link(in->data);
 
 	//connect ouput to module output
 	outputs.SetValue(0, out);
@@ -107,14 +101,14 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	float beta_edge = *GetParameter(9)->GetFloat();																							//AddParameter_("beta_edge", DspParameter(DspParameter::ParamType::Float, 0.0000000001f));
 	float initialValue = *GetParameter(10)->GetFloat();																						//AddParameter_("initialValue", DspParameter(DspParameter::ParamType::Float, 0.0f));
 	int display = *GetParameter(11)->GetInt();																								//AddParameter_("Display", DspParameter(DspParameter::ParamType::Int, 1));
-	std::string out_dataset_name = *GetParameter(13)->GetString();																			//AddParameter_("out_dataset", DspParameter(DspParameter::ParamType::String, "2DTV"));
-	std::string in_dataset_name = *GetParameter(14)->GetString();																			//AddParameter_("in_dataset", DspParameter(DspParameter::ParamType::String, "2DTV"));
+	std::string out_dataset_name = *GetParameter(13)->GetString();																				//AddParameter_("out_dataset", DspParameter(DspParameter::ParamType::String, "2DTV"));
+	std::string in_dataset_name = *GetParameter(14)->GetString();																				//AddParameter_("in_dataset", DspParameter(DspParameter::ParamType::String, "2DTV"));
 
 
 	//get location of disparity and coherence map
 	cpath disparity_root;
 	try{
-		disparity_root = in_disp->data->getSubGroup(in_dataset_name);
+		disparity_root = in->data->getSubGroup(in_dataset_name);
 		std::cout << "Found disparity results!" << std::endl;
 	}
 	catch (const std::exception& e){
@@ -123,7 +117,7 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	}
 
 	// Load Disparity store
-	Datastore *disp_store = in_disp->data->getStore(disparity_root / "data");
+	Datastore *disp_store = in->data->getStore(disparity_root / "data");
 	errorCond(disp_store, "no disp_store available"); RETURN_ON_ERROR
 
 	cpath tmp_data_root = disparity_root;
@@ -136,7 +130,7 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 		searchPath = tmp_data_root;
 		searchPath /= "coherence";
-		if (in_disp->data->store(searchPath) != NULL)
+		if (in->data->store(searchPath) != NULL)
 		{
 			std::cout << "Found Coherence!" << std::endl;
 			std::cout << "Coherence path" << searchPath << std::endl;
@@ -160,7 +154,7 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 	Datastore *coh_store;
 	try{
-		coh_store = in_disp->data->getStore(tmp_data_root / "coherence");
+		coh_store = in->data->getStore(tmp_data_root / "coherence");
 	}
 	catch (const std::exception& e){
 		errorCond(coh_store, "no coh_store available"); RETURN_ON_ERROR
@@ -169,13 +163,13 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	// Load scaled Light Field
 	float scale = 1.0;
 	Attribute *attr;
-	attr = in_disp->data->get(tmp_data_root / "subset/scale");
+	attr = in->data->get(tmp_data_root / "subset/scale");
 	if (attr)  attr->get(scale);
 	ProcData opts(UNDISTORT);
 	opts.set_scale(scale);
-	Subset3d subset(in_disp->data, tmp_data_root / "source_LF", opts);
+	Subset3d subset(in->data, tmp_data_root / "source_LF", opts);
 
-	Datastore *lf_store = in_disp->data->getStore(tmp_data_root / "source_LF/data");
+	Datastore *lf_store = in->data->getStore(tmp_data_root / "source_LF/data");
 	errorCond(lf_store, "no lf_store available"); RETURN_ON_ERROR
 
 	tmp_data_root = out_dataset_name;
@@ -189,7 +183,7 @@ void COMP_2DTV::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 	
 	int TVposition = 0;
 	try{
-		in_disp->data->get(tmp_data_root / "refView", TVposition);
+		in->data->get(tmp_data_root / "refView", TVposition);
 		SetParameter_(12, DspParameter(DspParameter::ParamType::Int, TVposition));
 	}
 	catch (const std::exception& e) {

@@ -24,7 +24,7 @@
 #include <string>
 #include <QMainWindow>
 #include <QObject>
-#include "ConfigParser.h"
+#include <ConfigParser.h>
 #include <QFileDialog>
 #include <QLabel>
 #include <QScrollArea>

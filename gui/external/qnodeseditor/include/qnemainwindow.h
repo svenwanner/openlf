@@ -59,8 +59,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #include "DspCircuit.h"
 
-#include "external/LFCamconfigurator/include/lfcamconfigurator.h"
-
 class QNodesEditor;
 class Circuit_Viewer;
 
@@ -94,22 +92,17 @@ private slots:
   void check_viewer_state(Circuit_Viewer *v);
   void showPortProps(QNEPort *port);
   void open_clif_viewer();
-  void OpenLFCamConfigurator();
   
 signals:
   void itemDoubleClicked();
   
 private:
-	
-  LFCamConfigurator *LFCC = std::nullptr_t();
-
+  
   QMdiArea *mdiArea = std::nullptr_t();
   
   QMenu *fileMenu = std::nullptr_t();
   QMenu *helpMenu = std::nullptr_t();
   QMenu *viewMenu = std::nullptr_t();
-  QMenu *circuitMenu = std::nullptr_t();
-  QMenu *ToolsMenu = std::nullptr_t();
   
   QToolBar *fileToolBar = std::nullptr_t();
   
@@ -124,20 +117,15 @@ private:
   
   QAction *quitAct = std::nullptr_t();
   QAction *loadAct = std::nullptr_t();
+  QAction *saveAct = std::nullptr_t();
   QAction *newAct = std::nullptr_t();
   QAction *tabViewAct = NULL;
-
-  QAction *saveAct = std::nullptr_t();
-  QAction *saveAsAct = std::nullptr_t();
-  QAction *LFCamConfiguratorAct = std::nullptr_t();
-
   
   QListWidget *List1 = std::nullptr_t();
   QListWidget *List2 = std::nullptr_t();
   
   QDockWidget *_comp_list_dock = NULL;
-  QDockWidget *_settings_dock_old = NULL;
-  QScrollArea *_settings_dock = NULL;
+  QDockWidget *_settings_dock = NULL;
   QDockWidget *_circuit_dock = NULL;
   QDockWidget *_circuit_list_dock = NULL;
   QDockWidget *_port_dock = NULL;

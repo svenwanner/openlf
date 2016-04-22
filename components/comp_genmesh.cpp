@@ -20,7 +20,7 @@
 *
 */
 
-#include "clif/config.h"
+#include "clif/config.hpp"
 
 #ifdef CLIF_WITH_LIBIGL
 

@@ -141,9 +141,9 @@ private:
   void check_add_circuit();
   
   QAction *MousePosition;
-  //QAction *saveAct;
-  //QAction *saveAsAct;
-  //QAction *loadAct;
+  QAction *saveAct;
+  QAction *saveAsAct;
+  QAction *loadAct;
   QAction *exitAct;
   QAction *infoAct;
   QAction *zoomInAct;
@@ -158,6 +158,7 @@ private:
   QMenu *circuitMenu = std::nullptr_t();
   
   
+  
   //QVBoxLayout* vbox;
   
   //QMenuBar *menuBar;
@@ -165,6 +166,7 @@ private:
   //QMenu *viewMenu;
   
   //QToolBar *fileToolBar;
+  
   
   
   //double scaleFactor;

@@ -106,7 +106,7 @@ COMP_Epi::COMP_Epi()
   AddOutput_("disparity");
   
   openlf_add_param("tensorCircuit", (DspComponent*)NULL, DPPT::Pointer, P_IDX::Tensor_Circuit);
-  openlf_add_param("orientationCircuit", (DspComponent*)NULL, DPPT::Pointer, P_IDX::Orientation_Circuit);
+  openlf_add_param("orientaionCircuit", (DspComponent*)NULL, DPPT::Pointer, P_IDX::Orientation_Circuit);
   openlf_add_param("mergeCircuit", (DspComponent*)NULL, DPPT::Pointer, P_IDX::Merge_Circuit);
   
   openlf_add_param("DispStart", DPPT::Float, P_IDX::DispStart);

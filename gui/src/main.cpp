@@ -14,11 +14,12 @@ int main(int argc, char *argv[])
     LightFieldToolbox.setOrganizationName("HCI");
     LightFieldToolbox.setApplicationName("Light Field Toolbox");
 
-	QNEMainWindow *_QNEMW = new QNEMainWindow();
-	_QNEMW->showMaximized();
+    GUI_Toolbox gui;
+//    LFgui.loadConfigini(config_path);
+    gui.show();
 
 //     Prints welcome message...
-    std::cout << "Welcome to Light-Field Nodes Editor" << std::endl;
+    std::cout << "Welcome to Light-Field GUI" << std::endl;
 
     // Prints arguments...
     if (argc > 1) {
