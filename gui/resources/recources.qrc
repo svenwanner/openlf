@@ -23,5 +23,6 @@
 		<file>fittowindow.png</file>
 		<file>normalView.png</file>
 		<file>clock.png</file>
+		<file>LFCConfig.png</file>
     </qresource>
 </RCC>
