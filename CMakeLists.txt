@@ -146,6 +146,7 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 			vigra
 				PREFIX ${CMAKE_CURRENT_BINARY_DIR}/force_vigra
 				GIT_REPOSITORY https://github.com/ukoethe/vigra.git
+				GIT_TAG b80e82c68c159c5d69e1bd0c0dc344e4408c7b71
 				CMAKE_ARGS -DTIFF_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DTIFF_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libtiff.lib
 				CMAKE_ARGS -DJPEG_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DJPEG_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libjpeg.lib
 				CMAKE_ARGS -DPNG_PNG_INCLUDE_DIR=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include -DPNG_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/lib/libpng.lib
@@ -160,6 +161,7 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 				CMAKE_ARGS -DOPENEXR_INCLUDE_LIBRARY=${CMAKE_CURRENT_BINARY_DIR}/basic_libs/include
 				CMAKE_ARGS -DWITH_OPENEXR=1 -DWITH_VIGRANUMPY=${vigranumpyflag} -DWITH_HDF5=0
 				CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
+				CMAKE_ARGS -DVIGRA_STATIC_LIB=1
 				INSTALL_COMMAND ;
 			)
 		")
@@ -189,7 +191,7 @@ message(STATUS "Vigra lib dirs: ${Vigra_LIBRARY_DIRS}")
 ###########################################################################################
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 	message(STATUS "Search HDF5")
-	find_package(HDF5 QUIET)
+	find_package(HDF5 QUIET COMPONENTS C CXX)
 	option(REBUILD_HDF5 "internal HDF5 download and build" OFF)
 	if (HDF5_FOUND)
 	  set(HDF5_INTERNAL OFF)
@@ -215,7 +217,7 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 				URL https://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.15-patch1/src/hdf5-1.8.15-patch1.tar.gz
 				CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install
 				CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CompileAs}
-				CMAKE_ARGS -DBUILD_SHARED_LIBS=1
+				CMAKE_ARGS -DBUILD_SHARED_LIBS=0
 				INSTALL_COMMAND ;
 			)
 		")
@@ -229,22 +231,22 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 		execute_process(COMMAND ${CMAKE_COMMAND} --build . --config ${CompileAs}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/build)
 		
-		set(HDF5_C_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include CACHE TYPE STRING FORCE)
-		set(HDF5_CXX_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include CACHE TYPE STRING FORCE)
-		set(HDF5_hdf5_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5.lib CACHE TYPE STRING FORCE)
-		set(HDF5_hdf5_cxx_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5_cpp.lib CACHE TYPE STRING FORCE)
-		set(HDF5_hdf5_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5_D.lib CACHE TYPE STRING FORCE)
-		set(HDF5_hdf5_cxx_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5_cpp_D.lib CACHE TYPE STRING FORCE)
-		set(HDF5_C_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5.lib CACHE TYPE STRING FORCE)
-		set(HDF5_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/cmake CACHE TYPE STRING FORCE)
-		set(HDF5_DIFF_EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/bin/h5diff.exe CACHE TYPE STRING FORCE)
-		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/cmake FORCE)
+# 		set(HDF5_C_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include CACHE TYPE STRING FORCE)
+# 		set(HDF5_CXX_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/include CACHE TYPE STRING FORCE)
+# 		set(HDF5_hdf5_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5.lib CACHE TYPE STRING FORCE)
+# 		set(HDF5_hdf5_cxx_LIBRARY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5_cpp.lib CACHE TYPE STRING FORCE)
+# 		set(HDF5_hdf5_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5_D.lib CACHE TYPE STRING FORCE)
+# 		set(HDF5_hdf5_cxx_LIBRARY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5_cpp_D.lib CACHE TYPE STRING FORCE)
+# 		set(HDF5_C_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/lib/hdf5.lib CACHE TYPE STRING FORCE)
+# 		set(HDF5_DIR ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/cmake CACHE TYPE STRING FORCE)
+# 		set(HDF5_DIFF_EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/bin/h5diff.exe CACHE TYPE STRING FORCE)
+ 		list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/force_hdf5/install/cmake FORCE)
 	endif()
 endif()
 
 SET(REBUILD_HDF5 OFF CACHE BOOL "internal HDF5 download and build" FORCE)
 
-find_package(HDF5 REQUIRED)
+find_package(HDF5 REQUIRED COMPONENTS C CXX)
 message(STATUS "HDF5 include dir: ${HDF5_INCLUDE_DIRS}")
 message(STATUS "HDF5 lib dirs: ${HDF5_LIBRARIES} ${HDF5_hdf5_cxx_LIBRARY_RELEASE} ${HDF5_hdf5_LIBRARY_DEBUG} ${HDF5_hdf5_cxx_LIBRARY_DEBUG}")
 
@@ -800,7 +802,8 @@ link_directories(${CLIF_LIBRARY_DIRS})
 link_directories(${CLIF-QT_LIBRARY_DIRS})
 link_directories(${CLIINI_LIBRARY_DIRS})
 
-list(APPEND OPENLF_LIBRARIES ${CLIF_LIBRARIES} ${CLIF-QT_LIBRARIES} ${CLIINI_LIBRARIES} ${Boost_LIBRARIES})
+#FIXME vigraimpex should come from clif
+list(APPEND OPENLF_LIBRARIES vigraimpex ${CLIF_LIBRARIES} ${CLIF-QT_LIBRARIES} ${CLIINI_LIBRARIES} ${Boost_LIBRARIES})
 
 message("${CLIF_LIBRARIES}")
 message("${CLIINI_LIBRARIES}")
