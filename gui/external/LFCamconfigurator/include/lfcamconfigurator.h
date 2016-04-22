@@ -24,12 +24,12 @@
 #include <string>
 #include <QMainWindow>
 #include <QObject>
-#include <ConfigParser.h>
 #include <QFileDialog>
 #include <QLabel>
 #include <QScrollArea>
-#include "class_LFsetup.h"
 
+#include "class_LFsetup.h"
+#include "ConfigParser.h"
 
 using namespace std;
 
